@@ -1,0 +1,19 @@
+# git自动忽略的文件类型
+# windows自动生成的垃圾
+Thumbs.db
+Desktop.ini
+# 测试文件
+# test
+# 日志文件
+*.log
+# 编译中间文件
+*.o
+*.obj
+# 编译目录
+build
+debug
+# svn文件
+.svn
+doxygen
+# 测试数据
+data
