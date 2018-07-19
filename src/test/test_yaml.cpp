@@ -2,7 +2,7 @@
 // Created by jiang.wenqiang on 2018/7/17.
 //
 
-#include "../src/Log.h"
+#include "Log.h"
 #include "yaml-cpp/yaml.h"
 #include <sstream>
 #include <QtCore/QFile>

@@ -3,8 +3,8 @@
 //
 
 
-#include "../src/CurveConfig.h"
-#include "../src/Log.h"
+#include "CurveConfig.h"
+#include "Log.h"
 
 int main() {
     qInstallMessageHandler(Log::handler);

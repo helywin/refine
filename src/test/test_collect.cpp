@@ -2,12 +2,12 @@
 // Created by jiang.wenqiang on 2018/7/3.
 //
 #include <QtCore/QFile>
-#include "../src/Revolve.h"
+#include "Revolve.h"
 #include "Kebab.h"
-#include "../src/Log.h"
-#include "../src/CanConfig.h"
-#include "../src/Can.h"
-#include "../src/CurveConfig.h"
+#include "Log.h"
+#include "CanConfig.h"
+#include "Can.h"
+#include "CurveConfig.h"
 #include <iostream>
 
 

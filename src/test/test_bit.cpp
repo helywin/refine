@@ -2,7 +2,7 @@
 // Created by jiang.wenqiang on 2018/7/4.
 //
 
-#include "../src/Log.h"
+#include "Log.h"
 
 int main() {
     qInstallMessageHandler(Log::handler);

@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/6/29.
 //
 
-#include "../src/Can.h"
-#include "../src/Log.h"
+#include "Can.h"
+#include "Log.h"
 #include <QtCore/QCoreApplication>
 
 int main(int argc, char *argv[]) {

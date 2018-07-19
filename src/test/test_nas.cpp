@@ -8,7 +8,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QTime>
 
-#include "../src/Log.h"
+#include "Log.h"
 int main() {
     QTime t;
     t.start();
