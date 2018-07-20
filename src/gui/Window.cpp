@@ -9,6 +9,9 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QTabWidget>
 
 #include <QtCore/QDebug>
 #include <QtWidgets/QApplication>
@@ -27,30 +30,41 @@ void Window::setup_ui() {
     central_widget = new QWidget(this);
     this->setCentralWidget(central_widget);
     whole_hbox_layout = new QHBoxLayout(central_widget);
+    left_widget = new QWidget(this);
     mid_widget = new QWidget(this);
+    right_widget = new QWidget(this);
+    left_vbox_layout = new QVBoxLayout(left_widget);
     mid_vbox_layout = new QVBoxLayout(mid_widget);
+    right_vbox_layout = new QVBoxLayout(right_widget);
     
     opengl = new QOpenGLWidget(mid_widget);
     
     central_widget->setLayout(whole_hbox_layout);
-    left_tab_widget = new QTabWidget(this);
-    left_tab_widget->addTab(new QWidget(this), QString("匹配"));
-    left_tab_widget->addTab(new QWidget(this), QString("曲线"));
-    left_tab_widget->addTab(new QWidget(this), QString("工况"));
+    left_tab_widget = new QTabWidget(left_widget);
+    left_tab_widget->addTab(new QWidget(left_tab_widget), QString("工况"));
+    left_tab_widget->addTab(new QWidget(left_tab_widget), QString("通信"));
+    left_tab_widget->addTab(new QWidget(left_tab_widget), QString("文件"));
+    left_tab_widget->addTab(new QWidget(left_tab_widget), QString("报告"));
     left_tab_widget->setTabEnabled(0, false);
     left_tab_widget->setTabBarAutoHide(true);
     left_tab_widget->setTabPosition(QTabWidget::West);
     left_tab_widget->setTabBarAutoHide(true);
-    whole_hbox_layout->addWidget(left_tab_widget,1);
-//    whole_hbox_layout->setMargin(0);
-    whole_hbox_layout->addWidget(mid_widget,7);
-
+    //    whole_hbox_layout->setMargin(0);
+    whole_hbox_layout->addWidget(left_widget, 1);
+    whole_hbox_layout->addWidget(mid_widget, 7);
+    whole_hbox_layout->addWidget(right_widget, 1);
+    left_widget->setLayout(left_vbox_layout);
     mid_widget->setLayout(mid_vbox_layout);
+    right_widget->setLayout(right_vbox_layout);
+    left_vbox_layout->addWidget(new QPushButton());
+    left_vbox_layout->addWidget(left_tab_widget);
     mid_vbox_layout->addWidget(opengl,10);
     mid_vbox_layout->setMargin(0);
     opengl_scroller = new QScrollBar(mid_widget);
     opengl_scroller->setOrientation(Qt::Horizontal);
     mid_vbox_layout->addWidget(opengl_scroller, 1);
+    right_vbox_layout->addWidget(new QLineEdit(right_widget));
+    right_vbox_layout->addWidget(new QTabWidget(right_widget));
 
     menu_bar = new QMenuBar(this);
     menu_bar->setObjectName(QStringLiteral("menu_bar"));
@@ -74,11 +88,11 @@ void Window::setup_ui() {
     this->setMenuBar(menu_bar);
     status_bar = new QStatusBar(this);
     status_bar->setObjectName(QStringLiteral("status_bar"));
-    status_bar->addAction(menu_action_new);
 
     this->setStatusBar(status_bar);
 
     connect(menu_setting_skin, &QAction::triggered, this, &Window::change_skin);
+    connect(menu_action_new, &QAction::triggered, this, &Window::get_color);
 }
 
 Window::~Window() {}
@@ -104,4 +118,9 @@ void Window::change_skin() {
         default:
             break;
     }
+}
+
+void Window::get_color() {
+    dialog.show();
+    qDebug("yes");
 }

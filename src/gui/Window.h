@@ -9,6 +9,7 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QOpenGLWidget>
 #include <QtWidgets/QScrollBar>
+#include <QtWidgets/QColorDialog>
 
 class Window : public QMainWindow{
 Q_OBJECT
@@ -21,10 +22,15 @@ private:
     QAction *menu_action_new;
     QAction *menu_setting_skin;
     QHBoxLayout *whole_hbox_layout;
+    QVBoxLayout *left_vbox_layout;
     QVBoxLayout *mid_vbox_layout;
+    QVBoxLayout *right_vbox_layout;
+    QWidget *left_widget;
     QWidget *mid_widget;
+    QWidget *right_widget;
     QOpenGLWidget *opengl;
     QScrollBar *opengl_scroller;
+    QColorDialog dialog;
 
 
     QTabWidget *left_tab_widget;
@@ -39,6 +45,7 @@ public:
 
 public slots:
     void change_skin();
+    void get_color();
 
 };
 
