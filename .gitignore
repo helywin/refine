@@ -17,3 +17,5 @@ debug
 doxygen
 # 测试数据
 data
+# clion文件
+.idea

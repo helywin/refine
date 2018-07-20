@@ -18,6 +18,8 @@
 
 Window::Window(QWidget *parent) : QMainWindow(parent) {
     setup_ui();
+    move(100,100);
+    this->setWindowState(Qt::WindowMaximized);
 }
 
 void Window::setup_ui() {
@@ -26,7 +28,6 @@ void Window::setup_ui() {
     
     this->setDocumentMode(true);
     this->setWindowTitle(QString("Refine匹配软件"));
-    this->setWindowState(Qt::WindowMaximized);
     central_widget = new QWidget(this);
     this->setCentralWidget(central_widget);
     whole_hbox_layout = new QHBoxLayout(central_widget);
@@ -71,19 +72,38 @@ void Window::setup_ui() {
     menu_bar->setGeometry(QRect(0, 0, 300, 23));
 
     menu_file = new QMenu(QString("文件(&F)"), menu_bar);
+    menu_collect = new QMenu(QString("采集(&C)"), menu_bar);
+    menu_match = new QMenu(QString("匹配(&M)"), menu_bar);
     menu_setting = new QMenu(QString("设置(&S)"));
-    menu_file->setObjectName(QStringLiteral("menu"));
-    menu_action_new = new QAction(this);
-    menu_action_new->setObjectName(QStringLiteral("menu_action_file"));
-    menu_action_new->setText("新建(&N)");
+    menu_help = new QMenu(QString("帮助(&H)"));
+    menu_file_new = new QAction(this);
+    menu_file_new->setText("新建(&N)");
+    menu_collect_load = new QAction(this);
+    menu_collect_load->setText("加载配置(&L)...");
+    menu_collect_config = new QAction(this);
+    menu_collect_config->setText("手动配置(&M)...");
+    menu_match_load = new QAction(this);
+    menu_match_load->setText("加载配置(&L)...");
+    menu_match_config = new QAction(this);
+    menu_match_config->setText("手动配置(&M)...");
     menu_setting_skin = new QAction(this);
     menu_setting_skin->setText("皮肤(&S)");
-
-    menu_file->addAction(menu_action_new);
+    menu_help_about = new QAction(this);
+    menu_help_about->setText("关于(&A)...");
+    menu_help_feedback->setText("反馈(&A)...");
+    menu_file->addAction(menu_file_new);
+    menu_collect->addAction(menu_collect_load);
+    menu_collect->addAction(menu_collect_config);
+    menu_match->addAction(menu_match_load);
+    menu_match->addAction(menu_match_config);
     menu_setting->addAction(menu_setting_skin);
+    menu_help->addAction(menu_help_about);
 
     menu_bar->addAction(menu_file->menuAction());
+    menu_bar->addAction(menu_collect->menuAction());
+    menu_bar->addAction(menu_match->menuAction());
     menu_bar->addAction(menu_setting->menuAction());
+    menu_bar->addAction(menu_help->menuAction());
 
     this->setMenuBar(menu_bar);
     status_bar = new QStatusBar(this);
@@ -92,10 +112,13 @@ void Window::setup_ui() {
     this->setStatusBar(status_bar);
 
     connect(menu_setting_skin, &QAction::triggered, this, &Window::change_skin);
-    connect(menu_action_new, &QAction::triggered, this, &Window::get_color);
+    connect(menu_help_about, &QAction::triggered, this, &Window::about);
+    about_dialog = new About(this);
 }
 
-Window::~Window() {}
+Window::~Window() {
+    delete about_dialog;
+}
 
 void Window::resizeEvent(QResizeEvent *event) {
     qDebug() << this->size();
@@ -120,7 +143,10 @@ void Window::change_skin() {
     }
 }
 
-void Window::get_color() {
-    dialog.show();
-    qDebug("yes");
+void Window::about() {
+    about_dialog->show();
+}
+
+void Window::hide_about() {
+    about_dialog->hide();
 }

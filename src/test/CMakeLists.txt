@@ -3,6 +3,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
+find_package(Qt5Gui CONFIG REQUIRED)
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/core CORE)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/gui GUI)
@@ -66,4 +67,4 @@ add_executable(test_right test_right.cpp my_right.h my_right.cpp)
 target_link_libraries(test_right Qt5Core)
 
 add_executable(test_window test_window.cpp ${GUI})
-target_link_libraries(test_window Qt5Widgets Qt5Core)
+target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui)

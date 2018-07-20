@@ -10,6 +10,7 @@
 #include <QtWidgets/QOpenGLWidget>
 #include <QtWidgets/QScrollBar>
 #include <QtWidgets/QColorDialog>
+#include "About.h"
 
 class Window : public QMainWindow{
 Q_OBJECT
@@ -17,10 +18,19 @@ private:
     QWidget *central_widget;
     QMenuBar *menu_bar;
     QMenu *menu_file;
+    QMenu *menu_collect;
+    QMenu *menu_match;
     QMenu *menu_setting;
+    QMenu *menu_help;
     QStatusBar *status_bar;
-    QAction *menu_action_new;
+    QAction *menu_file_new;
+    QAction *menu_collect_load;
+    QAction *menu_collect_config;
+    QAction *menu_match_load;
+    QAction *menu_match_config;
     QAction *menu_setting_skin;
+    QAction *menu_help_about;
+    QAction *menu_help_feedback;
     QHBoxLayout *whole_hbox_layout;
     QVBoxLayout *left_vbox_layout;
     QVBoxLayout *mid_vbox_layout;
@@ -30,11 +40,9 @@ private:
     QWidget *right_widget;
     QOpenGLWidget *opengl;
     QScrollBar *opengl_scroller;
-    QColorDialog dialog;
-
-
     QTabWidget *left_tab_widget;
 
+    About *about_dialog;
 public:
     explicit Window(QWidget *parent = nullptr);
     ~Window() final;
@@ -45,8 +53,10 @@ public:
 
 public slots:
     void change_skin();
-    void get_color();
 
+    void about();
+
+    void hide_about();
 };
 
 
