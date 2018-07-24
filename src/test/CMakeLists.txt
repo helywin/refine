@@ -5,6 +5,15 @@ find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(Qt5Gui CONFIG REQUIRED)
 
+set(CMAKE_BUILD_TYPE Release CACHE STRING "set build type to debug")
+
+#if(CMAKE_BUILD_TYPE MATCHES Release)
+    set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-arcs -ftest-coverage")
+    set_target_properties(Qt5::Core PROPERTIES MAP_IMPORTED_CONFIG_COVERAGE "RELEASE")
+    set_target_properties(Qt5::Widgets PROPERTIES MAP_IMPORTED_CONFIG_COVERAGE "RELEASE")
+    set_target_properties(Qt5::Gui PROPERTIES MAP_IMPORTED_CONFIG_COVERAGE "RELEASE")
+#endif(CMAKE_BUILD_TYPE MATCHES Release)
+
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/core CORE)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/gui GUI)
 include_directories(${PROJECT_SOURCE_DIR}/src/core)
@@ -68,3 +77,6 @@ target_link_libraries(test_right Qt5Core)
 
 add_executable(test_window test_window.cpp ${GUI})
 target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui)
+
+add_executable(test_release test_release.cpp)
+target_link_libraries(test_release Qt5Core)

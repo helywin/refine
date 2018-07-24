@@ -8,9 +8,10 @@
 #include <QtCore/QDebug>
 
 About::About(QWidget *parent) : QDialog(parent) {
+    setWindowFlag(Qt::ToolTip);
     setup_ui();
-    setWindowFlag(Qt::WindowContextHelpButtonHint, false);
-    setWindowFlag(Qt::WindowCloseButtonHint, false);
+//    setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+//    setWindowFlag(Qt::WindowCloseButtonHint, false);
     setWindowTitle("关于");
     setFixedSize(500,500);
     move(420,100);
@@ -59,7 +60,7 @@ void About::setup_ui() {
 
     QFont font_soft("微软雅黑",20, 5);
     soft = new QLabel(this);
-    soft->setText("开源软件协议");
+    soft->setText("第三方开源软件协议");
     soft->setFont(font_soft);
     soft->move(20, 240);
     soft->resize(460, 40);

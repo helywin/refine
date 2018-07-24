@@ -25,11 +25,11 @@ private:
 public:
     explicit About(QWidget *parent = nullptr);
 
-    void setup_ui();
-
     ~About() final = default;
 
 protected:
+    void setup_ui();
+
     bool eventFilter(QObject *object, QEvent *event) override;
 
 };
