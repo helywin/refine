@@ -8,7 +8,7 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QDialog>
 
-class CurveTable : public QTableWidget{
+class CurveTable : public QTableWidget {
 Q_OBJECT
 private:
     QDialog test;

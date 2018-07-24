@@ -20,10 +20,9 @@ namespace Const {
         static const double six;
         static const double r;
     };
+
     static const double gravity = 9.8;
 }
-
-
 
 
 #endif //CORE_CONSTANT_H

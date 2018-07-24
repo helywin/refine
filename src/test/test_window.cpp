@@ -2,8 +2,7 @@
 // Created by jiang.wenqiang on 2018/7/19.
 //
 
-#include "Window.h"
-#include <QtCore/QDebug>
+#include "../gui/Window.h"
 #include "QtWidgets/QApplication"
 
 int main(int argc, char *argv[]) {

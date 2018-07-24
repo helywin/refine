@@ -26,7 +26,7 @@ public:
         File
     };
 
-    class ModePeriod{
+    class ModePeriod {
         bool validity;
         unsigned int start;
         unsigned int length;

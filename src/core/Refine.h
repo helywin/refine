@@ -13,8 +13,9 @@ private:
     unsigned int length;
 public:
     Range() = delete;
+
     Range(const unsigned int begin_index, const unsigned int length) :
-            begin_index(begin_index), length(length){};
+            begin_index(begin_index), length(length) {};
 
     inline unsigned int begin() { return begin_index; }
 
@@ -43,7 +44,7 @@ public:
 
 private:
     static inline unsigned int freq_to_index(double s_freq, double freq,
-                                        unsigned int point);
+                                             unsigned int point);
 };
 
 

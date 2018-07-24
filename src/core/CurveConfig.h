@@ -78,9 +78,12 @@ public:
 
     bool transform(unsigned long id, unsigned char *data,
                    double &result, unsigned short &index);
+
     Status statu();
 
     void names(QStringList &list);
+
+    inline int size() const { return config.size(); }
 };
 
 

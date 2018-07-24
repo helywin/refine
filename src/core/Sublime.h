@@ -6,6 +6,7 @@
 #define CORE_SUBLIME_H
 
 #include <QtCore/QThread>
+#include <omp.h>
 #include "CurveConfig.h"
 #include "CanBuffer.h"
 #include "Kebab.h"
@@ -17,17 +18,22 @@ private:
 
     CanBuffer &buffer;
 
-    Kebab &raft;
+    Kebab &kebab;
+
+    omp_lock_t lock;
 
 public:
     Sublime() = delete;
 
-    Sublime(CurveConfig &cfg, CanBuffer &buffer, Kebab &raft);
+    Sublime(CurveConfig &cfg, CanBuffer &buffer, Kebab &kebab);
+
+    ~Sublime() final;
 
 protected:
     void run() Q_DECL_OVERRIDE;
 
 signals:
+
     void result(unsigned int use, unsigned int total);
 
     void unload();

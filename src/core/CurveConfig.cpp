@@ -137,9 +137,9 @@ QString CurveConfigCell::str() {
             .arg(high_range[0])
             .arg(high_range[1]));
     list.append(QString("%1;%2~%3")
-            .arg(low_byte)
-            .arg(low_range[0])
-            .arg(low_range[1]));
+                        .arg(low_byte)
+                        .arg(low_range[0])
+                        .arg(low_range[1]));
     if (sample == CurveConfigCell::Frame) {
         list.append(QString("帧数"));
     } else {
@@ -442,8 +442,8 @@ bool CurveConfig::transform(unsigned long id, unsigned char *data,
                             double &result, unsigned short &index) {
     for (const auto &iter : config) {
         bool flag = iter.can_id == id &&
-                (!iter.zero_flag || data[0] == iter.zero_byte);
-        if(flag) {
+                    (!iter.zero_flag || data[0] == iter.zero_byte);
+        if (flag) {
             unsigned int full;
             unsigned int high_byte;
             unsigned int low_byte;
@@ -456,17 +456,18 @@ bool CurveConfig::transform(unsigned long id, unsigned char *data,
                 high_byte = 0;
             }
             low_byte = data[iter.low_byte];
-            qDebug() << "low byte " <<low_byte;
+//            qDebug() << "low byte " << low_byte;
             low_byte <<= 7 - iter.low_range[1];
             low_byte >>= 7 - iter.low_range[1] + iter.low_range[0];
             full = high_byte + low_byte;
-            qDebug() << full;
+//            qDebug() << full;
             double k;
             double b;
-            k = (double)(iter.range_out[1] - iter.range_out[0]) /
-                    (double)(iter.range_in[1] - iter.range_in[0]);
-            b = (double)iter.range_out[0] - k * iter.range_in[0];
-            result = (double)full * k + b;
+            k = (double) (iter.range_out[1] - iter.range_out[0]) /
+                (double) (iter.range_in[1] - iter.range_in[0]);
+            b = (double) iter.range_out[0] - k * iter.range_in[0];
+            result = (double) full * k + b;
+            index = iter.index;
             return true;
         } else {
             return false;

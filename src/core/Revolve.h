@@ -14,27 +14,26 @@
 class Revolve : public QObject {
 Q_OBJECT
 private:
-    Keep *keep;
+    Keep &keep;
 
-    Collect *clt;
+    Collect &clt;
 
-    Sublime *sub;
+    Sublime &sub;
 
     bool collect_fail;
 
     unsigned int unconnected_times;
 
 public:
+    Revolve() = delete;
 
-    Revolve();
+    Revolve(Keep &keep, Collect &clt, Sublime &sub);
 
-    void set(Keep *keep, Collect *clt, Sublime *sub);
+    inline void start_sublime();
 
-    void start_sublime();
+    inline void start_keep();
 
-    void start_keep();
-
-    void start_collect();
+    inline void start_collect();
 
     bool marvel();
 

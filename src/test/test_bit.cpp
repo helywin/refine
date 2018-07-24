@@ -11,10 +11,10 @@ int main() {
     unsigned int a = 56;
     unsigned int b = 0xFFFFFFFF;
     unsigned int c = 0xFFFFFFFF;
-    b = b<<3U & b>>26U;
+    b = b << 3U & b >> 26U;
     qDebug() << a;
     qDebug() << b;
-    qDebug() << (b&a);
+    qDebug() << (b & a);
     qDebug() << sizeof(int);
     qDebug() << sizeof(short);
     qDebug() << c;

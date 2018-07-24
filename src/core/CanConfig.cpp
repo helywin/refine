@@ -60,9 +60,9 @@ void CanConfig::to_struct(VCI_INIT_CONFIG &cfg) {
 }
 
 CanBoardInfo::CanBoardInfo() :
-hardware_version(0), firmware_version(0), driver_version(0),
-interface_version(0), interrupt_number(0), can_channels(0),
-serial_number("none"), hardware_type("none"), reserved(){}
+        hardware_version(0), firmware_version(0), driver_version(0),
+        interface_version(0), interrupt_number(0), can_channels(0),
+        serial_number("none"), hardware_type("none"), reserved() {}
 
 CanBoardInfo::CanBoardInfo(const VCI_BOARD_INFO &info) {
     *this = info;

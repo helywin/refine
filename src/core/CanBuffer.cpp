@@ -99,7 +99,7 @@ CanBufferCell *CanBuffer::out() {
     }
 }
 
-CanBufferCell* CanBuffer::push() {
+CanBufferCell *CanBuffer::push() {
     if (full()) {
         return nullptr;
     } else {
@@ -119,10 +119,10 @@ bool CanBuffer::full() {
            head_point - tail_point == -1;
 }
 
-CanBufferCell* CanBuffer::head() {
+CanBufferCell *CanBuffer::head() {
     return head_point;
 }
 
-CanBufferCell* CanBuffer::tail() {
+CanBufferCell *CanBuffer::tail() {
     return tail_point;
 }

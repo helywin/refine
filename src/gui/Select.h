@@ -12,7 +12,7 @@
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QMenuBar>
 
-class Select : public QDialog{
+class Select : public QDialog {
 Q_OBJECT
 private:
     QMenuBar *menu_bar;

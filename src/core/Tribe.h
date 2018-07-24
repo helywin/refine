@@ -35,9 +35,9 @@ public:
 
     QString str(const QString &key);
 
-    inline QString str(const char *key) {str(QString(key)); };
+    inline QString str(const char *key) { str(QString(key)); };
 
-    inline unsigned int size() { return (unsigned)clan.size(); }
+    inline unsigned int size() { return (unsigned) clan.size(); }
 
     inline QList<QString> keys() { return clan.keys(); }
 

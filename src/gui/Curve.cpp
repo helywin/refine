@@ -4,18 +4,18 @@
 
 #include "Curve.h"
 
-Curve::Curve(QWidget *parent) : QDialog(parent){
+Curve::Curve(QWidget *parent) : QDialog(parent) {
     setup_ui();
-    move(0,0);
+    move(0, 0);
     setWindowFlag(Qt::ToolTip);
-    setFixedSize(1366,706);
+    setFixedSize(1366, 706);
 }
 
 void Curve::setup_ui() {
     setWindowTitle(QString("曲线配置"));
     table = new CurveTable(this);
     layout = new QVBoxLayout(this);
-    layout->setContentsMargins(10,30,10,10);
+    layout->setContentsMargins(10, 30, 10, 10);
 
     menu_bar = new QMenuBar(this);
     menu_file = new QMenu(QString("文件(&F)"), this);

@@ -5,7 +5,7 @@
 #include "Middle.h"
 #include <QtGui/QKeyEvent>
 
-Middle::Middle(QWidget *parent) : QWidget(parent){}
+Middle::Middle(QWidget *parent) : QWidget(parent) {}
 
 void Middle::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {

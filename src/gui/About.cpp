@@ -4,7 +4,6 @@
 
 #include "About.h"
 #include <QtCore/QEvent>
-#include <QtGui/QPicture>
 #include <QtCore/QDebug>
 
 About::About(QWidget *parent) : QDialog(parent) {
@@ -13,31 +12,31 @@ About::About(QWidget *parent) : QDialog(parent) {
 //    setWindowFlag(Qt::WindowContextHelpButtonHint, false);
 //    setWindowFlag(Qt::WindowCloseButtonHint, false);
     setWindowTitle("关于");
-    setFixedSize(500,500);
-    move(420,100);
+    setFixedSize(500, 500);
+    move(420, 100);
     QWidget::installEventFilter(this);
 }
 
 void About::setup_ui() {
     logo = new QLabel(this);
-    logo->move(20,20);
-    logo->setFixedSize(200,200);
+    logo->move(20, 20);
+    logo->setFixedSize(200, 200);
     QPixmap pic;
-    pic.load("D:/jiang.wenqiang/code/refine/assets/logo.png");
+    pic.load(":/res/ui/logo.png");
     if (pic.isNull()) {
         qDebug("null");
     }
     logo->setPixmap(pic);
     name = new QLabel(this);
     name->setText("Refine");
-    QFont font_name("微软雅黑",35, 5);
+    QFont font_name("微软雅黑", 35, 5);
     name->setFont(font_name);
-    name->move(240,35);
+    name->move(240, 35);
     name->resize(240, 45);
     name->setAlignment(Qt::AlignCenter);
 
     version = new QLabel(this);
-    QFont font("微软雅黑",10, 5);
+    QFont font("微软雅黑", 10, 5);
     version->setText("Version: 0.0.1(build 0)");
     version->setFont(font);
     version->move(240, 100);
@@ -58,7 +57,7 @@ void About::setup_ui() {
     copyright->resize(240, 20);
     copyright->setAlignment(Qt::AlignCenter);
 
-    QFont font_soft("微软雅黑",20, 5);
+    QFont font_soft("微软雅黑", 20, 5);
     soft = new QLabel(this);
     soft->setText("第三方开源软件协议");
     soft->setFont(font_soft);
@@ -68,7 +67,7 @@ void About::setup_ui() {
 
 
     license = new QTextBrowser(this);
-    license->move(20,280);
+    license->move(20, 280);
     license->resize(460, 200);
 }
 

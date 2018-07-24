@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     str = "我,是,中,国,人";
     QStringList list = str.split(QChar(','));
     for (const auto &iter : list) {
-        if (iter == "我"){
+        if (iter == "我") {
             qInfo("我");
         }
     }

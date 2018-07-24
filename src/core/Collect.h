@@ -53,6 +53,7 @@ public:
     void stop();
 
 signals:
+
     void get();
 
     void fail(Fail code);

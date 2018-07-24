@@ -41,12 +41,12 @@ void Collect::run() {
     unsigned int check_cnt = 0;
     while (!stop_flag) {
         msleep(10);
-        if (minute*60*1000 <= time_now.elapsed()){
+        if (minute * 60 * 1000 <= time_now.elapsed()) {
             emit fail(Collect::Time);
             return;
         }
         check_cnt += 1;
-        if(check_cnt == 100 && !can.board_info(info)){
+        if (check_cnt == 100 && !can.board_info(info)) {
             emit fail(Collect::Connect);
         } else if (check_cnt == 100) {
             check_cnt = 0;

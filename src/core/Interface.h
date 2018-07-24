@@ -11,7 +11,7 @@ class Interface {
 public:
     class PdfInterface {
     public:
-        typedef void *(PdfHandler) (Rate &rate);
+        typedef void *(PdfHandler)(Rate &rate);
     };
 };
 

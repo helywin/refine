@@ -7,7 +7,7 @@
 
 #include <QtWidgets/QWidget>
 
-class Middle : public QWidget{
+class Middle : public QWidget {
 Q_OBJECT
 public:
     explicit Middle(QWidget *parent);
@@ -18,6 +18,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 signals:
+
     void cancel_full_screen();
 };
 

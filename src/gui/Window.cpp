@@ -3,15 +3,9 @@
 //
 
 #include "Window.h"
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QAction>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLineEdit>
-#include <QtWidgets/QTabWidget>
 #include <QtCore/QDebug>
 #include <QtWidgets/QApplication>
 #include <QtGui/QKeyEvent>
@@ -20,7 +14,7 @@
 
 Window::Window(QWidget *parent) : QMainWindow(parent) {
     setup_ui();
-    move(100,100);
+    move(100, 100);
     setWindowState(Qt::WindowMaximized);
 }
 
@@ -39,16 +33,16 @@ void Window::setup_ui() {
     right_widget = new QWidget(this);
     right_widget->setMinimumWidth(200);
     left_vbox_layout = new QVBoxLayout(left_widget);
-    left_vbox_layout->setContentsMargins(10,5,0,5);
+    left_vbox_layout->setContentsMargins(10, 5, 0, 5);
     mid_container = new QVBoxLayout(mid_content);
-    mid_container->setContentsMargins(0,5,0,5);
+    mid_container->setContentsMargins(0, 5, 0, 5);
     mid_vbox_layout = new QVBoxLayout(mid_widget);
     mid_vbox_layout->setMargin(0);
     right_vbox_layout = new QVBoxLayout(right_widget);
-    right_vbox_layout->setContentsMargins(0,5,10,5);
-    
+    right_vbox_layout->setContentsMargins(0, 5, 10, 5);
+
     opengl = new QOpenGLWidget(mid_widget);
-    
+
 //    central_widget->setLayout(whole_hbox_layout);
     left_tab_widget = new QTabWidget(left_widget);
     left_tab_widget->addTab(new QWidget(left_tab_widget), QString("工况"));
@@ -65,7 +59,8 @@ void Window::setup_ui() {
     central_splitter->addWidget(mid_content);
     central_splitter->addWidget(right_widget);
     central_splitter->setSizes
-            (QList({this->width()/6,this->width()/6*4,this->width()/6}));
+            (QList({this->width() / 6, this->width() / 6 * 4,
+                    this->width() / 6}));
 //    central_splitter->setStretchFactor(1, 20);
 //    central_splitter->setStretchFactor(0, 5);
 //    central_splitter->setStretchFactor(2, 5);
@@ -78,7 +73,7 @@ void Window::setup_ui() {
     mid_container->addWidget(mid_widget);
     mid_content->setLayout(mid_container);
 
-    mid_vbox_layout->addWidget(opengl,10);
+    mid_vbox_layout->addWidget(opengl, 10);
     opengl_scroller = new QScrollBar(mid_widget);
     opengl_scroller->setOrientation(Qt::Horizontal);
     mid_vbox_layout->addWidget(opengl_scroller, 1);
@@ -151,18 +146,27 @@ void Window::setup_ui() {
     select_dialog = new Select(this);
     curve_dialog = new Curve(this);
 
-    connect(menu_collect_load, &QAction::triggered, new QFileDialog, &QFileDialog::show);
-    connect(menu_match_load, &QAction::triggered, new QFileDialog, &QFileDialog::show);
+    connect(menu_collect_load, &QAction::triggered, new QFileDialog,
+            &QFileDialog::show);
+    connect(menu_match_load, &QAction::triggered, new QFileDialog,
+            &QFileDialog::show);
     connect(menu_setting_skin, &QAction::triggered, this, &Window::change_skin);
-    connect(menu_setting_display_left, &QAction::triggered, this, &Window::hide_display);
-    connect(menu_setting_display_right, &QAction::triggered, this, &Window::hide_display);
-    connect(menu_setting_display_statu, &QAction::triggered, this, &Window::hide_display);
-    connect(menu_setting_fullscreen, &QAction::triggered, this, &Window::full_screen);
-    connect(menu_match_config, &QAction::triggered, select_dialog, &Select::show);
-    connect(menu_collect_config, &QAction::triggered, curve_dialog, &Curve::show);
+    connect(menu_setting_display_left, &QAction::triggered, this,
+            &Window::hide_display);
+    connect(menu_setting_display_right, &QAction::triggered, this,
+            &Window::hide_display);
+    connect(menu_setting_display_statu, &QAction::triggered, this,
+            &Window::hide_display);
+    connect(menu_setting_fullscreen, &QAction::triggered, this,
+            &Window::full_screen);
+    connect(menu_match_config, &QAction::triggered, select_dialog,
+            &Select::show);
+    connect(menu_collect_config, &QAction::triggered, curve_dialog,
+            &Curve::show);
     connect(menu_help_about, &QAction::triggered, about_dialog, &About::show);
 
-    connect(mid_widget, &Middle::cancel_full_screen, this, &Window::full_screen_cancel);
+    connect(mid_widget, &Middle::cancel_full_screen, this,
+            &Window::full_screen_cancel);
     before_full_screen = mid_widget->windowFlags();
 }
 

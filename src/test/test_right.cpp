@@ -4,7 +4,7 @@
 
 #include "my_right.h"
 
-int main () {
+int main() {
     QString R("right");
     Right right(qMove(R));
     Right right1(qMove(right));

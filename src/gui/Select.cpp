@@ -4,16 +4,15 @@
 
 #include "Select.h"
 #include <QtGui/QtEvents>
-#include <QtWidgets/QHeaderView>
 
-Select::Select(QWidget *parent) : QDialog(parent){
+Select::Select(QWidget *parent) : QDialog(parent) {
     setup_ui();
-    move(0,0);
+    move(0, 0);
     setWindowFlag(Qt::ToolTip);
 //    this->setWindowState(Qt::WindowMaximized);
 //    setWindowFlag(Qt::WindowMaximizeButtonHint, false);
 //    setWindowFlag(Qt::WindowContextHelpButtonHint, false);
-    setFixedSize(1366,706);
+    setFixedSize(1366, 706);
     setWindowTitle(QString("设置工况配置"));
 //    this->setFixedSize(size());
 }
@@ -21,7 +20,7 @@ Select::Select(QWidget *parent) : QDialog(parent){
 void Select::setup_ui() {
     layout = new QHBoxLayout(this);
     this->setLayout(layout);
-    layout->setContentsMargins(10,30,10,10);
+    layout->setContentsMargins(10, 30, 10, 10);
     menu_bar = new QMenuBar(this);
     menu_file = new QMenu(QString("文件(&F)"), this);
     menu_edit = new QMenu(QString("编辑(&E)"), this);
@@ -59,10 +58,10 @@ void Select::setup_ui() {
     criteria = new QListWidget(this);
     params = new QTableWidget(this);
 
-    layout->addWidget(whole_modes,1);
-    layout->addWidget(modes,1);
-    layout->addWidget(criteria,1);
-    layout->addWidget(params,1);
+    layout->addWidget(whole_modes, 1);
+    layout->addWidget(modes, 1);
+    layout->addWidget(criteria, 1);
+    layout->addWidget(params, 1);
 
     //! code for demo
     whole_modes->setColumnCount(1);
@@ -70,25 +69,25 @@ void Select::setup_ui() {
     QTreeWidgetItem *mode_start = new QTreeWidgetItem(
             whole_modes, QStringList(QString("Acceleration")));
     QTreeWidgetItem *mode_Acceleration = new QTreeWidgetItem(
-            mode_start,QStringList(QString("CylinderDeactivation")));
-    QTreeWidgetItem *mode_CylinderReactivation  = new QTreeWidgetItem(
-            mode_start,QStringList(QString("CylinderReactivation")));
+            mode_start, QStringList(QString("CylinderDeactivation")));
+    QTreeWidgetItem *mode_CylinderReactivation = new QTreeWidgetItem(
+            mode_start, QStringList(QString("CylinderReactivation")));
     QTreeWidgetItem *mode_Elasticity = new QTreeWidgetItem(
-            mode_start,QStringList(QString("Elasticity")));
+            mode_start, QStringList(QString("Elasticity")));
     QTreeWidgetItem *mode_FullLoad = new QTreeWidgetItem(
-            mode_start,QStringList(QString("FullLoad")));
+            mode_start, QStringList(QString("FullLoad")));
     QTreeWidgetItem *mode_FullLoadHundredKph = new QTreeWidgetItem(
-            mode_start,QStringList(QString("FullLoadHundredKph")));
+            mode_start, QStringList(QString("FullLoadHundredKph")));
     QTreeWidgetItem *mode_FullLoadThroughGears = new QTreeWidgetItem(
-            mode_start,QStringList(QString("FullLoadThroughGears")));
+            mode_start, QStringList(QString("FullLoadThroughGears")));
     QTreeWidgetItem *mode_LowEndTorque = new QTreeWidgetItem(
-            mode_start,QStringList(QString("LowEndTorque")));
+            mode_start, QStringList(QString("LowEndTorque")));
     QTreeWidgetItem *mode_PartLoadConstantPedal = new QTreeWidgetItem(
-            mode_start,QStringList(QString("PartLoadConstantPedal")));
+            mode_start, QStringList(QString("PartLoadConstantPedal")));
     QTreeWidgetItem *mode_PartLoadFallingPedal = new QTreeWidgetItem(
-            mode_start,QStringList(QString("PartLoadFallingPedal")));
+            mode_start, QStringList(QString("PartLoadFallingPedal")));
     QTreeWidgetItem *mode_PartLoadRisingPedal = new QTreeWidgetItem(
-            mode_start,QStringList(QString("PartLoadRisingPedal")));
+            mode_start, QStringList(QString("PartLoadRisingPedal")));
 
     modes->addItem(new QListWidgetItem(QString("Elasticity")));
     modes->addItem(new QListWidgetItem(QString("FullLoad")));
@@ -96,7 +95,8 @@ void Select::setup_ui() {
     modes->addItem(new QListWidgetItem(QString("PartLoadRisingPedal")));
 
     criteria->addItem(new QListWidgetItem(QString("NinetyPercentTorqueRange")));
-    criteria->addItem(new QListWidgetItem(QString("NinetyPercentTorqueThreshold")));
+    criteria->addItem(
+            new QListWidgetItem(QString("NinetyPercentTorqueThreshold")));
     criteria->addItem(new QListWidgetItem(QString("AccelerationGradient")));
     criteria->addItem(new QListWidgetItem(QString("AccelerationSteps")));
     criteria->addItem(new QListWidgetItem(QString("Correlation")));
@@ -123,7 +123,7 @@ void Select::setup_ui() {
 }
 
 void Select::showEvent(QShowEvent *event) {
-    move(0,0);
+    move(0, 0);
 }
 
 void Select::closeEvent(QCloseEvent *event) {

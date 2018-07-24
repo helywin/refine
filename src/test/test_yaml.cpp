@@ -18,10 +18,12 @@ int main() {
     QString ss = stream.readAll();
     YAML::Node config = YAML::Load(ss.toStdString());
     if (config["lastLogin"]) {
-        QString s = QString::fromStdString(config["lastLogin"].as<std::string>());
+        QString s = QString::fromStdString(
+                config["lastLogin"].as<std::string>());
         qDebug() << s;
     }
-    config["lastLogin"] = QDate::currentDate().toString(QString("yyyy-MM-dd")).toStdString();
+    config["lastLogin"] = QDate::currentDate().toString(
+            QString("yyyy-MM-dd")).toStdString();
     QFile fw("D:/jiang.wenqiang/code/autophi/core/data/test_bak.yaml");
     fw.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream write(&fw);

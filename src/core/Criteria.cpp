@@ -5,10 +5,9 @@
 
 #include "Criteria.h"
 #include "Constant.h"
-#include "omp.h"
 #include "cmath"
 
-Criteria::Criteria(Criteria::ModeType type, Tribe &tribe, Rate &rate):
+Criteria::Criteria(Criteria::ModeType type, Tribe &tribe, Rate &rate) :
         mode_type(type), tribe(tribe), rate(rate) {}
 
 bool Criteria::check_data(Tribe &tribe) {
@@ -31,7 +30,7 @@ void Criteria::converter_slip(Tribe &tribe) {
 #pragma omp parallel for
     for (int i = 0; i < tribe.length(); ++i) {
         double current_ratio = 0;
-        switch ((int)tribe["当前档位"][i]) {
+        switch ((int) tribe["当前档位"][i]) {
             case Const::Shift::one :
                 current_ratio = Const::Ratio::one;
                 break;

@@ -5,7 +5,7 @@
 #include "Kebab.h"
 
 KebabCell::KebabCell() :
-        size(RAFT_CELL_LENGTH), head_index(0), tail_index(0){}
+        size(KEBAB_CELL_LENGTH), head_index(0), tail_index(0) {}
 
 double &KebabCell::operator[](unsigned int index) {
     return cell[index];
@@ -20,7 +20,7 @@ double &KebabCell::tail() {
 }
 
 void KebabCell::inc() {
-    if(head_index == size - 1) {
+    if (head_index == size - 1) {
         head_index = 0;
     } else {
         head_index += 1;
@@ -28,7 +28,7 @@ void KebabCell::inc() {
 }
 
 void KebabCell::dec() {
-    if(tail_index == size - 1) {
+    if (tail_index == size - 1) {
         tail_index = 0;
     } else {
         tail_index += 1;
@@ -48,7 +48,7 @@ unsigned int KebabCell::length() {
     if (l < 0) {
         l += size;
     }
-    return (unsigned int)l;
+    return (unsigned int) l;
 }
 
 
@@ -57,11 +57,13 @@ Kebab::Kebab(unsigned short size) : cell_size(size), max_len(0) {
 }
 
 Kebab::~Kebab() {
-    delete kebab;
+    delete [] kebab;
 }
 
 bool Kebab::add(unsigned short index, double val) {
-
+    if (index > cell_size - 1) {
+        return false;
+    }
     if (kebab[index].full()) {
         return false;
     } else {
@@ -74,7 +76,7 @@ bool Kebab::add(unsigned short index, double val) {
 }
 
 bool Kebab::out(double *list) {
-    for (int i = 0; i < cell_size; ++ i) {
+    for (int i = 0; i < cell_size; ++i) {
         if (!kebab[i].empty()) {
             list[i] = kebab[i].tail();
             kebab[i].dec();
@@ -85,10 +87,10 @@ bool Kebab::out(double *list) {
     return true;
 }
 
-unsigned short Kebab::size() {
+unsigned short Kebab::size() const {
     return cell_size;
 }
 
-unsigned int Kebab::length() {
+unsigned int Kebab::length() const {
     return max_len;
 }

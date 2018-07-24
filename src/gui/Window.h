@@ -16,7 +16,7 @@
 #include "Middle.h"
 #include "Curve.h"
 
-class Window : public QMainWindow{
+class Window : public QMainWindow {
 Q_OBJECT
 private:
     QWidget *central_widget;
@@ -59,6 +59,7 @@ private:
     About *about_dialog;
 public:
     explicit Window(QWidget *parent = nullptr);
+
     ~Window() final;
 
     void setup_ui();
@@ -66,6 +67,7 @@ public:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
 public slots:
+
     void change_skin();
 
     void hide_display();

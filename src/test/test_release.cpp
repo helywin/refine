@@ -3,8 +3,10 @@
 //
 
 #include <QtCore/QCoreApplication>
+#include <QtCore/QDebug>
 
-int main (int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
+    qDebug("debug");
     return QCoreApplication::exec();
 }

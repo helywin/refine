@@ -8,16 +8,20 @@
 #include <QtCore/QDebug>
 #include <QtCore/QDateTime>
 
-class LogCell{
+class LogCell {
 public:
     LogCell(QtMsgType type, const QString &msg);
-    LogCell(const LogCell& cell) = default;
+
+    LogCell(const LogCell &cell) = default;
+
     LogCell &operator=(const LogCell &cell) = default;
+
     LogCell();
 
     QtMsgType type;
     QString msg;
     QDateTime time;
+
     QString str();
 };
 
@@ -27,7 +31,7 @@ public:
     static QVector<LogCell> log;
     static QString path;
 
-    static void handler(QtMsgType type, const QMessageLogContext & ctxt,
+    static void handler(QtMsgType type, const QMessageLogContext &ctxt,
                         const QString &msg);
 
     static void set_path(const QString &path);

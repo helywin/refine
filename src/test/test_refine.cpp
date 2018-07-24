@@ -8,7 +8,7 @@
 #include "Abstract.h"
 #include "Constant.h"
 
-int main () {
+int main() {
 //    qInstallMessageHandler(Log::handler);
 //    Log::set_path(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
     qInfo("===============启动预处理==============");

@@ -9,6 +9,7 @@
 #include <QtCore/QTime>
 
 #include "Log.h"
+
 int main() {
     QTime t;
     t.start();

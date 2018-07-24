@@ -5,14 +5,14 @@
 #ifndef CORE_KEBAB_H
 #define CORE_KEBAB_H
 
-#define RAFT_CELL_LENGTH 4096
+#define KEBAB_CELL_LENGTH 4096
 
 class KebabCell {
 public:
     unsigned int size;
 
 private:
-    double cell[RAFT_CELL_LENGTH];
+    double cell[KEBAB_CELL_LENGTH];
 
     unsigned int head_index;
 
@@ -59,9 +59,9 @@ public:
 
     bool out(double *list);
 
-    unsigned short size();
+    unsigned short size() const;
 
-    unsigned int length();
+    unsigned int length() const;
 
 };
 

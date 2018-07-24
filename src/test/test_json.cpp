@@ -9,7 +9,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QDebug>
 
-int main () {
+int main() {
     QJsonObject json;
     json.insert("name", "jiang");
     json.insert("age", 22);
@@ -32,7 +32,7 @@ int main () {
     QJsonDocument rdoc;
     QJsonObject rjson(rdoc.object());
     auto error = new QJsonParseError;
-    rdoc = QJsonDocument::fromJson(f.readAll(),error);
+    rdoc = QJsonDocument::fromJson(f.readAll(), error);
     qDebug() << rjson;
     qDebug() << rdoc.object();
     return 0;
