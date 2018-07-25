@@ -10,6 +10,7 @@
 #include <QtWidgets/QVBoxLayout>
 
 #include "CurveTable.h"
+#include "TableTips.h"
 
 class Curve : public QDialog {
 Q_OBJECT

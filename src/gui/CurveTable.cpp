@@ -4,13 +4,15 @@
 
 #include "CurveTable.h"
 #include <QtGui/QMouseEvent>
+#include <QtCore/QDebug>
 
 CurveTable::CurveTable(QWidget *parent) : QTableWidget(parent) {
     setup_ui();
 }
 
 void CurveTable::setup_ui() {
-    test.setWindowTitle(QString("test dialog!"));
+    get_val = new GetVal(this);
+    connect(get_val, &GetVal::get_val, this, &CurveTable::cell);
     setColumnCount(15);
     setRowCount(10);
     setHorizontalHeaderLabels(QStringList(
@@ -25,9 +27,16 @@ void CurveTable::setup_ui() {
 
 void CurveTable::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
-        int row = currentRow();
-        int column = currentColumn();
-        test.setWindowTitle(QString("当前%1行%2列").arg(row).arg(column));
-        test.show();
+        switch (currentColumn()) {
+            case 2:
+                get_val->get(GetVal::Type::Type, currentRow(), currentColumn(), event->globalPos());
+                break;
+            default:
+                break;
+        }
     }
+}
+
+void CurveTable::cell(QString s, int row, int column) {
+    this->setItem(row, column, new QTableWidgetItem(s));
 }

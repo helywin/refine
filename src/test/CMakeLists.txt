@@ -20,7 +20,7 @@ endif (CMAKE_BUILD_TYPE MATCHES Release)
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     message("debug compile!!")
-    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-Wl,-subsystem,windows -mthreads")
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-mthreads")
 endif (CMAKE_BUILD_TYPE MATCHES Debug)
 #add_definitions(-DQT_DEPRECATED_WARNINGS)
 #add_definitions(-DUNICODE)

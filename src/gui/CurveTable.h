@@ -7,11 +7,13 @@
 
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QDialog>
+#include "TableTips.h"
+
 
 class CurveTable : public QTableWidget {
 Q_OBJECT
 private:
-    QDialog test;
+    GetVal *get_val;
 public:
     explicit CurveTable(QWidget *parent);
 
@@ -19,8 +21,13 @@ public:
 
     void setup_ui();
 
+
 protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
+
+public slots:
+    void cell(QString s, int row, int column);
+
 };
 
 
