@@ -37,6 +37,9 @@ public:
     ~Select() final = default;
 
 protected:
+    void resizeEvent(QResizeEvent *event) override;
+
+protected:
     void setup_ui();
 
     void closeEvent(QCloseEvent *event) override;

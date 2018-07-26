@@ -25,6 +25,10 @@ private:
     QAction *menu_file_save;
     QAction *menu_file_saveas;
     QAction *menu_edit_reset;
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
+private:
     QAction *menu_action_finish;
     QAction *menu_action_abort;
 

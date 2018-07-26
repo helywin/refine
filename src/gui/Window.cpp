@@ -10,6 +10,7 @@
 #include <QtWidgets/QApplication>
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QFileDialog>
+#include <QtCore/QTimer>
 
 
 Window::Window(QWidget *parent) : QMainWindow(parent) {
@@ -41,7 +42,10 @@ void Window::setup_ui() {
     right_vbox_layout = new QVBoxLayout(right_widget);
     right_vbox_layout->setContentsMargins(0, 5, 10, 5);
 
-    opengl = new QOpenGLWidget(mid_widget);
+    opengl = new Sketch(mid_widget);
+    auto *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, opengl, &Sketch::animate);
+    timer->start(10);
 
 //    central_widget->setLayout(whole_hbox_layout);
     left_tab_widget = new QTabWidget(left_widget);
@@ -115,10 +119,16 @@ void Window::setup_ui() {
     menu_setting_display_statu->setChecked(true);
     menu_setting_fullscreen = new QAction(this);
     menu_setting_fullscreen->setText(QString("全屏(&F)"));
+    menu_help_manual = new QAction(this);
+    menu_help_manual->setText(QString("手册(&M)..."));
+    menu_help_opensource = new QAction(this);
+    menu_help_opensource->setText(QString("开源(&O)..."));
+    menu_help_sysinfo = new QAction(this);
+    menu_help_sysinfo->setText(QString("信息(&I)..."));
+    menu_help_feedback = new QAction(this);
+    menu_help_feedback->setText(QString("反馈(&F)..."));
     menu_help_about = new QAction(this);
     menu_help_about->setText(QString("关于(&A)..."));
-    menu_help_feedback = new QAction(this);
-    menu_help_feedback->setText(QString("反馈(&A)..."));
     menu_file->addAction(menu_file_new);
     menu_collect->addAction(menu_collect_load);
     menu_collect->addAction(menu_collect_config);
@@ -130,6 +140,10 @@ void Window::setup_ui() {
     menu_setting_display->addAction(menu_setting_display_right);
     menu_setting_display->addAction(menu_setting_display_statu);
     menu_setting->addAction(menu_setting_fullscreen);
+    menu_help->addAction(menu_help_manual);
+    menu_help->addAction(menu_help_opensource);
+    menu_help->addAction(menu_help_sysinfo);
+    menu_help->addAction(menu_help_feedback);
     menu_help->addAction(menu_help_about);
 
     menu_bar->addAction(menu_file->menuAction());

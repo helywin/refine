@@ -12,7 +12,7 @@ Select::Select(QWidget *parent) : QDialog(parent) {
 //    this->setWindowState(Qt::WindowMaximized);
 //    setWindowFlag(Qt::WindowMaximizeButtonHint, false);
 //    setWindowFlag(Qt::WindowContextHelpButtonHint, false);
-    setFixedSize(1366, 706);
+    setWindowState(Qt::WindowMaximized);
     setWindowTitle(QString("设置工况配置"));
 //    this->setFixedSize(size());
 }
@@ -129,5 +129,9 @@ void Select::showEvent(QShowEvent *event) {
 void Select::closeEvent(QCloseEvent *event) {
     event->ignore();
     this->hide();
+}
+
+void Select::resizeEvent(QResizeEvent *event) {
+    setWindowState(Qt::WindowMaximized);
 }
 

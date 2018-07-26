@@ -15,6 +15,7 @@
 #include "Select.h"
 #include "Middle.h"
 #include "Curve.h"
+#include "Sketch.h"
 
 class Window : public QMainWindow {
 Q_OBJECT
@@ -39,8 +40,11 @@ private:
     QAction *menu_setting_display_right;
     QAction *menu_setting_display_statu;
     QAction *menu_setting_fullscreen;
-    QAction *menu_help_about;
+    QAction *menu_help_manual;
+    QAction *menu_help_opensource;
+    QAction *menu_help_sysinfo;
     QAction *menu_help_feedback;
+    QAction *menu_help_about;
     QVBoxLayout *mid_container;
     QVBoxLayout *left_vbox_layout;
     QVBoxLayout *mid_vbox_layout;
@@ -49,7 +53,7 @@ private:
     QWidget *mid_content;
     Middle *mid_widget;
     QWidget *right_widget;
-    QOpenGLWidget *opengl;
+    Sketch *opengl;
     QScrollBar *opengl_scroller;
     QTabWidget *left_tab_widget;
     Qt::WindowFlags before_full_screen;

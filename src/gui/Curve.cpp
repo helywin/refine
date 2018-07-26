@@ -8,7 +8,7 @@ Curve::Curve(QWidget *parent) : QDialog(parent) {
     setup_ui();
     move(0, 0);
     setWindowFlag(Qt::ToolTip);
-    setFixedSize(1366, 706);
+    setWindowState(Qt::WindowMaximized);
 }
 
 void Curve::setup_ui() {
@@ -51,6 +51,10 @@ void Curve::setup_ui() {
 
     layout->addWidget(table);
 
+}
+
+void Curve::resizeEvent(QResizeEvent *event) {
+    setWindowState(Qt::WindowMaximized);
 }
 
 
