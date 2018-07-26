@@ -16,6 +16,7 @@
 #include "Middle.h"
 #include "Curve.h"
 #include "Sketch.h"
+#include "PaintTest.h"
 
 class Window : public QMainWindow {
 Q_OBJECT
@@ -28,6 +29,7 @@ private:
     QMenu *menu_match;
     QMenu *menu_setting;
     QMenu *menu_setting_display;
+    QMenu *menu_test;
     QMenu *menu_help;
     QStatusBar *status_bar;
     QAction *menu_file_new;
@@ -40,6 +42,7 @@ private:
     QAction *menu_setting_display_right;
     QAction *menu_setting_display_statu;
     QAction *menu_setting_fullscreen;
+    QAction *menu_test_paint;
     QAction *menu_help_manual;
     QAction *menu_help_opensource;
     QAction *menu_help_sysinfo;
@@ -60,6 +63,7 @@ private:
 
     Curve *curve_dialog;
     Select *select_dialog;
+    PaintTest *paint_test_dialog;
     About *about_dialog;
 public:
     explicit Window(QWidget *parent = nullptr);

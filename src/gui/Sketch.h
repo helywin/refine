@@ -8,17 +8,24 @@
 #include <QtWidgets/QOpenGLWidget>
 #include "Painter.h"
 
-class Sketch : public QOpenGLWidget{
+class Sketch : public QOpenGLWidget {
 Q_OBJECT
 public:
     explicit Sketch(QWidget *parent = nullptr);
+
     ~Sketch() final = default;
+
+    inline void set_param(int freq, int num, int ps, int width) {
+        paint.set_param(freq, num, ps, width);
+    }
+
 private:
     Painter paint;
 protected:
     void paintEvent(QPaintEvent *e) override;
 
 public slots:
+
     void animate();
 };
 

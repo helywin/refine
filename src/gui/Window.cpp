@@ -43,9 +43,6 @@ void Window::setup_ui() {
     right_vbox_layout->setContentsMargins(0, 5, 10, 5);
 
     opengl = new Sketch(mid_widget);
-    auto *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, opengl, &Sketch::animate);
-    timer->start(10);
 
 //    central_widget->setLayout(whole_hbox_layout);
     left_tab_widget = new QTabWidget(left_widget);
@@ -92,6 +89,7 @@ void Window::setup_ui() {
     menu_match = new QMenu(QString("匹配(&M)"), menu_bar);
     menu_setting = new QMenu(QString("设置(&S)"));
     menu_setting_display = new QMenu(QString("显示(&D)"));
+    menu_test = new QMenu(QString("测试(&T)"));
     menu_help = new QMenu(QString("帮助(&H)"));
     menu_file_new = new QAction(this);
     menu_file_new->setText(QString("新建(&N)"));
@@ -119,6 +117,8 @@ void Window::setup_ui() {
     menu_setting_display_statu->setChecked(true);
     menu_setting_fullscreen = new QAction(this);
     menu_setting_fullscreen->setText(QString("全屏(&F)"));
+    menu_test_paint = new QAction(this);
+    menu_test_paint->setText(QString("绘图(&P)"));
     menu_help_manual = new QAction(this);
     menu_help_manual->setText(QString("手册(&M)..."));
     menu_help_opensource = new QAction(this);
@@ -140,6 +140,7 @@ void Window::setup_ui() {
     menu_setting_display->addAction(menu_setting_display_right);
     menu_setting_display->addAction(menu_setting_display_statu);
     menu_setting->addAction(menu_setting_fullscreen);
+    menu_test->addAction(menu_test_paint);
     menu_help->addAction(menu_help_manual);
     menu_help->addAction(menu_help_opensource);
     menu_help->addAction(menu_help_sysinfo);
@@ -150,6 +151,7 @@ void Window::setup_ui() {
     menu_bar->addAction(menu_collect->menuAction());
     menu_bar->addAction(menu_match->menuAction());
     menu_bar->addAction(menu_setting->menuAction());
+    menu_bar->addAction(menu_test->menuAction());
     menu_bar->addAction(menu_help->menuAction());
 
     this->setMenuBar(menu_bar);
@@ -159,6 +161,7 @@ void Window::setup_ui() {
     about_dialog = new About(this);
     select_dialog = new Select(this);
     curve_dialog = new Curve(this);
+    paint_test_dialog = new PaintTest(this);
 
     connect(menu_collect_load, &QAction::triggered, new QFileDialog,
             &QFileDialog::show);
@@ -177,6 +180,8 @@ void Window::setup_ui() {
             &Select::show);
     connect(menu_collect_config, &QAction::triggered, curve_dialog,
             &Curve::show);
+    connect(menu_test_paint, &QAction::triggered, paint_test_dialog,
+            &PaintTest::show);
     connect(menu_help_about, &QAction::triggered, about_dialog, &About::show);
 
     connect(mid_widget, &Middle::cancel_full_screen, this,

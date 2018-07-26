@@ -7,6 +7,7 @@
 
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEvent>
+#include <QtCore/QTime>
 
 class Painter {
 public:
@@ -19,9 +20,18 @@ private:
     QPen textPen;
     QVector <QLine> lines;
     QVector <Painter::point> points;
+    double fps;
+    QTime last;
+    int freq;
+    int num;
+    int ps;
+    int line_width;
+    double t;
 
 public:
     Painter();
+
+    void set_param(int freq = 5, int num = 20, int ps = 1000, int width = 1);
 
     void paint(QPainter *painter, QPaintEvent *event);
 };
