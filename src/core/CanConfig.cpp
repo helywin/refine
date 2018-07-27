@@ -50,7 +50,7 @@ bool CanConfig::check() {
     return true;
 }
 
-void CanConfig::to_struct(VCI_INIT_CONFIG &cfg) {
+void CanConfig::toStruct(VCI_INIT_CONFIG &cfg) {
     cfg.AccCode = this->acc_code;
     cfg.AccMask = this->mask_code;
     cfg.Filter = this->filter;

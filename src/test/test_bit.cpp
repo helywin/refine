@@ -6,7 +6,7 @@
 
 int main() {
     qInstallMessageHandler(Log::handler);
-    Log::set_path(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
+    Log::setPath(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
     qInfo("==============测试位运算==============");
     unsigned int a = 56;
     unsigned int b = 0xFFFFFFFF;

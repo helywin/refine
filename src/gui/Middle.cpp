@@ -12,7 +12,7 @@ void Middle::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_Escape:
         case Qt::Key_F11:
             qDebug("hello");
-            emit cancel_full_screen();
+            emit cancelFullScreen();
         default:
             break;
     }

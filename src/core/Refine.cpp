@@ -47,8 +47,8 @@ void Refine::filter(const TribeCell &in, TribeCell &out,
                     double s_freq, double l_freq,
                     unsigned int h_freq, bool band_pass) {
     const auto size = (size_t) in.size();
-    unsigned int index_low = freq_to_index(s_freq, l_freq, size);
-    unsigned int index_high = freq_to_index(s_freq, h_freq, size);
+    unsigned int index_low = freqToIndex(s_freq, l_freq, size);
+    unsigned int index_high = freqToIndex(s_freq, h_freq, size);
     if (out.size() != in.size()) {
         out.resize(size);
     }
@@ -81,8 +81,8 @@ void Refine::filter(const TribeCell &in, TribeCell &out,
     //完成时域变换
 }
 
-unsigned int Refine::freq_to_index(double s_freq, double freq,
-                                   unsigned int point) {
+unsigned int Refine::freqToIndex(double s_freq, double freq,
+                                 unsigned int point) {
     auto result = (unsigned int) (freq / s_freq * point * 2);
     return result > point ? point : result;
 }

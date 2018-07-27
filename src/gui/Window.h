@@ -21,9 +21,10 @@
 class Window : public QMainWindow {
 Q_OBJECT
 private:
-    QWidget *central_widget;
+    QWidget *buttom_widget;
     QMenuBar *menu_bar;
-    QSplitter *central_splitter;
+    QSplitter *central_hsplitter;
+    QSplitter *central_vsplitter;
     QMenu *menu_file;
     QMenu *menu_collect;
     QMenu *menu_match;
@@ -59,6 +60,7 @@ private:
     Sketch *opengl;
     QScrollBar *opengl_scroller;
     QTabWidget *left_tab_widget;
+    QTabWidget *buttom_tab_widget;
     Qt::WindowFlags before_full_screen;
 
     Curve *curve_dialog;
@@ -70,19 +72,19 @@ public:
 
     ~Window() final;
 
-    void setup_ui();
+    void setupUi();
 
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
 public slots:
 
-    void change_skin();
+    void changeSkin();
 
-    void hide_display();
+    void hideDisplay();
 
-    void full_screen();
+    void fullScreen();
 
-    void full_screen_cancel();
+    void fullScreenCancel();
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

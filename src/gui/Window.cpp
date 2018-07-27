@@ -14,18 +14,27 @@
 
 
 Window::Window(QWidget *parent) : QMainWindow(parent) {
-    setup_ui();
+    setupUi();
     move(100, 100);
     setWindowState(Qt::WindowMaximized);
 }
 
-void Window::setup_ui() {
+void Window::setupUi() {
     this->setDocumentMode(true);
     this->setWindowTitle(QString("Refine匹配软件"));
-    central_widget = new QWidget(this);
-    central_splitter = new QSplitter(Qt::Horizontal, this);
-    this->setCentralWidget(central_splitter);
-//    whole_hbox_layout = new QHBoxLayout(central_widget);
+    buttom_widget = new QWidget(this);
+    central_vsplitter = new QSplitter(Qt::Vertical, this);
+    central_hsplitter = new QSplitter(Qt::Horizontal, central_vsplitter);
+    central_vsplitter->addWidget(central_hsplitter);
+
+    buttom_tab_widget = new QTabWidget(central_vsplitter);
+    central_vsplitter->addWidget(buttom_tab_widget);
+    buttom_tab_widget->addTab(new QTableWidget(), QString("日志"));
+    central_vsplitter->setSizes
+            (QList({this->width() / 5 * 4, this->width() / 5}));
+
+    this->setCentralWidget(central_vsplitter);
+//    whole_hbox_layout = new QHBoxLayout(buttom_widget);
     left_widget = new QWidget(this);
     left_widget->setMinimumWidth(200);
     mid_content = new QWidget(this);
@@ -44,7 +53,7 @@ void Window::setup_ui() {
 
     opengl = new Sketch(mid_widget);
 
-//    central_widget->setLayout(whole_hbox_layout);
+//    buttom_widget->setLayout(whole_hbox_layout);
     left_tab_widget = new QTabWidget(left_widget);
     left_tab_widget->addTab(new QWidget(left_tab_widget), QString("工况"));
     left_tab_widget->addTab(new QWidget(left_tab_widget), QString("通信"));
@@ -56,15 +65,15 @@ void Window::setup_ui() {
     left_tab_widget->setTabPosition(QTabWidget::West);
     left_tab_widget->setTabBarAutoHide(true);
     //    whole_hbox_layout->setMargin(0);
-    central_splitter->addWidget(left_widget);
-    central_splitter->addWidget(mid_content);
-    central_splitter->addWidget(right_widget);
-    central_splitter->setSizes
-            (QList({this->width() / 6, this->width() / 6 * 4,
-                    this->width() / 6}));
-//    central_splitter->setStretchFactor(1, 20);
-//    central_splitter->setStretchFactor(0, 5);
-//    central_splitter->setStretchFactor(2, 5);
+    central_hsplitter->addWidget(left_widget);
+    central_hsplitter->addWidget(mid_content);
+    central_hsplitter->addWidget(right_widget);
+    central_hsplitter->setSizes
+            (QList({this->width() / 8, this->width() / 8 * 6,
+                    this->width() / 8}));
+    central_hsplitter->setStretchFactor(1, 20);
+    central_hsplitter->setStretchFactor(0, 5);
+    central_hsplitter->setStretchFactor(2, 5);
 
     left_widget->setLayout(left_vbox_layout);
     mid_widget->setLayout(mid_vbox_layout);
@@ -163,19 +172,23 @@ void Window::setup_ui() {
     curve_dialog = new Curve(this);
     paint_test_dialog = new PaintTest(this);
 
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, opengl, &Sketch::animate);
+    timer->start(10);
+
     connect(menu_collect_load, &QAction::triggered, new QFileDialog,
             &QFileDialog::show);
     connect(menu_match_load, &QAction::triggered, new QFileDialog,
             &QFileDialog::show);
-    connect(menu_setting_skin, &QAction::triggered, this, &Window::change_skin);
+    connect(menu_setting_skin, &QAction::triggered, this, &Window::changeSkin);
     connect(menu_setting_display_left, &QAction::triggered, this,
-            &Window::hide_display);
+            &Window::hideDisplay);
     connect(menu_setting_display_right, &QAction::triggered, this,
-            &Window::hide_display);
+            &Window::hideDisplay);
     connect(menu_setting_display_statu, &QAction::triggered, this,
-            &Window::hide_display);
+            &Window::hideDisplay);
     connect(menu_setting_fullscreen, &QAction::triggered, this,
-            &Window::full_screen);
+            &Window::fullScreen);
     connect(menu_match_config, &QAction::triggered, select_dialog,
             &Select::show);
     connect(menu_collect_config, &QAction::triggered, curve_dialog,
@@ -184,8 +197,8 @@ void Window::setup_ui() {
             &PaintTest::show);
     connect(menu_help_about, &QAction::triggered, about_dialog, &About::show);
 
-    connect(mid_widget, &Middle::cancel_full_screen, this,
-            &Window::full_screen_cancel);
+    connect(mid_widget, &Middle::cancelFullScreen, this,
+            &Window::fullScreenCancel);
     before_full_screen = mid_widget->windowFlags();
 }
 
@@ -197,7 +210,7 @@ void Window::resizeEvent(QResizeEvent *event) {
     qDebug() << this->size();
 }
 
-void Window::change_skin() {
+void Window::changeSkin() {
     static int flag = 0;
     flag += 1;
     flag %= 3;
@@ -216,7 +229,7 @@ void Window::change_skin() {
     }
 }
 
-void Window::hide_display() {
+void Window::hideDisplay() {
     if (menu_setting_display_left->isChecked()) {
         left_widget->show();
     } else {
@@ -234,14 +247,14 @@ void Window::hide_display() {
     }
 }
 
-void Window::full_screen() {
+void Window::fullScreen() {
     mid_container->removeWidget(mid_widget);
     mid_widget->hide();
     mid_widget->setWindowFlag(Qt::Window);
     mid_widget->showFullScreen();
 }
 
-void Window::full_screen_cancel() {
+void Window::fullScreenCancel() {
     mid_widget->setWindowFlags(before_full_screen);
     mid_widget->hide();
     mid_widget->setWindowFlag(Qt::Widget);
@@ -252,7 +265,7 @@ void Window::full_screen_cancel() {
 void Window::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
         case Qt::Key_F11:
-            full_screen();
+            fullScreen();
             break;
         default:
             break;

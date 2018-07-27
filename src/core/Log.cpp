@@ -77,7 +77,7 @@ void Log::handler(QtMsgType type, const QMessageLogContext &ctxt,
     file.close();
 }
 
-void Log::set_path(const QString &path) {
+void Log::setPath(const QString &path) {
     Log::path = path;
 }
 /*todo 后面可以调用线程进行日志的写入，

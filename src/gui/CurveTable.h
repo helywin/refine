@@ -19,10 +19,9 @@ public:
 
     ~CurveTable() final = default;
 
-    void setup_ui();
-
-
 protected:
+    void setupUi();
+    
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 public slots:

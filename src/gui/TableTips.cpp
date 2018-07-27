@@ -8,11 +8,11 @@
 
 TableTips::TableTips(QWidget *parent) :
         QDialog(parent, Qt::ToolTip) {
-    this->setup_ui();
+    this->setupUi();
     installEventFilter(this);
 }
 
-void TableTips::setup_ui() {
+void TableTips::setupUi() {
     layout = new QVBoxLayout(this);
     layout->setMargin(10);
     main_widget = new QWidget(this);
@@ -34,10 +34,10 @@ void TableTips::setup_ui() {
 
 
 TipType::TipType(QWidget *parent) : TableTips(parent) {
-    this->setup_ui();
+    this->setupUi();
 }
 
-void TipType::setup_ui() {
+void TipType::setupUi() {
     type = new QGroupBox(QString("类型"), main_widget);
     physical = new QRadioButton(QString("物理"),type);
     physical->setChecked(true);
@@ -49,7 +49,7 @@ void TipType::setup_ui() {
     radio_layout->addWidget(logical);
     main_layout->addWidget(type);
     this->setFixedSize(120,140);
-    connect(ok_button, &QPushButton::clicked, this, &TipType::set_val);
+    connect(ok_button, &QPushButton::clicked, this, &TipType::setVal);
 }
 
 bool TableTips::eventFilter(QObject *object, QEvent *event) {
@@ -62,7 +62,7 @@ bool TableTips::eventFilter(QObject *object, QEvent *event) {
     return false;
 }
 
-void TipType::set_val() {
+void TipType::setVal() {
     qDebug("clicked");
     if (physical->isChecked()){
         emit val(QString("物理"));

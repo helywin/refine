@@ -10,14 +10,14 @@
 
 int main() {
 //    qInstallMessageHandler(Log::handler);
-//    Log::set_path(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
+//    Log::setPath(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
     qInfo("===============启动预处理==============");
     qDebug() << "测试常数:" << Const::Ratio::one;
     QFile f("D:/jiang.wenqiang/code/autophi/core/data/datas.csv");
     QFile fs("D:/jiang.wenqiang/code/autophi/core/data/datass.csv");
     Tribe tribe;
     Abstract abstract(tribe);
-    abstract.read_csv(f);
+    abstract.readCsv(f);
 
     tribe.add("filter");
     Refine::filter(tribe["VehSpeed(NULL)"], tribe["filter"], 100, 0, 5, true);
@@ -33,7 +33,7 @@ int main() {
 //    qDebug() << rms;
 //    double vdv = Refine::vdv(tribe["加速度(NULL)"], a);
 //    qDebug() << vdv;
-    if (!abstract.save_csv(fs)) {
+    if (!abstract.saveCsv(fs)) {
         qDebug("打开失败");
     }
 }

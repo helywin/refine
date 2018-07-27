@@ -29,10 +29,10 @@ public:
     virtual void regen(QPoint pos) = 0;
 
 protected:
-    virtual void setup_ui();
+    virtual void setupUi();
 
 protected slots:
-    virtual void set_val() = 0;
+    virtual void setVal() = 0;
 
 signals:
     virtual void val(QString s);
@@ -55,10 +55,10 @@ public:
     void regen(QPoint pos) override;
 
 private:
-    void setup_ui() override;
+    void setupUi() override;
 
 protected slots:
-    void set_val() override;
+    void setVal() override;
 
 };
 

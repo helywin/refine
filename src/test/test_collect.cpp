@@ -8,7 +8,7 @@
 
 int main() {
 //    qInstallMessageHandler(Log::handler);
-//    Log::set_path(QString("D:/jiang.wenqiang/code/refine/log/log.txt"));
+//    Log::setPath(QString("D:/jiang.wenqiang/code/refine/log/log.txt"));
     qInfo("===============启动测试采集==============");
     CanConfig config;
     Can can(config);

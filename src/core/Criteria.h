@@ -48,24 +48,24 @@ public:
 
     virtual Fail init(QFile &file) = 0;
 
-    virtual void split_periods() = 0;
+    virtual void splitPeriods() = 0;
 
     virtual void verify() = 0;
 
     virtual Fail analyse(Tribe &tribe) = 0;
 
 protected:
-    bool check_data(Tribe &tribe);
+    bool checkData(Tribe &tribe);
 
-    void gear_ratio(Tribe &tribe);
+    void gearRatio(Tribe &tribe);
 
-    void converter_slip(Tribe &tribe);
+    void converterSlip(Tribe &tribe);
 
-    void synchron_speed(Tribe &tribe);
+    void synchronSpeed(Tribe &tribe);
 
-    void road_gradient(Tribe &tribe);
+    void roadGradient(Tribe &tribe);
 
-    void wheel_slip(Tribe &tribe);
+    void wheelSlip(Tribe &tribe);
 
     void torque(Tribe &tribe);
 
@@ -73,9 +73,9 @@ protected:
 
     void bemp(Tribe &tribe);
 
-    void torque_expected(Tribe &tribe);
+    void torqueExpected(Tribe &tribe);
 
-    void acceleration_expected(Tribe &tribe);
+    void accelerationExpected(Tribe &tribe);
 };
 
 //const Criteria::Ratio Criteria::ratio = {};

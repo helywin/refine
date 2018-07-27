@@ -7,14 +7,14 @@
 
 
 PaintTest::PaintTest(QWidget *parent) :QDialog(parent) {
-    setup_ui();
+    setupUi();
     move(0, 0);
     setWindowFlag(Qt::ToolTip);
     setWindowState(Qt::WindowMaximized);
     setWindowTitle(QString("测试绘图性能"));
 }
 
-void PaintTest::setup_ui() {
+void PaintTest::setupUi() {
     layout = new QHBoxLayout(this);
     paint = new Sketch(this);
     setting_widget = new QWidget(this);

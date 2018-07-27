@@ -32,7 +32,7 @@ bool Can::init() {
 //        return false;
 //    }
     VCI_INIT_CONFIG config_st;
-    config.to_struct(config_st);
+    config.toStruct(config_st);
     unsigned long flag = VCI_InitCAN(config.device_type,
                                      config.device_index,
                                      config.device_channel,
@@ -46,7 +46,7 @@ bool Can::init() {
     return flag == 1;
 }
 
-bool Can::board_info(CanBoardInfo &info) {
+bool Can::boardInfo(CanBoardInfo &info) {
 //    if (can_statu != Can::inited && can_statu != Can::started) {
 //        qWarning("不能在此时获取CAN盒信息");
 //        return false;
@@ -65,7 +65,7 @@ bool Can::board_info(CanBoardInfo &info) {
     return flag == 1;
 }
 
-bool Can::error_info(CanErrorInfo &error) {
+bool Can::errorInfo(CanErrorInfo &error) {
 //    if (can_statu != Can::inited && can_statu != Can::started) {
 //        qWarning("不能在此时获取CAN盒错误信息");
 //        return false;
@@ -135,7 +135,7 @@ unsigned long Can::cache() {
     return cache;
 }
 
-bool Can::get_reference(unsigned char &val) {
+bool Can::getReference(unsigned char &val) {
 //    if (can_statu != Can::inited && can_statu != Can::started) {
 //        qWarning("不能在此时获取CAN盒寄存器");
 //        return false;
@@ -162,7 +162,7 @@ bool Can::get_reference(unsigned char &val) {
     return flag == 1;
 }
 
-bool Can::set_reference() {
+bool Can::setReference() {
     return false;
 }
 
@@ -200,7 +200,7 @@ bool Can::reset() {
     return flag == 1;
 }
 
-bool Can::send_frame(CanBufferCell *send_buffer) {
+bool Can::sendFrame(CanBufferCell *send_buffer) {
 //    if (can_statu != Can::started) {
 //        qWarning("不能在此时发送CAN数据帧");
 //        return false;
@@ -224,7 +224,7 @@ bool Can::send_frame(CanBufferCell *send_buffer) {
     }
 }
 
-bool Can::receive_frame(CanBufferCell *receive_buffer, CanErrorInfo &error) {
+bool Can::receiveFrame(CanBufferCell *receive_buffer, CanErrorInfo &error) {
 //    if (can_statu != Can::started) {
 //        qWarning("不能在此时接收CAN数据帧");
 //        return false;
@@ -240,7 +240,7 @@ bool Can::receive_frame(CanBufferCell *receive_buffer, CanErrorInfo &error) {
         qInfo("接收CAN数据帧成功");
         receive_buffer->index += 1;
     } else {
-        error_info(error);
+        errorInfo(error);
         qCritical("接收CAN数据帧失败");
     }
     return receive_buffer->l != 0xFFFFFFFF;

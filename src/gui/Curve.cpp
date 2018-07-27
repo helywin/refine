@@ -5,13 +5,13 @@
 #include "Curve.h"
 
 Curve::Curve(QWidget *parent) : QDialog(parent) {
-    setup_ui();
+    setupUi();
     move(0, 0);
     setWindowFlag(Qt::ToolTip);
     setWindowState(Qt::WindowMaximized);
 }
 
-void Curve::setup_ui() {
+void Curve::setupUi() {
     setWindowTitle(QString("曲线配置"));
     table = new CurveTable(this);
     layout = new QVBoxLayout(this);

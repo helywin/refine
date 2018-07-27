@@ -46,7 +46,7 @@ void Collect::run() {
             return;
         }
         check_cnt += 1;
-        if (check_cnt == 100 && !can.board_info(info)) {
+        if (check_cnt == 100 && !can.boardInfo(info)) {
             emit fail(Collect::Connect);
         } else if (check_cnt == 100) {
             check_cnt = 0;
@@ -56,7 +56,7 @@ void Collect::run() {
             unsigned long cache = can.cache();
             if (cache > 0) {
                 if (!buffer.full()) {
-                    bool flag = can.receive_frame(buffer.push(), error);
+                    bool flag = can.receiveFrame(buffer.push(), error);
                     if (flag) {
                         QStringList list;
                         qDebug() << CanBufferCell::header();

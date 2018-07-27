@@ -35,9 +35,9 @@ public:
 
     bool init();
 
-    bool board_info(CanBoardInfo &info);
+    bool boardInfo(CanBoardInfo &info);
 
-    bool error_info(CanErrorInfo &error);
+    bool errorInfo(CanErrorInfo &error);
 
 //    bool get_statu(CanRegStatus &status);
 
@@ -45,17 +45,17 @@ public:
 
     unsigned long cache();
 
-    bool get_reference(unsigned char &val);
+    bool getReference(unsigned char &val);
 
-    bool set_reference();
+    bool setReference();
 
     bool start();
 
     bool reset();
 
-    bool receive_frame(CanBufferCell *receive_buffer, CanErrorInfo &error);
+    bool receiveFrame(CanBufferCell *receive_buffer, CanErrorInfo &error);
 
-    bool send_frame(CanBufferCell *send_buffer);
+    bool sendFrame(CanBufferCell *send_buffer);
 
     bool close();
 

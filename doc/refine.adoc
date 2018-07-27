@@ -1,0 +1,79 @@
+= 匹配软件设计说明书
+jiang.wenqiang
+:doctype: book
+:encoding: utf-8
+:lang: zh
+:toc: left
+
+////////////////
+[colophon]
+== 版权
+
+无版权 (c) 2018
+
+////////////////
+[preface]
+== 前言
+
+软件编写需要认真考虑一些结构和配置参数以便更好的设计合理的软件架构和敏捷开发的代。
+
+== 引言
+
+=== 编写目的
+
+. 重新理清软件的需求
+. 确定初版程序能实现的基本功能
+. 根据软件需求定义每个模块需要实现的功能
+. 确定数据存储格式和配置格式
+. 梳理软件运行流程
+
+=== 项目背景
+
+公司对匹配文档的审查以及匹配流程的标准，报告的一致性
+
+[bibliography]
+=== 参考资料
+
+参考资料列举如：
+
+[bibliography]
+
+.书籍
+- [[[1]]] AVL-DRIVE Function Description (DCT).pdf
+
+== 总体设计
+
+=== 需求概述
+
+主要功能：
+
+. 数据采集和回放
+. 根据采集的数据根据配置进行评分计算
+. 评分结果生成pdf文档
+
+其他功能：
+
+. 匹配结果汇总
+
+=== 软件结构
+
+.软件结构
+[tree,file="./assets/software-structure.png"]
+--
+软件
+|-- 底层
+|   |-- ca.txt
+|   |-- festival.png
+|   `-- balloon.jpg
+`-- 界面
+    |-- car-video.avi
+    |-- dance.mp4
+    |-- dance01.mpg
+    |-- another video.divx
+    `-- school videos
+--
+
+
+
+
+

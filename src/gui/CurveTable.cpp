@@ -7,10 +7,10 @@
 #include <QtCore/QDebug>
 
 CurveTable::CurveTable(QWidget *parent) : QTableWidget(parent) {
-    setup_ui();
+    setupUi();
 }
 
-void CurveTable::setup_ui() {
+void CurveTable::setupUi() {
     get_val = new GetVal(this);
     connect(get_val, &GetVal::get_val, this, &CurveTable::cell);
     setColumnCount(15);

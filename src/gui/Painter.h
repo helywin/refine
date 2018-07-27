@@ -27,11 +27,17 @@ private:
     int ps;
     int line_width;
     double t;
+    int x;
+    int xx;
+    int y;
+    int yy;
+    QString s;
+    int update_time;
 
 public:
     Painter();
 
-    void set_param(int freq = 5, int num = 20, int ps = 1000, int width = 1);
+    void setParams(int freq = 5, int num = 20, int ps = 1000, int width = 1);
 
     void paint(QPainter *painter, QPaintEvent *event);
 };

@@ -16,7 +16,7 @@ public:
     ~Sketch() final = default;
 
     inline void set_param(int freq, int num, int ps, int width) {
-        paint.set_param(freq, num, ps, width);
+        paint.setParams(freq, num, ps, width);
     }
 
 private:

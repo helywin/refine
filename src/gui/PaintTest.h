@@ -34,7 +34,7 @@ public:
     explicit PaintTest(QWidget *parent = nullptr);
 
 private:
-    void setup_ui();
+    void setupUi();
 
 private slots:
     void setting();

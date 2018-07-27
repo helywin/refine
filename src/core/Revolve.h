@@ -29,25 +29,25 @@ public:
 
     Revolve(Keep &keep, Collect &clt, Sublime &sub);
 
-    inline void start_sublime();
+    inline void startSublime();
 
-    inline void start_keep();
+    inline void startKeep();
 
-    inline void start_collect();
+    inline void startCollect();
 
     bool marvel();
 
 public slots:
 
-    void collect_got();
+    void collectGot();
 
-    void collect_failed(Collect::Fail code);
+    void collectFailed(Collect::Fail code);
 
-    void sublime_result(unsigned int use, unsigned int total);
+    void sublimeResult(unsigned int use, unsigned int total);
 
-    void sublime_unloaded();
+    void sublimeUnloaded();
 
-    void keep_failed(Keep::KeepFail code);
+    void keepFailed(Keep::KeepFail code);
 
 };
 

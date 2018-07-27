@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[]) {
     qInstallMessageHandler(Log::handler);
-    Log::set_path(QString("log.txt"));
+    Log::setPath(QString("log.txt"));
     qInfo("==============启动==============");
     CanConfig config;
     Can can = Can(config);
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     can.open();
     can.init();
     can.start();
-    can.board_info(info);
+    can.boardInfo(info);
     QString str;
     qDebug() << info.str();
     can.close();

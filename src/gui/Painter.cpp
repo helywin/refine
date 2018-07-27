@@ -10,13 +10,10 @@
 
 void Painter::paint(QPainter *painter, QPaintEvent *event) {
     painter->fillRect(event->rect(), background);
+    circlePen.setWidth(line_width);
     constexpr double pi2 = 3.141592653*2;
     double k = sin(pi2*t);
     t += pi2/1000*freq;
-    static int x = 0;
-    static int xx = 0;
-    static int y = 0;
-    static int yy = 0;
     points.append({t,k});
 //    painter->save();
     painter->setPen(circlePen);
@@ -45,8 +42,6 @@ void Painter::paint(QPainter *painter, QPaintEvent *event) {
         }
 
     }
-    static QString s;
-    static int update_time = 0;
     update_time += 1;
     if (update_time == 10){
         double inter = last.msecsTo(QTime::currentTime());
@@ -71,6 +66,7 @@ Painter::Painter() {
     background = QBrush(QColor(64, 32, 64));
     circleBrush = QBrush(gradient);
     circlePen = QPen(Qt::white);
+    line_width = 2;
     circlePen.setWidth(line_width);
     textPen = QPen(Qt::white);
     textFont.setPixelSize(30);
@@ -80,14 +76,19 @@ Painter::Painter() {
     freq = 5;
     num = 20;
     ps = 1000;
-    line_width = 1;
     t = 0;
+    x = 0;
+    xx = 0;
+    y = 0;
+    yy = 0;
+    update_time = 0;
 }
 
-void Painter::set_param(int freq, int num, int ps, int width) {
+void Painter::setParams(int freq, int num, int ps, int width) {
     this->freq = freq;
     this->num = num;
     this->ps = ps;
+    this->line_width = width;
     points.clear();
     qDebug("清空点数");
     t = 0;

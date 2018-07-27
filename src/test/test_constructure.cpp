@@ -17,7 +17,7 @@ public:
 
 int main() {
     qInstallMessageHandler(Log::handler);
-    Log::set_path(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
+    Log::setPath(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
     qInfo("===============启动构造函数==============");
 
     A a = A();

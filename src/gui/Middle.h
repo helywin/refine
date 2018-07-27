@@ -19,7 +19,7 @@ protected:
 
 signals:
 
-    void cancel_full_screen();
+    void cancelFullScreen();
 };
 
 

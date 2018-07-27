@@ -39,7 +39,7 @@ public:
     ~Curve() final = default;
 
 protected:
-    void setup_ui();
+    void setupUi();
 };
 
 

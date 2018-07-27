@@ -34,7 +34,7 @@ public:
     static void handler(QtMsgType type, const QMessageLogContext &ctxt,
                         const QString &msg);
 
-    static void set_path(const QString &path);
+    static void setPath(const QString &path);
 };
 
 

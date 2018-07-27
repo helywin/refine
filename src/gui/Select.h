@@ -40,7 +40,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 protected:
-    void setup_ui();
+    void setupUi();
 
     void closeEvent(QCloseEvent *event) override;
 

@@ -43,8 +43,8 @@ public:
     static double vdv(const TribeCell &in, Range &range);
 
 private:
-    static inline unsigned int freq_to_index(double s_freq, double freq,
-                                             unsigned int point);
+    static inline unsigned int freqToIndex(double s_freq, double freq,
+                                           unsigned int point);
 };
 
 

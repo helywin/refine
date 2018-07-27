@@ -6,7 +6,7 @@
 #include <QtGui/QtEvents>
 
 Select::Select(QWidget *parent) : QDialog(parent) {
-    setup_ui();
+    setupUi();
     move(0, 0);
     setWindowFlag(Qt::ToolTip);
 //    this->setWindowState(Qt::WindowMaximized);
@@ -17,7 +17,7 @@ Select::Select(QWidget *parent) : QDialog(parent) {
 //    this->setFixedSize(size());
 }
 
-void Select::setup_ui() {
+void Select::setupUi() {
     layout = new QHBoxLayout(this);
     this->setLayout(layout);
     layout->setContentsMargins(10, 30, 10, 10);

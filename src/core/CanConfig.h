@@ -31,7 +31,7 @@ public:
 
     CanConfig &operator=(const CanConfig &cfg) = default;
 
-    void to_struct(VCI_INIT_CONFIG &cfg);
+    void toStruct(VCI_INIT_CONFIG &cfg);
 };
 
 
@@ -103,7 +103,7 @@ public:
     CanRegStatus &operator=(const CanRegStatus &reg);
     CanRegStatus &operator=(const VCI_CAN_STATUS &reg);
     void str(QString &s);
-    void to_struct(VCI_CAN_STATUS &status);
+    void toStruct(VCI_CAN_STATUS &status);
 };
 */
 
