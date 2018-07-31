@@ -3,3 +3,11 @@
 //
 
 #include "Send.h"
+
+Send::Send(Abstract &abstract, Can &can, CurveConfig &config) :
+        abstract(abstract), can(can), config(config) {
+}
+
+void Send::run() {
+
+}

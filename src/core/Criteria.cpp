@@ -62,7 +62,7 @@ void Criteria::roadGradient(Tribe &tribe) {
 
 void Criteria::wheelSlip(Tribe &tribe) {
     tribe.add("打滑", tribe.length());
-#pragma omp parallel for
+//#pragma omp parallel for
     //todo
 }
 

@@ -8,20 +8,20 @@
 Tribe::Tribe(const QStringList &keys) {
     for (const auto &key : keys) {
         if (!key.isEmpty()) {
-            clan.insert(key, TribeCell());
+            clan.insert(key, Cell());
         }
     }
 }
 
 void Tribe::add(const QString &key) {
-    clan.insert(key, TribeCell());
+    clan.insert(key, Cell());
 }
 
 void Tribe::add(const QString &str, unsigned int size) {
-    clan.insert(str, TribeCell(size));
+    clan.insert(str, Cell(size));
 }
 
-TribeCell &Tribe::operator[](const QString &key) {
+Tribe::Cell &Tribe::operator[](const QString &key) {
     return clan[key];
 }
 

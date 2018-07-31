@@ -7,40 +7,16 @@
 
 #define KEBAB_CELL_LENGTH 4096
 
-class KebabCell {
-public:
-    unsigned int size;
-
-private:
-    double cell[KEBAB_CELL_LENGTH];
-
-    unsigned int head_index;
-
-    unsigned int tail_index;
-
-public:
-    KebabCell();
-
-    double &operator[](unsigned int index);
-
-    double &head();
-
-    double &tail();
-
-    void inc();
-
-    void dec();
-
-    bool full();
-
-    bool empty();
-
-    unsigned int length();
-};
+#include <QtCore/QMap>
 
 class Kebab {
+public:
+    typedef QMap <unsigned short, float> Group;
+
+    class Cell;
+
 private:
-    KebabCell *kebab;
+    Cell *cells;
 
     unsigned short cell_size;
 
@@ -57,12 +33,45 @@ public:
 
     bool add(unsigned short index, double val);
 
+    bool add(Group &group);
+
     bool out(double *list);
 
     unsigned short size() const;
 
     unsigned int length() const;
 
+};
+
+class Kebab::Cell {
+public:
+    unsigned int size;
+
+private:
+    double cell[KEBAB_CELL_LENGTH];
+
+    unsigned int head_index;
+
+    unsigned int tail_index;
+
+public:
+    Cell();
+
+    double &operator[](unsigned int index);
+
+    double &head();
+
+    double &tail();
+
+    void inc();
+
+    void dec();
+
+    bool full();
+
+    bool empty();
+
+    unsigned int length();
 };
 
 

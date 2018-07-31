@@ -29,7 +29,7 @@ void TableTips::setupUi() {
     ok_button = new QPushButton(button_widget);
     ok_button->setText("确定");
     button_layout->addWidget(ok_button);
-
+    connect(ok_button, &QPushButton::clicked, this, &TableTips::setVal);
 }
 
 
@@ -48,8 +48,8 @@ void TipType::setupUi() {
     radio_layout->addWidget(physical);
     radio_layout->addWidget(logical);
     main_layout->addWidget(type);
-    this->setFixedSize(120,140);
-    connect(ok_button, &QPushButton::clicked, this, &TipType::setVal);
+//    this->setFixedSize(120,140);
+//    this->resize(120,140);
 }
 
 bool TableTips::eventFilter(QObject *object, QEvent *event) {
@@ -82,16 +82,118 @@ void TipType::regen(QPoint pos) {
 
 
 GetVal::GetVal(QWidget *parent) :
-        row(-1), column(-1),type(new TipType(parent)) {
-    connect(type, &TipType::val, this, &GetVal::got_val);
+        row(-1), column(-1),type(new TipType(parent)),
+        zero(new TipZero(parent)), sample(new TipSample(parent)) {
+    connect(type, &TipType::val, this, &GetVal::gotVal);
+    connect(zero, &TipZero::val, this, &GetVal::gotVal);
+    connect(sample, &TipSample::val, this, &GetVal::gotVal);
 }
 
 void GetVal::get(GetVal::Type t, int row, int column, QPoint pos) {
-    type->regen(pos);
+    switch (t) {
+        case GetVal::Type::Type :
+            type->regen(pos);
+            break;
+        case GetVal::Type::ZeroByte :
+            zero->regen(pos);
+            break;
+        case GetVal::Type::Sample :
+            sample->regen(pos);
+            break;
+        default:
+            break;
+    }
     this->row = row;
     this->column = column;
 }
 
-void GetVal::got_val(QString s) {
-    emit get_val(s, row, column);
+void GetVal::gotVal(QString s) {
+    emit getVal(s, row, column);
+}
+
+TipZero::TipZero(QWidget *parent) : TableTips(parent) {
+    setupUi();
+}
+
+void TipZero::regen(QPoint pos) {
+    show();
+    move(pos.x(),pos.y());
+    activateWindow();
+}
+
+void TipZero::setupUi() {
+    zero = new QGroupBox(this);
+    zero->setTitle("零字节");
+    zero->setCheckable(true);
+    zero->setChecked(true);
+    group_layout = new QVBoxLayout(zero);
+    line = new QSpinBox(zero);
+    line->setMinimum(0);
+    line->setMaximum(7);
+    line->setValue(0);
+    main_layout->addWidget(zero);
+    zero->setLayout(group_layout);
+    group_layout->addWidget(line);
+}
+
+void TipZero::setVal() {
+    if (zero->isChecked()) {
+        emit val(QString("有;%1").arg(line->value()));
+    } else {
+        emit val(QString("无;"));
+    }
+    this->hide();
+}
+
+TipSample::TipSample(QWidget *parent) : TableTips(parent) {
+    setupUi();
+}
+
+void TipSample::regen(QPoint pos) {
+    show();
+    move(pos.x(),pos.y());
+    activateWindow();
+}
+
+void TipSample::setupUi() {
+    sample = new QGroupBox(this);
+    sample->setTitle(QString("采样"));
+    group_layout = new QVBoxLayout(sample);
+    time = new QRadioButton(sample);
+    time->setText(QString("时间"));
+    time->setChecked(true);
+    frame = new QRadioButton(sample);
+    frame->setText(QString("帧数"));
+    main_layout->addWidget(sample);
+    sample->setLayout(group_layout);
+    group_layout->addWidget(time);
+    group_layout->addWidget(frame);
+    line = new QSpinBox(this);
+    main_layout->addWidget(line);
+    line->setMinimum(0);
+    line->setMaximum(200);
+    line->setSingleStep(10);
+    line->setValue(10);
+    line->setSuffix(QString("毫秒"));
+    connect(time, &QRadioButton::released, this, &TipSample::changeSelection);
+    connect(frame, &QRadioButton::released, this, &TipSample::changeSelection);
+}
+
+void TipSample::setVal() {
+    if (time->isChecked()) {
+        emit val(QString("时间;%1").arg(line->value()));
+    } else if (frame->isChecked()) {
+        emit val(QString("帧数;%1").arg(line->value()));
+    } else {
+        emit val(QString());
+    }
+    this->hide();
+}
+
+void TipSample::changeSelection() {
+    if (time->isChecked()) {
+        line->setSuffix(QString("毫秒"));
+    } else {
+        line->setSuffix(QString("帧"));
+    }
 }

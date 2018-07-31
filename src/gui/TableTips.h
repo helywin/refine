@@ -10,6 +10,7 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QRadioButton>
 #include <QtCore/QEvent>
+#include <QtWidgets/QSpinBox>
 
 class TableTips : public QDialog{
 Q_OBJECT
@@ -62,6 +63,47 @@ protected slots:
 
 };
 
+class TipZero : public  TableTips {
+Q_OBJECT
+protected:
+    QVBoxLayout *group_layout;
+    QGroupBox *zero;
+    QSpinBox *line;
+public:
+    explicit TipZero(QWidget *parent = nullptr);
+
+    void regen(QPoint pos) override;
+
+private:
+    void setupUi() override;
+
+protected:
+    void setVal() override;
+};
+
+class TipSample : public  TableTips {
+Q_OBJECT
+protected:
+    QVBoxLayout *group_layout;
+    QRadioButton *time;
+    QRadioButton *frame;
+    QGroupBox *sample;
+    QSpinBox *line;
+public:
+    explicit TipSample(QWidget *parent = nullptr);
+
+    void regen(QPoint pos) override;
+
+private:
+    void setupUi() override;
+
+protected:
+    void setVal() override;
+
+private slots:
+    void changeSelection();
+};
+
 class GetVal : public QObject{
 Q_OBJECT
 public:
@@ -80,6 +122,8 @@ private:
     int row;
     int column;
     TipType *type;
+    TipZero *zero;
+    TipSample *sample;
 
 public:
     GetVal() = delete;
@@ -93,11 +137,12 @@ public:
     GetVal &operator=(const GetVal &v) = delete;
 
 signals:
-    void get_val(QString s, int row, int column);
+    void getVal(QString s, int row, int column);
 
 public slots:
-    void got_val(QString s);
+    void gotVal(QString s);
 
 };
+
 
 #endif //REFINE_TABLETIPS_H

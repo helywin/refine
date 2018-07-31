@@ -27,20 +27,20 @@ public:
 
 class Refine {
 public:
-    static void smoothing(const TribeCell &in, TribeCell &out,
+    static void smoothing(const Tribe::Cell &in, Tribe::Cell &out,
                           unsigned int point);
 
-    static void derivation(const TribeCell &in, TribeCell &out);
+    static void derivation(const Tribe::Cell &in, Tribe::Cell &out);
 
-    static void filter(const TribeCell &in, TribeCell &out,
+    static void filter(const Tribe::Cell &in, Tribe::Cell &out,
                        double s_freq, double l_freq,
                        unsigned int h_freq, bool band_pass);
 
-    static double average(const TribeCell &in, Range &range);
+    static double average(const Tribe::Cell &in, Range &range);
 
-    static double rms(const TribeCell &in, Range &range);
+    static double rms(const Tribe::Cell &in, Range &range);
 
-    static double vdv(const TribeCell &in, Range &range);
+    static double vdv(const Tribe::Cell &in, Range &range);
 
 private:
     static inline unsigned int freqToIndex(double s_freq, double freq,

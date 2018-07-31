@@ -174,7 +174,7 @@ void Window::setupUi() {
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, opengl, &Sketch::animate);
-    timer->start(10);
+//    timer->start(10);
 
     connect(menu_collect_load, &QAction::triggered, new QFileDialog,
             &QFileDialog::show);

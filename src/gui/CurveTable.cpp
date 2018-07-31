@@ -12,14 +12,14 @@ CurveTable::CurveTable(QWidget *parent) : QTableWidget(parent) {
 
 void CurveTable::setupUi() {
     get_val = new GetVal(this);
-    connect(get_val, &GetVal::get_val, this, &CurveTable::cell);
+    connect(get_val, &GetVal::getVal, this, &CurveTable::cell);
     setColumnCount(15);
     setRowCount(10);
     setHorizontalHeaderLabels(QStringList(
             {QString("名称"), QString("备注"), QString("类型"), QString("物理"),
              QString("宽度"), QString("颜色"), QString("地址"), QString("零字节"),
-             QString("高字节"), QString("低字节"), QString("取点"), QString("时间"),
-             QString("帧数"), QString("输入量程"), QString("输出量程")}));
+             QString("高字节"), QString("低字节"), QString("采样"),
+             QString("输入量程"), QString("输出量程")}));
     setSelectionMode(QAbstractItemView::SingleSelection);
 
 
@@ -30,6 +30,12 @@ void CurveTable::mouseReleaseEvent(QMouseEvent *event) {
         switch (currentColumn()) {
             case 2:
                 get_val->get(GetVal::Type::Type, currentRow(), currentColumn(), event->globalPos());
+                break;
+            case 7:
+                get_val->get(GetVal::Type::ZeroByte, currentRow(), currentColumn(), event->globalPos());
+                break;
+            case 10:
+                get_val->get(GetVal::Type::Sample, currentRow(), currentColumn(), event->globalPos());
                 break;
             default:
                 break;

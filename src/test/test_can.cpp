@@ -10,9 +10,9 @@ int main(int argc, char *argv[]) {
     qInstallMessageHandler(Log::handler);
     Log::setPath(QString("log.txt"));
     qInfo("==============启动==============");
-    CanConfig config;
+    Config config;
     Can can = Can(config);
-    CanBoardInfo info = CanBoardInfo();
+    BoardInfo info = BoardInfo();
     can.close();
     can.open();
     can.init();

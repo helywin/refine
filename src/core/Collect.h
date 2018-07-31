@@ -31,7 +31,7 @@ private:
 
     bool stop_flag;
 
-    bool reconnect_flag;
+//    bool reconnect_flag;
 
     unsigned int reconnect;
 

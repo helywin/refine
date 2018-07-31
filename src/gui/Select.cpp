@@ -14,7 +14,7 @@ Select::Select(QWidget *parent) : QDialog(parent) {
 //    setWindowFlag(Qt::WindowContextHelpButtonHint, false);
     setWindowState(Qt::WindowMaximized);
     setWindowTitle(QString("设置工况配置"));
-//    this->setFixedSize(size());
+//    this->setFixedSize(_size());
 }
 
 void Select::setupUi() {
@@ -54,49 +54,78 @@ void Select::setupUi() {
     menu_bar->addAction(menu_action->menuAction());
 
     whole_modes = new QTreeWidget(this);
-    modes = new QListWidget(this);
+//    modes = new QListWidget(this);
     criteria = new QListWidget(this);
     params = new QTableWidget(this);
 
     layout->addWidget(whole_modes, 1);
-    layout->addWidget(modes, 1);
+//    layout->addWidget(modes, 1);
     layout->addWidget(criteria, 1);
     layout->addWidget(params, 1);
 
     //! code for demo
     whole_modes->setColumnCount(1);
-    whole_modes->setHeaderLabel("工况选择");
+    whole_modes->setHeaderLabel(QString("选择工况"));
     QTreeWidgetItem *mode_start = new QTreeWidgetItem(
             whole_modes, QStringList(QString("Acceleration")));
+    mode_start->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_Acceleration = new QTreeWidgetItem(
             mode_start, QStringList(QString("CylinderDeactivation")));
+    mode_Acceleration->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_CylinderReactivation = new QTreeWidgetItem(
             mode_start, QStringList(QString("CylinderReactivation")));
+    mode_CylinderReactivation->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_Elasticity = new QTreeWidgetItem(
             mode_start, QStringList(QString("Elasticity")));
+    mode_Elasticity->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_FullLoad = new QTreeWidgetItem(
             mode_start, QStringList(QString("FullLoad")));
+    mode_FullLoad->setCheckState(0, Qt::Checked);
+
+    QTreeWidgetItem *mode_FullLoad_1 = new QTreeWidgetItem(
+            mode_FullLoad, QStringList(QString("FullLoad_1")));
+    mode_FullLoad_1->setCheckState(0, Qt::Checked);
+
+    QTreeWidgetItem *mode_FullLoad_2 = new QTreeWidgetItem(
+            mode_FullLoad, QStringList(QString("FullLoad_2")));
+    mode_FullLoad_2->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_FullLoadHundredKph = new QTreeWidgetItem(
             mode_start, QStringList(QString("FullLoadHundredKph")));
+    mode_FullLoadHundredKph->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_FullLoadThroughGears = new QTreeWidgetItem(
             mode_start, QStringList(QString("FullLoadThroughGears")));
+    mode_FullLoadThroughGears->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_LowEndTorque = new QTreeWidgetItem(
             mode_start, QStringList(QString("LowEndTorque")));
+    mode_LowEndTorque->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_PartLoadConstantPedal = new QTreeWidgetItem(
             mode_start, QStringList(QString("PartLoadConstantPedal")));
+    mode_PartLoadConstantPedal->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_PartLoadFallingPedal = new QTreeWidgetItem(
             mode_start, QStringList(QString("PartLoadFallingPedal")));
+    mode_PartLoadFallingPedal->setCheckState(0, Qt::Checked);
+
     QTreeWidgetItem *mode_PartLoadRisingPedal = new QTreeWidgetItem(
             mode_start, QStringList(QString("PartLoadRisingPedal")));
+    mode_PartLoadRisingPedal->setCheckState(0, Qt::Checked);
 
-    modes->addItem(new QListWidgetItem(QString("Elasticity")));
-    modes->addItem(new QListWidgetItem(QString("FullLoad")));
-    modes->addItem(new QListWidgetItem(QString("LowEndTorque")));
-    modes->addItem(new QListWidgetItem(QString("PartLoadRisingPedal")));
+
+//    modes->addItem(new QListWidgetItem(QString("Elasticity")));
+//    modes->addItem(new QListWidgetItem(QString("FullLoad")));
+//    modes->addItem(new QListWidgetItem(QString("LowEndTorque")));
+//    modes->addItem(new QListWidgetItem(QString("PartLoadRisingPedal")));
 
     criteria->addItem(new QListWidgetItem(QString("NinetyPercentTorqueRange")));
-    criteria->addItem(
-            new QListWidgetItem(QString("NinetyPercentTorqueThreshold")));
+    criteria->addItem(new QListWidgetItem(QString("NinetyPercentTorqueThreshold")));
     criteria->addItem(new QListWidgetItem(QString("AccelerationGradient")));
     criteria->addItem(new QListWidgetItem(QString("AccelerationSteps")));
     criteria->addItem(new QListWidgetItem(QString("Correlation")));

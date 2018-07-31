@@ -11,8 +11,43 @@
 #include <QtCore/QFile>
 #include <QtCore/QStringList>
 
+class Transform;
 
-class CurveConfigCell {
+class CurveConfig {
+public:
+
+    class Cell;
+
+    enum Status {
+        Empty, File, Ok, Error
+    };
+    friend class Transform;
+private:
+    QStringList config_header;
+
+    QVector<Cell> config;
+
+    Status curve_statu;
+public:
+    CurveConfig();
+
+    bool load(QFile &file);
+
+    void str(QStringList &list);
+
+    const Cell &operator[](unsigned int index);
+
+    bool transform(unsigned long id, unsigned char *data,
+                   double &result, unsigned short &index);
+
+    Status statu();
+
+    void names(QStringList &list);
+
+    inline int size() const { return config.size(); }
+};
+
+class CurveConfig::Cell {
 public:
     enum Type {
         Physical, Logical
@@ -37,54 +72,21 @@ public:
     unsigned short high_range[2];
     unsigned short low_byte;
     unsigned short low_range[2];
-    Sample sample;
-    unsigned long time;
-    unsigned long frame;
+    Sample sample_type;
+    unsigned long sample;
     long range_in[2];
     long range_out[2];
     QMap<unsigned short, QString> logic;
 
-    CurveConfigCell() = default;
+    Cell() = default;
 
-    CurveConfigCell(const CurveConfigCell &cell) = default;
+    Cell(const Cell &cell) = default;
 
-    CurveConfigCell &operator=(CurveConfigCell const &cell) = default;
+    Cell &operator=(Cell const &cell) = default;
 
     bool check();
 
     QString str();
 };
-
-
-class CurveConfig {
-public:
-    enum Status {
-        Empty, File, Ok, Error
-    };
-private:
-    QStringList config_header;
-
-    QVector<CurveConfigCell> config;
-
-    Status curve_statu;
-public:
-    CurveConfig();
-
-    bool load(QFile &file);
-
-    void str(QStringList &list);
-
-    const CurveConfigCell &operator[](unsigned int index);
-
-    bool transform(unsigned long id, unsigned char *data,
-                   double &result, unsigned short &index);
-
-    Status statu();
-
-    void names(QStringList &list);
-
-    inline int size() const { return config.size(); }
-};
-
 
 #endif //CORE_CURVECONFIG_H

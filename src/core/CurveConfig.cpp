@@ -5,40 +5,40 @@
 #include "CurveConfig.h"
 #include "Log.h"
 
-//CurveConfigCell::CurveConfigCell() {
+//Cell::Cell() {
 //}
 //
-//CurveConfigCell::CurveConfigCell(const CurveConfigCell &cell) {
-//    *this = cell;
+//Cell::Cell(const Cell &cells) {
+//    *this = cells;
 //}
 //
-//CurveConfigCell& CurveConfigCell::operator=(const CurveConfigCell &cell) {
-//    this->index = cell.index;
-//    this->name = cell.name;
-//    this->remark = cell.remark;
-//    this->type = cell.type;
-//    this->physical = cell.unit;
-//    this->width = cell.width;
-//    this->color = cell.color;
-//    this->can_id = cell.can_id;
-//    this->zero_flag = cell.zero_flag;
-//    this->zero_bit = cell.zero_bit;
-//    this->high_flag = cell.high_flag;
-//    this->high_range[0] = cell.high_range[0];
-//    this->high_range[1] = cell.high_range[1];
-//    this->low_range[0] = cell.low_range[0];
-//    this->low_range[1] = cell.low_range[1];
-//    this->sample = cell.sample;
-//    this->time = cell.time;
-//    this->frame = cell.frame;
-//    this->range_in[0] = cell.range_in[0];
-//    this->range_in[1] = cell.range_in[1];
-//    this->range_out[0] = cell.range_out[0];
-//    this->range_out[1] = cell.range_out[1];
-//    this->logic = cell.logic;
+//Cell& Cell::operator=(const Cell &cells) {
+//    this->m_index = cells.m_index;
+//    this->name = cells.name;
+//    this->remark = cells.remark;
+//    this->type = cells.type;
+//    this->physical = cells.unit;
+//    this->width = cells.width;
+//    this->color = cells.color;
+//    this->can_id = cells.can_id;
+//    this->zero_flag = cells.zero_flag;
+//    this->zero_bit = cells.zero_bit;
+//    this->high_flag = cells.high_flag;
+//    this->high_range[0] = cells.high_range[0];
+//    this->high_range[1] = cells.high_range[1];
+//    this->low_range[0] = cells.low_range[0];
+//    this->low_range[1] = cells.low_range[1];
+//    this->sample_type = cells.sample_type;
+//    this->sample = cells.sample;
+//    this->frame = cells.frame;
+//    this->range_in[0] = cells.range_in[0];
+//    this->range_in[1] = cells.range_in[1];
+//    this->range_out[0] = cells.range_out[0];
+//    this->range_out[1] = cells.range_out[1];
+//    this->logic = cells.logic;
 //}
 
-bool CurveConfigCell::check() {
+bool CurveConfig::Cell::check() {
     bool flag = true;
     qInfo() << "检查曲线:" << name;
     if (name.isEmpty()) {
@@ -107,13 +107,13 @@ bool CurveConfigCell::check() {
     return flag;
 }
 
-QString CurveConfigCell::str() {
+QString CurveConfig::Cell::str() {
     QString s;
     QStringList list;
     list.append(QString::number(index));
     list.append(name);
     list.append(remark);
-    if (type == CurveConfigCell::Logical) {
+    if (type == Cell::Logical) {
         list.append(QString("逻辑"));
     } else {
         list.append(QString("物理"));
@@ -140,13 +140,11 @@ QString CurveConfigCell::str() {
                         .arg(low_byte)
                         .arg(low_range[0])
                         .arg(low_range[1]));
-    if (sample == CurveConfigCell::Frame) {
-        list.append(QString("帧数"));
+    if (sample_type == CurveConfig::Cell::Frame) {
+        list.append(QString("帧数;%1").arg(sample));
     } else {
-        list.append(QString("时间"));
+        list.append(QString("时间;%1").arg(sample));
     }
-    list.append(QString::number(time));
-    list.append(QString::number(frame));
     list.append(QString("%1~%2")
                         .arg(range_in[0])
                         .arg(range_in[1]));
@@ -186,7 +184,7 @@ bool CurveConfig::load(QFile &f) {
         str.remove(QRegExp("\\s"));
         QStringList list = str.split(QChar(','), QString::KeepEmptyParts);
         QStringList split_list;
-        CurveConfigCell cell;
+        Cell cell;
         unsigned short i = 0;
         bool first = true;
         bool flag = false;
@@ -216,12 +214,12 @@ bool CurveConfig::load(QFile &f) {
             }
             if (iter == "类型") {
                 if (list[i] == "逻辑") {
-                    cell.type = CurveConfigCell::Logical;
+                    cell.type = Cell::Logical;
                 } else if (list[i] == "物理") {
-                    cell.type = CurveConfigCell::Physical;
+                    cell.type = Cell::Physical;
                 } else {
                     qWarning("未知类型,设为物理");
-                    cell.type = CurveConfigCell::Physical;
+                    cell.type = Cell::Physical;
                 }
                 continue;
             }
@@ -332,49 +330,18 @@ bool CurveConfig::load(QFile &f) {
                 }
             }
             if (iter == "采样") {
-                if (list[i] == "帧数") {
-                    cell.sample = CurveConfigCell::Frame;
-                } else if (list[i] == "时间") {
-                    cell.sample = CurveConfigCell::Time;
+                split_list = list[i].split(QChar(';'));
+                flag = false;
+                cell.sample = split_list[1].toUShort(&flag, 10);
+                if (split_list[0] == "帧数") {
+                    cell.sample_type = Cell::Frame;
+                } else if (split_list[0] == "时间") {
+                    cell.sample_type = Cell::Time;
                 } else {
-                    cell.sample = CurveConfigCell::Time;
+                    cell.sample_type = Cell::Time;
                     qWarning("读取失败,设为时间采样");
                 }
                 continue;
-            }
-            if (iter == "时间") {
-                if (cell.sample == 1) {
-                    cell.time = 0;
-                    continue;
-                } else {
-                    flag = false;
-                    cell.time = list[i].toULong(&flag, 10);
-                    if (!flag) {
-                        qCritical("读取采样时间失败");
-                        curve_statu = CurveConfig::Error;
-                        f.close();
-                        return false;
-                    } else {
-                        continue;
-                    }
-                }
-            }
-            if (iter == "帧数") {
-                if (cell.sample == 0) {
-                    cell.frame = 0;
-                    continue;
-                } else {
-                    flag = false;
-                    cell.frame = list[i].toULong(&flag, 10);
-                    if (!flag) {
-                        qCritical("读取采样帧数失败");
-                        curve_statu = CurveConfig::Error;
-                        f.close();
-                        return false;
-                    } else {
-                        continue;
-                    }
-                }
             }
             if (iter == "输入量程") {
                 split_list = list[i].split(QChar('~'));
@@ -434,7 +401,7 @@ void CurveConfig::str(QStringList &list) {
     }
 }
 
-const CurveConfigCell &CurveConfig::operator[](unsigned int index) {
+const CurveConfig::Cell &CurveConfig::operator[](unsigned int index) {
     return config.at(index);
 }
 

@@ -26,7 +26,7 @@ int main() {
 //    qInfo("===============滤波后数据==============");
 //    qDebug() << tribe.str(QString("filter"));
 //    qInfo("===============其他数据==============");
-//    Range a(0, (unsigned)tribe["加速度(NULL)"].size());
+//    Range a(0, (unsigned)tribe["加速度(NULL)"]._size());
 //    double avg = Refine::average(tribe["加速度(NULL)"], a);
 //    qDebug() << avg;
 //    double rms = Refine::rms(tribe["加速度(NULL)"], a);

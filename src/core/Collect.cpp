@@ -36,8 +36,8 @@ void Collect::run() {
         return;
     }
     can.clear();
-    CanBoardInfo info;
-    CanErrorInfo error;
+    Can::BoardInfo info;
+    Can::ErrorInfo error;
     unsigned int check_cnt = 0;
     while (!stop_flag) {
         msleep(10);
@@ -59,8 +59,8 @@ void Collect::run() {
                     bool flag = can.receiveFrame(buffer.push(), error);
                     if (flag) {
                         QStringList list;
-                        qDebug() << CanBufferCell::header();
-//                        (buffer.head() - 1)->str(list);
+                        qDebug() << CanBuffer::Cell::header();
+//                        (_buffer.head() - 1)->str(list);
 //                        for (auto &iter : list) {
 //                            qDebug() << iter;
 //                        }

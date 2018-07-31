@@ -12,8 +12,3 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src/gui)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
 add_subdirectory(${PROJECT_SOURCE_DIR}/snippets)
 
-if (Release)
-
-endif (Release)
-
-

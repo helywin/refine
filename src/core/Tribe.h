@@ -13,11 +13,12 @@
 //    QVector<double> member;
 //};
 
-typedef QVector<double> TribeCell;
 
 class Tribe {
+public:
+    typedef QVector<double> Cell;
 private:
-    QMap<QString, TribeCell> clan;
+    QMap<QString, Cell> clan;
 
 public:
 
@@ -31,7 +32,7 @@ public:
 
     void add(const QString &key, unsigned int size);
 
-    TribeCell &operator[](const QString &key);
+    Cell &operator[](const QString &key);
 
     QString str(const QString &key);
 

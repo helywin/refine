@@ -10,9 +10,9 @@ int main() {
 //    qInstallMessageHandler(Log::handler);
 //    Log::setPath(QString("D:/jiang.wenqiang/code/refine/log/log.txt"));
     qInfo("===============启动测试采集==============");
-    CanConfig config;
+    Can::Config config;
     Can can(config);
-//    CanErrorInfo error;
+//    ErrorInfo error;
     CanBuffer buffer(20, 200);
     QFile f(":/res/test/cfg.txt");
     CurveConfig curve;
