@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/7/23.
 //
 
+#include <QtCore/QDebug>
 #include "Curve.h"
 
 Curve::Curve(QWidget *parent) : QDialog(parent) {
@@ -33,9 +34,26 @@ void Curve::setupUi() {
     menu_file->addAction(menu_file_saveas);
 
     menu_edit_reset = new QAction(this);
-    menu_edit_reset->setText(QString("重置(&R)"));
+    menu_edit_reset->setText(QString("重置(&R)\tCTRL+R"));
+    menu_edit_reset->setShortcut(QKeySequence(tr("Ctrl+R")));
+
+    menu_edit_add = new QAction(this);
+    menu_edit_add->setText(QString("增加(&A)\tCTRL+A"));
+    menu_edit_add->setShortcut(QKeySequence(tr("Ctrl+A")));
+
+    menu_edit_insert = new QAction(this);
+    menu_edit_insert->setText(QString("插入(&I)\tCTRL+I"));
+    menu_edit_insert->setShortcut(QKeySequence(tr("Ctrl+I")));
+
+    menu_edit_delete = new QAction(this);
+    menu_edit_delete->setText(QString("删除(&D)\tCTRL+D"));
+    menu_edit_delete->setShortcut(QKeySequence(tr("Ctrl+D")));
 
     menu_edit->addAction(menu_edit_reset);
+    menu_edit->addSeparator();
+    menu_edit->addAction(menu_edit_add);
+    menu_edit->addAction(menu_edit_insert);
+    menu_edit->addAction(menu_edit_delete);
 
     menu_action_finish = new QAction(this);
     menu_action_finish->setText(QString("完成(&F)"));
@@ -50,6 +68,12 @@ void Curve::setupUi() {
     menu_bar->addAction(menu_action->menuAction());
 
     layout->addWidget(table);
+
+    connect(menu_edit_reset, &QAction::triggered, table, &CurveTable::clearAll);
+    connect(menu_edit_add, &QAction::triggered, table, &CurveTable::add);
+    connect(menu_edit_insert, &QAction::triggered, table, &CurveTable::insert);
+    connect(menu_edit_delete, &QAction::triggered, table, &CurveTable::remove);
+    connect(menu_action_abort, &QAction::triggered, this, &Curve::hide);
 
 }
 

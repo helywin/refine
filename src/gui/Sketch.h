@@ -6,9 +6,10 @@
 #define REFINE_SKETCH_H
 
 #include <QtWidgets/QOpenGLWidget>
+#include <QtOpenGL/QGLFunctions>
 #include "Painter.h"
 
-class Sketch : public QOpenGLWidget {
+class Sketch : public QOpenGLWidget, public QGLFunctions {
 Q_OBJECT
 public:
     explicit Sketch(QWidget *parent = nullptr);

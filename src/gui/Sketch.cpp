@@ -8,7 +8,7 @@
 void Sketch::paintEvent(QPaintEvent *event) {
     QPainter painter;
     painter.begin(this);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+//    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.paint(&painter, event);
     painter.end();
 }

@@ -27,6 +27,14 @@ protected:
 public slots:
     void cell(QString s, int row, int column);
 
+    void insert();
+
+    void remove();
+
+    void add();
+
+    void clearAll();
+
 };
 
 

@@ -3,7 +3,7 @@
 # Project created by QtCreator 2018-06-09T11:25:15
 #
 #-------------------------------------------------
-QT       += core gui
+QT       += core gui widgets opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,6 +25,7 @@ SOURCES += \
         ./src/gui/Sketch.cpp \
         ./src/gui/TableTips.cpp \
         ./src/gui/Window.cpp \
+        ./src/gui/ModePanel.cpp \
         ./src/test/test_window.cpp
 
 HEADERS += \
@@ -38,6 +39,8 @@ HEADERS += \
         ./src/gui/Sketch.h \
         ./src/gui/TableTips.h \
         ./src/gui/Window.h \
+        ./src/gui/ModePanel.h \
+        ./src/core/Version.h
 
 RESOURCES += \
     res/ui.qrc

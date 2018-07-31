@@ -17,6 +17,7 @@
 #include "Curve.h"
 #include "Sketch.h"
 #include "PaintTest.h"
+#include "ModePanel.h"
 
 class Window : public QMainWindow {
 Q_OBJECT
@@ -26,6 +27,8 @@ private:
     QSplitter *central_hsplitter;
     QSplitter *central_vsplitter;
     QMenu *menu_file;
+    QMenu *menu_connection;
+    QMenu *menu_connection_channel;
     QMenu *menu_collect;
     QMenu *menu_match;
     QMenu *menu_setting;
@@ -34,6 +37,8 @@ private:
     QMenu *menu_help;
     QStatusBar *status_bar;
     QAction *menu_file_new;
+    QAction *menu_connection_channel_1;
+    QAction *menu_connection_channel_2;
     QAction *menu_collect_load;
     QAction *menu_collect_config;
     QAction *menu_match_load;
@@ -42,6 +47,7 @@ private:
     QAction *menu_setting_display_left;
     QAction *menu_setting_display_right;
     QAction *menu_setting_display_statu;
+    QAction *menu_setting_display_bottom;
     QAction *menu_setting_fullscreen;
     QAction *menu_test_paint;
     QAction *menu_help_manual;
@@ -60,8 +66,10 @@ private:
     Sketch *opengl;
     QScrollBar *opengl_scroller;
     QTabWidget *left_tab_widget;
-    QTabWidget *buttom_tab_widget;
+    QTabWidget *bottom_tab_widget;
     Qt::WindowFlags before_full_screen;
+
+    ModePanel *mode;
 
     Curve *curve_dialog;
     Select *select_dialog;
@@ -76,13 +84,20 @@ public:
 
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
-public slots:
-
+private slots:
     void changeSkin();
 
     void hideDisplay();
 
     void fullScreen();
+
+    void changeToChannel1();
+
+    void changeToChannel2();
+
+public slots:
+
+
 
     void fullScreenCancel();
 

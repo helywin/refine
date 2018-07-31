@@ -27,9 +27,10 @@ void Window::setupUi() {
     central_hsplitter = new QSplitter(Qt::Horizontal, central_vsplitter);
     central_vsplitter->addWidget(central_hsplitter);
 
-    buttom_tab_widget = new QTabWidget(central_vsplitter);
-    central_vsplitter->addWidget(buttom_tab_widget);
-    buttom_tab_widget->addTab(new QTableWidget(), QString("日志"));
+    bottom_tab_widget = new QTabWidget(central_vsplitter);
+    bottom_tab_widget->setContentsMargins(5,5,5,5);
+    central_vsplitter->addWidget(bottom_tab_widget);
+    bottom_tab_widget->addTab(new QTableWidget(), QString("日志"));
     central_vsplitter->setSizes
             (QList({this->width() / 5 * 4, this->width() / 5}));
 
@@ -43,26 +44,27 @@ void Window::setupUi() {
     right_widget = new QWidget(this);
     right_widget->setMinimumWidth(200);
     left_vbox_layout = new QVBoxLayout(left_widget);
-    left_vbox_layout->setContentsMargins(10, 5, 0, 5);
+    left_vbox_layout->setContentsMargins(5, 5, 0, 5);
     mid_container = new QVBoxLayout(mid_content);
     mid_container->setContentsMargins(0, 5, 0, 5);
     mid_vbox_layout = new QVBoxLayout(mid_widget);
     mid_vbox_layout->setMargin(0);
     right_vbox_layout = new QVBoxLayout(right_widget);
-    right_vbox_layout->setContentsMargins(0, 5, 10, 5);
+    right_vbox_layout->setContentsMargins(0, 5, 5, 5);
 
     opengl = new Sketch(mid_widget);
 
 //    buttom_widget->setLayout(whole_hbox_layout);
     left_tab_widget = new QTabWidget(left_widget);
-    left_tab_widget->addTab(new QWidget(left_tab_widget), QString("工况"));
+    mode = new ModePanel(left_tab_widget);
+    left_tab_widget->addTab(mode, QString("工况"));
     left_tab_widget->addTab(new QWidget(left_tab_widget), QString("通信"));
-    left_tab_widget->addTab(new QWidget(left_tab_widget), QString("文件"));
+    left_tab_widget->addTab(new QWidget(left_tab_widget), QString("数据"));
     left_tab_widget->addTab(new QWidget(left_tab_widget), QString("报告"));
     left_tab_widget->addTab(new QWidget(left_tab_widget), QString("坐标"));
-    left_tab_widget->setTabEnabled(0, false);
+//    left_tab_widget->setTabEnabled(1, false);
     left_tab_widget->setTabBarAutoHide(true);
-    left_tab_widget->setTabPosition(QTabWidget::West);
+    left_tab_widget->setTabPosition(QTabWidget::North);
     left_tab_widget->setTabBarAutoHide(true);
     //    whole_hbox_layout->setMargin(0);
     central_hsplitter->addWidget(left_widget);
@@ -78,7 +80,7 @@ void Window::setupUi() {
     left_widget->setLayout(left_vbox_layout);
     mid_widget->setLayout(mid_vbox_layout);
     right_widget->setLayout(right_vbox_layout);
-    left_vbox_layout->addWidget(new QPushButton());
+//    left_vbox_layout->addWidget(new QPushButton());
     left_vbox_layout->addWidget(left_tab_widget);
     mid_container->addWidget(mid_widget);
     mid_content->setLayout(mid_container);
@@ -94,6 +96,7 @@ void Window::setupUi() {
     menu_bar->setGeometry(QRect(0, 0, 300, 23));
 
     menu_file = new QMenu(QString("文件(&F)"), menu_bar);
+    menu_connection = new QMenu(QString("连接(&N)"), menu_bar);
     menu_collect = new QMenu(QString("采集(&C)"), menu_bar);
     menu_match = new QMenu(QString("匹配(&M)"), menu_bar);
     menu_setting = new QMenu(QString("设置(&S)"));
@@ -102,6 +105,15 @@ void Window::setupUi() {
     menu_help = new QMenu(QString("帮助(&H)"));
     menu_file_new = new QAction(this);
     menu_file_new->setText(QString("新建(&N)"));
+    menu_connection_channel = new QMenu(QString("通道(&C)"));
+    menu_connection_channel_1 = new QAction(this);
+    menu_connection_channel_1->setText(QString("通道1(&1)"));
+    menu_connection_channel_1->setCheckable(true);
+    menu_connection_channel_1->setChecked(true);
+    menu_connection_channel_2 = new QAction(this);
+    menu_connection_channel_2->setText(QString("通道2(&2)"));
+    menu_connection_channel_2->setCheckable(true);
+    menu_connection_channel_2->setChecked(false);
     menu_collect_load = new QAction(this);
     menu_collect_load->setText(QString("加载配置(&L)..."));
     menu_collect_config = new QAction(this);
@@ -124,10 +136,14 @@ void Window::setupUi() {
     menu_setting_display_statu->setText(QString("状态栏(&S)"));
     menu_setting_display_statu->setCheckable(true);
     menu_setting_display_statu->setChecked(true);
+    menu_setting_display_bottom = new QAction(this);
+    menu_setting_display_bottom->setText(QString("底部(&B)"));
+    menu_setting_display_bottom->setCheckable(true);
+    menu_setting_display_bottom->setChecked(true);
     menu_setting_fullscreen = new QAction(this);
     menu_setting_fullscreen->setText(QString("全屏(&F)"));
     menu_test_paint = new QAction(this);
-    menu_test_paint->setText(QString("绘图(&P)"));
+    menu_test_paint->setText(QString("绘图(&P)..."));
     menu_help_manual = new QAction(this);
     menu_help_manual->setText(QString("手册(&M)..."));
     menu_help_opensource = new QAction(this);
@@ -139,6 +155,9 @@ void Window::setupUi() {
     menu_help_about = new QAction(this);
     menu_help_about->setText(QString("关于(&A)..."));
     menu_file->addAction(menu_file_new);
+    menu_connection->addMenu(menu_connection_channel);
+    menu_connection_channel->addAction(menu_connection_channel_1);
+    menu_connection_channel->addAction(menu_connection_channel_2);
     menu_collect->addAction(menu_collect_load);
     menu_collect->addAction(menu_collect_config);
     menu_match->addAction(menu_match_load);
@@ -148,6 +167,7 @@ void Window::setupUi() {
     menu_setting_display->addAction(menu_setting_display_left);
     menu_setting_display->addAction(menu_setting_display_right);
     menu_setting_display->addAction(menu_setting_display_statu);
+    menu_setting_display->addAction(menu_setting_display_bottom);
     menu_setting->addAction(menu_setting_fullscreen);
     menu_test->addAction(menu_test_paint);
     menu_help->addAction(menu_help_manual);
@@ -157,6 +177,7 @@ void Window::setupUi() {
     menu_help->addAction(menu_help_about);
 
     menu_bar->addAction(menu_file->menuAction());
+    menu_bar->addAction(menu_connection->menuAction());
     menu_bar->addAction(menu_collect->menuAction());
     menu_bar->addAction(menu_match->menuAction());
     menu_bar->addAction(menu_setting->menuAction());
@@ -187,6 +208,8 @@ void Window::setupUi() {
             &Window::hideDisplay);
     connect(menu_setting_display_statu, &QAction::triggered, this,
             &Window::hideDisplay);
+    connect(menu_setting_display_bottom, &QAction::triggered, this,
+            &Window::hideDisplay);
     connect(menu_setting_fullscreen, &QAction::triggered, this,
             &Window::fullScreen);
     connect(menu_match_config, &QAction::triggered, select_dialog,
@@ -199,6 +222,10 @@ void Window::setupUi() {
 
     connect(mid_widget, &Middle::cancelFullScreen, this,
             &Window::fullScreenCancel);
+    connect(menu_connection_channel_1, &QAction::triggered, this,
+            &Window::changeToChannel1);
+    connect(menu_connection_channel_2, &QAction::triggered, this,
+            &Window::changeToChannel2);
     before_full_screen = mid_widget->windowFlags();
 }
 
@@ -207,7 +234,6 @@ Window::~Window() {
 }
 
 void Window::resizeEvent(QResizeEvent *event) {
-    qDebug() << this->size();
 }
 
 void Window::changeSkin() {
@@ -245,6 +271,11 @@ void Window::hideDisplay() {
     } else {
         status_bar->hide();
     }
+    if (menu_setting_display_bottom->isChecked()) {
+        bottom_tab_widget->show();
+    } else {
+        bottom_tab_widget->hide();
+    }
 }
 
 void Window::fullScreen() {
@@ -270,4 +301,14 @@ void Window::keyPressEvent(QKeyEvent *event) {
         default:
             break;
     }
+}
+
+void Window::changeToChannel1() {
+    menu_connection_channel_2->setChecked(false);
+    menu_connection_channel_1->setChecked(true);
+}
+
+void Window::changeToChannel2() {
+    menu_connection_channel_1->setChecked(false);
+    menu_connection_channel_2->setChecked(true);
 }

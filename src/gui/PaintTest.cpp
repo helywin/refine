@@ -28,6 +28,8 @@ void PaintTest::setupUi() {
     ok = new QPushButton(setting_widget);
     ok->setText(QString("确定"));
 
+    interval->setMaximum(1000);
+    interval->setMinimum(10);
     interval->setValue(10);
     interval->setSingleStep(10);
     interval->setSuffix(QString("刷新间隔/ms"));
@@ -37,14 +39,20 @@ void PaintTest::setupUi() {
     point_num->setValue(1000);
     point_num->setSuffix(QString("单条曲线点数"));
 
+    line_num->setMinimum(1);
+    line_num->setMaximum(1000);
     line_num->setValue(20);
     line_num->setSingleStep(10);
     line_num->setSuffix(QString("曲线条数"));
 
+    freq->setMinimum(1);
+    freq->setMaximum(10);
     freq->setValue(5);
     freq->setSingleStep(1);
     freq->setSuffix(QString("波形宽度系数"));
 
+    freq->setMinimum(1);
+    freq->setMaximum(10);
     line_width->setValue(1);
     line_width->setSingleStep(1);
     line_width->setSuffix(QString("曲线宽度"));

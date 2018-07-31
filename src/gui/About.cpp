@@ -3,11 +3,12 @@
 //
 
 #include "About.h"
+#include "../core/Version.h"
 #include <QtCore/QEvent>
 #include <QtCore/QDebug>
 
 About::About(QWidget *parent) : QDialog(parent) {
-    setWindowFlag(Qt::ToolTip);
+    setWindowFlag(Qt::SplashScreen);
     setup_ui();
 //    setWindowFlag(Qt::WindowContextHelpButtonHint, false);
 //    setWindowFlag(Qt::WindowCloseButtonHint, false);
@@ -37,7 +38,7 @@ void About::setup_ui() {
 
     version = new QLabel(this);
     QFont font("微软雅黑", 10, 5);
-    version->setText("Version: 0.0.1(build 0)");
+    version->setText(Version::str());
     version->setFont(font);
     version->move(240, 100);
     version->resize(240, 20);
@@ -59,7 +60,7 @@ void About::setup_ui() {
 
     QFont font_soft("微软雅黑", 20, 5);
     soft = new QLabel(this);
-    soft->setText("第三方开源软件协议");
+    soft->setText("版本变更");
     soft->setFont(font_soft);
     soft->move(20, 240);
     soft->resize(460, 40);

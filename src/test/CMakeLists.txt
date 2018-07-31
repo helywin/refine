@@ -13,6 +13,7 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(Qt5Gui CONFIG REQUIRED)
+find_package(Qt5OpenGL CONFIG REQUIRED)
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_C_COMPILER gcc)
 set(DEFINES "-DUNICODE -D_UNICODE -DWIN32 -DQT_DEPRECATED_WARNINGS")
@@ -115,8 +116,14 @@ target_link_libraries(test_refine
 #target_link_libraries(test_right Qt5Core)
 
 add_executable(test_window test_window.cpp ${GUI} ${SRC})
-target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui)
+target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui Qt5OpenGL)
 
+add_executable(test_gl test_gl.cpp)
+target_link_libraries(test_gl D:/msys32/mingw32/lib/libglfw3.a
+        D:/software/mingw32/i686-w64-mingw32/lib/libopengl32.a
+        D:/software/mingw32/i686-w64-mingw32/lib/libgcc_s.a
+        D:/software/mingw32/i686-w64-mingw32/lib/libpthread.a)
+set_target_properties(test_gl PROPERTIES LINK_FLAGS "-Wl,-s -static -Wl,-subsystem,windows -mthreads")
 #add_executable(test_release test_release.cpp)
 #target_link_libraries(test_release Qt5Core)
 #set_target_properties(TARGET test_release PROPERTY )
