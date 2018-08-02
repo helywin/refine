@@ -14,18 +14,18 @@
 class Sublime : public QThread {
 Q_OBJECT
 private:
-    CurveConfig &cfg;
-
     CanBuffer &buffer;
 
     Kebab &kebab;
+
+    Transform &transform;
 
     omp_lock_t lock;
 
 public:
     Sublime() = delete;
 
-    Sublime(CurveConfig &cfg, CanBuffer &buffer, Kebab &kebab);
+    Sublime(CanBuffer &buffer, Kebab &kebab, Transform &transform);
 
     ~Sublime() final;
 

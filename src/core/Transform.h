@@ -12,13 +12,13 @@
 
 class Transform {
 private:
-    CurveConfig &confg;
+    CurveConfig &config;
 public:
     explicit Transform(CurveConfig &config);
 
-    Kebab::Group &&canToData(CanBuffer &buffer);
+    Kebab::Group &&canToData(CanBuffer &buffer) const;
 
-    CanBuffer::Cell &&dataToCan(Tribe &tribe);
+    CanBuffer::Cell &&dataToCan(Tribe &tribe) const;
 };
 
 

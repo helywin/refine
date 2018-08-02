@@ -33,7 +33,7 @@ public:
 
     bool add(unsigned short index, double val);
 
-    bool add(Group &group);
+    bool add(Group &&group);
 
     bool out(double *list);
 
@@ -48,7 +48,7 @@ public:
     unsigned int size;
 
 private:
-    double cell[KEBAB_CELL_LENGTH];
+    float cell[KEBAB_CELL_LENGTH];
 
     unsigned int head_index;
 
@@ -57,11 +57,11 @@ private:
 public:
     Cell();
 
-    double &operator[](unsigned int index);
+    float &operator[](unsigned int index);
 
-    double &head();
+    float &head();
 
-    double &tail();
+    float &tail();
 
     void inc();
 

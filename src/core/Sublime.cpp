@@ -4,9 +4,10 @@
 
 #include "Sublime.h"
 #include "Log.h"
+#include "Transform.h"
 
-Sublime::Sublime(CurveConfig &cfg, CanBuffer &buffer, Kebab &kebab) :
-        cfg(cfg), buffer(buffer), kebab(kebab) {
+Sublime::Sublime(CanBuffer &buffer, Kebab &kebab, Transform &transform) :
+        buffer(buffer), kebab(kebab), transform(transform) {
     omp_init_lock(&lock);
 }
 
@@ -16,29 +17,7 @@ Sublime::~Sublime() {
 
 void Sublime::run() {
     qDebug("处理数据");
-    unsigned int use = 0;
-    unsigned int total = 0;
-    while (auto p = buffer.out()) {
-        total += p->length();
-//#pragma omp parallel for
-        for (int i = 0; i < p->length(); ++i) {
-            unsigned short index = 0;
-            double result;
-            if (cfg.transform(p->buffer()->ID,
-                              p->buffer()->Data,
-                              result, index)) {
-                int index_u = index - 1;
-                Q_ASSERT(index_u >= 0);
-                kebab.add((unsigned short)index_u, result);
-                omp_set_lock(&lock);
-//                qDebug() << "曲线" << m_index << "添加" << result;
-                use += 1;
-//                qDebug() << use;
-                omp_unset_lock(&lock);
-            }
-        }
-    }
-    emit result(use, total);
+    kebab.add(transform.canToData(buffer));
     if (kebab.length() > KEBAB_CELL_LENGTH / 4) {
 //    if (cells.length() > 100) {
         emit unload();

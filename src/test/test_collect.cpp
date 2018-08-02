@@ -4,6 +4,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
 #include "Revolve.h"
+#include "Transform.h"
 
 
 int main() {
@@ -26,7 +27,8 @@ int main() {
     QFile file(QString("D:/jiang.wenqiang/code/refine/data/data.txt"));
     Keep keep(data, file);
     Collect collect(can, buffer);
-    Sublime sublime(curve, buffer, data);
+    Transform transform(curve);
+    Sublime sublime(buffer, data, transform);
     Revolve revolve(keep, collect, sublime);
     revolve.marvel();
     return 0;

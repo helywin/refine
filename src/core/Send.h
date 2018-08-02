@@ -13,13 +13,13 @@
 class Send : QThread{
 Q_OBJECT
 private:
-    Abstract &abstract;
+    Tribe &tribe;
     Can &can;
     CurveConfig &config;
 
 public:
     Send() = delete;
-    explicit Send(Abstract &abstract, Can &can, CurveConfig &config);
+    explicit Send(Tribe &Tribe, Can &can, CurveConfig &config);
 
 private:
     void run() override;

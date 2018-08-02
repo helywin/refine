@@ -5,17 +5,17 @@
 #include "Kebab.h"
 
 Kebab::Cell::Cell() :
-        size(KEBAB_CELL_LENGTH), head_index(0), tail_index(0) {}
+        size(KEBAB_CELL_LENGTH), head_index(0), tail_index(0), cell({}) {}
 
-double &Kebab::Cell::operator[](unsigned int index) {
+float &Kebab::Cell::operator[](unsigned int index) {
     return cell[index];
 }
 
-double &Kebab::Cell::head() {
+float &Kebab::Cell::head() {
     return cell[head_index];
 }
 
-double &Kebab::Cell::tail() {
+float &Kebab::Cell::tail() {
     return cell[tail_index];
 }
 
@@ -73,6 +73,7 @@ bool Kebab::add(unsigned short index, double val) {
         cells[index].head() = val;
         cells[index].inc();
     }
+    return true;
 }
 
 bool Kebab::out(double *list) {
@@ -93,4 +94,14 @@ unsigned short Kebab::size() const {
 
 unsigned int Kebab::length() const {
     return max_len;
+}
+
+bool Kebab::add(Kebab::Group &&group) {
+    if (group.empty()) {
+        return false;
+    }
+    for(const auto &key : group.keys()) {
+        add(key, group[key]);
+    }
+    return true;
 }

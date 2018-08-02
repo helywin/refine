@@ -17,11 +17,11 @@ class CanBuffer {
 public:
     class Cell;
 
-    Cell *buffer_list;
-
+private:
     unsigned int length;
 
-private:
+    Cell *buffer_list;
+
     unsigned int index;
 
     Cell *head_point;
@@ -57,7 +57,7 @@ private:
 
 class CanBuffer::Cell {
     friend CanBuffer;
-private:
+public:
     //! \brief 帧缓冲区
     PVCI_CAN_OBJ _buffer;
 
