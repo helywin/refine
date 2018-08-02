@@ -4,7 +4,9 @@
 
 #include "Sublime.h"
 #include "Log.h"
+#include "Transform.h"
 
+<<<<<<< HEAD
 Sublime::Sublime(CurveConfig &cfg, CanBuffer &buffer, Kebab &raft) :
         cfg(cfg), buffer(buffer), raft(raft) {}
 
@@ -28,6 +30,22 @@ void Sublime::run() {
     emit result(use, total);
     if (raft.length() > RAFT_CELL_LENGTH/2) {
 //    if (raft.length() > 100) {
+=======
+Sublime::Sublime(CanBuffer &buffer, Kebab &kebab, Transform &transform) :
+        buffer(buffer), kebab(kebab), transform(transform) {
+    omp_init_lock(&lock);
+}
+
+Sublime::~Sublime() {
+    omp_destroy_lock(&lock);
+}
+
+void Sublime::run() {
+    qDebug("处理数据");
+    kebab.add(transform.canToData(buffer));
+    if (kebab.length() > KEBAB_CELL_LENGTH / 4) {
+//    if (cells.length() > 100) {
+>>>>>>> 568e96c... 准备重新开发结构
         emit unload();
     }
 }

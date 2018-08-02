@@ -13,16 +13,28 @@
 class Sublime : public QThread {
 Q_OBJECT
 private:
-    CurveConfig &cfg;
-
     CanBuffer &buffer;
 
+<<<<<<< HEAD
     Kebab &raft;
+=======
+    Kebab &kebab;
+
+    Transform &transform;
+
+    omp_lock_t lock;
+>>>>>>> 568e96c... 准备重新开发结构
 
 public:
     Sublime() = delete;
 
+<<<<<<< HEAD
     Sublime(CurveConfig &cfg, CanBuffer &buffer, Kebab &raft);
+=======
+    Sublime(CanBuffer &buffer, Kebab &kebab, Transform &transform);
+
+    ~Sublime() final;
+>>>>>>> 568e96c... 准备重新开发结构
 
 protected:
     void run() Q_DECL_OVERRIDE;

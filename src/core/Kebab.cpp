@@ -4,6 +4,7 @@
 
 #include "Kebab.h"
 
+<<<<<<< HEAD
 KebabCell::KebabCell() :
         size(RAFT_CELL_LENGTH), head_index(0), tail_index(0){}
 
@@ -16,6 +17,20 @@ double &KebabCell::head() {
 }
 
 double &KebabCell::tail() {
+=======
+Kebab::Cell::Cell() :
+        size(KEBAB_CELL_LENGTH), head_index(0), tail_index(0), cell({}) {}
+
+float &Kebab::Cell::operator[](unsigned int index) {
+    return cell[index];
+}
+
+float &Kebab::Cell::head() {
+    return cell[head_index];
+}
+
+float &Kebab::Cell::tail() {
+>>>>>>> 568e96c... 准备重新开发结构
     return cell[tail_index];
 }
 
@@ -71,6 +86,7 @@ bool Kebab::add(unsigned short index, double val) {
         kebab[index].head() = val;
         kebab[index].inc();
     }
+    return true;
 }
 
 bool Kebab::out(double *list) {
@@ -91,4 +107,14 @@ unsigned short Kebab::size() {
 
 unsigned int Kebab::length() {
     return max_len;
+}
+
+bool Kebab::add(Kebab::Group &&group) {
+    if (group.empty()) {
+        return false;
+    }
+    for(const auto &key : group.keys()) {
+        add(key, group[key]);
+    }
+    return true;
 }

@@ -8,6 +8,7 @@
 #include <QtCore/QVector>
 #include <QtCore/QMap>
 
+<<<<<<< HEAD
 //class Clan {
 //public:
 //    QVector<double> member;
@@ -16,6 +17,11 @@
 typedef QVector<double> TribeCell;
 
 class Tribe {
+=======
+class Tribe {
+public:
+    typedef QVector<float> Cell;
+>>>>>>> 568e96c... 准备重新开发结构
 private:
     QMap<QString, TribeCell> clan;
 
@@ -35,7 +41,11 @@ public:
 
     QString str(const QString &key);
 
+<<<<<<< HEAD
     inline QString str(const char *key) {str(QString(key)); };
+=======
+    inline QString str(const char *key) { return str(QString(key)); };
+>>>>>>> 568e96c... 准备重新开发结构
 
     inline unsigned int size() { return (unsigned)clan.size(); }
 

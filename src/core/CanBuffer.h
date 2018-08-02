@@ -11,6 +11,7 @@
 
 class CanBufferCell {
 public:
+<<<<<<< HEAD
     //! \brief 发送帧缓冲区
     PVCI_CAN_OBJ buffer;
 
@@ -19,6 +20,16 @@ public:
 
     //! \brief 实际长度
     unsigned long l;
+=======
+    class Cell;
+
+private:
+    unsigned int length;
+
+    Cell *buffer_list;
+
+    unsigned int index;
+>>>>>>> 568e96c... 准备重新开发结构
 
     //! \brief 计数器
     unsigned long index;
@@ -47,6 +58,25 @@ public:
 
 };
 
+<<<<<<< HEAD
+=======
+class CanBuffer::Cell {
+    friend CanBuffer;
+public:
+    //! \brief 帧缓冲区
+    PVCI_CAN_OBJ _buffer;
+
+    //! \brief 缓冲区大小
+    unsigned long _size;
+
+    //! \brief 实际长度
+    unsigned long _length;
+
+    //! \brief 计数器
+    unsigned long _index;
+
+    int _delay;
+>>>>>>> 568e96c... 准备重新开发结构
 
 /**
  * @brief 接收CAN帧的数据结构

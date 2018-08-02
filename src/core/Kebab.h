@@ -27,7 +27,11 @@ public:
 
     double &tail();
 
+<<<<<<< HEAD
     void inc();
+=======
+    bool add(Group &&group);
+>>>>>>> 568e96c... 准备重新开发结构
 
     void dec();
 
@@ -40,7 +44,11 @@ public:
 
 class Kebab {
 private:
+<<<<<<< HEAD
     KebabCell *kebab;
+=======
+    float cell[KEBAB_CELL_LENGTH];
+>>>>>>> 568e96c... 准备重新开发结构
 
     unsigned short cell_size;
 
@@ -48,10 +56,18 @@ private:
 
 public:
 
+<<<<<<< HEAD
 
     Kebab() = delete;
 
     explicit Kebab(unsigned short size);
+=======
+    float &operator[](unsigned int index);
+
+    float &head();
+
+    float &tail();
+>>>>>>> 568e96c... 准备重新开发结构
 
     ~Kebab();
 
