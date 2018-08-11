@@ -16,7 +16,7 @@ CONFIG += c++1z
 
 SOURCES += \
         ./src/gui/About.cpp \
-        ./src/gui/Curve.cpp \
+        ./src/gui/CurveDialog.cpp \
         ./src/gui/CurveTable.cpp \
         ./src/gui/Middle.cpp \
         ./src/gui/Painter.cpp \
@@ -30,7 +30,7 @@ SOURCES += \
 
 HEADERS += \
         ./src/gui/About.h \
-        ./src/gui/Curve.h \
+        ./src/gui/CurveDialog.h \
         ./src/gui/CurveTable.h \
         ./src/gui/Middle.h \
         ./src/gui/Painter.h \

@@ -7,15 +7,15 @@
 Kebab::Cell::Cell() :
         size(KEBAB_CELL_LENGTH), head_index(0), tail_index(0), cell({}) {}
 
-float &Kebab::Cell::operator[](unsigned int index) {
+double &Kebab::Cell::operator[](unsigned int index) {
     return cell[index];
 }
 
-float &Kebab::Cell::head() {
+double &Kebab::Cell::head() {
     return cell[head_index];
 }
 
-float &Kebab::Cell::tail() {
+double &Kebab::Cell::tail() {
     return cell[tail_index];
 }
 

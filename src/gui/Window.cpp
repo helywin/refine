@@ -190,7 +190,7 @@ void Window::setupUi() {
 
     about_dialog = new About(this);
     select_dialog = new Select(this);
-    curve_dialog = new Curve(this);
+    curve_dialog = new CurveDialog(this);
     paint_test_dialog = new PaintTest(this);
 
     QTimer *timer = new QTimer(this);
@@ -215,7 +215,7 @@ void Window::setupUi() {
     connect(menu_match_config, &QAction::triggered, select_dialog,
             &Select::show);
     connect(menu_collect_config, &QAction::triggered, curve_dialog,
-            &Curve::show);
+            &CurveDialog::show);
     connect(menu_test_paint, &QAction::triggered, paint_test_dialog,
             &PaintTest::show);
     connect(menu_help_about, &QAction::triggered, about_dialog, &About::show);

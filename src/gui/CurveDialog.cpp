@@ -3,16 +3,16 @@
 //
 
 #include <QtCore/QDebug>
-#include "Curve.h"
+#include "CurveDialog.h"
 
-Curve::Curve(QWidget *parent) : QDialog(parent) {
+CurveDialog::CurveDialog(QWidget *parent) : QDialog(parent) {
     setupUi();
     move(0, 0);
     setWindowFlag(Qt::ToolTip);
     setWindowState(Qt::WindowMaximized);
 }
 
-void Curve::setupUi() {
+void CurveDialog::setupUi() {
     setWindowTitle(QString("曲线配置"));
     table = new CurveTable(this);
     layout = new QVBoxLayout(this);
@@ -73,11 +73,11 @@ void Curve::setupUi() {
     connect(menu_edit_add, &QAction::triggered, table, &CurveTable::add);
     connect(menu_edit_insert, &QAction::triggered, table, &CurveTable::insert);
     connect(menu_edit_delete, &QAction::triggered, table, &CurveTable::remove);
-    connect(menu_action_abort, &QAction::triggered, this, &Curve::hide);
+    connect(menu_action_abort, &QAction::triggered, this, &CurveDialog::hide);
 
 }
 
-void Curve::resizeEvent(QResizeEvent *event) {
+void CurveDialog::resizeEvent(QResizeEvent *event) {
     setWindowState(Qt::WindowMaximized);
 }
 

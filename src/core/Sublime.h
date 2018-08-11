@@ -7,14 +7,14 @@
 
 #include <QtCore/QThread>
 #include <omp.h>
-#include "CurveConfig.h"
-#include "CanBuffer.h"
+#include "Curve.h"
+#include "Buffer.h"
 #include "Kebab.h"
 
 class Sublime : public QThread {
 Q_OBJECT
 private:
-    CanBuffer &buffer;
+    Buffer &buffer;
 
     Kebab &kebab;
 
@@ -25,7 +25,7 @@ private:
 public:
     Sublime() = delete;
 
-    Sublime(CanBuffer &buffer, Kebab &kebab, Transform &transform);
+    Sublime(Buffer &buffer, Kebab &kebab, Transform &transform);
 
     ~Sublime() final;
 

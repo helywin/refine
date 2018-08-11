@@ -10,7 +10,7 @@
 
 class Tribe {
 public:
-    typedef QVector<float> Cell;
+    typedef QVector<double> Cell;
 private:
     QMap<QString, Cell> clan;
 

@@ -106,11 +106,8 @@ double Refine::rms(const Tribe::Cell &in, Range &range) {
 
 double Refine::vdv(const Tribe::Cell &in, Range &range) {
     double sum = 0;
-    double times = 0;
     for (int i = range.begin(); i < range.end(); ++i) {
-        times = in[i] * in[i];
-        times *= times;
-        sum += times;
+        sum += in[i] * in[i] * in[i] * in[i];
     }
     return sqrt(sqrt(sum));
 }

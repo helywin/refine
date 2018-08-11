@@ -2,7 +2,7 @@
 // Created by jiang.wenqiang on 2018/6/29.
 //
 
-#include "CurveConfig.h"
+#include "Curve.h"
 #include "Log.h"
 
 //Cell::Cell() {
@@ -38,7 +38,7 @@
 //    this->logic = cells.logic;
 //}
 
-bool CurveConfig::Cell::check() {
+bool Curve::Cell::check() {
     bool flag = true;
     qInfo() << "检查曲线:" << name;
     if (name.isEmpty()) {
@@ -107,7 +107,7 @@ bool CurveConfig::Cell::check() {
     return flag;
 }
 
-QString CurveConfig::Cell::str() {
+QString Curve::Cell::str() {
     QString s;
     QStringList list;
     list.append(QString::number(index));
@@ -140,7 +140,7 @@ QString CurveConfig::Cell::str() {
                         .arg(low_byte)
                         .arg(low_range[0])
                         .arg(low_range[1]));
-    if (sample_type == CurveConfig::Cell::Frame) {
+    if (sample_type == Curve::Cell::Frame) {
         list.append(QString("帧数;%1").arg(sample));
     } else {
         list.append(QString("时间;%1").arg(sample));
@@ -155,29 +155,29 @@ QString CurveConfig::Cell::str() {
     return s;
 }
 
-CurveConfig::CurveConfig() {
-    curve_statu = CurveConfig::Empty;
+Curve::Curve() {
+    _status = Curve::Empty;
 }
 
-bool CurveConfig::load(QFile &f) {
-    if (!f.isOpen()) {
-        f.open(QIODevice::ReadOnly | QIODevice::Text);
+bool Curve::loadCsv(QFile &csv) {
+    if (!csv.isOpen()) {
+        csv.open(QIODevice::ReadOnly | QIODevice::Text);
     } else {
-        f.close();
-        f.open(QIODevice::ReadOnly | QIODevice::Text);
+        csv.close();
+        csv.open(QIODevice::ReadOnly | QIODevice::Text);
     }
-    if (!f.isOpen()) {
+    if (!csv.isOpen()) {
         qCritical("文件打开失败");
-        curve_statu = CurveConfig::File;
+        _status = Curve::File;
         return false;
     }
-    QTextStream stream(&f);
+    QTextStream stream(&csv);
     stream.setCodec("gbk");
     QString str;
     str = stream.readLine(200);
     str = str.simplified();
     str.remove(QRegExp("\\s"));
-    config_header = str.split(QChar(','), QString::KeepEmptyParts);
+    _header = str.split(QChar(','), QString::KeepEmptyParts);
     while (!stream.atEnd()) {
         str = stream.readLine(200);
         str = str.simplified();
@@ -188,7 +188,7 @@ bool CurveConfig::load(QFile &f) {
         unsigned short i = 0;
         bool first = true;
         bool flag = false;
-        for (const auto &iter : config_header) {
+        for (const auto &iter : _header) {
             if (!first) {
                 i += 1;
             } else {
@@ -250,8 +250,8 @@ bool CurveConfig::load(QFile &f) {
                 cell.can_id = list[i].toULong(&flag, 0);
                 if (!flag) {
                     qCritical("读取地址失败");
-                    curve_statu = CurveConfig::Error;
-                    f.close();
+                    _status = Curve::Error;
+                    csv.close();
                     return false;
                 }
             }
@@ -267,8 +267,8 @@ bool CurveConfig::load(QFile &f) {
                     cell.zero_byte = split_list[1].toUShort(&flag, 10);
                     if (!flag) {
                         qCritical("零位无法读取");
-                        curve_statu = CurveConfig::Error;
-                        f.close();
+                        _status = Curve::Error;
+                        csv.close();
                         return false;
                     }
                 }
@@ -289,8 +289,8 @@ bool CurveConfig::load(QFile &f) {
 
                     if (!flag) {
                         qCritical("读取高位范围失败");
-                        curve_statu = CurveConfig::Error;
-                        f.close();
+                        _status = Curve::Error;
+                        csv.close();
                         return false;
                     } else {
                         continue;
@@ -322,8 +322,8 @@ bool CurveConfig::load(QFile &f) {
                 }
                 if (!flag) {
                     qCritical("读取低位范围失败");
-                    curve_statu = CurveConfig::Error;
-                    f.close();
+                    _status = Curve::Error;
+                    csv.close();
                     return false;
                 } else {
                     continue;
@@ -352,8 +352,8 @@ bool CurveConfig::load(QFile &f) {
                 }
                 if (!flag) {
                     qCritical("读取输入量程失败");
-                    curve_statu = CurveConfig::Error;
-                    f.close();
+                    _status = Curve::Error;
+                    csv.close();
                     return false;
                 } else {
                     continue;
@@ -368,8 +368,8 @@ bool CurveConfig::load(QFile &f) {
                 }
                 if (!flag) {
                     qCritical("读取输出量程失败");
-                    curve_statu = CurveConfig::Error;
-                    f.close();
+                    _status = Curve::Error;
+                    csv.close();
                     return false;
                 } else {
                     continue;
@@ -377,37 +377,37 @@ bool CurveConfig::load(QFile &f) {
             }
         }
         if (cell.check()) {
-            config.append(cell);
+            _config.append(cell);
         } else {
             qCritical("曲线配置有问题");
-            curve_statu = CurveConfig::Error;
-            f.close();
+            _status = Curve::Error;
+            csv.close();
             return false;
         }
     }
-    f.close();
-    curve_statu = CurveConfig::Ok;
+    csv.close();
+    _status = Curve::Ok;
     return true;
 }
 
-CurveConfig::Status CurveConfig::statu() {
-    return curve_statu;
+Curve::Status Curve::status() const {
+    return _status;
 }
 
-void CurveConfig::str(QStringList &list) {
-    list.append(config_header.join(QChar(',')));
-    for (auto &cell : config) {
+void Curve::str(QStringList &list) {
+    list.append(_header.join(QChar(',')));
+    for (auto &cell : _config) {
         list.append(cell.str());
     }
 }
 
-const CurveConfig::Cell &CurveConfig::operator[](unsigned int index) {
-    return config.at(index);
+const Curve::Cell &Curve::operator[](unsigned int index) {
+    return _config.at(index);
 }
 
-bool CurveConfig::transform(unsigned long id, unsigned char *data,
+bool Curve::transform(unsigned long id, unsigned char *data,
                             double &result, unsigned short &index) {
-    for (const auto &iter : config) {
+    for (const auto &iter : _config) {
         bool flag = iter.can_id == id &&
                     (!iter.zero_flag || data[0] == iter.zero_byte);
         if (flag) {
@@ -442,9 +442,9 @@ bool CurveConfig::transform(unsigned long id, unsigned char *data,
     }
 }
 
-void CurveConfig::names(QStringList &list) {
+void Curve::names(QStringList &list) {
     list.clear();
-    for (const auto &iter : config) {
+    for (const auto &iter : _config) {
         list.append(iter.name);
     }
 }

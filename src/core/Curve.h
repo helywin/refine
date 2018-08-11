@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/6/29.
 //
 
-#ifndef CORE_CURVECONFIG_H
-#define CORE_CURVECONFIG_H
+#ifndef CORE_CURVE_H
+#define CORE_CURVE_H
 
 #include <QtCore/QString>
 #include <QtCore/QMap>
@@ -13,7 +13,7 @@
 
 class Transform;
 
-class CurveConfig {
+class Curve {
 public:
 
     class Cell;
@@ -23,15 +23,15 @@ public:
     };
     friend class Transform;
 private:
-    QStringList config_header;
+    QStringList _header;
 
-    QVector<Cell> config;
+    QVector<Cell> _config;
 
-    Status curve_statu;
+    Status _status;
 public:
-    CurveConfig();
+    Curve();
 
-    bool load(QFile &file);
+    bool loadCsv(QFile &csv);
 
     void str(QStringList &list);
 
@@ -40,14 +40,14 @@ public:
     bool transform(unsigned long id, unsigned char *data,
                    double &result, unsigned short &index);
 
-    Status statu();
+    Status status() const;
 
     void names(QStringList &list);
 
-    inline int size() const { return config.size(); }
+    inline int size() const { return _config.size(); }
 };
 
-class CurveConfig::Cell {
+class Curve::Cell {
 public:
     enum Type {
         Physical, Logical
@@ -58,8 +58,8 @@ public:
     };
 public:
     unsigned short index;
+    bool display;
     QString name;
-    QString remark;
     Type type;
     QString unit;
     unsigned short width;
@@ -77,6 +77,7 @@ public:
     long range_in[2];
     long range_out[2];
     QMap<unsigned short, QString> logic;
+    QString remark;
 
     Cell() = default;
 
@@ -89,4 +90,4 @@ public:
     QString str();
 };
 
-#endif //CORE_CURVECONFIG_H
+#endif //CORE_CURVE_H

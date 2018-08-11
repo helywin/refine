@@ -6,7 +6,7 @@
 #include "Log.h"
 #include "Transform.h"
 
-Sublime::Sublime(CanBuffer &buffer, Kebab &kebab, Transform &transform) :
+Sublime::Sublime(Buffer &buffer, Kebab &kebab, Transform &transform) :
         buffer(buffer), kebab(kebab), transform(transform) {
     omp_init_lock(&lock);
 }

@@ -3,7 +3,7 @@
 //
 
 
-#include "CurveConfig.h"
+#include "Curve.h"
 #include "Log.h"
 
 int main() {
@@ -11,7 +11,7 @@ int main() {
     Log::setPath(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
     qInfo("==============启动==============");
     QFile f("cfg.txt");
-    CurveConfig curve;
+    Curve curve;
     if (curve.load(f)) {
         QStringList list;
         curve.str(list);

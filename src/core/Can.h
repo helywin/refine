@@ -8,7 +8,7 @@
 #include <QtCore/QVector>
 #include <QtCore/QString>
 #include <QtCore/QTextStream>
-#include "CanBuffer.h"
+#include "Buffer.h"
 
 
 class Can {
@@ -57,9 +57,9 @@ public:
 
     bool reset();
 
-    bool receiveFrame(CanBuffer::Cell *receive_buffer, ErrorInfo &error);
+    bool receiveFrame(Buffer::Cell *receive_buffer, ErrorInfo &error);
 
-    bool sendFrame(CanBuffer::Cell *send_buffer);
+    bool sendFrame(Buffer::Cell *send_buffer);
 
     bool close();
 

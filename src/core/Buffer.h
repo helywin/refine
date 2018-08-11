@@ -13,7 +13,7 @@
  * @brief 接收CAN帧的数据结构
  * 循环队列
  */
-class CanBuffer {
+class Buffer {
 public:
     class Cell;
 
@@ -29,11 +29,11 @@ private:
     Cell *tail_point;
 
 public:
-    CanBuffer() = delete;
+    Buffer() = delete;
 
-    CanBuffer(unsigned int length, unsigned int size);
+    Buffer(unsigned int length, unsigned int size);
 
-    ~CanBuffer();
+    ~Buffer();
 //    void resize(unsigned int length, unsigned int _size);
 
     Cell *out();
@@ -55,8 +55,8 @@ private:
     void dec();
 };
 
-class CanBuffer::Cell {
-    friend CanBuffer;
+class Buffer::Cell {
+    friend Buffer;
 public:
     //! \brief 帧缓冲区
     PVCI_CAN_OBJ _buffer;
@@ -100,7 +100,7 @@ public:
 
     inline unsigned int size() const { return _size; }
 
-    inline unsigned int delay() const { return _delay; }
+//    inline int delay() const { return _delay; }
 
 };
 

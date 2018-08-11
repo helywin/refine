@@ -8,18 +8,18 @@
 #include <QtCore/QThread>
 #include "Can.h"
 #include "Abstract.h"
-#include "CurveConfig.h"
+#include "Curve.h"
 
 class Send : QThread{
 Q_OBJECT
 private:
     Tribe &tribe;
     Can &can;
-    CurveConfig &config;
+    Curve &config;
 
 public:
     Send() = delete;
-    explicit Send(Tribe &Tribe, Can &can, CurveConfig &config);
+    explicit Send(Tribe &Tribe, Can &can, Curve &config);
 
 private:
     void run() override;

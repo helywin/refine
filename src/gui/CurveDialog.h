@@ -12,7 +12,7 @@
 #include "CurveTable.h"
 #include "TableTips.h"
 
-class Curve : public QDialog {
+class CurveDialog : public QDialog {
 Q_OBJECT
 private:
     QVBoxLayout *layout;
@@ -37,9 +37,9 @@ private:
 
     CurveTable *table;
 public:
-    explicit Curve(QWidget *parent);
+    explicit CurveDialog(QWidget *parent);
 
-    ~Curve() final = default;
+    ~CurveDialog() final = default;
 
 protected:
     void setupUi();

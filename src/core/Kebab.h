@@ -11,7 +11,7 @@
 
 class Kebab {
 public:
-    typedef QMap <unsigned short, float> Group;
+    typedef QMap <unsigned short, double> Group;
 
     class Cell;
 
@@ -48,7 +48,7 @@ public:
     unsigned int size;
 
 private:
-    float cell[KEBAB_CELL_LENGTH];
+    double cell[KEBAB_CELL_LENGTH];
 
     unsigned int head_index;
 
@@ -57,11 +57,11 @@ private:
 public:
     Cell();
 
-    float &operator[](unsigned int index);
+    double &operator[](unsigned int index);
 
-    float &head();
+    double &head();
 
-    float &tail();
+    double &tail();
 
     void inc();
 

@@ -2,12 +2,12 @@
 // Created by jiang.wenqiang on 2018/6/29.
 //
 
-#include "CanBuffer.h"
+#include "Buffer.h"
 #include "Log.h"
 
 //Cell::Cell() = default {}
 
-void CanBuffer::Cell::init(unsigned long size, int delay) {
+void Buffer::Cell::init(unsigned long size, int delay) {
     this->_size = size;
     this->_delay = delay;
     this->_index = 0;
@@ -15,11 +15,11 @@ void CanBuffer::Cell::init(unsigned long size, int delay) {
     _buffer = new VCI_CAN_OBJ[size];
 }
 
-CanBuffer::Cell::~Cell() {
+Buffer::Cell::~Cell() {
     delete[] _buffer;
 }
 
-PVCI_CAN_OBJ CanBuffer::Cell::operator[](unsigned int index) {
+PVCI_CAN_OBJ Buffer::Cell::operator[](unsigned int index) {
     if (index < _size) {
         return _buffer + index;
     } else {
@@ -27,7 +27,7 @@ PVCI_CAN_OBJ CanBuffer::Cell::operator[](unsigned int index) {
     }
 }
 
-void CanBuffer::Cell::str(QStringList &list) {
+void Buffer::Cell::str(QStringList &list) {
     list.clear();
     for (unsigned int i = 0; i < _length; ++i) {
         QString str;
@@ -47,11 +47,11 @@ void CanBuffer::Cell::str(QStringList &list) {
     }
 }
 
-QString CanBuffer::Cell::header(){
+QString Buffer::Cell::header(){
     return QString("  地 址  \t  时 间  \t长度\t   数 据   ");
 }
 
-CanBuffer::CanBuffer(unsigned int length, unsigned int size) :
+Buffer::Buffer(unsigned int length, unsigned int size) :
         length(length), index(0) {
     buffer_list = new Cell[length];
     for (unsigned int i = 0; i < length; ++i) {
@@ -61,11 +61,11 @@ CanBuffer::CanBuffer(unsigned int length, unsigned int size) :
     tail_point = buffer_list;
 }
 
-CanBuffer::~CanBuffer() {
+Buffer::~Buffer() {
     delete[] buffer_list;
 }
 
-void CanBuffer::inc() {
+void Buffer::inc() {
     head_point->_index = this->index;
     if (head_point == buffer_list + length - 1) {
         head_point = buffer_list;
@@ -74,7 +74,7 @@ void CanBuffer::inc() {
     }
 }
 
-void CanBuffer::dec() {
+void Buffer::dec() {
     if (tail_point == buffer_list + length - 1) {
         tail_point = buffer_list;
     } else {
@@ -82,7 +82,7 @@ void CanBuffer::dec() {
     }
 }
 
-CanBuffer::Cell *CanBuffer::out() {
+Buffer::Cell *Buffer::out() {
     if (empty()) {
         return nullptr;
     } else {
@@ -93,7 +93,7 @@ CanBuffer::Cell *CanBuffer::out() {
     }
 }
 
-CanBuffer::Cell *CanBuffer::push() {
+Buffer::Cell *Buffer::push() {
     if (full()) {
         return nullptr;
     } else {
@@ -104,19 +104,19 @@ CanBuffer::Cell *CanBuffer::push() {
     }
 }
 
-bool CanBuffer::empty() {
+bool Buffer::empty() {
     return head_point == tail_point;
 }
 
-bool CanBuffer::full() {
+bool Buffer::full() {
     return head_point - tail_point == length - 1 ||
            head_point - tail_point == -1;
 }
 
-CanBuffer::Cell *CanBuffer::head() {
+Buffer::Cell *Buffer::head() {
     return head_point;
 }
 
-CanBuffer::Cell *CanBuffer::tail() {
+Buffer::Cell *Buffer::tail() {
     return tail_point;
 }

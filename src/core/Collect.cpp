@@ -5,7 +5,7 @@
 #include "Collect.h"
 #include "Log.h"
 
-Collect::Collect(Can &can, CanBuffer &buffer,
+Collect::Collect(Can &can, Buffer &buffer,
                  int minute) :
         can(can), buffer(buffer), minute(minute), pause_flag(false),
         stop_flag(false), reconnect(0), fail_connect(0) {}
@@ -59,7 +59,7 @@ void Collect::run() {
                     bool flag = can.receiveFrame(buffer.push(), error);
                     if (flag) {
                         QStringList list;
-                        qDebug() << CanBuffer::Cell::header();
+                        qDebug() << Buffer::Cell::header();
 //                        (_buffer.head() - 1)->str(list);
 //                        for (auto &iter : list) {
 //                            qDebug() << iter;

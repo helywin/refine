@@ -34,7 +34,7 @@
 #define    ERR_CAN_PASSIVE             0x0004    //CAN控制器消极错误
 #define    ERR_CAN_LOSE                0x0008    //CAN控制器仲裁丢失
 #define    ERR_CAN_BUSERR              0x0010    //CAN控制器总线错误
-#define ERR_CAN_BUSOFF                 0x0020    //总线关闭错误
+#define    ERR_CAN_BUSOFF              0x0020    //总线关闭错误
 //通用错误码
 #define    ERR_DEVICEOPENED            0x0100    //设备已经打开
 #define    ERR_DEVICEOPEN              0x0200    //打开设备错误
@@ -42,7 +42,7 @@
 #define    ERR_BUFFEROVERFLOW          0x0800    //缓冲区溢出
 #define    ERR_DEVICENOTEXIST          0x1000    //此设备不存在
 #define    ERR_LOADKERNELDLL           0x2000    //装载动态库失败
-#define ERR_CMDFAILED                  0x4000    //执行命令失败错误码
+#define    ERR_CMDFAILED               0x4000    //执行命令失败错误码
 #define    ERR_BUFFERCREATE            0x8000    //内存不足
 
 

@@ -92,9 +92,9 @@ bool Can::get_statu(CanRegStatus &status) {
         return false;
     }
     VCI_CAN_STATUS status_st;
-    unsigned long flag = VCI_ReadCANStatus(config.device_type,
-                                           config.device_index,
-                                           config.device_channel,
+    unsigned long flag = VCI_ReadCANStatus(_config.device_type,
+                                           _config.device_index,
+                                           _config.device_channel,
                                            &status_st);
     status = status_st;
     if (flag) {
@@ -201,7 +201,7 @@ bool Can::reset() {
     return flag == 1;
 }
 
-bool Can::sendFrame(CanBuffer::Cell *send_buffer) {
+bool Can::sendFrame(Buffer::Cell *send_buffer) {
 //    if (can_statu != Can::started) {
 //        qWarning("不能在此时发送CAN数据帧");
 //        return false;
@@ -224,7 +224,7 @@ bool Can::sendFrame(CanBuffer::Cell *send_buffer) {
     }
 }
 
-bool Can::receiveFrame(CanBuffer::Cell *receive_buffer, Can::ErrorInfo &error) {
+bool Can::receiveFrame(Buffer::Cell *receive_buffer, Can::ErrorInfo &error) {
 //    if (can_statu != Can::started) {
 //        qWarning("不能在此时接收CAN数据帧");
 //        return false;
@@ -233,9 +233,9 @@ bool Can::receiveFrame(CanBuffer::Cell *receive_buffer, Can::ErrorInfo &error) {
     receive_buffer->setLength(VCI_Receive(config.device_type,
                                     config.device_index,
                                     config.device_channel,
-                                          receive_buffer->buffer(),
+                                    receive_buffer->buffer(),
                                     receive_buffer->size(),
-                                    receive_buffer->delay()));
+                                    -1));
     if (receive_buffer->length() < 0xFFFFFFFF) {
         qInfo("接收CAN数据帧成功");
     } else {

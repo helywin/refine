@@ -14,7 +14,7 @@
 #include "About.h"
 #include "Select.h"
 #include "Middle.h"
-#include "Curve.h"
+#include "CurveDialog.h"
 #include "Sketch.h"
 #include "PaintTest.h"
 #include "ModePanel.h"
@@ -71,7 +71,7 @@ private:
 
     ModePanel *mode;
 
-    Curve *curve_dialog;
+    CurveDialog *curve_dialog;
     Select *select_dialog;
     PaintTest *paint_test_dialog;
     About *about_dialog;

@@ -14,10 +14,10 @@ int main() {
     Can::Config config;
     Can can(config);
 //    ErrorInfo error;
-    CanBuffer buffer(20, 200);
+    Buffer buffer(20, 200);
     QFile f(":/res/test/cfg.txt");
-    CurveConfig curve;
-    curve.load(f);
+    Curve curve;
+    curve.loadCsv(f);
     QStringList list;
     curve.str(list);
     for (const auto &iter : list) {
