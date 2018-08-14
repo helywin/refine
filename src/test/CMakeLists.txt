@@ -67,3 +67,8 @@ target_link_libraries(test_json Qt5Core)
 
 add_executable(test_right test_right.cpp my_right.h my_right.cpp)
 target_link_libraries(test_right Qt5Core)
+
+add_executable(test_sqlite test_sqlite.cpp)
+target_link_libraries(test_sqlite Qt5Core Qt5Sql Qt5Widgets)
+
+add_executable(test_username test_username.cpp)
