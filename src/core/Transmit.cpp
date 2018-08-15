@@ -2,30 +2,31 @@
 // Created by jiang.wenqiang on 2018/8/8.
 //
 
-#include "Collect.h"
+#include "Transmit.h"
 
-Collect::Collect(Can *can, Buffer *buffer) :
+Transmit::Transmit(Can *can, Buffer *buffer) :
         _can(can), _buffer(buffer) {
-    Q_ASSERT(can != nullptr && buffer != nullptr);
+    Q_ASSERT(can != nullptr);
+    Q_ASSERT(buffer != nullptr);
 }
 
-void Collect::setCan(Can *can) {
+void Transmit::setCan(Can *can) {
     Q_ASSERT(can != nullptr);
     _can = can;
 }
 
-void Collect::setBuffer(Buffer *buffer) {
+void Transmit::setBuffer(Buffer *buffer) {
     Q_ASSERT(buffer != nullptr);
     _buffer = buffer;
 }
 
-void Collect::run() {
+void Transmit::run() {
     bool flag;
-    if (_buffer->isFull()) {
-        emit result(Result::BufferFull);
+    if (_buffer->isEmpty()) {
+        emit result(Result::BufferEmpty);
         return;
     }
-    flag = _can->collect(*_buffer);
+    flag = _can->deliver(*_buffer);
     if (flag) {
         emit result(Result::Succeeded);
     } else {

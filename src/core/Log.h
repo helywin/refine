@@ -1,41 +1,49 @@
 //
-// Created by jiang.wenqiang on 2018/6/29.
+// Created by jiang.wenqiang on 2018/8/7.
 //
 
-#ifndef CORE_LOG_H
-#define CORE_LOG_H
+#ifndef REFINE_LOG_H
+#define REFINE_LOG_H
 
 #include <QtCore/QDebug>
 #include <QtCore/QDateTime>
 
-class LogCell {
-public:
-    LogCell(QtMsgType type, const QString &msg);
-
-    LogCell(const LogCell &cell) = default;
-
-    LogCell &operator=(const LogCell &cell) = default;
-
-    LogCell();
-
-    QtMsgType type;
-    QString msg;
-    QDateTime time;
-
-    QString str();
-};
-
 class Log {
+private:
+    class Cell;
+
+private:
+    QVector<Cell> _log;
+    QString _path;
+    QFile _file;
 public:
+    explicit Log(const QString &path);
 
-    static QVector<LogCell> log;
-    static QString path;
+    ~Log();
 
-    static void handler(QtMsgType type, const QMessageLogContext &ctxt,
-                        const QString &msg);
+    void handler(QtMsgType type, const QMessageLogContext &context,
+                 const QString &msg);
+};
 
-    static void setPath(const QString &path);
+class Log::Cell {
+public:
+    Cell();
+
+    Cell(QtMsgType type, const QString &&msg);
+
+    Cell(QtMsgType type, const QString &msg);
+
+    Cell(const Cell &cell) = default;
+
+    Cell &operator=(const Cell &cell) = default;
+
+    QString str() const;
+
+private:
+    QtMsgType _type;
+    QString _msg;
+    QDateTime _time;
 };
 
 
-#endif //CORE_LOG_H
+#endif //REFINE_LOG_H
