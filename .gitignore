@@ -12,8 +12,11 @@ Desktop.ini
 # 编译目录
 build
 debug
+#release #release加上dll后还挺大的，不过一般dll都不动
 # svn文件
 .svn
 doxygen
 # 测试数据
 data
+# clion文件
+.idea

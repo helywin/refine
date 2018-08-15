@@ -13,7 +13,9 @@ public:
     QString str;
 public:
     explicit Right(QString &&str);
+
     explicit Right(Right &&other);
+
     ~Right();
 };
 
@@ -22,7 +24,9 @@ public:
     QString str;
 public:
     explicit Left(const QString &str);
+
     Left(const Left &other);
+
     ~Left();
 };
 

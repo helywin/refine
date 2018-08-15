@@ -16,14 +16,16 @@ public:
         Fail
     };
 private:
-    Kebab &raft;
+    Kebab &kebab;
 
     QFile &file;
 
 public:
     Keep() = delete;
 
-    Keep(Kebab &raft, QFile &file);
+    Keep(Kebab &kebab, QFile &file);
+
+    ~Keep() final;
 
 protected:
     void run() Q_DECL_OVERRIDE;
@@ -32,6 +34,7 @@ public slots:
 //    void start();
 
 signals:
+
     void fail(KeepFail code);
 };
 

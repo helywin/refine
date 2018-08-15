@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/res" lang="CN">
+        <!--UI资源文件夹-->
+        <file>ui/logo.png</file>
+        <!--测试用文件夹-->
+        <file>test/cfg.txt</file>
+    </qresource>
+</RCC>

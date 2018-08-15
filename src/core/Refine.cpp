@@ -4,11 +4,10 @@
 
 #include "Refine.h"
 #include "Log.h"
-#include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_real.h>
 #include <gsl/gsl_fft_halfcomplex.h>
 
-void Refine::smoothing(const TribeCell &in, TribeCell &out,
+void Refine::smoothing(const Tribe::Cell &in, Tribe::Cell &out,
                        unsigned int point) {
     const unsigned int half = point / 2;
     double sum = 0;
@@ -21,7 +20,7 @@ void Refine::smoothing(const TribeCell &in, TribeCell &out,
         if (i < half || i > in.size() - half - 1) {
             out[i] = in[i];
         } else if (i == half) {
-            for (int j = 0; j < point; ++ j) {
+            for (int j = 0; j < point; ++j) {
                 sum += in[i];
             }
             sum /= point;
@@ -33,7 +32,7 @@ void Refine::smoothing(const TribeCell &in, TribeCell &out,
     }
 }
 
-void Refine::derivation(const TribeCell &in, TribeCell &out) {
+void Refine::derivation(const Tribe::Cell &in, Tribe::Cell &out) {
     Q_ASSERT(in.size() > 1);
     if (out.size() != in.size()) {
         out.resize(in.size());
@@ -44,12 +43,12 @@ void Refine::derivation(const TribeCell &in, TribeCell &out) {
     }
 }
 
-void Refine::filter(const TribeCell &in, TribeCell &out,
+void Refine::filter(const Tribe::Cell &in, Tribe::Cell &out,
                     double s_freq, double l_freq,
                     unsigned int h_freq, bool band_pass) {
-    const auto size = (size_t)in.size();
-    unsigned int index_low = freq_to_index(s_freq, l_freq, size);
-    unsigned int index_high = freq_to_index(s_freq, h_freq, size);
+    const auto size = (size_t) in.size();
+    unsigned int index_low = freqToIndex(s_freq, l_freq, size);
+    unsigned int index_high = freqToIndex(s_freq, h_freq, size);
     if (out.size() != in.size()) {
         out.resize(size);
     }
@@ -82,21 +81,21 @@ void Refine::filter(const TribeCell &in, TribeCell &out,
     //完成时域变换
 }
 
-unsigned int Refine::freq_to_index(double s_freq, double freq,
-                                     unsigned int point) {
-    auto result = (unsigned int)(freq/s_freq*point*2);
-    return result > point? point : result;
+unsigned int Refine::freqToIndex(double s_freq, double freq,
+                                 unsigned int point) {
+    auto result = (unsigned int) (freq / s_freq * point * 2);
+    return result > point ? point : result;
 }
 
-double Refine::average(const TribeCell &in, Range &range) {
+double Refine::average(const Tribe::Cell &in, Range &range) {
     double sum = 0;
     for (int i = range.begin(); i < range.end(); ++i) {
         sum += in[i];
     }
-    return sum/range.len();
+    return sum / range.len();
 }
 
-double Refine::rms(const TribeCell &in, Range &range) {
+double Refine::rms(const Tribe::Cell &in, Range &range) {
     double sum = 0;
     for (int i = range.begin(); i < range.end(); ++i) {
         sum += in[i] * in[i];
@@ -105,13 +104,10 @@ double Refine::rms(const TribeCell &in, Range &range) {
     return sqrt(sum);
 }
 
-double Refine::vdv(const TribeCell &in, Range &range) {
+double Refine::vdv(const Tribe::Cell &in, Range &range) {
     double sum = 0;
-    double times = 0;
     for (int i = range.begin(); i < range.end(); ++i) {
-        times =  in[i] * in[i];
-        times *= times;
-        sum += times;
+        sum += in[i] * in[i] * in[i] * in[i];
     }
     return sqrt(sqrt(sum));
 }

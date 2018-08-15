@@ -9,7 +9,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QTime>
 #include "Can.h"
-#include "CanBuffer.h"
+#include "Buffer.h"
 
 
 class Collect : public QThread {
@@ -23,7 +23,7 @@ public:
 private:
     Can &can;
 
-    CanBuffer &buffer;
+    Buffer &buffer;
 
     int minute;
 
@@ -31,7 +31,7 @@ private:
 
     bool stop_flag;
 
-    bool reconnect_flag;
+//    bool reconnect_flag;
 
     unsigned int reconnect;
 
@@ -40,7 +40,7 @@ private:
 public:
     Collect() = delete;
 
-    Collect(Can &can, CanBuffer &buffer, int minute = 5);
+    Collect(Can &can, Buffer &buffer, int minute = 5);
 
 protected:
     void run() Q_DECL_OVERRIDE;
@@ -53,6 +53,7 @@ public:
     void stop();
 
 signals:
+
     void get();
 
     void fail(Fail code);

@@ -1,7 +1,7 @@
 //
 // Created by jiang.wenqiang on 2018/7/4.
 //
-#include "../src/Log.h"
+#include "Log.h"
 
 class A {
 public:
@@ -17,7 +17,7 @@ public:
 
 int main() {
     qInstallMessageHandler(Log::handler);
-    Log::set_path(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
+    Log::setPath(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
     qInfo("===============启动构造函数==============");
 
     A a = A();

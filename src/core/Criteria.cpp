@@ -5,19 +5,18 @@
 
 #include "Criteria.h"
 #include "Constant.h"
-#include "omp.h"
 #include "cmath"
 
-Criteria::Criteria(Criteria::ModeType type, Tribe &tribe, Rate &rate):
+Criteria::Criteria(Criteria::ModeType type, Tribe &tribe, Rate &rate) :
         mode_type(type), tribe(tribe), rate(rate) {}
 
-bool Criteria::check_data(Tribe &tribe) {
+bool Criteria::checkData(Tribe &tribe) {
     return tribe.exist("发动机转速_SMO") &&
            tribe.exist("当前档位") &&
            tribe.exist("车速");
 }
 
-void Criteria::gear_ratio(Tribe &tribe) {
+void Criteria::gearRatio(Tribe &tribe) {
     tribe.add("传动比", tribe.length());
 #pragma omp parallel for
     for (int i = 0; i < tribe.length(); ++i) {
@@ -26,12 +25,12 @@ void Criteria::gear_ratio(Tribe &tribe) {
     }
 }
 
-void Criteria::converter_slip(Tribe &tribe) {
+void Criteria::converterSlip(Tribe &tribe) {
     tribe.add("转换损失", tribe.length());
 #pragma omp parallel for
     for (int i = 0; i < tribe.length(); ++i) {
         double current_ratio = 0;
-        switch ((int)tribe["当前档位"][i]) {
+        switch ((int) tribe["当前档位"][i]) {
             case Const::Shift::one :
                 current_ratio = Const::Ratio::one;
                 break;
@@ -43,7 +42,7 @@ void Criteria::converter_slip(Tribe &tribe) {
     }
 }
 
-void Criteria::synchron_speed(Tribe &tribe) {
+void Criteria::synchronSpeed(Tribe &tribe) {
     tribe.add("发动机同步速度", tribe.length());
 #pragma omp parallel for
     for (int i = 0; i < tribe.length(); ++i) {
@@ -52,7 +51,7 @@ void Criteria::synchron_speed(Tribe &tribe) {
     }
 }
 
-void Criteria::road_gradient(Tribe &tribe) {
+void Criteria::roadGradient(Tribe &tribe) {
     tribe.add("道路坡度", tribe.length());
 #pragma omp parallel for
     for (int i = 0; i < tribe.length(); ++i) {
@@ -61,9 +60,9 @@ void Criteria::road_gradient(Tribe &tribe) {
     }
 }
 
-void Criteria::wheel_slip(Tribe &tribe) {
+void Criteria::wheelSlip(Tribe &tribe) {
     tribe.add("打滑", tribe.length());
-#pragma omp parallel for
+//#pragma omp parallel for
     //todo
 }
 
@@ -79,10 +78,10 @@ void Criteria::bemp(Tribe &tribe) {
     //todo 貌似可以采集到
 }
 
-void Criteria::torque_expected(Tribe &tribe) {
+void Criteria::torqueExpected(Tribe &tribe) {
     //todo 驾驶员请求扭矩吗
 }
 
-void Criteria::acceleration_expected(Tribe &tribe) {
+void Criteria::accelerationExpected(Tribe &tribe) {
     //todo 根据期望扭矩求
 }

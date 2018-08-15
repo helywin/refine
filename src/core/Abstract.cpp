@@ -10,7 +10,7 @@
 Abstract::Abstract(Tribe &tribe) :
         tribe(tribe) {}
 
-bool Abstract::read_csv(QFile &file) {
+bool Abstract::readCsv(QFile &file) {
     if (file.isOpen()) {
         file.close();
     }
@@ -53,7 +53,7 @@ bool Abstract::read_csv(QFile &file) {
     qDebug("读取完成");
 }
 
-bool Abstract::save_csv(QFile &file) {
+bool Abstract::saveCsv(QFile &file) {
     if (file.isOpen()) {
         file.close();
     }

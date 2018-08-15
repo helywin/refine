@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
-    <generated />
+    <generated>
+      <config projectName="refine" targetName="test_collect_autogen" />
+      <config projectName="refine" targetName="SendMain_autogen" />
+      <config projectName="refine" targetName="test_refine_autogen" />
+      <config projectName="refine" targetName="SendMain" />
+      <config projectName="refine" targetName="test_collect" />
+      <config projectName="refine" targetName="test_window" />
+      <config projectName="refine" targetName="test_refine" />
+      <config projectName="refine" targetName="test_window_autogen" />
+    </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
@@ -11,42 +20,183 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8df582f-ff05-4a08-93ac-c38a1e4137e7" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/gui/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/test_sql.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/匹配软件设计说明书.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/匹配软件设计说明书.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/refine.pro" beforeDir="false" afterPath="$PROJECT_DIR$/refine.pro" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Can.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Can.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Can.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Can.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/CanBuffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Buffer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/CanBuffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Buffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Collect.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Collect.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Collect.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Collect.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/ControlCan.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ControlCan.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/CurveConfig.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Curve.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/CurveConfig.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Curve.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Kebab.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Kebab.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Kebab.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Kebab.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Refine.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Refine.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Send.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Send.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Send.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Send.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Sublime.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Sublime.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Sublime.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Sublime.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Transform.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Transform.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Transform.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Transform.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Tribe.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Tribe.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/Curve.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/CurveDialog.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/Curve.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/CurveDialog.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/Window.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/Window.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/Window.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/Window.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/test_collect.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/test_collect.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/test_config.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/test_config.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/build/" />
     <ignored path="$PROJECT_DIR$/debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FUSProjectUsageTrigger">
+    <session id="204827935">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="4" />
+          <entry key="project.open.time.0" value="1" />
+          <entry key="project.open.time.11" value="1" />
+          <entry key="project.open.time.12" value="1" />
+          <entry key="project.open.time.49" value="1" />
+          <entry key="project.open.time.58" value="1" />
+          <entry key="project.open.time.67" value="1" />
+          <entry key="project.opened" value="6" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="QSql" value="1" />
+          <entry key="cpp" value="11" />
+          <entry key="h" value="11" />
+          <entry key="pro" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="ObjectiveC" value="23" />
+          <entry key="PLAIN_TEXT" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="cpp" value="189" />
+          <entry key="h" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="ObjectiveC" value="190" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/Revolve.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="8" selection-start-line="8" selection-end-line="8" />
+            <state relative-caret-position="703">
+              <caret line="37" column="12" selection-start-line="37" selection-start-column="12" selection-end-line="37" selection-end-column="12" />
+              <folding>
+                <element signature="e#96#121#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/gui/CMakeLists.txt">
-          <provider selected="true" editor-type-id="text-editor" />
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/Revolve.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1197">
+              <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
+              <folding>
+                <element signature="e#49#69#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
-      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/test/CMakeLists.txt">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/gui/Window.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="76">
-              <caret line="4" column="40" lean-forward="true" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
+            <state relative-caret-position="3705">
+              <caret line="195" column="8" selection-start-line="195" selection-start-column="8" selection-end-line="195" selection-end-column="8" />
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/Transform.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="912">
+              <caret line="48" selection-start-line="48" selection-end-line="48" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/Kebab.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="17" column="8" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/Transform.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="380">
+              <caret line="20" column="49" selection-start-line="20" selection-start-column="49" selection-end-line="20" selection-end-column="49" />
+              <folding>
+                <element signature="e#105#124#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/test_sql.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="380">
+              <caret line="20" column="1" selection-start-line="20" selection-start-column="1" selection-end-line="20" selection-end-column="1" />
+              <folding>
+                <element signature="e#49#78#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/refine.pro">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-171" />
           </provider>
         </entry>
       </file>
@@ -55,6 +205,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="UML Class" />
         <option value="CMakeLists.txt" />
       </list>
     </option>
@@ -62,19 +213,94 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>src</find>
+      <find>&quot;(.*)&quot;</find>
+      <find>&quot;(.*?)&quot;</find>
+      <find>whole_hbox_layout</find>
+      <find>mid_widget</find>
+      <find>mid_vbox_layout</find>
+      <find>splitter</find>
+      <find>qspli</find>
+      <find>mid_content</find>
+      <find>clt-&gt;</find>
+      <find>keep-&gt;</find>
+      <find>线程keep</find>
+      <find>keep</find>
+      <find>qtimer</find>
+      <find>str</find>
+      <find>header</find>
+      <find>帧数</find>
+      <find>switch</find>
+      <find>get_val</find>
+      <find>SRC</find>
+      <find>qdebug</find>
+      <find>float</find>
     </findStrings>
     <replaceStrings>
       <replace>core</replace>
+      <replace>QString(&quot;$1&quot;)</replace>
+      <replace>keep.</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/src/core/Refine.h" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/src/gui/TableTips.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/Select.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Criteria.cpp" />
+        <option value="$PROJECT_DIR$/src/test/test_gl.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/Select.h" />
+        <option value="$PROJECT_DIR$/src/gui/Sketch.h" />
+        <option value="$PROJECT_DIR$/src/gui/Sketch.cpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/src/tool/SendMain.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/PaintTest.cpp" />
+        <option value="$PROJECT_DIR$/src/tool/SendDialog.cpp" />
+        <option value="$PROJECT_DIR$/src/tool/SendDialog.h" />
+        <option value="$PROJECT_DIR$/src/tool/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/src/gui/CollectPanel.h" />
+        <option value="$PROJECT_DIR$/src/gui/CollectPanel.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/Window.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/Window.h" />
+        <option value="$PROJECT_DIR$/src/gui/CurveTable.h" />
+        <option value="$PROJECT_DIR$/src/gui/Curve.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/CurveTable.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/About.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/ModePanel.h" />
+        <option value="$PROJECT_DIR$/src/gui/ModePanel.cpp" />
+        <option value="$PROJECT_DIR$/refine.pro" />
+        <option value="$PROJECT_DIR$/src/core/Send.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Send.h" />
+        <option value="$PROJECT_DIR$/src/core/Version.h" />
+        <option value="$PROJECT_DIR$/src/core/CurveConfig.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Transform.h" />
+        <option value="$PROJECT_DIR$/src/core/Sublime.h" />
+        <option value="$PROJECT_DIR$/src/test/test_collect.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Sublime.cpp" />
+        <option value="$PROJECT_DIR$/src/gui/Curve.h" />
+        <option value="$PROJECT_DIR$/src/gui/CurveDialog.h" />
+        <option value="$PROJECT_DIR$/src/core/CurveConfig.h" />
+        <option value="$PROJECT_DIR$/src/core/CanBuffer.h" />
+        <option value="$PROJECT_DIR$/src/core/Curve.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Tribe.h" />
+        <option value="$PROJECT_DIR$/src/core/Transform.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Kebab.h" />
+        <option value="$PROJECT_DIR$/src/core/Kebab.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Curve.h" />
+        <option value="$PROJECT_DIR$/src/core/Refine.cpp" />
+        <option value="$PROJECT_DIR$/src/test/test_nas.cpp" />
+        <option value="$PROJECT_DIR$/src/core/ControlCan.h" />
+        <option value="$PROJECT_DIR$/src/core/Buffer.h" />
+        <option value="$PROJECT_DIR$/src/redev/Buffer.h" />
+        <option value="$PROJECT_DIR$/src/redev/Buffer.cpp" />
         <option value="$PROJECT_DIR$/src/test/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/src/core/Can.cpp" />
+        <option value="$PROJECT_DIR$/src/test/test_sql.cpp" />
       </list>
     </option>
   </component>
@@ -84,11 +310,9 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="NodePackageJsonFileManager">
-    <packageJsonPaths />
-  </component>
+  <component name="OCFindUsagesOptions" text="false" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="width" value="701" />
+    <option name="width" value="683" />
     <option name="height" value="728" />
   </component>
   <component name="ProjectView">
@@ -106,7 +330,18 @@
             <path>
               <item name="refine" type="b2602c69:ProjectViewProjectNode" />
               <item name="refine" type="462c0819:PsiDirectoryNode" />
+              <item name="build" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="refine" type="b2602c69:ProjectViewProjectNode" />
+              <item name="refine" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="refine" type="b2602c69:ProjectViewProjectNode" />
+              <item name="refine" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -116,10 +351,23 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="cfg&#9;FILE&#9;file://D:/jiang.wenqiang/code/refine/proto/configs/cfg.csv&#10;about&#9;FILE&#9;file://D:/jiang.wenqiang/code/refine/src/gui/About.h" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="add_unversioned_files" value="$PROJECT_DIR$/build/src/test/test_window_autogen/TUYZJ7PCOQ/moc_TableTips.cpp" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../redev/refine" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="fileTemplates" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\jiang.wenqiang\code\refine\proto\configs" />
+      <recent name="D:\jiang.wenqiang\code\refine\res\test" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\jiang.wenqiang\code\refine\res" />
+      <recent name="D:\jiang.wenqiang\code\refine\assets" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -133,22 +381,62 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.test_refine">
-    <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all" />
-    <configuration name="test_json" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_json" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="test_json" />
-    <configuration name="test_json_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_json_autogen" CONFIG_NAME="Debug" />
-    <configuration name="test_refine" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_refine" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="test_refine" />
-    <configuration name="test_refine_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_refine_autogen" CONFIG_NAME="Debug" />
-    <configuration name="test_right" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_right" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="test_right" />
-    <configuration name="test_right_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_right_autogen" CONFIG_NAME="Debug" />
+  <component name="RunManager" selected="Application.test_window">
+    <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="SendMain" EXPLICIT_BUILD_TARGET_NAME="all">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SendMain" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="SendMain" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="SendMain">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SendMain_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="SendMain_autogen" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test_collect" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_collect" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="test_collect">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test_collect_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_collect_autogen" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="SendMain">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test_refine" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_refine" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="SendMain">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test_refine_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_refine_autogen" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="SendMain">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test_window" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_window" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="test_window">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test_window_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="test_window_autogen" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="SendMain">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Application.Build All" />
-      <item itemvalue="Application.test_json" />
-      <item itemvalue="Application.test_json_autogen" />
+      <item itemvalue="Application.test_collect" />
+      <item itemvalue="Application.test_collect_autogen" />
       <item itemvalue="Application.test_refine" />
       <item itemvalue="Application.test_refine_autogen" />
-      <item itemvalue="Application.test_right" />
-      <item itemvalue="Application.test_right_autogen" />
+      <item itemvalue="Application.test_window" />
+      <item itemvalue="Application.test_window_autogen" />
+      <item itemvalue="Application.SendMain" />
+      <item itemvalue="Application.SendMain_autogen" />
     </list>
   </component>
   <component name="SvnConfiguration">
@@ -162,57 +450,428 @@
       <option name="presentableId" value="Default" />
       <updated>1531969486099</updated>
       <workItem from="1531969487768" duration="888000" />
+      <workItem from="1532053105787" duration="20307000" />
+      <workItem from="1532304880664" duration="31634000" />
+      <workItem from="1532392959975" duration="10507000" />
+      <workItem from="1532408831248" duration="12084000" />
+      <workItem from="1532658823470" duration="13976000" />
+      <workItem from="1532910181621" duration="5121000" />
+      <workItem from="1532915914508" duration="21884000" />
+      <workItem from="1532996322471" duration="29117000" />
+      <workItem from="1533083220843" duration="2212000" />
+      <workItem from="1533170681107" duration="20080000" />
+      <workItem from="1533259131554" duration="8945000" />
+      <workItem from="1533515129779" duration="62000" />
+      <workItem from="1533515238135" duration="10971000" />
+      <workItem from="1533612384530" duration="5782000" />
+      <workItem from="1533688403800" duration="11392000" />
+      <workItem from="1533773507509" duration="93000" />
+      <workItem from="1533794258843" duration="204000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="888000" />
+    <option name="totallyTimeSpent" value="205259000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="CMake" visible="true" weight="0.32843137" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24281392" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info id="Favorites" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32843137" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49924356" visible="true" weight="0.2782324" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39869282" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32733223" />
+      <window_info anchor="bottom" id="Inspection Results" order="7" weight="0.32843137" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.32569557" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32733223" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50075644" side_tool="true" weight="0.2782324" />
+      <window_info anchor="bottom" x="398" y="135" width="569" height="457" id="Version Control" order="11" weight="0.32569557" />
+      <window_info anchor="bottom" id="CMake" order="12" weight="0.29575163" />
+      <window_info anchor="bottom" x="616" y="348" width="133" height="38" id="Statistic" order="13" weight="0.40849674" />
+      <window_info anchor="bottom" id="Database Changes" order="14" show_stripe_button="false" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.24962178" />
+      <window_info anchor="right" id="PlantUML" order="3" weight="0.32980332" />
+      <window_info anchor="right" x="0" y="0" width="295" height="544" id="Documentation" order="4" side_tool="true" weight="0.32980332" />
+      <window_info anchor="right" id="Database" order="5" weight="0.32980332" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+    <entry file="file://D:/msys32/mingw32/include/QtCore/qlist.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        <state relative-caret-position="-3701">
+          <caret line="233" column="36" lean-forward="true" selection-start-line="233" selection-start-column="36" selection-end-line="233" selection-end-column="36" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/gui/CMakeLists.txt">
+    <entry file="file://D:/msys32/mingw32/include/QtCore/qstringlist.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/msys32/mingw32/include/QtCore/QStringList">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="17" selection-start-column="17" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Version.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="28" column="29" lean-forward="true" selection-start-line="28" selection-start-column="29" selection-end-line="28" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Sublime.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="27" column="8" selection-start-line="27" selection-start-column="8" selection-end-line="27" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Sublime.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="19" column="43" selection-start-line="19" selection-start-column="43" selection-end-line="19" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Tribe.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="20" column="33" lean-forward="true" selection-start-line="20" selection-start-column="33" selection-end-line="20" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Send.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gui/CurveDialog.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="75" column="29" selection-start-line="75" selection-start-column="29" selection-end-line="75" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gui/CurveDialog.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-175">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Kebab.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="13" column="29" lean-forward="true" selection-start-line="13" selection-start-column="29" selection-end-line="13" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/msys32/mingw32/include/poppler/cpp/poppler-global.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="97" column="27" lean-forward="true" selection-start-line="97" selection-start-column="27" selection-end-line="97" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Criteria.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1026" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Abstract.h">
       <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Keep.cpp">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Keep.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://D:/msys32/mingw32/include/gsl/gsl_fft.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-277" />
+      </provider>
+    </entry>
+    <entry file="file://D:/msys32/mingw32/include/gsl/gsl_fft_halfcomplex.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="26" column="18" selection-start-line="26" selection-start-column="18" selection-end-line="26" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/test_collect.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="532">
+          <caret line="28" column="33" selection-start-line="28" selection-start-column="33" selection-end-line="28" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Refine.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2014">
+          <caret line="106" column="45" selection-start-line="106" selection-start-column="45" selection-end-line="106" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/msys32/mingw32/i686-w64-mingw32/include/winnetwk.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/test_nas.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="407">
+          <caret line="31" column="23" selection-start-line="31" selection-start-column="23" selection-end-line="31" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Refine.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/redev/Buffer.h" />
+    <entry file="file://$PROJECT_DIR$/src/redev/Buffer.cpp" />
+    <entry file="file://$PROJECT_DIR$/src/core/Buffer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="388">
+          <caret line="35" column="7" selection-start-line="35" selection-start-column="7" selection-end-line="35" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Buffer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="433">
+          <caret line="46" column="5" selection-start-line="31" selection-start-column="4" selection-end-line="46" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/Makefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="4" column="40" lean-forward="true" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
+        <state relative-caret-position="2223">
+          <caret line="117" column="29" selection-start-line="117" selection-start-column="29" selection-end-line="117" selection-end-column="29" />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Can.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Can.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2128">
+          <caret line="112" column="11" selection-start-line="112" selection-start-column="11" selection-end-line="112" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Curve.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="931">
+          <caret line="49" column="19" selection-start-line="49" selection-start-column="19" selection-end-line="49" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Curve.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="10" column="33" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Log.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1558">
+          <caret line="82" column="23" selection-start-line="82" selection-start-column="23" selection-end-line="82" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Log.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="7" selection-start-line="7" selection-end-line="8" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/ControlCan.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2793">
+          <caret line="147" column="17" selection-start-line="147" selection-start-column="2" selection-end-line="147" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Tribe.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="121">
+          <caret line="12" column="33" selection-start-line="12" selection-start-column="33" selection-end-line="12" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Constant.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-258" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Criteria.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-695" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Collect.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="33" column="27" selection-start-line="33" selection-start-column="27" selection-end-line="33" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Collect.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="27" column="12" selection-start-line="27" selection-start-column="12" selection-end-line="27" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/msys32/mingw32/include/QtSql/qtsqlglobal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-438" />
+      </provider>
+    </entry>
+    <entry file="file://D:/msys32/mingw32/include/QtSql/QSql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="16" lean-forward="true" selection-start-column="16" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Revolve.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="703">
+          <caret line="37" column="12" selection-start-line="37" selection-start-column="12" selection-end-line="37" selection-end-column="12" />
+          <folding>
+            <element signature="e#96#121#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Revolve.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1197">
+          <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
+          <folding>
+            <element signature="e#49#69#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gui/Window.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3705">
+          <caret line="195" column="8" selection-start-line="195" selection-start-column="8" selection-end-line="195" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Transform.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="912">
+          <caret line="48" selection-start-line="48" selection-end-line="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Kebab.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="17" column="8" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Transform.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="20" column="49" selection-start-line="20" selection-start-column="49" selection-end-line="20" selection-end-column="49" />
+          <folding>
+            <element signature="e#105#124#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/test_sql.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="20" column="1" selection-start-line="20" selection-start-column="1" selection-end-line="20" selection-end-column="1" />
+          <folding>
+            <element signature="e#49#78#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/refine.pro">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-171" />
       </provider>
     </entry>
   </component>

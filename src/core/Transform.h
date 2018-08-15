@@ -5,20 +5,20 @@
 #ifndef REFINE_TRANSFORM_H
 #define REFINE_TRANSFORM_H
 
-#include "CanBuffer.h"
-#include "CurveConfig.h"
+#include "Buffer.h"
+#include "Curve.h"
 #include "Kebab.h"
 #include "Tribe.h"
 
 class Transform {
 private:
-    CurveConfig &config;
+    Curve &config;
 public:
-    explicit Transform(CurveConfig &config);
+    explicit Transform(Curve &config);
 
-    Kebab::Group &&canToData(CanBuffer &buffer) const;
+    Kebab::Group &&canToData(Buffer &buffer) const;
 
-    CanBuffer::Cell &&dataToCan(Tribe &tribe) const;
+    Buffer::Cell &&dataToCan(Tribe &tribe) const;
 };
 
 

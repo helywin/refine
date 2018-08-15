@@ -46,6 +46,7 @@ public:
     void set_send(Sender *send);
 
     void test();
+
 public slots:
 
     void send_finish();

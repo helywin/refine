@@ -5,78 +5,78 @@
 #include "Revolve.h"
 #include "Log.h"
 
-Revolve::Revolve() : unconnected_times(0), collect_fail(false) {}
+Revolve::Revolve(Keep &keep, Collect &clt, Sublime &sub) :
+        unconnected_times(0), collect_fail(false),
+        clt(clt), keep(keep), sub(sub){
+    connect(&clt, &Collect::get, this, &Revolve::collectGot,
+            Qt::DirectConnection);
+    connect(&clt, &Collect::fail, this, &Revolve::collectFailed,
+            Qt::DirectConnection);
 
-void Revolve::set(Keep *keep, Collect *clt, Sublime *sub) {
-    connect(clt, &Collect::get, this, &Revolve::collect_got,
+    connect(&sub, &Sublime::result, this, &Revolve::sublimeResult,
             Qt::DirectConnection);
-    connect(clt, &Collect::fail, this, &Revolve::collect_failed,
+    connect(&sub, &Sublime::unload, this, &Revolve::sublimeUnloaded,
             Qt::DirectConnection);
-    this->clt = clt;
 
-    connect(sub, &Sublime::result, this, &Revolve::sublime_result,
+    connect(&keep, &Keep::fail, this, &Revolve::keepFailed,
             Qt::DirectConnection);
-    connect(sub, &Sublime::unload, this, &Revolve::sublime_unloaded,
-            Qt::DirectConnection);
-    this->sub = sub;
-
-    connect(keep, &Keep::fail, this, &Revolve::keep_failed,
-            Qt::DirectConnection);
-    this->keep = keep;
 }
 
-void Revolve::start_sublime() {
-    if (!sub->isRunning()) {
-        sub->start();
+void Revolve::startSublime() {
+    if (!sub.isRunning()) {
+        sub.start();
     }
 }
 
-void Revolve::sublime_result(unsigned int use,
-                               unsigned int total) {
+void Revolve::sublimeResult(unsigned int use,
+                            unsigned int total) {
     qDebug() << "处理结果" << use << "/" << total;
 }
 
-void Revolve::start_keep() {
-    if (!keep->isRunning()) {
-        keep->start();
+void Revolve::startKeep() {
+    if (!keep.isRunning()) {
+        keep.start(QThread::HighestPriority);
     }
 }
 
-void Revolve::keep_failed(Keep::KeepFail code) {
+void Revolve::keepFailed(Keep::KeepFail code) {
 
 }
 
-void Revolve::collect_got() {
-    start_sublime();
+void Revolve::collectGot() {
+    startSublime();
 }
 
-void Revolve::start_collect() {
-    if (!clt->isRunning()) {
-        clt->start();
+void Revolve::startCollect() {
+    if (!clt.isRunning()) {
+        clt.start();
     }
 }
 
 
-void Revolve::collect_failed(Collect::Fail code) {
+void Revolve::collectFailed(Collect::Fail code) {
     collect_fail = true;
     qDebug("发送停止信号");
-    clt->stop();
+    clt.stop();
 }
 
-void Revolve::sublime_unloaded() {
+void Revolve::sublimeUnloaded() {
     qDebug("启动存储数据线程");
-    start_keep();
+    startKeep();
 }
 
 bool Revolve::marvel() {
-    start_collect();
+    startCollect();
     while (true) {
-        if (clt->isFinished() &&
-            sub->isFinished() &&
-            keep->isFinished()){
+        if (clt.isFinished() && sub.isFinished() &&
+            keep.isFinished()) {
+            startKeep();
+            while (keep.isRunning()) {}
             return true;
         } else {
-            if (collect_fail && clt->isFinished()) {
+            if (collect_fail && clt.isFinished()) {
+                startKeep();
+                while (keep.isRunning()) {}
                 return false;
             }
         }

@@ -5,7 +5,7 @@
 #include "Collect.h"
 #include "Log.h"
 
-Collect::Collect(Can &can, CanBuffer &buffer,
+Collect::Collect(Can &can, Buffer &buffer,
                  int minute) :
         can(can), buffer(buffer), minute(minute), pause_flag(false),
         stop_flag(false), reconnect(0), fail_connect(0) {}
@@ -36,17 +36,17 @@ void Collect::run() {
         return;
     }
     can.clear();
-    CanBoardInfo info;
-    CanErrorInfo error;
+    Can::BoardInfo info;
+    Can::ErrorInfo error;
     unsigned int check_cnt = 0;
     while (!stop_flag) {
         msleep(10);
-        if (minute*60*1000 <= time_now.elapsed()){
+        if (minute * 60 * 1000 <= time_now.elapsed()) {
             emit fail(Collect::Time);
             return;
         }
         check_cnt += 1;
-        if(check_cnt == 100 && !can.board_info(info)){
+        if (check_cnt == 100 && !can.boardInfo(info)) {
             emit fail(Collect::Connect);
         } else if (check_cnt == 100) {
             check_cnt = 0;
@@ -56,11 +56,11 @@ void Collect::run() {
             unsigned long cache = can.cache();
             if (cache > 0) {
                 if (!buffer.full()) {
-                    bool flag = can.receive_frame(buffer.push(), error);
+                    bool flag = can.receiveFrame(buffer.push(), error);
                     if (flag) {
                         QStringList list;
-                        qDebug() << CanBufferCell::header();
-//                        (buffer.head() - 1)->str(list);
+                        qDebug() << Buffer::Cell::header();
+//                        (_buffer.head() - 1)->str(list);
 //                        for (auto &iter : list) {
 //                            qDebug() << iter;
 //                        }

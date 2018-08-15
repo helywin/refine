@@ -14,41 +14,40 @@
 class Revolve : public QObject {
 Q_OBJECT
 private:
-    Keep *keep;
+    Keep &keep;
 
-    Collect *clt;
+    Collect &clt;
 
-    Sublime *sub;
+    Sublime &sub;
 
     bool collect_fail;
 
     unsigned int unconnected_times;
 
 public:
+    Revolve() = delete;
 
-    Revolve();
+    Revolve(Keep &keep, Collect &clt, Sublime &sub);
 
-    void set(Keep *keep, Collect *clt, Sublime *sub);
+    inline void startSublime();
 
-    void start_sublime();
+    inline void startKeep();
 
-    void start_keep();
-
-    void start_collect();
+    inline void startCollect();
 
     bool marvel();
 
 public slots:
 
-    void collect_got();
+    void collectGot();
 
-    void collect_failed(Collect::Fail code);
+    void collectFailed(Collect::Fail code);
 
-    void sublime_result(unsigned int use, unsigned int total);
+    void sublimeResult(unsigned int use, unsigned int total);
 
-    void sublime_unloaded();
+    void sublimeUnloaded();
 
-    void keep_failed(Keep::KeepFail code);
+    void keepFailed(Keep::KeepFail code);
 
 };
 

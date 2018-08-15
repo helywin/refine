@@ -2,22 +2,22 @@
 // Created by jiang.wenqiang on 2018/6/29.
 //
 
-#include "../src/Can.h"
-#include "../src/Log.h"
+#include "Can.h"
+#include "Log.h"
 #include <QtCore/QCoreApplication>
 
 int main(int argc, char *argv[]) {
     qInstallMessageHandler(Log::handler);
-    Log::set_path(QString("log.txt"));
+    Log::setPath(QString("log.txt"));
     qInfo("==============启动==============");
-    CanConfig config;
+    Config config;
     Can can = Can(config);
-    CanBoardInfo info = CanBoardInfo();
+    BoardInfo info = BoardInfo();
     can.close();
     can.open();
     can.init();
     can.start();
-    can.board_info(info);
+    can.boardInfo(info);
     QString str;
     qDebug() << info.str();
     can.close();
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     str = "我,是,中,国,人";
     QStringList list = str.split(QChar(','));
     for (const auto &iter : list) {
-        if (iter == "我"){
+        if (iter == "我") {
             qInfo("我");
         }
     }

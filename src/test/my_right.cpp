@@ -5,7 +5,7 @@
 #include "my_right.h"
 
 Right::Right(Right &&other) {
-    qSwap(str,other.str);
+    qSwap(str, other.str);
     other.str = nullptr;
     qDebug() << "Right拷贝构造元素: " << str;
 }
@@ -18,6 +18,6 @@ Right::~Right() {
     qDebug() << "Right析构函数: " << str;
 }
 
-Left::Left(const Left &other) : str(other.str){
+Left::Left(const Left &other) : str(other.str) {
     qDebug() << "Left拷贝构造: " << str;
 }

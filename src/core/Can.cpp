@@ -4,8 +4,9 @@
 
 #include "Can.h"
 #include "Log.h"
+#include <QtCore/QTextStream>
 
-Can::Can(CanConfig &config) : config(config) {
+Can::Can(Config &config) : config(config) {
     can_statu = Can::closed;
 }
 
@@ -32,7 +33,7 @@ bool Can::init() {
 //        return false;
 //    }
     VCI_INIT_CONFIG config_st;
-    config.to_struct(config_st);
+    config.toStruct(config_st);
     unsigned long flag = VCI_InitCAN(config.device_type,
                                      config.device_index,
                                      config.device_channel,
@@ -46,7 +47,7 @@ bool Can::init() {
     return flag == 1;
 }
 
-bool Can::board_info(CanBoardInfo &info) {
+bool Can::boardInfo(BoardInfo &info) {
 //    if (can_statu != Can::inited && can_statu != Can::started) {
 //        qWarning("不能在此时获取CAN盒信息");
 //        return false;
@@ -65,7 +66,7 @@ bool Can::board_info(CanBoardInfo &info) {
     return flag == 1;
 }
 
-bool Can::error_info(CanErrorInfo &error) {
+bool Can::errorInfo(ErrorInfo &error) {
 //    if (can_statu != Can::inited && can_statu != Can::started) {
 //        qWarning("不能在此时获取CAN盒错误信息");
 //        return false;
@@ -91,9 +92,9 @@ bool Can::get_statu(CanRegStatus &status) {
         return false;
     }
     VCI_CAN_STATUS status_st;
-    unsigned long flag = VCI_ReadCANStatus(config.device_type,
-                                           config.device_index,
-                                           config.device_channel,
+    unsigned long flag = VCI_ReadCANStatus(_config.device_type,
+                                           _config.device_index,
+                                           _config.device_channel,
                                            &status_st);
     status = status_st;
     if (flag) {
@@ -135,7 +136,7 @@ unsigned long Can::cache() {
     return cache;
 }
 
-bool Can::get_reference(unsigned char &val) {
+bool Can::getReference(unsigned char &val) {
 //    if (can_statu != Can::inited && can_statu != Can::started) {
 //        qWarning("不能在此时获取CAN盒寄存器");
 //        return false;
@@ -162,7 +163,7 @@ bool Can::get_reference(unsigned char &val) {
     return flag == 1;
 }
 
-bool Can::set_reference() {
+bool Can::setReference() {
     return false;
 }
 
@@ -200,23 +201,22 @@ bool Can::reset() {
     return flag == 1;
 }
 
-bool Can::send_frame(CanBufferCell *send_buffer) {
+bool Can::sendFrame(Buffer::Cell *send_buffer) {
 //    if (can_statu != Can::started) {
 //        qWarning("不能在此时发送CAN数据帧");
 //        return false;
 //    }
-    if (send_buffer->l == 0) {
+    if (send_buffer->length() == 0) {
 
     } else {
         unsigned long num = VCI_Transmit(config.device_type,
                                          config.device_index,
                                          config.device_channel,
-                                         send_buffer->buffer,
-                                         send_buffer->l);
+                                         send_buffer->buffer(),
+                                         send_buffer->length());
         if (num != 0) {
             qInfo("发送CAN数据帧成功");
-            send_buffer->index += 1;
-            send_buffer->l = 0;
+            send_buffer->clear();
         } else {
             qInfo("发送CAN数据帧失败");
         }
@@ -224,26 +224,25 @@ bool Can::send_frame(CanBufferCell *send_buffer) {
     }
 }
 
-bool Can::receive_frame(CanBufferCell *receive_buffer, CanErrorInfo &error) {
+bool Can::receiveFrame(Buffer::Cell *receive_buffer, Can::ErrorInfo &error) {
 //    if (can_statu != Can::started) {
 //        qWarning("不能在此时接收CAN数据帧");
 //        return false;
 //    }
-    receive_buffer->l = 0;
-    receive_buffer->l = VCI_Receive(config.device_type,
+    receive_buffer->clear();
+    receive_buffer->setLength(VCI_Receive(config.device_type,
                                     config.device_index,
                                     config.device_channel,
-                                    receive_buffer->buffer,
-                                    receive_buffer->size,
-                                    receive_buffer->delay);
-    if (receive_buffer->l < 0xFFFFFFFF) {
+                                    receive_buffer->buffer(),
+                                    receive_buffer->size(),
+                                    -1));
+    if (receive_buffer->length() < 0xFFFFFFFF) {
         qInfo("接收CAN数据帧成功");
-        receive_buffer->index += 1;
     } else {
-        error_info(error);
+        errorInfo(error);
         qCritical("接收CAN数据帧失败");
     }
-    return receive_buffer->l != 0xFFFFFFFF;
+    return receive_buffer->length() != 0xFFFFFFFF;
 }
 
 
@@ -265,4 +264,173 @@ bool Can::close() {
 
 Can::Status Can::statu() {
     return can_statu;
+}
+
+
+
+//Config& Config::operator=(const Config &cfg) {
+//    this->device_type = cfg.device_type;
+//    this->device_index = cfg.device_index;
+//    this->device_channel = cfg.device_channel;
+//    this->acc_code = cfg.acc_code;
+//    this->mask_code = cfg.mask_code;
+//    this->filter = cfg.filter;
+//    this->mode = cfg.mode;
+//    this->baud_rate = cfg.baud_rate;
+//    this->timer_0 = cfg.timer_0;
+//    this->timer_1 = cfg.timer_1;
+//}
+
+Can::Config::Config() :
+        device_type(4), device_index(0), device_channel(0),
+        acc_code(0x00000000), mask_code(0xFFFFFFFF), filter(0),
+        mode(0), baud_rate(500), timer_0(0x00), timer_1(0x1C) {}
+
+bool Can::Config::str(QString &s) {
+    s.clear();
+    QTextStream stream(&s);
+    stream << QString("盒类型:\t") << dec << device_type
+           << QString("\n设备ID:\t") << dec << device_index
+           << QString("\n通道ID:\t") << dec << device_channel
+           << QString("\n接收码:\t") << L"0x";
+    stream.setFieldWidth(8);
+    stream.setPadChar('0');
+    stream << acc_code
+           << QString("\n屏蔽码:\t") << L"0x" << hex
+           << mask_code
+           << QString("\n滤波器:\t") << dec << filter
+           << QString("\n模  式:\t") << dec << mode
+           << QString("\n波特率:\t") << dec << baud_rate << L" kbps"
+           << QString("\n定时 0:\t") << L"0x";
+    stream.setFieldWidth(2);
+    stream << hex << timer_0
+           << QString("\n定时 1:\t") << L"0x" << hex
+           << timer_1
+           << "\n";
+}
+
+bool Can::Config::check() {
+    return true;
+}
+
+void Can::Config::toStruct(VCI_INIT_CONFIG &cfg) {
+    cfg.AccCode = this->acc_code;
+    cfg.AccMask = this->mask_code;
+    cfg.Filter = this->filter;
+    cfg.Mode = this->mode;
+    cfg.Timing0 = this->timer_0;
+    cfg.Timing1 = this->timer_1;
+}
+
+Can::BoardInfo::BoardInfo() :
+        hardware_version(0), firmware_version(0), driver_version(0),
+        interface_version(0), interrupt_number(0), can_channels(0),
+        serial_number("none"), hardware_type("none"), reserved() {}
+
+Can::BoardInfo::BoardInfo(const VCI_BOARD_INFO &info) {
+    *this = info;
+}
+
+//BoardInfo& BoardInfo::operator=(const BoardInfo &info) {
+//    this->hardware_version = info.hardware_version;
+//    this->firmware_version = info.firmware_version;
+//    this->driver_version = info.driver_version;
+//    this->interface_version = info.interface_version;
+//    this->interrupt_number = info.interrupt_number;
+//    this->can_channels = info.can_channels;
+//    memcpy(this->serial_number, info.serial_number,
+//           sizeof(info.serial_number));
+//    memcpy(this->hardware_type, info.hardware_type,
+//           sizeof(info.hardware_type));
+//    memcpy(this->reserved, info.reserved,
+//           sizeof(info.reserved));
+//    return *this;
+//}
+
+Can::BoardInfo &Can::BoardInfo::operator=(const VCI_BOARD_INFO &info) {
+    this->hardware_version = info.hw_Version;
+    this->firmware_version = info.fw_Version;
+    this->driver_version = info.dr_Version;
+    this->interface_version = info.in_Version;
+    this->interrupt_number = info.irq_Num;
+    this->can_channels = info.can_Num;
+    memcpy(this->serial_number, info.str_Serial_Num,
+           sizeof(info.str_Serial_Num));
+    memcpy(this->hardware_type, info.str_hw_Type,
+           sizeof(info.str_hw_Type));
+    memcpy(this->reserved, info.Reserved,
+           sizeof(info.Reserved));
+    return *this;
+}
+
+QString Can::BoardInfo::str() {
+    QString s;
+    s += QString("硬件版本:0x%1")
+            .arg(hardware_version, 8, 16, QLatin1Char('0'));
+    s += QString("\n固件版本:0x%1")
+            .arg(firmware_version, 8, 16, QLatin1Char('0'));
+    s += QString("\n驱动版本:0x%1")
+            .arg(driver_version, 8, 16, QLatin1Char('0'));
+    s += QString("\n接口版本:0x%1")
+            .arg(interface_version, 8, 16, QLatin1Char('0'));
+    s += QString("\n中 断 号:%1")
+            .arg(interrupt_number, 5, 10, QLatin1Char(' '));
+    s += QString("\n通道数目:%1")
+            .arg(can_channels, 3, 10, QLatin1Char(' '));
+    s += QString("\n卡序列号:");
+    s += QString(serial_number);
+    s += QString("\n硬件类型:");
+    s += QString(hardware_type);
+    s += QString("\n系统保留:%1 %2 %3 %4")
+            .arg(reserved[0], 4, 16, QLatin1Char('0'))
+            .arg(reserved[1], 4, 16, QLatin1Char('0'))
+            .arg(reserved[2], 4, 16, QLatin1Char('0'))
+            .arg(reserved[3], 4, 16, QLatin1Char('0'));
+    return s;
+}
+
+void Can::BoardInfo::toStruct(VCI_BOARD_INFO &info) {
+    info.hw_Version = this->hardware_version;
+    info.fw_Version = this->firmware_version;
+    info.dr_Version = this->driver_version;
+    info.in_Version = this->interface_version;
+    info.irq_Num = this->interrupt_number;
+    info.can_Num = this->can_channels;
+    memcpy(info.str_Serial_Num, this->serial_number,
+           sizeof(info.str_Serial_Num));
+    memcpy(info.str_hw_Type, this->hardware_type,
+           sizeof(info.str_hw_Type));
+    memcpy(info.Reserved, this->reserved,
+           sizeof(info.Reserved));
+}
+
+Can::ErrorInfo::ErrorInfo(const VCI_ERR_INFO &error) {
+    *this = error;
+}
+
+//ErrorInfo& ErrorInfo::operator=(const ErrorInfo &error) {
+//    this->error_code = error.error_code;
+//    memcpy(this->passive_error_data, error.passive_error_data,
+//           sizeof(error.passive_error_data));
+//    this->lost_error_data = error.lost_error_data;
+//    return *this;
+//}
+
+Can::ErrorInfo &Can::ErrorInfo::operator=(const VCI_ERR_INFO &error) {
+    this->error_code = error.ErrCode;
+    memcpy(this->passive_error_data, error.Passive_ErrData,
+           sizeof(error.Passive_ErrData));
+    this->lost_error_data = error.ArLost_ErrData;
+    return *this;
+}
+
+QString Can::ErrorInfo::str() {
+    //todo
+}
+
+void Can::ErrorInfo::toStruct(VCI_ERR_INFO &error) {
+    error.ErrCode = this->error_code;
+    memcpy(error.Passive_ErrData, this->passive_error_data,
+           sizeof(error.Passive_ErrData));
+    error.ArLost_ErrData = this->lost_error_data;
 }

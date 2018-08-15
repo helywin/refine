@@ -10,14 +10,14 @@ LogCell::LogCell() {
     type = QtDebugMsg;
 }
 
-//LogCell::LogCell(const LogCell &cell) {
-//    *this = cell;
+//LogCell::LogCell(const LogCell &cells) {
+//    *this = cells;
 //}
 
-//LogCell& LogCell::operator=(const LogCell &cell){
-//    this->type = cell.type;
-//    this->msg = cell.msg;
-//    this->time = cell.time;
+//LogCell& LogCell::operator=(const LogCell &cells){
+//    this->type = cells.type;
+//    this->msg = cells.msg;
+//    this->sample = cells.sample;
 //    return *this;
 //}
 
@@ -77,7 +77,7 @@ void Log::handler(QtMsgType type, const QMessageLogContext &ctxt,
     file.close();
 }
 
-void Log::set_path(const QString &path) {
+void Log::setPath(const QString &path) {
     Log::path = path;
 }
 /*todo 后面可以调用线程进行日志的写入，

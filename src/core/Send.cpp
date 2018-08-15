@@ -4,7 +4,7 @@
 
 #include "Send.h"
 
-Send::Send(Tribe &tribe, Can &can, CurveConfig &config) :
+Send::Send(Tribe &tribe, Can &can, Curve &config) :
         tribe(tribe), can(can), config(config) {
 }
 

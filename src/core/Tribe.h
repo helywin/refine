@@ -8,22 +8,11 @@
 #include <QtCore/QVector>
 #include <QtCore/QMap>
 
-<<<<<<< HEAD
-//class Clan {
-//public:
-//    QVector<double> member;
-//};
-
-typedef QVector<double> TribeCell;
-
-class Tribe {
-=======
 class Tribe {
 public:
-    typedef QVector<float> Cell;
->>>>>>> 568e96c... 准备重新开发结构
+    typedef QVector<double> Cell;
 private:
-    QMap<QString, TribeCell> clan;
+    QMap<QString, Cell> clan;
 
 public:
 
@@ -37,17 +26,13 @@ public:
 
     void add(const QString &key, unsigned int size);
 
-    TribeCell &operator[](const QString &key);
+    Cell &operator[](const QString &key);
 
     QString str(const QString &key);
 
-<<<<<<< HEAD
-    inline QString str(const char *key) {str(QString(key)); };
-=======
     inline QString str(const char *key) { return str(QString(key)); };
->>>>>>> 568e96c... 准备重新开发结构
 
-    inline unsigned int size() { return (unsigned)clan.size(); }
+    inline unsigned int size() { return (unsigned) clan.size(); }
 
     inline QList<QString> keys() { return clan.keys(); }
 

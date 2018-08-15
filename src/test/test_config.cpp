@@ -3,15 +3,15 @@
 //
 
 
-#include "../src/CurveConfig.h"
-#include "../src/Log.h"
+#include "Curve.h"
+#include "Log.h"
 
 int main() {
     qInstallMessageHandler(Log::handler);
-    Log::set_path(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
+    Log::setPath(QString("D:/jiang.wenqiang/code/autophi/core/log.txt"));
     qInfo("==============启动==============");
     QFile f("cfg.txt");
-    CurveConfig curve;
+    Curve curve;
     if (curve.load(f)) {
         QStringList list;
         curve.str(list);

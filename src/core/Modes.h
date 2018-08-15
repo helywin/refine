@@ -7,7 +7,7 @@
 
 #include "Criteria.h"
 
-class ModeAcc : public Criteria{
+class ModeAcc : public Criteria {
 public:
     enum class Subtype : int {
         CylinderDeactivation = 1,
@@ -51,14 +51,14 @@ public:
 
     //functions
 
-    Fail init(QFile &file) override ;
+    Fail init(QFile &file) override;
 
 
 };
 
-class ModeDvw : public Criteria{
+class ModeDvw : public Criteria {
 public:
-    enum class Subtype :int {
+    enum class Subtype : int {
         Creep = 1,
         HillClimbing = 2,
         Lunch = 3,
@@ -87,9 +87,9 @@ public:
     };
 };
 
-class ModeGrs : public Criteria{
+class ModeGrs : public Criteria {
 public:
-    enum class Subtype :int {
+    enum class Subtype : int {
         CoastBreakOnDownshift = 1,
         CoastBreakOnUpshift = 2,
         KickDownTipInDownshift = 3,
@@ -134,9 +134,9 @@ public:
     };
 };
 
-class ModeTpn : public Criteria{
+class ModeTpn : public Criteria {
 public:
-    enum class Subtype :int {
+    enum class Subtype : int {
         AfterClosedPedal = 1,
         AfterConstantSpeed = 2,
         DuringAcceleration = 3,
@@ -159,9 +159,9 @@ public:
     };
 };
 
-class ModeTpt : public Criteria{
+class ModeTpt : public Criteria {
 public:
-    enum class Subtype :int {
+    enum class Subtype : int {
         AfterAcceleration = 1,
         AfterConstantSpeed = 2,
         DuringDeceleration = 3
@@ -175,9 +175,9 @@ public:
     };
 };
 
-class ModeCrs : public Criteria{
+class ModeCrs : public Criteria {
 public:
-    enum class Subtype :int {
+    enum class Subtype : int {
         CancelHard = 1,
         CancelSoft = 2,
         ConstantSpeedAfterOverride = 3,

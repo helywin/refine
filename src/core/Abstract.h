@@ -17,9 +17,9 @@ public:
 
     explicit Abstract(Tribe &tribe);
 
-    bool read_csv(QFile &file);
+    bool readCsv(QFile &file);
 
-    bool save_csv(QFile &file);
+    bool saveCsv(QFile &file);
 };
 
 
