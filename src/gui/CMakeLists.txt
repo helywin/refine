@@ -10,4 +10,4 @@ include_directories(${PROJECT_SOURCE_DIR}/src/core)
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
     include_directories(D:/msys32/mingw32/qt5-static/include)
-endif(CMAKE_BUILD_TYPE MATCHES Release)
+endif (CMAKE_BUILD_TYPE MATCHES Release)

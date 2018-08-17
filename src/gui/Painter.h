@@ -11,15 +11,18 @@
 
 class Painter {
 public:
-    struct point{double x; double y;};
+    struct point {
+        double x;
+        double y;
+    };
 private:
     QBrush background;
     QBrush circleBrush;
     QFont textFont;
     QPen circlePen;
     QPen textPen;
-    QVector <QLine> lines;
-    QVector <Painter::point> points;
+    QVector<QLine> lines;
+    QVector<Painter::point> points;
     double fps;
     QTime last;
     int freq;

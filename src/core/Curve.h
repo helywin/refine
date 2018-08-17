@@ -13,6 +13,7 @@
 class Curve {
 public:
     class Cell;
+
     typedef QStringList Header;
 
     enum Status {

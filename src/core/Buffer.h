@@ -11,6 +11,7 @@
 class Buffer {
 public:
     class Cell;
+
     typedef Cell *BufferType;
 
 private:

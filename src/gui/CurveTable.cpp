@@ -4,7 +4,6 @@
 
 #include "CurveTable.h"
 #include <QtGui/QMouseEvent>
-#include <QtCore/QDebug>
 
 CurveTable::CurveTable(QWidget *parent) : QTableWidget(parent) {
     setupUi();
@@ -73,7 +72,7 @@ void CurveTable::insert() {
     }
 //    qDebug() << "current row" << currentRow();
     insertRow(index);
-    for(int i = 0; i < columnCount(); ++i) {
+    for (int i = 0; i < columnCount(); ++i) {
         setItem(index, i, new QTableWidgetItem());
     }
     item(index, 1)->setFlags(item(index, 1)->flags() & ~Qt::ItemIsEditable);
@@ -97,7 +96,7 @@ void CurveTable::remove() {
 void CurveTable::add() {
     int index = rowCount();
     insertRow(index);
-    for(int i = 0; i < columnCount(); ++i) {
+    for (int i = 0; i < columnCount(); ++i) {
         setItem(index, i, new QTableWidgetItem());
     }
     item(index, 1)->setFlags(item(index, 1)->flags() & ~Qt::ItemIsEditable);

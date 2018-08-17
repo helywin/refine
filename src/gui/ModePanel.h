@@ -10,12 +10,12 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QPushButton>
 
-class ModePanel : public QWidget{
-    Q_OBJECT
+class ModePanel : public QWidget {
+Q_OBJECT
 private:
     QVBoxLayout *layout;
     QWidget *button_widget;
-    QHBoxLayout * button_layout;
+    QHBoxLayout *button_layout;
     QTableWidget *mode_list;
     QPushButton *start_mode;
     QPushButton *stop_mode;

@@ -5,21 +5,19 @@
 #include "Painter.h"
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QDebug>
-#include <QtCore/QTime>
-#include <omp.h>
 
 void Painter::paint(QPainter *painter, QPaintEvent *event) {
     painter->fillRect(event->rect(), background);
     circlePen.setWidth(line_width);
-    constexpr double pi2 = 3.141592653*2;
-    double k = sin(pi2*t);
-    t += pi2/1000*freq;
-    points.append({t,k});
+    constexpr double pi2 = 3.141592653 * 2;
+    double k = sin(pi2 * t);
+    t += pi2 / 1000 * freq;
+    points.append({t, k});
 //    painter->save();
     painter->setPen(circlePen);
     int start = 0;
     ps = event->rect().width();
-    if(points.size() < ps) {
+    if (points.size() < ps) {
         start = 0;
     } else {
         start = points.size() - ps;
@@ -27,34 +25,38 @@ void Painter::paint(QPainter *painter, QPaintEvent *event) {
 
     for (int i = start; i < points.size() - 2; ++i) {
         if (i == start) {
-            x = (int)((points[i].x - points[start].x) /pi2/freq * event->rect().width())*1000/ps;
-            xx = (int)((points[i+1].x - points[start].x) /pi2/freq * event->rect().width())*1000/ps;
-            y = (int)(points[i].y * event->rect().height()/num);
-            yy = (int)(points[i+1].y * event->rect().height()/num);
+            x = (int) ((points[i].x - points[start].x) / pi2 / freq *
+                       event->rect().width()) * 1000 / ps;
+            xx = (int) ((points[i + 1].x - points[start].x) / pi2 / freq *
+                        event->rect().width()) * 1000 / ps;
+            y = (int) (points[i].y * event->rect().height() / num);
+            yy = (int) (points[i + 1].y * event->rect().height() / num);
         } else {
             x = xx;
-            xx = (int)((points[i+1].x - points[start].x) /pi2/freq * event->rect().width())*1000/ps;
+            xx = (int) ((points[i + 1].x - points[start].x) / pi2 / freq *
+                        event->rect().width()) * 1000 / ps;
             y = yy;
-            yy = (int)(points[i+1].y * event->rect().height()/num);
+            yy = (int) (points[i + 1].y * event->rect().height() / num);
         }
         for (int j = 1; j <= num; ++j) {
-            painter->drawLine(x,y + event->rect().height()/num*j,xx,yy + event->rect().height()/num*j);
+            painter->drawLine(x, y + event->rect().height() / num * j, xx,
+                              yy + event->rect().height() / num * j);
         }
 
     }
     update_time += 1;
-    if (update_time == 10){
+    if (update_time == 10) {
         double inter = last.msecsTo(QTime::currentTime());
         last = QTime::currentTime();
-        s = QString("fps: %1").arg(inter == 0?0:10000/inter);
+        s = QString("fps: %1").arg(inter == 0 ? 0 : 10000 / inter);
         update_time = 0;
     }
 
 
     painter->setPen(textPen);
     painter->setFont(textFont);
-    painter->fillRect(35,event->rect().height() - 80, 200, 40, background);
-    painter->drawText(50,event->rect().height() - 50,s);
+    painter->fillRect(35, event->rect().height() - 80, 200, 40, background);
+    painter->drawText(50, event->rect().height() - 50, s);
 //    painter->restore();
 }
 

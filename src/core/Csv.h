@@ -24,13 +24,13 @@ public:
 
     void setFile(QFile *f);
 
-    bool startWrite(const char* codec);
+    bool startWrite(const char *codec, bool is_append = false);
 
     void writeLine(const QStringList &list) const;
 
     bool finishWrite();
 
-    bool startRead(const char* codec);
+    bool startRead(const char *codec);
 
     void readLine(QStringList &list) const;
 

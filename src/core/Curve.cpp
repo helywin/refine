@@ -216,14 +216,14 @@ bool Curve::dumpToSqlite3(QFile &f) const {
 }
 
 Curve::Cell &Curve::operator[](const int index) {
-    Q_ASSERT(index >=0 && index < _cells.size());
+    Q_ASSERT(index >= 0 && index < _cells.size());
     return _cells[index];
 }
 
 
 Curve::Cell::Cell(int index) {
     Q_ASSERT(index > 0);
-    _index = (unsigned short)(index - 1);
+    _index = (unsigned short) (index - 1);
     _display = false;
     _name = QString("未命名");
     _type = Type::Physical;

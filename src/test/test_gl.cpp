@@ -8,7 +8,7 @@
 int main() {
     GLFWwindow *window;
 
-    if (!glfwInit()){
+    if (!glfwInit()) {
         return -1;
     }
     window = glfwCreateWindow(480, 320, "hello world", nullptr, nullptr);

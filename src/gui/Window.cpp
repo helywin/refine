@@ -4,13 +4,9 @@
 
 #include "Window.h"
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QLineEdit>
-#include <QtCore/QDebug>
 #include <QtWidgets/QApplication>
-#include <QtGui/QKeyEvent>
 #include <QtWidgets/QFileDialog>
-#include <QtCore/QTimer>
 
 
 Window::Window(QWidget *parent) : QMainWindow(parent) {
@@ -28,7 +24,7 @@ void Window::setupUi() {
     central_vsplitter->addWidget(central_hsplitter);
 
     bottom_tab_widget = new QTabWidget(central_vsplitter);
-    bottom_tab_widget->setContentsMargins(5,5,5,5);
+    bottom_tab_widget->setContentsMargins(5, 5, 5, 5);
     central_vsplitter->addWidget(bottom_tab_widget);
     bottom_tab_widget->addTab(new QTableWidget(), QString("日志"));
     central_vsplitter->setSizes

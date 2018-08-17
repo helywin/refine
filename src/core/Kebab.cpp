@@ -70,6 +70,7 @@ bool Kebab::push(int index, const double &val) {
         return false;
     }
     _cells[index].push(val);
+    dump();
     return true;
 }
 
@@ -79,12 +80,31 @@ bool Kebab::push(const QString &name, const double &val) {
         return false;
     }
     _cells[_index.indexOf(name)].push(val);
+    dump();
     return true;
+}
+
+bool Kebab::isFull() const {
+    for (const auto &iter : _cells) {
+        if (iter.isFull()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Kebab::isEmpty() const {
+    for (const auto &iter : _cells) {
+        if (iter.isEmpty()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool Kebab::pop(int index, double &val) {
     Q_ASSERT(index < _cells.size());
-    if (_cells[index].isFull()) {
+    if (_cells[index].isEmpty()) {
         return false;
     }
     _cells[index].pop(val);
@@ -100,24 +120,32 @@ bool Kebab::pop(const QString &name, double &val) {
     return true;
 }
 
-bool Kebab::isFull() const {
-    for (const auto &iter : _cells) {
-        if (iter.isFull()) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Kebab::isEmpty() const {
-    for (const auto &iter : _cells) {
-        if (!iter.isEmpty()) {
+bool Kebab::popLine(QStringList &list) {
+    list.clear();
+    double v;
+    for (int i = 0; i < size(); ++i) {
+        if (pop(i, v)) {
+            list.append(QString::number(v));
+        } else {
             return false;
         }
     }
     return true;
 }
 
+int Kebab::size() const {
+    return _cells.size();
+}
+
+void Kebab::dump() {
+    if (maxLen() > _cell_whole_size / 2) {
+        _dump->start();
+    }
+}
+
+int Kebab::wholeLen() const {
+    return _cell_whole_size;
+}
 
 Kebab::Cell::Cell() :
         _cell(nullptr), _is_alloc(false),

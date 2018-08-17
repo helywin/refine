@@ -23,7 +23,7 @@ int main() {
     for (const auto &iter : list) {
         qDebug() << iter;
     }
-    Kebab data((unsigned short)curve.size());
+    Kebab data((unsigned short) curve.size());
     QFile file(QString("D:/jiang.wenqiang/code/refine/data/data.txt"));
     Keep keep(data, file);
     Collect collect(can, buffer);

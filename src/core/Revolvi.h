@@ -15,21 +15,21 @@ Q_OBJECT
 private:
     QTimer _timer;
     Collect *_collect;
-    Transfori *_transform;
+    Transfori *_transfori;
     int _time_limit;
     int _interval;
 
 public:
     Revolvi() = delete;
 
-    Revolvi(Collect *collect, Transfori *transform,
+    Revolvi(Collect *collect, Transfori *transfori,
             int limit = 300, int interval = 10);
 
     void setTimeLimit(int limit);
 
     void setCollect(Collect *collect);
 
-    void setTransfori(Transfori *transform);
+    void setTransfori(Transfori *transfori);
 
     void setInterval(int interval);
 

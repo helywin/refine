@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/7/12.
 //
 
-#ifndef CORE_MODES_H
-#define CORE_MODES_H
+#ifndef REFINE_MODES_H
+#define REFINE_MODES_H
 
 #include "Criteria.h"
 

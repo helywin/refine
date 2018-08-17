@@ -25,13 +25,26 @@ private:
 
 public:
     static const QString str() {
-        QString s = QString("Version: %1.%2.%3 ").arg(major).arg(micro).arg(minor);
+        QString s = QString("Version: %1.%2.%3 ")
+                .arg(major)
+                .arg(micro)
+                .arg(minor);
         switch (identifier) {
-            case Id::Demo:s += QString("(Demo)");break;
-            case Id::Alpha:s += QString("(Alpha)");break;
-            case Id::Beta:s += QString("(Beta)");break;
-            case Id::Gamma:s += QString("(Gamma)");break;
-            case Id::Release:s += QString("(Release)");break;
+            case Id::Demo:
+                s += QString("(Demo)");
+                break;
+            case Id::Alpha:
+                s += QString("(Alpha)");
+                break;
+            case Id::Beta:
+                s += QString("(Beta)");
+                break;
+            case Id::Gamma:
+                s += QString("(Gamma)");
+                break;
+            case Id::Release:
+                s += QString("(Release)");
+                break;
         }
         return s;
     }

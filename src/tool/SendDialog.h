@@ -10,7 +10,7 @@
 #include <QtWidgets/QPushButton>
 
 class SendDialog : public QMainWindow {
-    Q_OBJECT
+Q_OBJECT
 public:
 private:
 public:
@@ -19,6 +19,7 @@ protected:
 
 public:
     explicit SendDialog(QWidget *parent = nullptr);
+
     ~SendDialog() final = default;
 
 private:

@@ -12,7 +12,7 @@
 
 #define KEBAB_CELL_LENGTH 4096
 
-class Kebab : public QThread{
+class Kebab : public QThread {
 Q_OBJECT
 public:
     class Cell;
@@ -25,20 +25,44 @@ private:
 
 public:
     Kebab() = delete;
-    explicit Kebab(const Curve::Header &header, Dump *dump, int cell_len = KEBAB_CELL_LENGTH);
+
+    explicit Kebab(const Curve::Header &header, Dump *dump,
+                   int cell_len = KEBAB_CELL_LENGTH);
+
     Cell &operator[](int index);
+
     Cell &operator[](const QString &name);
+
     int maxLen() const;
+
     int minLen() const;
+
     void addCell(const QString &name);
+
     void removeCell(const QString &name);
+
     void removeCell(int index);
-    bool push(int index,const double &val);
-    bool push(const QString &name,const double &val);
-    bool pop(int index, double &val);
-    bool pop(const QString &name, double &val);
+
+    bool push(int index, const double &val);
+
+    bool push(const QString &name, const double &val);
+
     bool isFull() const;
+
     bool isEmpty() const;
+
+    int size() const;
+
+    int wholeLen() const;
+
+    bool popLine(QStringList &list);
+
+private:
+    void dump();
+
+    bool pop(int index, double &val);
+
+    bool pop(const QString &name, double &val);
 };
 
 class Kebab::Cell {
@@ -53,21 +77,30 @@ private:
 
 public:
     Cell();
+
     Cell(const Cell &v) = default;
+
     Cell &operator=(const Cell &v) = default;
+
     ~Cell();
+
     void initialize(int len);
+
     bool push(const double &val);
+
     bool pop(double &val);
+
     bool isFull() const;
+
     bool isEmpty() const;
+
     int len() const;
 
 private:
     void headForward();
+
     void tailForward();
 };
-
 
 
 #endif //REFINE_KEBAB_H

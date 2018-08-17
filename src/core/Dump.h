@@ -7,6 +7,8 @@
 
 #include <QtCore/QThread>
 #include <QtCore/QFile>
+#include "Csv.h"
+#include "Rf.h"
 
 class Kebab;
 
@@ -15,15 +17,20 @@ Q_OBJECT
 public:
     enum FileType {
         Csv,
-        Refine,
+        Rf,
     };
 private:
     Kebab *_kebab;
     QFile *_file;
     FileType _file_type;
+    ::Csv *_csv;
+    ::Rf *_rf;
+
 public:
     Dump();
+
     void setKebab(Kebab *kebab);
+
     void setFile(QFile *f, FileType type);
 
 protected:

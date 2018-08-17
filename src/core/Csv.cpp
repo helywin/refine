@@ -21,8 +21,10 @@ void Csv::setFile(QFile *f) {
     _file = f;
 }
 
-bool Csv::startWrite(const char* codec) {
-    _file->open(QIODevice::WriteOnly | QIODevice::Text);
+bool Csv::startWrite(const char *codec, bool is_append) {
+    _file->open(QIODevice::WriteOnly |
+                QIODevice::Text |
+                (((int) is_append) << 2 & QIODevice::Append));
     _stream = new QTextStream(_file);
     _stream->setCodec(codec);
     return _file->isOpen();
@@ -41,7 +43,7 @@ bool Csv::finishWrite() {
     return !_file->isOpen();
 }
 
-bool Csv::startRead(const char* codec) {
+bool Csv::startRead(const char *codec) {
     _file->open(QIODevice::ReadOnly | QIODevice::Text);
     _stream = new QTextStream(_file);
     _stream->setCodec(codec);

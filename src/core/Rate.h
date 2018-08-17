@@ -3,8 +3,8 @@
 // 评分结果基类
 //
 
-#ifndef CORE_RATE_H
-#define CORE_RATE_H
+#ifndef REFINE_RATE_H
+#define REFINE_RATE_H
 
 #include <QtCore/QFile>
 

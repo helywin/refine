@@ -17,21 +17,21 @@ Q_OBJECT
 private:
     QTimer _timer;
     Transmit *_transmit;
-    Transforo *_transform;
+    Transforo *_transforo;
     int _time_limit;
     int _interval;
 
 public:
     Revolvo() = delete;
 
-    Revolvo(Transmit *transmit, Transforo *transform,
-              int limit = 300, int interval = 10);
+    Revolvo(Transmit *transmit, Transforo *transforo,
+            int limit = 300, int interval = 10);
 
     void setTimeLimit(int limit);
 
     void setTransmit(Transmit *transmit);
 
-    void setTransforo(Transforo *transform);
+    void setTransforo(Transforo *transforo);
 
     void setInterval(int interval);
 
@@ -45,7 +45,7 @@ public:
 
 public slots:
 
-    void collectResult(Collect::Result result);
+    void collectResult(Transmit::Result result);
 
 };
 
