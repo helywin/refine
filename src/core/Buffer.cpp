@@ -59,6 +59,7 @@ void Buffer::headForward() {
 }
 
 void Buffer::tailForward() {
+    _tail->setDataSize(0);
     if (_tail == _cells + _size - 1) {
         _tail = _cells;
     } else {
@@ -130,6 +131,17 @@ void Buffer::Cell::initialize(unsigned long size) {
         _cell = new VCI_CAN_OBJ[size];
 //        _delay = delay;
         _status = Status::Initialized;
+        _whole_size = size;
+        for (auto i = 0; i < size; ++i) {
+            _cell[i].Data[0] = 0;
+            _cell[i].Data[1] = 0;
+            _cell[i].Data[2] = 0;
+            _cell[i].Data[3] = 0;
+            _cell[i].Data[4] = 0;
+            _cell[i].Data[5] = 0;
+            _cell[i].Data[6] = 0;
+            _cell[i].Data[7] = 0;
+        }
     }
 }
 
@@ -139,6 +151,16 @@ PVCI_CAN_OBJ Buffer::Cell::operator[](int index) {
 }
 
 const PVCI_CAN_OBJ Buffer::Cell::operator[](int index) const {
+    Q_ASSERT(index >= 0);
+    return _cell + index;
+}
+
+PVCI_CAN_OBJ Buffer::Cell::at(int index) {
+    Q_ASSERT(index >= 0);
+    return _cell + index;
+}
+
+const PVCI_CAN_OBJ Buffer::Cell::at(int index) const {
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
@@ -160,6 +182,7 @@ unsigned long Buffer::Cell::dataSize() const {
 }
 
 void Buffer::Cell::setDataSize(const unsigned long size) {
+    Q_ASSERT(size <= _whole_size);
     _data_size = size;
 }
 

@@ -14,30 +14,54 @@ public:
     class Cell;
 
 private:
-    QVector<QString> _raw_index;
+    QStringList _raw_index;
     QList<Cell> _raw_data;
-    QVector<QString> _cal_index;
+    QStringList _cal_index;
     QList<Cell> _cal_data;
 
 public:
     Tribe() = default;
+
     int maxLen() const;
+
     int minLen() const;
+
     int length() const;
+
     int rawSize() const;
+
     int calSize() const;
+
     int wholeSize() const;
+
+    bool isAligned() const;
+
     void addRaw(const QString &name, Cell &&cell);
+
     void addRaw(const QString &name, const double *data, int len);
+
     void addCal(const QString &name, Cell &&cell);
+
     void addCal(const QString &name, const double *data, int len);
+
     void removeRaw(const QString &name);
+
     void removeCal(const QString &name);
-    Cell &getRaw(const QString &name);
-    const Cell &getRaw(const QString &name) const;
-    Cell &getCal(const QString &name);
-    const Cell &getCal(const QString &name) const;
+
+    Cell &raw(const QString &name);
+
+    const Cell &raw(const QString &name) const;
+
+    Cell &cal(const QString &name);
+
+    const Cell &cal(const QString &name) const;
+
+    QStringList rawIndex() const;
+
+    QStringList calIndex() const;
+
     int memory() const;
+
 };
 
 class Tribe::Cell {
@@ -45,11 +69,21 @@ private:
     QVector<double> _cell;
 public:
     Cell() = default;
+
     Cell(const double *data, int len);
+
     Cell(const Cell &cell) = default;
+
     Cell &operator=(const Cell &cell) = default;
+
+    double &operator[](int index);
+
+    const double &operator[](int index) const;
+
     int length() const;
+
     double *data(int &len);
+
     const double *data(int &len) const;
 };
 

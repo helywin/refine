@@ -16,6 +16,8 @@ private:
     Curve *_curve;
     Buffer *_buffer;
     Tribe *_tribe;
+    int _size;
+    int _index;
 
 public:
     Transforo() = delete;

@@ -30,6 +30,7 @@ void Transfori::run() {
     if (_buffer->isEmpty()) {
         return;
     }
+    //todo 一个报文几条曲线的情况没有考虑，得重新写逻辑
     while (const Buffer::BufferType c = _buffer->tailCell()) {
         const Buffer::Cell &cell = *c;
         for (unsigned int i = 0; i < cell.dataSize(); ++i) {

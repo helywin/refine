@@ -225,12 +225,30 @@ const Curve::Cell &Curve::operator[](const int index) const{
     return _cells[index];
 }
 
+Curve::Cell &Curve::operator[](const QString &name) {
+    Q_ASSERT(_header.contains(name));
+    return _cells[_header.indexOf(name)];
+}
+
+const Curve::Cell &Curve::operator[](const QString &name) const {
+    Q_ASSERT(_header.contains(name));
+    return _cells[_header.indexOf(name)];
+}
+
 Curve::Cell &Curve::at(int index) {
     return (*this)[index];
 }
 
 const Curve::Cell &Curve::at(int index) const {
     return (*this)[index];
+}
+
+Curve::Cell &Curve::at(const QString &name) {
+    return (*this)[name];
+}
+
+const Curve::Cell &Curve::at(const QString &name) const {
+    return (*this)[name];
 }
 
 Curve::Cell::Cell() : Cell(0) {}

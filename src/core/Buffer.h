@@ -104,6 +104,10 @@ public:
 
     const PVCI_CAN_OBJ operator[](int index) const;
 
+    PVCI_CAN_OBJ at(int index);
+
+    const PVCI_CAN_OBJ at(int index) const;
+
     PVCI_CAN_OBJ cell();
 
     const PVCI_CAN_OBJ cell() const;

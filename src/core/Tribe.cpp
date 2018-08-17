@@ -48,7 +48,7 @@ int Tribe::minLen() const {
 }
 
 int Tribe::length() const {
-    return maxLen();
+    return minLen();
 }
 
 int Tribe::rawSize() const {
@@ -95,24 +95,32 @@ void Tribe::removeCal(const QString &name) {
     _cal_index.removeOne(name);
 }
 
-Tribe::Cell &Tribe::getRaw(const QString &name) {
+Tribe::Cell &Tribe::raw(const QString &name) {
     Q_ASSERT(_raw_index.contains(name));
     return _raw_data[_raw_index.indexOf(name)];
 }
 
-const Tribe::Cell &Tribe::getRaw(const QString &name) const {
+const Tribe::Cell &Tribe::raw(const QString &name) const {
     Q_ASSERT(_raw_index.contains(name));
     return _raw_data[_raw_index.indexOf(name)];
 }
 
-Tribe::Cell &Tribe::getCal(const QString &name) {
+Tribe::Cell &Tribe::cal(const QString &name) {
     Q_ASSERT(_cal_index.contains(name));
     return _cal_data[_cal_index.indexOf(name)];
 }
 
-const Tribe::Cell &Tribe::getCal(const QString &name) const {
+const Tribe::Cell &Tribe::cal(const QString &name) const {
     Q_ASSERT(_cal_index.contains(name));
     return _cal_data[_cal_index.indexOf(name)];
+}
+
+QStringList Tribe::rawIndex() const {
+    return _raw_index;
+}
+
+QStringList Tribe::calIndex() const {
+    return _cal_index;
 }
 
 int Tribe::memory() const {
@@ -125,6 +133,10 @@ int Tribe::memory() const {
         mem += iter.length() * sizeof(double);
     }
     return qMove(mem);
+}
+
+bool Tribe::isAligned() const {
+    return maxLen() == minLen();
 }
 
 Tribe::Cell::Cell(const double *data, int len) {
@@ -142,4 +154,14 @@ double *Tribe::Cell::data(int &len) {
 
 const double *Tribe::Cell::data(int &len) const {
     return _cell.data();
+}
+
+double &Tribe::Cell::operator[](int index) {
+    Q_ASSERT(index < _cell.size() && index > 0);
+    return _cell[index];
+}
+
+const double &Tribe::Cell::operator[](int index) const {
+    Q_ASSERT(index < _cell.size() && index > 0);
+    return _cell[index];
 }

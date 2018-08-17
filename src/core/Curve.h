@@ -49,9 +49,17 @@ public:
 
     const Cell &operator[](int index) const;
 
+    Cell &operator[](const QString &name);
+
+    const Cell &operator[](const QString &name) const;
+
     Cell &at(int index);
 
     const Cell &at(int index) const;
+
+    Cell &at(const QString &name);
+
+    const Cell &at(const QString &name) const;
 
     QStringList header() const;
 

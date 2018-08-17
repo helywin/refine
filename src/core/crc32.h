@@ -27,7 +27,7 @@ void init_table() {
     init = true;
 }
 
-unsigned int crc32(unsigned char *buf, int len) {
+unsigned int crc32(const unsigned char *buf, int len) {
     unsigned int ret = 0xFFFFFFFF;
     int i;
     if (!init) {
