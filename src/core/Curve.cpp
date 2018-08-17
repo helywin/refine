@@ -220,6 +220,20 @@ Curve::Cell &Curve::operator[](const int index) {
     return _cells[index];
 }
 
+const Curve::Cell &Curve::operator[](const int index) const{
+    Q_ASSERT(index >= 0 && index < _cells.size());
+    return _cells[index];
+}
+
+Curve::Cell &Curve::at(int index) {
+    return (*this)[index];
+}
+
+const Curve::Cell &Curve::at(int index) const {
+    return (*this)[index];
+}
+
+Curve::Cell::Cell() : Cell(0) {}
 
 Curve::Cell::Cell(int index) {
     Q_ASSERT(index > 0);

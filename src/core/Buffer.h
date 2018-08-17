@@ -35,11 +35,17 @@ public:
 
     BufferType operator[](int index);
 
+    const BufferType operator[](int index) const;
+
     int size() const;
 
-    PVCI_CAN_OBJ head() const;
+    const PVCI_CAN_OBJ head() const;
 
-    PVCI_CAN_OBJ tail() const;
+    PVCI_CAN_OBJ head();
+
+    const PVCI_CAN_OBJ tail() const;
+
+    PVCI_CAN_OBJ tail();
 
     void headForward();
 
@@ -61,9 +67,13 @@ public:
 
     bool isEmpty() const;
 
-    BufferType tailCell() const;
+    BufferType tailCell();
 
-    BufferType headCell() const;
+    const BufferType tailCell() const;
+
+    BufferType headCell();
+
+    const BufferType headCell() const;
 };
 
 
@@ -90,9 +100,13 @@ public:
 
     void initialize(unsigned long size = 100);
 
-    PVCI_CAN_OBJ operator[](int index) const;
+    PVCI_CAN_OBJ operator[](int index);
 
-    PVCI_CAN_OBJ cell() const;
+    const PVCI_CAN_OBJ operator[](int index) const;
+
+    PVCI_CAN_OBJ cell();
+
+    const PVCI_CAN_OBJ cell() const;
 
     unsigned long wholeSize() const;
 

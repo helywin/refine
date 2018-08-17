@@ -80,7 +80,7 @@ public:
 
     inline unsigned long reserved() const { return _config->Reserved; }
 
-    PVCI_INIT_CONFIG initConfig() const { return _config; }
+    const PVCI_INIT_CONFIG initConfig() const { return _config; }
 
 };
 

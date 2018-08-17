@@ -47,7 +47,11 @@ public:
 
     Cell &operator[](int index);
 
-    inline Cell &at(int index) { return (*this)[index]; }
+    const Cell &operator[](int index) const;
+
+    Cell &at(int index);
+
+    const Cell &at(int index) const;
 
     QStringList header() const;
 
@@ -118,7 +122,7 @@ private:
     Bundle _bundle;
 
 public:
-    Cell() = default;
+    Cell();
 
     explicit Cell(int index);
 
