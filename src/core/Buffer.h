@@ -12,40 +12,40 @@ class Buffer {
 public:
     class Cell;
 
-    typedef Cell *BufferType;
+//    typedef Cell *Cell *;
 
 private:
     int _size;
     int _index;
-    BufferType _cells;
-    BufferType _head;
-    BufferType _tail;
+    Cell * _cells;
+    Cell * _head;
+    Cell * _tail;
 
 
 public:
-    Buffer() = delete;
+    Buffer();
 
     Buffer(const Buffer &buffer) = delete;
 
-    explicit Buffer(int buffer_len = 50, unsigned long cell_size = 100);
+    explicit Buffer(int buffer_len, unsigned long cell_size = 100);
 
     ~Buffer();
 
     Buffer &operator=(const Buffer &buffer) = delete;
 
-    BufferType operator[](int index);
+    Cell* operator[](int index);
 
-    const BufferType operator[](int index) const;
+    const Cell* operator[](int index) const;
 
     int size() const;
 
-    const PVCI_CAN_OBJ head() const;
+    const VCI_CAN_OBJ* head() const;
 
-    PVCI_CAN_OBJ head();
+    VCI_CAN_OBJ* head();
 
-    const PVCI_CAN_OBJ tail() const;
+    const VCI_CAN_OBJ* tail() const;
 
-    PVCI_CAN_OBJ tail();
+    VCI_CAN_OBJ* tail();
 
     void headForward();
 
@@ -67,18 +67,26 @@ public:
 
     bool isEmpty() const;
 
-    BufferType tailCell();
+    Cell * tailCell();
 
-    const BufferType tailCell() const;
+    const Cell * tailCell() const;
 
-    BufferType headCell();
+    Cell * headCell();
 
-    const BufferType headCell() const;
+    const Cell * headCell() const;
 };
 
 
 class Buffer::Cell {
     friend class Buffer;
+
+public:
+    enum class SendType {
+        Normal = 0,     //! \brief 正常发送
+        Once = 1,       //! \brief 单次发送
+        SelfSendRecieve = 2,        //! \brief 自发自收
+        SelfSendRecieveOnce = 3     //! \brief 单次自发自收
+    };
 
 private:
     enum class Status {
@@ -88,7 +96,7 @@ private:
 
 private:
     Status _status;
-    PVCI_CAN_OBJ _cell;
+    VCI_CAN_OBJ* _cell;
     unsigned long _whole_size;
     unsigned long _data_size;
 //    int _delay;
@@ -100,23 +108,25 @@ public:
 
     void initialize(unsigned long size = 100);
 
-    PVCI_CAN_OBJ operator[](int index);
+    VCI_CAN_OBJ* operator[](int index);
 
-    const PVCI_CAN_OBJ operator[](int index) const;
+    const VCI_CAN_OBJ* operator[](int index) const;
 
-    PVCI_CAN_OBJ at(int index);
+    VCI_CAN_OBJ* at(int index);
 
-    const PVCI_CAN_OBJ at(int index) const;
+    const VCI_CAN_OBJ* at(int index) const;
 
-    PVCI_CAN_OBJ cell();
+    VCI_CAN_OBJ* cell();
 
-    const PVCI_CAN_OBJ cell() const;
+    const VCI_CAN_OBJ* cell() const;
 
     unsigned long wholeSize() const;
 
     unsigned long dataSize() const;
 
     void setDataSize(unsigned long size);
+
+    void setSendType(SendType type);
 
 //    void setDelay(int delay = -1);
 //    void clear();

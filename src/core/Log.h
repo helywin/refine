@@ -6,6 +6,7 @@
 #define REFINE_LOG_H
 
 #include <QtCore/QDebug>
+#include <QtCore/QFile>
 #include <QtCore/QDateTime>
 
 class Log {

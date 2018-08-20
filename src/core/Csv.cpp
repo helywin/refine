@@ -22,9 +22,14 @@ void Csv::setFile(QFile *f) {
 }
 
 bool Csv::startWrite(const char *codec, bool is_append) {
-    _file->open(QIODevice::WriteOnly |
-                QIODevice::Text |
-                (((int) is_append) << 2 & QIODevice::Append));
+    if(is_append) {
+        _file->open(QIODevice::WriteOnly |
+                    QIODevice::Text |
+                    QIODevice::Append);
+    } else {
+        _file->open(QIODevice::WriteOnly |
+                    QIODevice::Text);
+    }
     _stream = new QTextStream(_file);
     _stream->setCodec(codec);
     return _file->isOpen();

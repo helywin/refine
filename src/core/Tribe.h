@@ -13,6 +13,11 @@ class Tribe {
 public:
     class Cell;
 
+    enum class DataType {
+        Raw = 0,
+        Calculated = 1
+    };
+
 private:
     QStringList _raw_index;
     QList<Cell> _raw_data;
@@ -36,17 +41,16 @@ public:
 
     bool isAligned() const;
 
-    void addRaw(const QString &name, Cell &&cell);
+    void setIndex(const QStringList &index, DataType type);
 
-    void addRaw(const QString &name, const double *data, int len);
+    void addSequence(const QStringList &v, DataType type);
 
-    void addCal(const QString &name, Cell &&cell);
+    void addWholeCurve(const QStringList &name, Cell &&cell, DataType type);
 
-    void addCal(const QString &name, const double *data, int len);
+    void addWholeCurve(const QString &name, const double *data, int len,
+                       DataType type);
 
-    void removeRaw(const QString &name);
-
-    void removeCal(const QString &name);
+    void removeWholeCurve(const QString &name, DataType type);
 
     Cell &raw(const QString &name);
 
@@ -85,6 +89,10 @@ public:
     double *data(int &len);
 
     const double *data(int &len) const;
+
+    void append(double &v);
+
+    void append(double &&v);
 };
 
 #endif //CORE_TRIBE_H

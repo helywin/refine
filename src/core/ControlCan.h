@@ -97,7 +97,7 @@ typedef struct {//_VCI_BOARD_INFO {
     CHAR str_Serial_Num[20];          //! \brief serial number
     CHAR str_hw_Type[40];             //! \brief hardware type
     USHORT Reserved[4];               //! \brief reserved
-} VCI_BOARD_INFO, *PVCI_BOARD_INFO;
+} VCI_BOARD_INFO;//, *PVCI_BOARD_INFO;
 
 //! \brief 2.定义CAN信息帧的数据类型。
 typedef struct {//_VCI_CAN_OBJ {
@@ -114,7 +114,7 @@ typedef struct {//_VCI_CAN_OBJ {
     BYTE DataLen;                       //! \brief 数据长度(<=8)，即Data的长度
     BYTE Data[8];                      //! \brief 报文数据
     BYTE Reserved[3];                   //! \brief 保留字
-} VCI_CAN_OBJ, *PVCI_CAN_OBJ;
+} VCI_CAN_OBJ;//, *PVCI_CAN_OBJ;
 
 //! \brief 3.定义CAN控制器状态的数据类型。
 typedef struct {//_VCI_CAN_STATUS {
@@ -127,14 +127,14 @@ typedef struct {//_VCI_CAN_STATUS {
     UCHAR regRECounter;
     UCHAR regTECounter;
     DWORD Reserved;
-} VCI_CAN_STATUS, *PVCI_CAN_STATUS;
+} VCI_CAN_STATUS;//, *PVCI_CAN_STATUS;
 
 //! \brief 4.定义错误信息的数据类型。
 typedef struct {//_VCI_ERR_INFO {
     UINT ErrCode;
     BYTE Passive_ErrData[3];
     BYTE ArLost_ErrData;
-} VCI_ERR_INFO, *PVCI_ERR_INFO;
+} VCI_ERR_INFO;//, *PVCI_ERR_INFO;
 
 //! \brief 5.定义初始化CAN的数据类型
 typedef struct {//_VCI_INIT_CONFIG {
@@ -145,7 +145,7 @@ typedef struct {//_VCI_INIT_CONFIG {
     UCHAR Timing0;
     UCHAR Timing1;
     UCHAR Mode;
-} VCI_INIT_CONFIG, *PVCI_INIT_CONFIG;
+} VCI_INIT_CONFIG;//, *PVCI_INIT_CONFIG;
 
 typedef struct {//_tagChgDesIPAndPort {
     char szpwd[10];
@@ -159,7 +159,7 @@ typedef struct {//_VCI_FILTER_RECORD {
     DWORD ExtFrame;    //是否为扩展帧
     DWORD Start;
     DWORD End;
-} VCI_FILTER_RECORD, *PVCI_FILTER_RECORD;
+} VCI_FILTER_RECORD;//, *PVCI_FILTER_RECORD;
 
 
 #define EXTERNC        extern "C"
@@ -177,24 +177,24 @@ EXTERNC DWORD __stdcall
 VCI_InitCAN(DWORD DeviceType,
             DWORD DeviceInd,
             DWORD CANInd,
-            PVCI_INIT_CONFIG pInitConfig);
+            VCI_INIT_CONFIG *pInitConfig);
 
 EXTERNC DWORD __stdcall
 VCI_ReadBoardInfo(DWORD DeviceType,
                   DWORD DeviceInd,
-                  PVCI_BOARD_INFO pInfo);
+                  VCI_BOARD_INFO *pInfo);
 
 EXTERNC DWORD __stdcall
 VCI_ReadErrInfo(DWORD DeviceType,
                 DWORD DeviceInd,
                 DWORD CANInd,
-                PVCI_ERR_INFO pErrInfo);
+                VCI_ERR_INFO *pErrInfo);
 
 EXTERNC DWORD __stdcall
 VCI_ReadCANStatus(DWORD DeviceType,
                   DWORD DeviceInd,
                   DWORD CANInd,
-                  PVCI_CAN_STATUS pCANStatus);
+                  VCI_CAN_STATUS *pCANStatus);
 
 EXTERNC DWORD __stdcall
 VCI_GetReference(DWORD DeviceType,
@@ -234,14 +234,14 @@ EXTERNC ULONG __stdcall
 VCI_Transmit(DWORD DeviceType,
              DWORD DeviceInd,
              DWORD CANInd,
-             PVCI_CAN_OBJ pSend,
+             VCI_CAN_OBJ *pSend,
              ULONG Len);
 
 EXTERNC ULONG __stdcall
 VCI_Receive(DWORD DeviceType,
             DWORD DeviceInd,
             DWORD CANInd,
-            PVCI_CAN_OBJ pReceive,
+            VCI_CAN_OBJ *pReceive,
             ULONG Len,
             INT WaitTime = -1);
 

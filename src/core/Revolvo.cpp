@@ -37,7 +37,9 @@ void Revolvo::setInterval(const int interval) {
 }
 
 void Revolvo::marvel() {
+    _transforo->start();
     _timer.start(_interval);
+    while (_transmit->isRunning()) {}
 }
 
 void Revolvo::pulse() {
@@ -50,10 +52,4 @@ void Revolvo::pulse(int msec) {
 
 void Revolvo::resume() {
     _timer.start(_interval);
-}
-
-void Revolvo::collectResult(Transmit::Result result) {
-    if (result == Transmit::Result::Succeeded) {
-        _transforo->start();
-    }
 }

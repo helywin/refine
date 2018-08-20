@@ -57,12 +57,15 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/src/gui GUI)
 include_directories(${PROJECT_SOURCE_DIR}/src/core)
 include_directories(${PROJECT_SOURCE_DIR}/src/gui)
 
-set(SRC ${PROJECT_SOURCE_DIR}/res/ui.qrc)
+set(RES ${PROJECT_SOURCE_DIR}/res/ui.qrc)
 set(LIBLOG ${PROJECT_SOURCE_DIR}/src/core/Log.cpp)
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
 set(LIBGSL D:/msys32/mingw32/lib/libgsl.a)
 set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.a)
 
 
-add_executable(test_window test_window.cpp ${GUI} ${SRC})
+add_executable(test_window test_window.cpp ${GUI} ${RES})
 target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui Qt5OpenGL)
+
+add_executable(test_transmit test_transmit.cpp ${CORE})
+target_link_libraries(test_transmit Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})

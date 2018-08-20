@@ -6,7 +6,7 @@
 #include "Criteria.h"
 #include "Constant.h"
 #include "cmath"
-
+/*
 Criteria::Criteria(Criteria::ModeType type, Tribe &tribe, Rate &rate) :
         mode_type(type), tribe(tribe), rate(rate) {}
 
@@ -85,3 +85,5 @@ void Criteria::torqueExpected(Tribe &tribe) {
 void Criteria::accelerationExpected(Tribe &tribe) {
     //todo 根据期望扭矩求
 }
+
+*/

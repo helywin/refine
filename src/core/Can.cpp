@@ -4,10 +4,10 @@
 
 #include "Can.h"
 
-Can::Can(const Can::Config *config) :
+Can::Can(Can::Config *config) :
         _status(Status::Disconnected), _config(config) {}
 
-void Can::setConfig(const Can::Config *config) {
+void Can::setConfig(Can::Config *config) {
     _config = config;
 }
 
@@ -134,7 +134,7 @@ bool Can::isConnected() {
     return (bool) flag;
 }
 
-void Can::getError(PVCI_ERR_INFO error) {
+void Can::getError(VCI_ERR_INFO *error) {
     VCI_ReadErrInfo(_config->deviceType(),
                     _config->deviceIndex(),
                     _config->deviceChannel(),

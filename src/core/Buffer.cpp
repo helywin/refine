@@ -1,8 +1,11 @@
 //
-// Created by jiang.wenqiang on 2018/8/3.
-//
 
 #include "Buffer.h"
+
+//
+// Created by jiang.wenqiang on 2018/8/3.
+
+Buffer::Buffer() : Buffer(50, 100) {}
 
 Buffer::Buffer(int buffer_len, unsigned long cell_size) :
         _size(buffer_len), _index(0), _cells(new Cell[buffer_len]),
@@ -14,17 +17,17 @@ Buffer::Buffer(int buffer_len, unsigned long cell_size) :
     }
 }
 
+
 Buffer::~Buffer() {
     delete[] _cells;
 }
 
-
-Buffer::BufferType Buffer::operator[](int index) {
+Buffer::Cell* Buffer::operator[](int index) {
     Q_ASSERT(index >= 0);
     return _cells + index;
 }
 
-const Buffer::BufferType Buffer::operator[](int index) const {
+const Buffer::Cell* Buffer::operator[](int index) const {
     Q_ASSERT(index >= 0);
     return _cells + index;
 }
@@ -33,20 +36,20 @@ int Buffer::size() const {
     return _size;
 }
 
-const PVCI_CAN_OBJ Buffer::head() const {
-    return _head->cell();
-}
-
-PVCI_CAN_OBJ Buffer::head() {
+const VCI_CAN_OBJ* Buffer::head() const {
     return _head->cell();
 }
 
 
-const PVCI_CAN_OBJ Buffer::tail() const {
+VCI_CAN_OBJ* Buffer::head() {
+    return _head->cell();
+}
+
+const VCI_CAN_OBJ* Buffer::tail() const {
     return _tail->cell();
 }
 
-PVCI_CAN_OBJ Buffer::tail() {
+VCI_CAN_OBJ* Buffer::tail() {
     return _tail->cell();
 }
 
@@ -100,19 +103,19 @@ bool Buffer::isEmpty() const {
     return _head == _tail;
 }
 
-Buffer::BufferType Buffer::tailCell() {
+Buffer::Cell * Buffer::tailCell() {
     return _tail;
 }
 
-const Buffer::BufferType Buffer::tailCell() const {
+const Buffer::Cell * Buffer::tailCell() const {
     return _tail;
 }
 
-Buffer::BufferType Buffer::headCell() {
+Buffer::Cell * Buffer::headCell() {
     return _head;
 }
 
-const Buffer::BufferType Buffer::headCell() const {
+const Buffer::Cell * Buffer::headCell() const {
     return _head;
 }
 
@@ -145,31 +148,31 @@ void Buffer::Cell::initialize(unsigned long size) {
     }
 }
 
-PVCI_CAN_OBJ Buffer::Cell::operator[](int index) {
+VCI_CAN_OBJ* Buffer::Cell::operator[](int index) {
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
 
-const PVCI_CAN_OBJ Buffer::Cell::operator[](int index) const {
+const VCI_CAN_OBJ* Buffer::Cell::operator[](int index) const {
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
 
-PVCI_CAN_OBJ Buffer::Cell::at(int index) {
+VCI_CAN_OBJ* Buffer::Cell::at(int index) {
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
 
-const PVCI_CAN_OBJ Buffer::Cell::at(int index) const {
+const VCI_CAN_OBJ* Buffer::Cell::at(int index) const {
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
 
-PVCI_CAN_OBJ Buffer::Cell::cell() {
+VCI_CAN_OBJ* Buffer::Cell::cell() {
     return _cell;
 }
 
-const PVCI_CAN_OBJ Buffer::Cell::cell() const {
+const VCI_CAN_OBJ* Buffer::Cell::cell() const {
     return _cell;
 }
 
@@ -217,5 +220,25 @@ QStringList Buffer::Cell::str() const {
         list.append(str);
     }
     return qMove(list);
+}
+
+void Buffer::Cell::setSendType(Buffer::Cell::SendType type) {
+    unsigned char send_type = 0;
+    switch (type) {
+        case SendType::Normal:
+            break;
+        case SendType::Once:
+            send_type = 1;
+            break;
+        case SendType::SelfSendRecieve:
+            send_type = 2;
+            break;
+        case SendType::SelfSendRecieveOnce:
+            send_type = 3;
+            break;
+    }
+    for (auto i = 0; i < dataSize(); ++i) {
+        _cell[i].SendType = send_type;
+    }
 }
 

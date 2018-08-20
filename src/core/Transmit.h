@@ -32,6 +32,9 @@ public:
 protected:
     void run() override;
 
+public slots:
+    void start() { QThread::start(); };
+
 signals:
 
     void result(Result flag);

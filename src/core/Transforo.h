@@ -30,6 +30,8 @@ public:
 
     void setTribe(Tribe *tribe);
 
+    void resetIndex();
+
 protected:
     void run() override;
 };

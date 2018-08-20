@@ -45,8 +45,6 @@ public:
 
 public slots:
 
-    void collectResult(Transmit::Result result);
-
 };
 
 

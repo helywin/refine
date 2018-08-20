@@ -25,14 +25,14 @@ public:
 
 private:
     Status _status;
-    const Config *_config;
+    Config *_config;
 
 public:
     Can() = delete;
 
-    explicit Can(const Config *config);
+    explicit Can(Config *config);
 
-    void setConfig(const Config *config);
+    void setConfig(Config *config);
 
     bool connect();
 
@@ -51,7 +51,7 @@ public:
     bool isConnected();
 
 private:
-    void getError(PVCI_ERR_INFO error);
+    void getError(VCI_ERR_INFO *error);
 };
 
 class Can::Config {
@@ -60,7 +60,7 @@ private:
     unsigned long _device_index;     //! \brief 设备索引号
     unsigned long _device_channel;   //! \brief 第几路
     unsigned int _baud_rate;         //! \brief 波特率
-    PVCI_INIT_CONFIG _config;
+    VCI_INIT_CONFIG *_config;
 public:
     Config() = delete;
 
@@ -80,7 +80,9 @@ public:
 
     inline unsigned long reserved() const { return _config->Reserved; }
 
-    const PVCI_INIT_CONFIG initConfig() const { return _config; }
+//    const VCI_INIT_CONFIG *initConfig() const { return _config; }
+
+    inline VCI_INIT_CONFIG *initConfig() { return _config; }
 
 };
 

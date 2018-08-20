@@ -129,10 +129,6 @@ bool Curve::loadFromCsv(QFile &f) {
                 cell.setNameByStr(list[i]);
                 continue;
             }
-            if (iter == "备注") {
-                cell.setRemarkByStr(list[i]);
-                continue;
-            }
             if (iter == "类型") {
                 cell.setTypeByStr(list[i]);
                 continue;
@@ -175,6 +171,10 @@ bool Curve::loadFromCsv(QFile &f) {
             }
             if (iter == "输出量程") {
                 cell.setRangeOutByStr(list[i]);
+                continue;
+            }
+            if (iter == "备注") {
+                cell.setRemarkByStr(list[i]);
                 continue;
             }
         }
@@ -220,7 +220,7 @@ Curve::Cell &Curve::operator[](const int index) {
     return _cells[index];
 }
 
-const Curve::Cell &Curve::operator[](const int index) const{
+const Curve::Cell &Curve::operator[](const int index) const {
     Q_ASSERT(index >= 0 && index < _cells.size());
     return _cells[index];
 }
@@ -254,8 +254,8 @@ const Curve::Cell &Curve::at(const QString &name) const {
 Curve::Cell::Cell() : Cell(0) {}
 
 Curve::Cell::Cell(int index) {
-    Q_ASSERT(index > 0);
-    _index = (unsigned short) (index - 1);
+    Q_ASSERT(index >= 0);
+    _index = (unsigned short) (index);
     _display = false;
     _name = QString("未命名");
     _type = Type::Physical;
@@ -296,7 +296,7 @@ Curve::Cell::Cell(int index, Curve::Bundle bundle) : Cell(index) {
 }
 
 bool Curve::Cell::check() const {
-    return false;
+    return true;
 }
 
 QStringList Curve::Cell::str() const {
@@ -363,7 +363,7 @@ QString Curve::Cell::canIdStr() const {
 
 QString Curve::Cell::zeroByteStr() const {
     if (_zero_byte_existed) {
-        return QString("有;%1").arg(_zero_byte);
+        return QString("%1").arg(_zero_byte);
     } else {
         return QString("无");
     }
@@ -371,7 +371,7 @@ QString Curve::Cell::zeroByteStr() const {
 
 QString Curve::Cell::highByteStr() const {
     if (_high_byte_existed) {
-        return QString("有;%1;%2~%3")
+        return QString("%1;%2~%3")
                 .arg(_high_byte)
                 .arg(_high_byte_range[0])
                 .arg(_high_byte_range[1]);
@@ -555,8 +555,7 @@ void Curve::Cell::setZeroByteByStr(QString &s) {
         _zero_byte_existed = false;
     } else {
         _zero_byte_existed = true;
-        QStringList list = s.split(QChar(';'));
-        _zero_byte = list[1].toUShort();
+        _zero_byte = s.toUShort();
     }
 }
 
@@ -566,8 +565,8 @@ void Curve::Cell::setHighByteByStr(QString &s) {
     } else {
         _high_byte_existed = true;
         QStringList list = s.split(QChar(';'));
-        _high_byte = list[1].toUShort();
-        list = list[2].split(QChar('~'));
+        _high_byte = list[0].toUShort();
+        list = list[1].split(QChar('~'));
         _high_byte_range[0] = list[0].toUShort();
         _high_byte_range[1] = list[1].toUShort();
     }
@@ -592,13 +591,13 @@ void Curve::Cell::setSampleByStr(QString &s) {
 }
 
 void Curve::Cell::setRangeInByStr(QString &s) {
-    QStringList list = s.split(QChar(';'));
+    QStringList list = s.split(QChar('~'));
     _range_in[0] = list[0].toLong();
     _range_in[1] = list[1].toLong();
 }
 
 void Curve::Cell::setRangeOutByStr(QString &s) {
-    QStringList list = s.split(QChar(';'));
+    QStringList list = s.split(QChar('~'));
     _range_out[0] = list[0].toLong();
     _range_out[1] = list[1].toLong();
 }
