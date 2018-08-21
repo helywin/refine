@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/6/28.
 //
 
+#include <QtCore/QDebug>
 #include "Can.h"
 #include "Log.h"
 #include <QtCore/QTextStream>
@@ -47,6 +48,7 @@ bool Can::init() {
     return flag == 1;
 }
 
+<<<<<<< HEAD
 bool Can::boardInfo(BoardInfo &info) {
 //    if (can_statu != Can::inited && can_statu != Can::started) {
 //        qWarning("不能在此时获取CAN盒信息");
@@ -89,6 +91,16 @@ bool Can::errorInfo(ErrorInfo &error) {
 bool Can::get_statu(CanRegStatus &status) {
     if (can_statu != Can::inited && can_statu != Can::started) {
         qWarning("不能在此时获取CAN盒寄存器状态");
+=======
+bool Can::connect() {
+    VCI_CloseDevice(_config->deviceType(),
+                    _config->deviceIndex());
+    unsigned long flag = 0;
+    flag = VCI_OpenDevice(_config->deviceType(),
+                          _config->deviceIndex(),
+                          _config->reserved());
+    if (!flag) {
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
         return false;
     }
     VCI_CAN_STATUS status_st;
@@ -104,6 +116,15 @@ bool Can::get_statu(CanRegStatus &status) {
         qWarning("读取CAN盒寄存器状态失败");
         return false;
     }
+<<<<<<< HEAD
+=======
+    clear();
+    flag = VCI_StartCAN(_config->deviceType(),
+                        _config->deviceIndex(),
+                        _config->deviceChannel());
+    _status = Status::Connected;
+    return (bool) flag;
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
 }
 */
 bool Can::clear() {
@@ -193,10 +214,18 @@ bool Can::reset() {
                                       config.device_index,
                                       config.device_channel);
     if (flag) {
+<<<<<<< HEAD
         can_statu = Can::inited;
         qInfo("复位CAN盒成功");
     } else {
         qCritical("复位CAN盒失败");
+=======
+        buffer.setTailDataSize(0);
+        buffer.tailForward();
+    } else {
+        VCI_ERR_INFO error;
+        getError(&error);
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
     }
     return flag == 1;
 }
@@ -389,6 +418,7 @@ QString Can::BoardInfo::str() {
     return s;
 }
 
+<<<<<<< HEAD
 void Can::BoardInfo::toStruct(VCI_BOARD_INFO &info) {
     info.hw_Version = this->hardware_version;
     info.fw_Version = this->firmware_version;
@@ -407,6 +437,19 @@ void Can::BoardInfo::toStruct(VCI_BOARD_INFO &info) {
 Can::ErrorInfo::ErrorInfo(const VCI_ERR_INFO &error) {
     *this = error;
 }
+=======
+void Can::clear() {
+    VCI_ClearBuffer(_config->deviceType(),
+                    _config->deviceIndex(),
+                    _config->deviceChannel());
+}
+
+Can::Config::Config(unsigned long channel) :
+        _device_type(4), _device_index(0), _device_channel(channel),
+        _baud_rate(500),
+        _config(new VCI_INIT_CONFIG{0x00000000, 0xFFFFFFFF, 0, 0, 0x00,
+                                    0x1C, 0}) {}
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
 
 //ErrorInfo& ErrorInfo::operator=(const ErrorInfo &error) {
 //    this->error_code = error.error_code;

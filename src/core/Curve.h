@@ -27,6 +27,11 @@ private:
 
     QVector<Cell> _config;
 
+<<<<<<< HEAD
+=======
+private:
+    QStringList _table_head;
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
     Status _status;
 public:
     Curve();

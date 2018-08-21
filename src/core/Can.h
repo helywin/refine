@@ -65,6 +65,13 @@ public:
 
     Status statu();
 
+<<<<<<< HEAD
+=======
+    void clear();
+
+private:
+    void getError(VCI_ERR_INFO *error);
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
 };
 
 class Can::Config {
@@ -165,4 +172,11 @@ public:
     void toStruct(VCI_CAN_STATUS &status);
 };
 
+<<<<<<< HEAD
 #endif //PROJECT_CAN_H
+=======
+
+
+
+#endif //REFINE_CAN_H
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试

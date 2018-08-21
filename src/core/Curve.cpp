@@ -171,6 +171,7 @@ bool Curve::loadCsv(QFile &csv) {
         _status = Curve::File;
         return false;
     }
+<<<<<<< HEAD
     QTextStream stream(&csv);
     stream.setCodec("gbk");
     QString str;
@@ -185,10 +186,20 @@ bool Curve::loadCsv(QFile &csv) {
         QStringList list = str.split(QChar(','), QString::KeepEmptyParts);
         QStringList split_list;
         Cell cell;
+=======
+    csv.readLine(_table_head);
+    while (!csv.finishRead()) {
+        QStringList list;
+        csv.readLine(list);
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
         unsigned short i = 0;
         bool first = true;
+<<<<<<< HEAD
         bool flag = false;
         for (const auto &iter : _header) {
+=======
+        for (const auto &iter : _table_head) {
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
             if (!first) {
                 i += 1;
             } else {
@@ -208,8 +219,14 @@ bool Curve::loadCsv(QFile &csv) {
                 cell.name = list[i];
                 continue;
             }
+<<<<<<< HEAD
             if (iter == "备注") {
                 cell.remark = list[i];
+=======
+            if (iter == "名称") {
+                cell.setNameByStr(list[i]);
+                _header.append(list[i]);
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
                 continue;
             }
             if (iter == "类型") {

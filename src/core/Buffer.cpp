@@ -108,9 +108,43 @@ bool Buffer::empty() {
     return head_point == tail_point;
 }
 
+<<<<<<< HEAD
 bool Buffer::full() {
     return head_point - tail_point == length - 1 ||
            head_point - tail_point == -1;
+=======
+//inline void Buffer::Cell::setDelay(const int delay) {
+//    _delay = delay;
+//}
+
+//void Buffer::Cell::clear() {
+//    _status = Status::UnUsed;
+//}
+
+//inline int Buffer::Cell::delay() const {
+//    return _delay;
+//}
+
+QStringList Buffer::Cell::str() const {
+    QStringList list;
+    for (unsigned int i = 0; i < _data_size; ++i) {
+        QString str;
+        str = QString("0x%1 ").arg(_cell[i].ID, 8, 16, QChar('0'));
+        str += QString("%1 ").arg(_cell[i].TimeStamp / 1000, 0, 10);
+        str += QString::number(_cell[i].DataLen) + " ";
+        str += QString("0x%1 %2 %3 %4 %5 %6 %7 %8")
+                .arg(_cell[i].Data[0], 2, 16, QChar('0'))
+                .arg(_cell[i].Data[1], 2, 16, QChar('0'))
+                .arg(_cell[i].Data[2], 2, 16, QChar('0'))
+                .arg(_cell[i].Data[3], 2, 16, QChar('0'))
+                .arg(_cell[i].Data[4], 2, 16, QChar('0'))
+                .arg(_cell[i].Data[5], 2, 16, QChar('0'))
+                .arg(_cell[i].Data[6], 2, 16, QChar('0'))
+                .arg(_cell[i].Data[7], 2, 16, QChar('0'));
+        list.append(str);
+    }
+    return qMove(list);
+>>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
 }
 
 Buffer::Cell *Buffer::head() {
