@@ -34,6 +34,7 @@ public:
     };
 
 private:
+    QStringList _table_head;
     Status _status;
     Header _header;
     QVector<Cell> _cells;

@@ -104,14 +104,14 @@ bool Curve::loadFromCsv(QFile &f) {
         qCritical("文件打开失败");
         return false;
     }
-    csv.readLine(_header);
+    csv.readLine(_table_head);
     while (!csv.finishRead()) {
         QStringList list;
         csv.readLine(list);
         unsigned short i = 0;
         Cell cell(i);
         bool first = true;
-        for (const auto &iter : _header) {
+        for (const auto &iter : _table_head) {
             if (!first) {
                 i += 1;
             } else {
@@ -127,6 +127,7 @@ bool Curve::loadFromCsv(QFile &f) {
             }
             if (iter == "名称") {
                 cell.setNameByStr(list[i]);
+                _header.append(list[i]);
                 continue;
             }
             if (iter == "类型") {

@@ -205,9 +205,9 @@ QStringList Buffer::Cell::str() const {
     QStringList list;
     for (unsigned int i = 0; i < _data_size; ++i) {
         QString str;
-        str = QString("0x%1\t").arg(_cell[i].ID, 8, 16, QChar('0'));
-        str += QString("%1\t").arg(_cell[i].TimeStamp / 1000, 0, 10);
-        str += QString::number(_cell[i].DataLen) + "\t";
+        str = QString("0x%1 ").arg(_cell[i].ID, 8, 16, QChar('0'));
+        str += QString("%1 ").arg(_cell[i].TimeStamp / 1000, 0, 10);
+        str += QString::number(_cell[i].DataLen) + " ";
         str += QString("0x%1 %2 %3 %4 %5 %6 %7 %8")
                 .arg(_cell[i].Data[0], 2, 16, QChar('0'))
                 .arg(_cell[i].Data[1], 2, 16, QChar('0'))

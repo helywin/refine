@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/8/13.
 //
 
+#include <QtCore/QDebug>
 #include "Revolvo.h"
 
 Revolvo::Revolvo(Transmit *transmit, Transforo *transforo,
@@ -11,7 +12,6 @@ Revolvo::Revolvo(Transmit *transmit, Transforo *transforo,
     Q_ASSERT(transmit != nullptr && transforo != nullptr);
     Q_ASSERT(limit > 0);
     Q_ASSERT(interval > 0);
-    connect(&_timer, &QTimer::timeout, _transmit, &Transmit::start);
 }
 
 void Revolvo::setTimeLimit(const int limit) {
@@ -21,9 +21,7 @@ void Revolvo::setTimeLimit(const int limit) {
 
 void Revolvo::setTransmit(Transmit *transmit) {
     Q_ASSERT(transmit != nullptr);
-    disconnect(&_timer, &QTimer::timeout, _transmit, &Transmit::start);
     _transmit = transmit;
-    connect(&_timer, &QTimer::timeout, _transmit, &Transmit::start);
 }
 
 void Revolvo::setTransforo(Transforo *transforo) {
@@ -38,12 +36,11 @@ void Revolvo::setInterval(const int interval) {
 
 void Revolvo::marvel() {
     _transforo->start();
-    _timer.start(_interval);
+    _transmit->start();
     while (_transmit->isRunning()) {}
 }
 
 void Revolvo::pulse() {
-    _timer.stop();
 }
 
 void Revolvo::pulse(int msec) {
@@ -51,5 +48,4 @@ void Revolvo::pulse(int msec) {
 }
 
 void Revolvo::resume() {
-    _timer.start(_interval);
 }

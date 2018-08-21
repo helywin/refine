@@ -207,12 +207,12 @@ const double *Tribe::Cell::data(int &len) const {
 }
 
 double &Tribe::Cell::operator[](int index) {
-    Q_ASSERT(index < _cell.size() && index > 0);
+    Q_ASSERT(index < _cell.size() && index >= 0);
     return _cell[index];
 }
 
 const double &Tribe::Cell::operator[](int index) const {
-    Q_ASSERT(index < _cell.size() && index > 0);
+    Q_ASSERT(index < _cell.size() && index >= 0);
     return _cell[index];
 }
 

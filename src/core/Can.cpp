@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/8/3.
 //
 
+#include <QtCore/QDebug>
 #include "Can.h"
 
 Can::Can(Can::Config *config) :
@@ -12,6 +13,8 @@ void Can::setConfig(Can::Config *config) {
 }
 
 bool Can::connect() {
+    VCI_CloseDevice(_config->deviceType(),
+                    _config->deviceIndex());
     unsigned long flag = 0;
     flag = VCI_OpenDevice(_config->deviceType(),
                           _config->deviceIndex(),
@@ -26,6 +29,7 @@ bool Can::connect() {
     if (!flag) {
         return false;
     }
+    clear();
     flag = VCI_StartCAN(_config->deviceType(),
                         _config->deviceIndex(),
                         _config->deviceChannel());
@@ -88,6 +92,9 @@ bool Can::deliver(Buffer &buffer) {
     if (flag) {
         buffer.setTailDataSize(0);
         buffer.tailForward();
+    } else {
+        VCI_ERR_INFO error;
+        getError(&error);
     }
     return flag;
 }
@@ -141,12 +148,17 @@ void Can::getError(VCI_ERR_INFO *error) {
                     error);
 }
 
+void Can::clear() {
+    VCI_ClearBuffer(_config->deviceType(),
+                    _config->deviceIndex(),
+                    _config->deviceChannel());
+}
 
 Can::Config::Config(unsigned long channel) :
         _device_type(4), _device_index(0), _device_channel(channel),
         _baud_rate(500),
-        _config(new VCI_INIT_CONFIG{0x00000000, 0xFFFFFFFF, 0, 0, 0, 0x00,
-                                    0x1C}) {}
+        _config(new VCI_INIT_CONFIG{0x00000000, 0xFFFFFFFF, 0, 0, 0x00,
+                                    0x1C, 0}) {}
 
 Can::Config::~Config() {
     delete _config;

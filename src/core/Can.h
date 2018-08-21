@@ -50,6 +50,8 @@ public:
 
     bool isConnected();
 
+    void clear();
+
 private:
     void getError(VCI_ERR_INFO *error);
 };
@@ -94,6 +96,8 @@ class Can::ErrorInfo {
 
 class Can::RegStatus {
 };
+
+
 
 
 #endif //REFINE_CAN_H

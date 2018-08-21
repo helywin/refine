@@ -15,7 +15,6 @@
 class Revolvo : public QObject {
 Q_OBJECT
 private:
-    QTimer _timer;
     Transmit *_transmit;
     Transforo *_transforo;
     int _time_limit;
