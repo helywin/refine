@@ -20,9 +20,9 @@ void TableTips::setupUi() {
     layout->addWidget(main_widget);
     layout->addWidget(button_widget);
     main_layout = new QVBoxLayout(main_widget);
-    main_layout->setContentsMargins(0,0,0,5);
+    main_layout->setContentsMargins(0, 0, 0, 5);
     button_layout = new QVBoxLayout(button_widget);
-    button_layout->setContentsMargins(0,0,0,0);
+    button_layout->setContentsMargins(0, 0, 0, 0);
     main_widget->setLayout(main_layout);
     button_widget->setLayout(button_layout);
 
@@ -39,9 +39,9 @@ TipType::TipType(QWidget *parent) : TableTips(parent) {
 
 void TipType::setupUi() {
     type = new QGroupBox(QString("类型"), main_widget);
-    physical = new QRadioButton(QString("物理"),type);
+    physical = new QRadioButton(QString("物理"), type);
     physical->setChecked(true);
-    logical = new QRadioButton(QString("逻辑"),type);
+    logical = new QRadioButton(QString("逻辑"), type);
     logical->setChecked(false);
     radio_layout = new QVBoxLayout(type);
     type->setLayout(radio_layout);
@@ -64,7 +64,7 @@ bool TableTips::eventFilter(QObject *object, QEvent *event) {
 
 void TipType::setVal() {
     qDebug("clicked");
-    if (physical->isChecked()){
+    if (physical->isChecked()) {
         emit val(QString("物理"));
     } else if (logical->isChecked()) {
         emit val(QString("逻辑"));
@@ -76,13 +76,13 @@ void TipType::setVal() {
 
 void TipType::regen(QPoint pos) {
     show();
-    move(pos.x(),pos.y());
+    move(pos.x(), pos.y());
     activateWindow();
 }
 
 
 GetVal::GetVal(QWidget *parent) :
-        row(-1), column(-1),type(new TipType(parent)),
+        row(-1), column(-1), type(new TipType(parent)),
         zero(new TipZero(parent)), sample(new TipSample(parent)) {
     connect(type, &TipType::val, this, &GetVal::gotVal);
     connect(zero, &TipZero::val, this, &GetVal::gotVal);
@@ -117,7 +117,7 @@ TipZero::TipZero(QWidget *parent) : TableTips(parent) {
 
 void TipZero::regen(QPoint pos) {
     show();
-    move(pos.x(),pos.y());
+    move(pos.x(), pos.y());
     activateWindow();
 }
 
@@ -151,7 +151,7 @@ TipSample::TipSample(QWidget *parent) : TableTips(parent) {
 
 void TipSample::regen(QPoint pos) {
     show();
-    move(pos.x(),pos.y());
+    move(pos.x(), pos.y());
     activateWindow();
 }
 

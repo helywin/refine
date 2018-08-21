@@ -12,7 +12,7 @@
 #include <QtCore/QTimer>
 #include "Sketch.h"
 
-class PaintTest : public QDialog{
+class PaintTest : public QDialog {
 Q_OBJECT
 private:
     QHBoxLayout *layout;
@@ -37,6 +37,7 @@ private:
     void setupUi();
 
 private slots:
+
     void setting();
 };
 

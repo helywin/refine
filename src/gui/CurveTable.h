@@ -21,10 +21,11 @@ public:
 
 protected:
     void setupUi();
-    
+
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 public slots:
+
     void cell(QString s, int row, int column);
 
     void insert();

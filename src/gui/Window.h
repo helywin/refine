@@ -85,6 +85,7 @@ public:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
+
     void changeSkin();
 
     void hideDisplay();
@@ -96,7 +97,6 @@ private slots:
     void changeToChannel2();
 
 public slots:
-
 
 
     void fullScreenCancel();

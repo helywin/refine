@@ -4,35 +4,142 @@
 
 #include "Tribe.h"
 
-
-Tribe::Tribe(const QStringList &keys) {
-    for (const auto &key : keys) {
-        if (!key.isEmpty()) {
-            clan.insert(key, Cell());
+int Tribe::maxLen() const {
+    int size = 0;
+    for (const auto &iter : _raw_data) {
+        if (iter.length() > size) {
+            size = iter.length();
         }
     }
-}
 
-void Tribe::add(const QString &key) {
-    clan.insert(key, Cell());
-}
-
-void Tribe::add(const QString &str, unsigned int size) {
-    clan.insert(str, Cell(size));
-}
-
-Tribe::Cell &Tribe::operator[](const QString &key) {
-    return clan[key];
-}
-
-QString Tribe::str(const QString &key) {
-    QStringList list;
-    for (const auto &iter : clan[key]) {
-        list.append(QString::number(iter));
+    for (const auto &iter : _cal_data) {
+        if (iter.length() > size) {
+            size = iter.length();
+        }
     }
-<<<<<<< HEAD
-    return list.join(QChar(','));
-=======
+    return qMove(size);
+}
+
+int Tribe::minLen() const {
+    int size = 0;
+    bool init = false;
+    for (const auto &iter : _raw_data) {
+        if (!init) {
+            size = iter.length();
+            init = true;
+            continue;
+        }
+        if (iter.length() < size) {
+            size = iter.length();
+        }
+    }
+
+    for (const auto &iter : _cal_data) {
+        if (!init) {
+            size = iter.length();
+            init = true;
+            continue;
+        }
+        if (iter.length() > size) {
+            size = iter.length();
+        }
+    }
+    return qMove(size);
+}
+
+int Tribe::length() const {
+    return minLen();
+}
+
+int Tribe::rawSize() const {
+    return _raw_data.size();
+}
+
+int Tribe::calSize() const {
+    return _cal_data.size();
+}
+
+int Tribe::wholeSize() const {
+    return rawSize() + calSize();
+}
+
+
+void Tribe::setIndex(const QStringList &index, const Tribe::DataType type) {
+    switch (type) {
+        case DataType::Raw:
+            _raw_index = index;
+            for (auto i = 0; i < _raw_index.size(); ++i) {
+                _raw_data.append(Cell());
+            }
+            break;
+        case DataType::Calculated:
+            _cal_index = index;
+            for (auto i = 0; i < _raw_index.size(); ++i) {
+                _cal_data.append(Cell());
+            }
+            break;
+    }
+}
+
+
+void Tribe::addSequence(const QStringList &v, const Tribe::DataType type) {
+    switch (type) {
+        case DataType::Raw:
+            Q_ASSERT(_raw_index.size() == v.size());
+            for (auto i = 0; i < _raw_index.size(); ++i) {
+                _raw_data[i].append(v[i].toDouble());
+            }
+            break;
+        case DataType::Calculated:
+            Q_ASSERT(_cal_index.size() == v.size());
+            for (auto i = 0; i < _cal_index.size(); ++i) {
+                _cal_data[i].append(v[i].toDouble());
+            }
+            break;
+    }
+}
+
+void Tribe::addWholeCurve(const QStringList &name, Cell &&cell,
+                          const Tribe::DataType type) {
+    switch (type) {
+        case DataType::Raw:
+            _raw_index.append(name);
+            _raw_data.append(cell);
+            break;
+        case DataType::Calculated:
+            _cal_index.append(name);
+            _cal_data.append(cell);
+            break;
+    }
+}
+
+void Tribe::addWholeCurve(const QString &name, const double *data, int len,
+                          Tribe::DataType type) {
+    switch (type) {
+        case DataType::Raw:
+            _raw_index.append(name);
+            _raw_data.append(Cell(data, len));
+            break;
+        case DataType::Calculated:
+            _cal_index.append(name);
+            _cal_data.append(Cell(data, len));
+            break;
+    }
+}
+
+void Tribe::removeWholeCurve(const QString &name, Tribe::DataType type) {
+    switch (type) {
+        case DataType::Raw:
+            Q_ASSERT(_raw_index.contains(name));
+            _raw_data.removeAt(_raw_index.indexOf(name));
+            _raw_index.removeOne(name);
+            break;
+        case DataType::Calculated:
+            Q_ASSERT(_cal_index.contains(name));
+            _cal_data.removeAt(_raw_index.indexOf(name));
+            _cal_index.removeOne(name);
+            break;
+    }
 
 }
 
@@ -115,5 +222,4 @@ void Tribe::Cell::append(double &v) {
 
 void Tribe::Cell::append(double &&v) {
     _cell.append(v);
->>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
 }

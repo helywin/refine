@@ -6,7 +6,7 @@
 #include <QtWidgets/QPushButton>
 
 
-PaintTest::PaintTest(QWidget *parent) :QDialog(parent) {
+PaintTest::PaintTest(QWidget *parent) : QDialog(parent) {
     setupUi();
     move(0, 0);
     setWindowFlag(Qt::ToolTip);
@@ -59,7 +59,7 @@ void PaintTest::setupUi() {
 
 
     layout->addWidget(paint, 10);
-    layout->addWidget(setting_widget,2);
+    layout->addWidget(setting_widget, 2);
     setting_layout->addRow(QString("间隔"), interval);
     setting_layout->addRow(QString("点数"), point_num);
     setting_layout->addRow(QString("线数"), line_num);

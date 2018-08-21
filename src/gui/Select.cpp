@@ -125,7 +125,8 @@ void Select::setupUi() {
 //    modes->addItem(new QListWidgetItem(QString("PartLoadRisingPedal")));
 
     criteria->addItem(new QListWidgetItem(QString("NinetyPercentTorqueRange")));
-    criteria->addItem(new QListWidgetItem(QString("NinetyPercentTorqueThreshold")));
+    criteria->addItem(
+            new QListWidgetItem(QString("NinetyPercentTorqueThreshold")));
     criteria->addItem(new QListWidgetItem(QString("AccelerationGradient")));
     criteria->addItem(new QListWidgetItem(QString("AccelerationSteps")));
     criteria->addItem(new QListWidgetItem(QString("Correlation")));

@@ -1,39 +1,42 @@
 //
-// Created by jiang.wenqiang on 2018/6/29.
+// Created by jiang.wenqiang on 2018/8/7.
 //
 
-#include "Log.h"
 #include <QtCore/QFile>
+#include "Log.h"
 
-
-LogCell::LogCell() {
-    type = QtDebugMsg;
+Log::Log(const QString &path) :
+        _log(), _path(path), _file(path) {
+    Q_ASSERT(_file.open(QIODevice::WriteOnly | QIODevice::Append));
 }
 
-//LogCell::LogCell(const LogCell &cells) {
-//    *this = cells;
-//}
-
-//LogCell& LogCell::operator=(const LogCell &cells){
-//    this->type = cells.type;
-//    this->msg = cells.msg;
-//    this->sample = cells.sample;
-//    return *this;
-//}
-
-LogCell::LogCell(QtMsgType type, const QString &msg) {
-    this->type = type;
-    this->msg = msg;
-    time = QDateTime::currentDateTime();
+Log::~Log() {
+    _file.close();
 }
 
-QString LogCell::str() {
+void Log::handler(QtMsgType type, const QMessageLogContext &context,
+                  const QString &msg) {
+    Cell cell(type, msg);
+    _log.append(cell);
+    QTextStream steam(&_file);
+    steam.setCodec("UTF-8");
+    steam << cell.str() << "\n";
+    _file.flush();
+}
+
+Log::Cell::Cell() : _type(QtMsgType::QtDebugMsg) {}
+
+Log::Cell::Cell(QtMsgType type, const QString &&msg) : _type(type), _msg(msg) {}
+
+Log::Cell::Cell(QtMsgType type, const QString &msg) : _type(type), _msg(msg) {}
+
+QString Log::Cell::str() const {
     QString s;
     s += "[";
-    s += time.toString(QString("yyyy/MM/dd HH:mm:ss"));
+    s += _time.toString(QString("yyyy/MM/dd HH:mm:ss"));
     s += "]";
     s += "\t";
-    switch (type) {
+    switch (_type) {
         case QtDebugMsg:
             s += "DEBUG   ";
             break;
@@ -54,33 +57,8 @@ QString LogCell::str() {
             break;
     }
     s += "\t";
-    s += msg;
-    return s;
+    s += _msg;
+    return qMove(s);
 }
 
-QVector<LogCell> Log::log = QVector<LogCell>();
-QString Log::path = QString("");
 
-void Log::handler(QtMsgType type, const QMessageLogContext &ctxt,
-                  const QString &msg) {
-    LogCell cell(type, msg);
-    log.append(cell);
-    QFile file(path);
-    file.open(QIODevice::WriteOnly | QIODevice::Append);
-    if (!file.isOpen()) {
-        qCritical("日志文件没打开");
-        return;
-    }
-    QTextStream steam(&file);
-    steam.setCodec("UTF-8");
-    steam << cell.str() << "\n";
-    file.close();
-}
-
-void Log::setPath(const QString &path) {
-    Log::path = path;
-}
-/*todo 后面可以调用线程进行日志的写入，
- * 日志文件名称也要按照日期来分开日志的
- * 日志可以选择不写入，也要定期清除日志
- */

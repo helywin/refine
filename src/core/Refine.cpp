@@ -6,7 +6,7 @@
 #include "Log.h"
 #include <gsl/gsl_fft_real.h>
 #include <gsl/gsl_fft_halfcomplex.h>
-
+/*
 void Refine::smoothing(const Tribe::Cell &in, Tribe::Cell &out,
                        unsigned int point) {
     const unsigned int half = point / 2;
@@ -111,3 +111,4 @@ double Refine::vdv(const Tribe::Cell &in, Range &range) {
     }
     return sqrt(sqrt(sum));
 }
+ */

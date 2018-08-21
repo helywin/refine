@@ -12,9 +12,11 @@
 #include <QtCore/QEvent>
 #include <QtWidgets/QSpinBox>
 
-class TableTips : public QDialog{
+class TableTips : public QDialog {
 Q_OBJECT
-friend class GetVal;
+
+    friend class GetVal;
+
 protected:
     QVBoxLayout *layout;
     QVBoxLayout *button_layout;
@@ -33,9 +35,11 @@ protected:
     virtual void setupUi();
 
 protected slots:
+
     virtual void setVal() = 0;
 
 signals:
+
     virtual void val(QString s);
 
 protected:
@@ -59,11 +63,12 @@ private:
     void setupUi() override;
 
 protected slots:
+
     void setVal() override;
 
 };
 
-class TipZero : public  TableTips {
+class TipZero : public TableTips {
 Q_OBJECT
 protected:
     QVBoxLayout *group_layout;
@@ -81,7 +86,7 @@ protected:
     void setVal() override;
 };
 
-class TipSample : public  TableTips {
+class TipSample : public TableTips {
 Q_OBJECT
 protected:
     QVBoxLayout *group_layout;
@@ -101,10 +106,11 @@ protected:
     void setVal() override;
 
 private slots:
+
     void changeSelection();
 };
 
-class GetVal : public QObject{
+class GetVal : public QObject {
 Q_OBJECT
 public:
     enum class Type {
@@ -137,9 +143,11 @@ public:
     GetVal &operator=(const GetVal &v) = delete;
 
 signals:
+
     void getVal(QString s, int row, int column);
 
 public slots:
+
     void gotVal(QString s);
 
 };

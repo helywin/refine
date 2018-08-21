@@ -1,86 +1,131 @@
 //
-// Created by jiang.wenqiang on 2018/7/4.
+// Created by jiang.wenqiang on 2018/8/8.
 //
 
 #include "Kebab.h"
 
-Kebab::Cell::Cell() :
-        size(KEBAB_CELL_LENGTH), head_index(0), tail_index(0), cell({}) {}
-
-double &Kebab::Cell::operator[](unsigned int index) {
-    return cell[index];
-}
-
-double &Kebab::Cell::head() {
-    return cell[head_index];
-}
-
-double &Kebab::Cell::tail() {
-    return cell[tail_index];
-}
-
-void Kebab::Cell::inc() {
-    if (head_index == size - 1) {
-        head_index = 0;
-    } else {
-        head_index += 1;
+Kebab::Kebab(const Curve::Header &header, Dump *dump, int cell_len) :
+        _index(), _cells(), _cell_whole_size(cell_len), _dump(dump) {
+    Q_ASSERT(dump != nullptr);
+    for (const auto &iter : header) {
+        addCell(iter);
     }
+    _dump->setKebab(this);
 }
 
-void Kebab::Cell::dec() {
-    if (tail_index == size - 1) {
-        tail_index = 0;
-    } else {
-        tail_index += 1;
-    }
+Kebab::Cell &Kebab::operator[](int index) {
+    Q_ASSERT(index >= 0 && index < _cells.size());
+    return _cells[index];
 }
 
-bool Kebab::Cell::full() {
-    return length() >= size - 1;
+Kebab::Cell &Kebab::operator[](const QString &name) {
+    Q_ASSERT(_index.contains(name));
+    return _cells[_index.indexOf(name)];
 }
 
-bool Kebab::Cell::empty() {
-    return head_index == tail_index;
-}
-
-unsigned int Kebab::Cell::length() {
-    int l = head_index - tail_index;
-    if (l < 0) {
-        l += size;
-    }
-    return (unsigned int) l;
-}
-
-
-Kebab::Kebab(unsigned short size) : cell_size(size), max_len(0) {
-    cells = new Cell[size];
-}
-
-Kebab::~Kebab() {
-    delete [] cells;
-}
-
-bool Kebab::add(unsigned short index, double val) {
-    if (index > cell_size - 1) {
-        return false;
-    }
-    if (cells[index].full()) {
-        return false;
-    } else {
-        if (max_len < cells[index].length()) {
-            max_len = cells[index].length();
+int Kebab::maxLen() const {
+    int len = 0;
+    for (const auto &iter : _cells) {
+        if (len < iter.len()) {
+            len = iter.len();
         }
-        cells[index].head() = val;
-        cells[index].inc();
     }
+    return len;
+}
+
+int Kebab::minLen() const {
+    int len = 0;
+    for (const auto &iter : _cells) {
+        if (len > iter.len()) {
+            len = iter.len();
+        }
+    }
+    return len;
+}
+
+void Kebab::addCell(const QString &name) {
+    Q_ASSERT(!_index.contains(name));
+    _index.append(name);
+    Cell cell;
+    cell.initialize(_cell_whole_size);
+    _cells.append(qMove(cell));
+
+}
+
+void Kebab::removeCell(const QString &name) {
+    Q_ASSERT(_index.contains(name));
+    _cells.remove(_index.indexOf(name));
+    _index.remove(_index.indexOf(name));
+}
+
+void Kebab::removeCell(int index) {
+    Q_ASSERT(index < _index.size());
+    _cells.remove(index);
+    _index.remove(index);
+}
+
+bool Kebab::push(int index, const double &val) {
+    Q_ASSERT(index < _cells.size());
+    if (_cells[index].isFull()) {
+        return false;
+    }
+    _cells[index].push(val);
+    dump();
     return true;
 }
 
-bool Kebab::out(double *list) {
-    for (int i = 0; i < cell_size; ++i) {
-        if (!cells[i].empty()) {
-            list[i] = cells[i].tail();
-            cells[i].dec();
+bool Kebab::push(const QString &name, const double &val) {
+    Q_ASSERT(_index.contains(name));
+    if (_cells[_index.indexOf(name)].isFull()) {
+        return false;
+    }
+    _cells[_index.indexOf(name)].push(val);
+    dump();
+    return true;
+}
+
+bool Kebab::isFull() const {
+    for (const auto &iter : _cells) {
+        if (iter.isFull()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Kebab::isEmpty() const {
+    for (const auto &iter : _cells) {
+        if (iter.isEmpty()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Kebab::pop(int index, double &val) {
+    Q_ASSERT(index < _cells.size());
+    if (_cells[index].isEmpty()) {
+        return false;
+    }
+    _cells[index].pop(val);
+    return true;
+}
+
+bool Kebab::pop(const QString &name, double &val) {
+    Q_ASSERT(_index.contains(name));
+    if (_cells[_index.indexOf(name)].isFull()) {
+        return false;
+    }
+    _cells[_index.indexOf(name)].pop(val);
+    return true;
+}
+
+bool Kebab::popLine(QStringList &list) {
+    list.clear();
+    double v;
+    for (int i = 0; i < size(); ++i) {
+        if (pop(i, v)) {
+            list.append(QString::number(v));
         } else {
             return false;
         }
@@ -88,20 +133,90 @@ bool Kebab::out(double *list) {
     return true;
 }
 
-unsigned short Kebab::size() const {
-    return cell_size;
+int Kebab::size() const {
+    return _cells.size();
 }
 
-unsigned int Kebab::length() const {
-    return max_len;
+void Kebab::dump() {
+    if (maxLen() > _cell_whole_size / 2) {
+        _dump->start();
+    }
 }
 
-bool Kebab::add(Kebab::Group &&group) {
-    if (group.empty()) {
+int Kebab::wholeLen() const {
+    return _cell_whole_size;
+}
+
+Kebab::Cell::Cell() :
+        _cell(nullptr), _is_alloc(false),
+        _head(-1), _tail(-1), _whole_size(0) {}
+
+Kebab::Cell::~Cell() {
+    if (_is_alloc) {
+        delete[] _cell;
+    }
+}
+
+void Kebab::Cell::initialize(int len) {
+    if (_is_alloc) {
+        return;
+    }
+    _cell = new DataType[len];
+    _head = 0;
+    _tail = 0;
+    _is_alloc = true;
+    _whole_size = len;
+}
+
+bool Kebab::Cell::push(const double &val) {
+    if (isFull()) {
         return false;
     }
-    for(const auto &key : group.keys()) {
-        add(key, group[key]);
-    }
+    _cell[_head] = val;
+    headForward();
     return true;
 }
+
+bool Kebab::Cell::pop(double &val) {
+    if (isEmpty()) {
+        return false;
+    }
+    val = _cell[_tail];
+    tailForward();
+    return true;
+}
+
+bool Kebab::Cell::isFull() const {
+    return _head - _tail == -1 ||
+           _head - _tail == _whole_size - 1;
+}
+
+bool Kebab::Cell::isEmpty() const {
+    return _head == _tail;
+}
+
+int Kebab::Cell::len() const {
+    if (_head >= _tail) {
+        return _head - _tail;
+    } else {
+        return _head - _tail + _whole_size;
+    }
+}
+
+void Kebab::Cell::headForward() {
+    if (_head < _whole_size - 1) {
+        _head += 1;
+    } else {
+        _head = 0;
+    }
+}
+
+void Kebab::Cell::tailForward() {
+    if (_tail < _whole_size - 1) {
+        _tail += 1;
+    } else {
+        _tail = 0;
+    }
+}
+
+

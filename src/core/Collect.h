@@ -1,64 +1,46 @@
 //
-// Created by jiang.wenqiang on 2018/7/5.
+// Created by jiang.wenqiang on 2018/8/8.
 //
 
-#ifndef CORE_COLLECT_H
-#define CORE_COLLECT_H
+#ifndef REFINE_COLLECT_H
+#define REFINE_COLLECT_H
 
 #include <QtCore/QThread>
-#include <QtCore/QObject>
-#include <QtCore/QTime>
-#include "Can.h"
 #include "Buffer.h"
-
+#include "Can.h"
 
 class Collect : public QThread {
 Q_OBJECT
 public:
-    enum Fail {
-        Start = 1,
-        Time = 2,
-        Connect = 3,
+    enum Result {
+        Succeeded = 0,
+        CanError = 1,
+        BufferFull = 2
     };
 private:
-    Can &can;
-
-    Buffer &buffer;
-
-    int minute;
-
-    bool pause_flag;
-
-    bool stop_flag;
-
-//    bool reconnect_flag;
-
-    unsigned int reconnect;
-
-    unsigned int fail_connect;
+    Can *_can;
+    Buffer *_buffer;
 
 public:
     Collect() = delete;
 
-    Collect(Can &can, Buffer &buffer, int minute = 5);
+    explicit Collect(Can *can, Buffer *buffer);
+
+    void setCan(Can *can);
+
+    void setBuffer(Buffer *buffer);
 
 protected:
-    void run() Q_DECL_OVERRIDE;
+    void run() override;
 
-public:
-    void pause();
+public slots:
 
-    void resume();
-
-    void stop();
+    void start() { QThread::start(); };
 
 signals:
 
-    void get();
-
-    void fail(Fail code);
-
+    void result(Result r);
 };
 
 
-#endif //CORE_COLLECT_H
+#endif //REFINE_COLLECT_H

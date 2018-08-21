@@ -2,49 +2,97 @@
 // Created by jiang.wenqiang on 2018/7/10.
 //
 
-#ifndef CORE_TRIBE_H
-#define CORE_TRIBE_H
+#ifndef REFINE_TRIBE_H
+#define REFINE_TRIBE_H
 
+#include <QtCore/QObject>
+#include <QtCore/QList>
 #include <QtCore/QVector>
-#include <QtCore/QMap>
 
 class Tribe {
 public:
-    typedef QVector<double> Cell;
+    class Cell;
+
+    enum class DataType {
+        Raw = 0,
+        Calculated = 1
+    };
+
 private:
-    QMap<QString, Cell> clan;
+    QStringList _raw_index;
+    QList<Cell> _raw_data;
+    QStringList _cal_index;
+    QList<Cell> _cal_data;
 
 public:
-
     Tribe() = default;
 
-    explicit Tribe(const QStringList &keys);
+    int maxLen() const;
 
-    ~Tribe() = default;
+    int minLen() const;
 
-    void add(const QString &key);
+    int length() const;
 
-    void add(const QString &key, unsigned int size);
+    int rawSize() const;
 
-    Cell &operator[](const QString &key);
+    int calSize() const;
 
-    QString str(const QString &key);
+    int wholeSize() const;
 
-    inline QString str(const char *key) { return str(QString(key)); };
+    bool isAligned() const;
 
-    inline unsigned int size() { return (unsigned) clan.size(); }
+    void setIndex(const QStringList &index, DataType type);
 
-    inline QList<QString> keys() { return clan.keys(); }
+    void addSequence(const QStringList &v, DataType type);
 
-    inline unsigned int length() {
-        return (unsigned) clan.begin().value().length();
-    }
+    void addWholeCurve(const QStringList &name, Cell &&cell, DataType type);
 
-    inline bool exist(const QString &key) { return clan.contains(key); }
+    void addWholeCurve(const QString &name, const double *data, int len,
+                       DataType type);
 
-    inline bool empty(const QString &key) { return clan.empty(); };
+    void removeWholeCurve(const QString &name, DataType type);
+
+    Cell &raw(const QString &name);
+
+    const Cell &raw(const QString &name) const;
+
+    Cell &cal(const QString &name);
+
+    const Cell &cal(const QString &name) const;
+
+    QStringList rawIndex() const;
+
+    QStringList calIndex() const;
+
+    int memory() const;
 
 };
 
+class Tribe::Cell {
+private:
+    QVector<double> _cell;
+public:
+    Cell() = default;
+
+    Cell(const double *data, int len);
+
+    Cell(const Cell &cell) = default;
+
+    Cell &operator=(const Cell &cell) = default;
+
+    double &operator[](int index);
+
+    const double &operator[](int index) const;
+
+    int length() const;
+
+    double *data(int &len);
+
+    const double *data(int &len) const;
+
+    void append(double &v);
+
+    void append(double &&v);
+};
 
 #endif //CORE_TRIBE_H

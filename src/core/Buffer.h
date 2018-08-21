@@ -1,107 +1,140 @@
 //
-// Created by jiang.wenqiang on 2018/6/29.
+// Created by jiang.wenqiang on 2018/8/3.
 //
 
-#ifndef CORE_CANBUFFER_H
-#define CORE_CANBUFFER_H
+#ifndef REFINE_BUFFER_H
+#define REFINE_BUFFER_H
 
+#include <QtCore/QList>
 #include "ControlCan.h"
-#include <QtCore/QMutex>
-#include <QtCore/QStringList>
 
-/**
- * @brief 接收CAN帧的数据结构
- * 循环队列
- */
 class Buffer {
 public:
     class Cell;
 
+//    typedef Cell *Cell *;
+
 private:
-    unsigned int length;
+    int _size;
+    int _index;
+    Cell * _cells;
+    Cell * _head;
+    Cell * _tail;
 
-    Cell *buffer_list;
-
-    unsigned int index;
-
-    Cell *head_point;
-
-    Cell *tail_point;
 
 public:
-    Buffer() = delete;
+    Buffer();
 
-    Buffer(unsigned int length, unsigned int size);
+    Buffer(const Buffer &buffer) = delete;
+
+    explicit Buffer(int buffer_len, unsigned long cell_size = 100);
 
     ~Buffer();
-//    void resize(unsigned int length, unsigned int _size);
 
-    Cell *out();
+    Buffer &operator=(const Buffer &buffer) = delete;
 
-    Cell *push();
+    Cell* operator[](int index);
 
-    Cell *head();
+    const Cell* operator[](int index) const;
 
-    Cell *tail();
+    int size() const;
 
-    bool empty();
+    const VCI_CAN_OBJ* head() const;
 
-    bool full();
+    VCI_CAN_OBJ* head();
 
+    const VCI_CAN_OBJ* tail() const;
 
-private:
-    void inc();
+    VCI_CAN_OBJ* tail();
 
-    void dec();
+    void headForward();
+
+    void tailForward();
+
+    unsigned long headWholeSize() const;
+
+    unsigned long headDataSize() const;
+
+    void setHeadDataSize(unsigned long size);
+
+    unsigned long tailWholeSize() const;
+
+    unsigned long tailDataSize() const;
+
+    void setTailDataSize(unsigned long size = 0);
+
+    bool isFull() const;
+
+    bool isEmpty() const;
+
+    Cell * tailCell();
+
+    const Cell * tailCell() const;
+
+    Cell * headCell();
+
+    const Cell * headCell() const;
 };
 
+
 class Buffer::Cell {
-    friend Buffer;
-public:
-    //! \brief 帧缓冲区
-    PVCI_CAN_OBJ _buffer;
-
-    //! \brief 缓冲区大小
-    unsigned long _size;
-
-    //! \brief 实际长度
-    unsigned long _length;
-
-    //! \brief 计数器
-    unsigned long _index;
-
-    int _delay;
+    friend class Buffer;
 
 public:
+    enum class SendType {
+        Normal = 0,     //! \brief 正常发送
+        Once = 1,       //! \brief 单次发送
+        SelfSendRecieve = 2,        //! \brief 自发自收
+        SelfSendRecieveOnce = 3     //! \brief 单次自发自收
+    };
 
-    Cell() = default;
+private:
+    enum class Status {
+        UnInitialized,
+        Initialized,
+    };
 
-    void init(unsigned long size = 1, int delay = -1);
+private:
+    Status _status;
+    VCI_CAN_OBJ* _cell;
+    unsigned long _whole_size;
+    unsigned long _data_size;
+//    int _delay;
+
+public:
+    Cell();
 
     ~Cell();
 
-//    Cell(const Cell &cells);
+    void initialize(unsigned long size = 100);
 
-//    Cell &operator=(const Cell &cells);
+    VCI_CAN_OBJ* operator[](int index);
 
-    PVCI_CAN_OBJ operator[](unsigned int index);
+    const VCI_CAN_OBJ* operator[](int index) const;
 
-    void str(QStringList &list);
+    VCI_CAN_OBJ* at(int index);
 
-    static QString header();
+    const VCI_CAN_OBJ* at(int index) const;
 
-    inline unsigned long length() const { return _length; };
+    VCI_CAN_OBJ* cell();
 
-    inline PVCI_CAN_OBJ buffer() { return _buffer; };
+    const VCI_CAN_OBJ* cell() const;
 
-    inline void clear() { _length = 0; }
+    unsigned long wholeSize() const;
 
-    inline void setLength(unsigned int length) { _length = length; }
+    unsigned long dataSize() const;
 
-    inline unsigned int size() const { return _size; }
+    void setDataSize(unsigned long size);
 
-//    inline int delay() const { return _delay; }
+    void setSendType(SendType type);
+
+//    void setDelay(int delay = -1);
+//    void clear();
+//    int delay() const;
+    QStringList str() const;
 
 };
 
-#endif //CORE_CANBUFFER_H
+
+#endif //REFINE_BUFFER_H
+

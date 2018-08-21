@@ -1,77 +1,34 @@
 //
-// Created by jiang.wenqiang on 2018/7/5.
+// Created by jiang.wenqiang on 2018/8/8.
 //
 
 #include "Collect.h"
-#include "Log.h"
 
-Collect::Collect(Can &can, Buffer &buffer,
-                 int minute) :
-        can(can), buffer(buffer), minute(minute), pause_flag(false),
-        stop_flag(false), reconnect(0), fail_connect(0) {}
-
-void Collect::stop() {
-    stop_flag = true;
+Collect::Collect(Can *can, Buffer *buffer) :
+        _can(can), _buffer(buffer) {
+    Q_ASSERT(can != nullptr && buffer != nullptr);
 }
 
-void Collect::pause() {
-    pause_flag = true;
+void Collect::setCan(Can *can) {
+    Q_ASSERT(can != nullptr);
+    _can = can;
 }
 
-void Collect::resume() {
-    can.clear();
-    pause_flag = false;
+void Collect::setBuffer(Buffer *buffer) {
+    Q_ASSERT(buffer != nullptr);
+    _buffer = buffer;
 }
 
 void Collect::run() {
-    //connect
-    can.close();
-    can.open();
-    can.init();
-    QTime time_now;
-    time_now.start();
-    if (!can.start()) {
-        emit fail(Collect::Start);
-        qDebug("打不开CAN盒采集数据");
+    bool flag;
+    if (_buffer->isFull()) {
+        emit result(Result::BufferFull);
         return;
     }
-    can.clear();
-    Can::BoardInfo info;
-    Can::ErrorInfo error;
-    unsigned int check_cnt = 0;
-    while (!stop_flag) {
-        msleep(10);
-        if (minute * 60 * 1000 <= time_now.elapsed()) {
-            emit fail(Collect::Time);
-            return;
-        }
-        check_cnt += 1;
-        if (check_cnt == 100 && !can.boardInfo(info)) {
-            emit fail(Collect::Connect);
-        } else if (check_cnt == 100) {
-            check_cnt = 0;
-        }
-        if (pause_flag) {               //暂停
-        } else {                        //采集
-            unsigned long cache = can.cache();
-            if (cache > 0) {
-                if (!buffer.full()) {
-                    bool flag = can.receiveFrame(buffer.push(), error);
-                    if (flag) {
-                        QStringList list;
-                        qDebug() << Buffer::Cell::header();
-//                        (_buffer.head() - 1)->str(list);
-//                        for (auto &iter : list) {
-//                            qDebug() << iter;
-//                        }
-                        emit get();
-                    } else {
-                        qWarning("进入了不该进入的地方");
-                    }
-                } else {
-                    qCritical("帧缓冲区满了");
-                }
-            }
-        }
+    flag = _can->collect(*_buffer);
+    if (flag) {
+        emit result(Result::Succeeded);
+    } else {
+        emit result(Result::CanError);
     }
 }

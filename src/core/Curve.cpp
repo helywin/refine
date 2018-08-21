@@ -1,467 +1,702 @@
 //
-// Created by jiang.wenqiang on 2018/6/29.
+// Created by jiang.wenqiang on 2018/8/6.
 //
 
 #include "Curve.h"
-#include "Log.h"
+#include "Csv.h"
+#include <QtCore/QDebug>
 
-//Cell::Cell() {
-//}
-//
-//Cell::Cell(const Cell &cells) {
-//    *this = cells;
-//}
-//
-//Cell& Cell::operator=(const Cell &cells) {
-//    this->m_index = cells.m_index;
-//    this->name = cells.name;
-//    this->remark = cells.remark;
-//    this->type = cells.type;
-//    this->physical = cells.unit;
-//    this->width = cells.width;
-//    this->color = cells.color;
-//    this->can_id = cells.can_id;
-//    this->zero_flag = cells.zero_flag;
-//    this->zero_bit = cells.zero_bit;
-//    this->high_flag = cells.high_flag;
-//    this->high_range[0] = cells.high_range[0];
-//    this->high_range[1] = cells.high_range[1];
-//    this->low_range[0] = cells.low_range[0];
-//    this->low_range[1] = cells.low_range[1];
-//    this->sample_type = cells.sample_type;
-//    this->sample = cells.sample;
-//    this->frame = cells.frame;
-//    this->range_in[0] = cells.range_in[0];
-//    this->range_in[1] = cells.range_in[1];
-//    this->range_out[0] = cells.range_out[0];
-//    this->range_out[1] = cells.range_out[1];
-//    this->logic = cells.logic;
-//}
+Curve::Curve() : _status(Status::Uninitialized) {}
 
-bool Curve::Cell::check() {
-    bool flag = true;
-    qInfo() << "检查曲线:" << name;
-    if (name.isEmpty()) {
-        qWarning("名称为空");
-        name = QString("曲线%1").arg(index);
+bool Curve::load(QFile &f, const Curve::FileType type) {
+    bool flag = false;
+    switch (type) {
+        case Curve::FileType::Csv:
+            flag = loadFromCsv(f);
+            break;
+        case Curve::FileType::Sqlite3:
+            flag = loadFromSqlite3(f);
+            break;
     }
-    if (width > 10) {
-        qWarning("线太宽");
-        width = 1;
-    }
-    if (color > 0xFFFFFF) {
-        qWarning("颜色超范围");
-        color &= 0x00FFFFFF;
-    }
-    if (can_id > 0x7FF) {
-        qCritical("CAN_ID不对");
-        flag = false;
-    }
-    if (high_flag) {
-        if (high_byte > 7) {
-            qCritical("高字节超过7");
-            flag = false;
-        }
-        if (high_range[0] > 7 || high_range[1] > 7) {
-            qCritical("高位范围不对");
-            flag = false;
-        }
-        if (high_range[0] > high_range[1]) {
-            unsigned short temp = high_range[0];
-            high_range[0] = high_range[1];
-            high_range[1] = temp;
-            qWarning("高位范围弄反");
-        }
-    }
-    if (low_byte > 7) {
-        qCritical("低字节超过7");
-        flag = false;
-    }
-    if (zero_flag && low_byte == 0) {
-        qCritical("低字节和零字节冲突");
-        flag = false;
-    }
-    if (low_range[0] > 7 || low_range[1] > 7) {
-        qCritical("低位范围不对");
-        flag = false;
-    }
-    if (low_range[0] > low_range[1]) {
-        unsigned short temp = low_range[0];
-        low_range[0] = low_range[1];
-        low_range[1] = temp;
-        qWarning("低位范围弄反");
-    }
-    if (range_in[0] > range_in[1]) {
-        long temp = range_in[0];
-        range_in[0] = range_in[1];
-        range_in[1] = temp;
-        qWarning("输入范围弄反");
-    }
-    if (range_out[0] > range_out[1]) {
-        long temp = range_out[0];
-        range_out[0] = range_out[1];
-        range_out[1] = temp;
-        qWarning("输出范围弄反");
-    }
-    qInfo("检查结束");
     return flag;
 }
 
-QString Curve::Cell::str() {
-    QString s;
+bool Curve::dump(QFile &f, const Curve::FileType type) const {
+    bool flag = false;
+    switch (type) {
+        case Curve::FileType::Csv:
+            flag = dumpToCsv(f);
+            break;
+        case Curve::FileType::Sqlite3:
+            flag = dumpToSqlite3(f);
+            break;
+    }
+    return flag;
+}
+
+QStringList Curve::header() const {
+    return _header;
+}
+
+int Curve::size() const {
+    return _cells.size();
+}
+
+QStringList Curve::str() const {
     QStringList list;
-    list.append(QString::number(index));
-    list.append(name);
-    list.append(remark);
-    if (type == Cell::Logical) {
-        list.append(QString("逻辑"));
-    } else {
-        list.append(QString("物理"));
+    for (const auto &cell : _cells) {
+        list.append(cell.str());
     }
-    list.append(unit);
-    list.append(QString::number(width));
-    list.append(QString("0x%1").arg(color, 6, 16, QLatin1Char('0')));
-    list.append(QString("0x%1").arg(can_id, 3, 16, QLatin1Char('0')));
-    if (zero_flag) {
-        list.append(QString("有;") + QString::number(zero_byte));
-    } else {
-        list.append(QString("无;") + QString::number(zero_byte));
-    }
-    if (high_flag) {
-        s = QString("有;");
-    } else {
-        s = QString("无;");
-    }
-    list.append(s + QString("%1;%2~%3")
-            .arg(high_byte)
-            .arg(high_range[0])
-            .arg(high_range[1]));
-    list.append(QString("%1;%2~%3")
-                        .arg(low_byte)
-                        .arg(low_range[0])
-                        .arg(low_range[1]));
-    if (sample_type == Curve::Cell::Frame) {
-        list.append(QString("帧数;%1").arg(sample));
-    } else {
-        list.append(QString("时间;%1").arg(sample));
-    }
-    list.append(QString("%1~%2")
-                        .arg(range_in[0])
-                        .arg(range_in[1]));
-    list.append(QString("%1~%2")
-                        .arg(range_out[0])
-                        .arg(range_out[1]));
-    s = list.join(QChar(','));
-    return s;
+    return qMove(list);
 }
 
-Curve::Curve() {
-    _status = Curve::Empty;
+void Curve::appendRow() {
+    _cells.append(Cell(_cells.size() + 1));
+    _header.append(QString("未命名"));
 }
 
-bool Curve::loadCsv(QFile &csv) {
-    if (!csv.isOpen()) {
-        csv.open(QIODevice::ReadOnly | QIODevice::Text);
-    } else {
-        csv.close();
-        csv.open(QIODevice::ReadOnly | QIODevice::Text);
+void Curve::appendRow(const Bundle bundle) {
+    _cells.append(Cell(_cells.size() + 1, bundle));
+    switch (bundle) {
+        case Bundle::Acceleration:
+            _header.append(QString("加速度"));
+            break;
+        default:
+            break;
     }
-    if (!csv.isOpen()) {
+}
+
+void Curve::insertRow(const int index) {
+    if (index > _cells.size()) {
+        _cells.insert(_cells.size(), Cell(_cells.size() + 1));
+    } else if (index >= 0) {
+        _cells.insert(index, Cell(index));
+    }
+}
+
+void Curve::insertRow(const int index, const Bundle bundle) {
+    if (index > _cells.size()) {
+        _cells.insert(_cells.size(), Cell(_cells.size() + 1, bundle));
+    } else if (index >= 0) {
+        _cells.insert(index, Cell(index, bundle));
+    }
+}
+
+void Curve::removeRow(const int index) {
+    if (index > _cells.size()) {
+        _cells.remove(_cells.size());
+    } else if (index >= 0) {
+        _cells.remove(index);
+    }
+}
+
+void Curve::removeAllRow() {
+    _cells.clear();
+}
+
+bool Curve::loadFromCsv(QFile &f) {
+    if (f.isOpen()) {
+        f.close();
+    }
+    ::Csv csv;
+    csv.setFile(&f);
+    if (!csv.startRead("gbk")) {
         qCritical("文件打开失败");
-        _status = Curve::File;
         return false;
     }
-<<<<<<< HEAD
-    QTextStream stream(&csv);
-    stream.setCodec("gbk");
-    QString str;
-    str = stream.readLine(200);
-    str = str.simplified();
-    str.remove(QRegExp("\\s"));
-    _header = str.split(QChar(','), QString::KeepEmptyParts);
-    while (!stream.atEnd()) {
-        str = stream.readLine(200);
-        str = str.simplified();
-        str.remove(QRegExp("\\s"));
-        QStringList list = str.split(QChar(','), QString::KeepEmptyParts);
-        QStringList split_list;
-        Cell cell;
-=======
     csv.readLine(_table_head);
     while (!csv.finishRead()) {
         QStringList list;
         csv.readLine(list);
->>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
         unsigned short i = 0;
+        Cell cell(i);
         bool first = true;
-<<<<<<< HEAD
-        bool flag = false;
-        for (const auto &iter : _header) {
-=======
         for (const auto &iter : _table_head) {
->>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
             if (!first) {
                 i += 1;
             } else {
                 first = false;
             }
             if (iter == "序号") {
-                flag = false;
-                cell.index = list[i].toUShort(&flag, 10);
-                if (!flag) {
-                    cell.index = i;
-                    cell.index += 1;
-                    qWarning("读取序号失败");
-                }
+                cell.setIndexByStr(list[i]);
                 continue;
             }
-            if (iter == "名称") {
-                cell.name = list[i];
+            if (iter == "显示") {
+                cell.setDisplayByStr(list[i]);
                 continue;
             }
-<<<<<<< HEAD
-            if (iter == "备注") {
-                cell.remark = list[i];
-=======
             if (iter == "名称") {
                 cell.setNameByStr(list[i]);
                 _header.append(list[i]);
->>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
                 continue;
             }
             if (iter == "类型") {
-                if (list[i] == "逻辑") {
-                    cell.type = Cell::Logical;
-                } else if (list[i] == "物理") {
-                    cell.type = Cell::Physical;
-                } else {
-                    qWarning("未知类型,设为物理");
-                    cell.type = Cell::Physical;
-                }
+                cell.setTypeByStr(list[i]);
                 continue;
             }
-            if (iter == "物理") {
-                cell.unit = list[i];
+            if (iter == "单位") {
+                cell.setUnitByStr(list[i]);
                 continue;
             }
             if (iter == "宽度") {
-                flag = false;
-                cell.width = list[i].toUShort(&flag, 10);
-                if (!flag) {
-                    qWarning("读取宽度失败,设为1");
-                    cell.width = 1;
-                }
+                cell.setWidthByStr(list[i]);
                 continue;
             }
             if (iter == "颜色") {
-                flag = false;
-                cell.color = list[i].toULong(&flag, 0);
-                if (!flag) {
-                    cell.color = 0x000000;
-                    qWarning("读取颜色失败,设置为 0x000000");
-                }
+                cell.setColorByStr(list[i]);
                 continue;
             }
             if (iter == "地址") {
-                flag = false;
-                cell.can_id = list[i].toULong(&flag, 0);
-                if (!flag) {
-                    qCritical("读取地址失败");
-                    _status = Curve::Error;
-                    csv.close();
-                    return false;
-                }
+                cell.setCanIdByStr(list[i]);
+                continue;
             }
             if (iter == "零字节") {
-                split_list = list[i].split(QChar(';'));
-                if (split_list[0] == "无") {
-                    cell.zero_flag = false;
-                    cell.zero_byte = 0;
-                    continue;
-                } else if (split_list[0] == "有") {
-                    cell.zero_flag = true;
-                    flag = false;
-                    cell.zero_byte = split_list[1].toUShort(&flag, 10);
-                    if (!flag) {
-                        qCritical("零位无法读取");
-                        _status = Curve::Error;
-                        csv.close();
-                        return false;
-                    }
-                }
+                cell.setZeroByteByStr(list[i]);
+                continue;
             }
             if (iter == "高字节") {
-                split_list = list[i].split(QChar(';'));
-                if (split_list[0] == "有") {
-                    cell.high_flag = true;
-                    flag = false;
-                    cell.high_byte = split_list[1].toUShort(&flag, 10);
-                    split_list = split_list[2].split(QChar('~'));
-                    flag = false;
-                    cell.high_range[0] = split_list[0].toUShort(&flag, 10);
-                    if (flag) {
-                        flag = false;
-                        cell.high_range[1] = split_list[1].toUShort(&flag, 10);
-                    }
-
-                    if (!flag) {
-                        qCritical("读取高位范围失败");
-                        _status = Curve::Error;
-                        csv.close();
-                        return false;
-                    } else {
-                        continue;
-                    }
-
-                } else if (split_list[0] == "无") {
-                    cell.high_flag = false;
-                    cell.high_byte = 0;
-                    cell.high_range[0] = 0;
-                    cell.high_range[1] = 0;
-                    continue;
-                } else {
-                    qWarning("无法识别,设置为无");
-                    cell.high_flag = false;
-                    cell.high_byte = 0;
-                    cell.high_range[0] = 0;
-                    cell.high_range[1] = 0;
-                    continue;
-                }
+                cell.setHighByteByStr(list[i]);
+                continue;
             }
             if (iter == "低字节") {
-                split_list = list[i].split(QChar(';'));
-                flag = false;
-                cell.low_byte = split_list[0].toUShort(&flag, 10);
-                split_list = split_list[1].split(QChar('~'));
-                cell.low_range[0] = split_list[0].toUShort(&flag, 10);
-                if (flag) {
-                    cell.low_range[1] = split_list[1].toUShort(&flag, 10);
-                }
-                if (!flag) {
-                    qCritical("读取低位范围失败");
-                    _status = Curve::Error;
-                    csv.close();
-                    return false;
-                } else {
-                    continue;
-                }
+                cell.setLowByteByStr(list[i]);
+                continue;
             }
             if (iter == "采样") {
-                split_list = list[i].split(QChar(';'));
-                flag = false;
-                cell.sample = split_list[1].toUShort(&flag, 10);
-                if (split_list[0] == "帧数") {
-                    cell.sample_type = Cell::Frame;
-                } else if (split_list[0] == "时间") {
-                    cell.sample_type = Cell::Time;
-                } else {
-                    cell.sample_type = Cell::Time;
-                    qWarning("读取失败,设为时间采样");
-                }
+                cell.setSampleByStr(list[i]);
                 continue;
             }
             if (iter == "输入量程") {
-                split_list = list[i].split(QChar('~'));
-                flag = false;
-                cell.range_in[0] = split_list[0].toUShort(&flag, 10);
-                if (flag) {
-                    cell.range_in[1] = split_list[1].toUShort(&flag, 10);
-                }
-                if (!flag) {
-                    qCritical("读取输入量程失败");
-                    _status = Curve::Error;
-                    csv.close();
-                    return false;
-                } else {
-                    continue;
-                }
+                cell.setRangeInByStr(list[i]);
+                continue;
             }
             if (iter == "输出量程") {
-                split_list = list[i].split(QChar('~'));
-                flag = false;
-                cell.range_out[0] = split_list[0].toUShort(&flag, 10);
-                if (flag) {
-                    cell.range_out[1] = split_list[1].toUShort(&flag, 10);
-                }
-                if (!flag) {
-                    qCritical("读取输出量程失败");
-                    _status = Curve::Error;
-                    csv.close();
-                    return false;
-                } else {
-                    continue;
-                }
+                cell.setRangeOutByStr(list[i]);
+                continue;
+            }
+            if (iter == "备注") {
+                cell.setRemarkByStr(list[i]);
+                continue;
             }
         }
         if (cell.check()) {
-            _config.append(cell);
+            _cells.append(cell);
         } else {
             qCritical("曲线配置有问题");
-            _status = Curve::Error;
-            csv.close();
+            f.close();
             return false;
         }
     }
-    csv.close();
-    _status = Curve::Ok;
+    _status = Status::Initialized;
     return true;
 }
 
-Curve::Status Curve::status() const {
-    return _status;
+bool Curve::loadFromSqlite3(QFile &f) {
+    return false;
 }
 
-void Curve::str(QStringList &list) {
-    list.append(_header.join(QChar(',')));
-    for (auto &cell : _config) {
-        list.append(cell.str());
+bool Curve::dumpToCsv(QFile &f) const {
+    if (f.isOpen()) {
+        f.close();
+    }
+    ::Csv csv;
+    csv.setFile(&f);
+    if (!csv.startWrite("gbk")) {
+        qCritical("文件打开失败");
+        return false;
+    }
+    csv.writeLine(header());
+    for (const auto &cell : _cells) {
+        csv.writeLine(cell.str());
+    }
+    return csv.finishWrite();
+}
+
+bool Curve::dumpToSqlite3(QFile &f) const {
+    return false;
+}
+
+Curve::Cell &Curve::operator[](const int index) {
+    Q_ASSERT(index >= 0 && index < _cells.size());
+    return _cells[index];
+}
+
+const Curve::Cell &Curve::operator[](const int index) const {
+    Q_ASSERT(index >= 0 && index < _cells.size());
+    return _cells[index];
+}
+
+Curve::Cell &Curve::operator[](const QString &name) {
+    Q_ASSERT(_header.contains(name));
+    return _cells[_header.indexOf(name)];
+}
+
+const Curve::Cell &Curve::operator[](const QString &name) const {
+    Q_ASSERT(_header.contains(name));
+    return _cells[_header.indexOf(name)];
+}
+
+Curve::Cell &Curve::at(int index) {
+    return (*this)[index];
+}
+
+const Curve::Cell &Curve::at(int index) const {
+    return (*this)[index];
+}
+
+Curve::Cell &Curve::at(const QString &name) {
+    return (*this)[name];
+}
+
+const Curve::Cell &Curve::at(const QString &name) const {
+    return (*this)[name];
+}
+
+Curve::Cell::Cell() : Cell(0) {}
+
+Curve::Cell::Cell(int index) {
+    Q_ASSERT(index >= 0);
+    _index = (unsigned short) (index);
+    _display = false;
+    _name = QString("未命名");
+    _type = Type::Physical;
+    _unit = QString("无单位");
+    _width = 1;
+    _color = 0xFFFFFF;
+    _can_id = 0x777;
+    _zero_byte_existed = false;
+    _zero_byte = 0;
+    _high_byte_existed = false;
+    _high_byte = 0;
+    _high_byte_range[0] = 0;
+    _high_byte_range[1] = 0;
+    _low_byte = 0;
+    _low_byte_range[0] = 0;
+    _low_byte_range[1] = 7;
+    _sample_type = Sample::Timed;
+    _sample = 10;
+    _range_in[0] = 0;
+    _range_in[1] = 100;
+    _range_out[0] = 0;
+    _range_out[1] = 100;
+//    _logic_map = ;
+    _remark = QString("无");
+    _bundle = Bundle::None;
+}
+
+Curve::Cell::Cell(int index, Curve::Bundle bundle) : Cell(index) {
+    switch (bundle) {
+        case Bundle::Acceleration:
+            _name = QString("加速度");
+            _unit = QString("m/s^2");
+            _remark = QString("汽车的加速度");
+            break;
+        default:
+            break;
     }
 }
 
-const Curve::Cell &Curve::operator[](unsigned int index) {
-    return _config.at(index);
+bool Curve::Cell::check() const {
+    return true;
 }
 
-bool Curve::transform(unsigned long id, unsigned char *data,
-                            double &result, unsigned short &index) {
-    for (const auto &iter : _config) {
-        bool flag = iter.can_id == id &&
-                    (!iter.zero_flag || data[0] == iter.zero_byte);
-        if (flag) {
-            unsigned int full;
-            unsigned int high_byte;
-            unsigned int low_byte;
-            if (iter.high_flag) {
-                high_byte = data[iter.high_byte];
-                high_byte <<= 7 - iter.high_range[1];
-                high_byte >>= 7 - iter.high_range[1] + iter.high_range[0];
-                high_byte <<= iter.low_range[1] - iter.low_range[0] + 1;
-            } else {
-                high_byte = 0;
-            }
-            low_byte = data[iter.low_byte];
-//            qDebug() << "low byte " << low_byte;
-            low_byte <<= 7 - iter.low_range[1];
-            low_byte >>= 7 - iter.low_range[1] + iter.low_range[0];
-            full = high_byte + low_byte;
-//            qDebug() << full;
-            double k;
-            double b;
-            k = (double) (iter.range_out[1] - iter.range_out[0]) /
-                (double) (iter.range_in[1] - iter.range_in[0]);
-            b = (double) iter.range_out[0] - k * iter.range_in[0];
-            result = (double) full * k + b;
-            index = iter.index;
-            return true;
-        } else {
-            return false;
+QStringList Curve::Cell::str() const {
+    QStringList list;
+    list.append(indexStr());
+    list.append(displayStr());
+    list.append(nameStr());
+    list.append(typeStr());
+    list.append(unitStr());
+    list.append(widthStr());
+    list.append(colorStr());
+    list.append(canIdStr());
+    list.append(zeroByteStr());
+    list.append(highByteStr());
+    list.append(lowByteStr());
+    list.append(sampleStr());
+    list.append(rangeInStr());
+    list.append(rangeOutStr());
+    list.append(logicMapStr());
+    list.append(remarkStr());
+    return qMove(list);
+}
+
+//str getter
+
+QString Curve::Cell::indexStr() const {
+    return QString::number(_index);
+}
+
+QString Curve::Cell::displayStr() const {
+    return QString::number(_display);
+}
+
+QString Curve::Cell::nameStr() const {
+    return QString(_name);
+}
+
+QString Curve::Cell::typeStr() const {
+    switch (_type) {
+        case Type::Physical:
+            return QString("物理");
+        case Type::Logical:
+            return QString("逻辑");
+        default:
+            return QString();
+    }
+}
+
+QString Curve::Cell::unitStr() const {
+    return QString(_unit);
+}
+
+QString Curve::Cell::widthStr() const {
+    return QString::number(_width);
+}
+
+QString Curve::Cell::colorStr() const {
+    return QString("0x%1").arg(_color, 6, 16, QChar('0'));
+}
+
+QString Curve::Cell::canIdStr() const {
+    return QString("0x%1").arg(_can_id, 3, 16, QChar('0'));
+}
+
+QString Curve::Cell::zeroByteStr() const {
+    if (_zero_byte_existed) {
+        return QString("%1").arg(_zero_byte);
+    } else {
+        return QString("无");
+    }
+}
+
+QString Curve::Cell::highByteStr() const {
+    if (_high_byte_existed) {
+        return QString("%1;%2~%3")
+                .arg(_high_byte)
+                .arg(_high_byte_range[0])
+                .arg(_high_byte_range[1]);
+    } else {
+        return QString("无");
+    }
+}
+
+QString Curve::Cell::lowByteStr() const {
+    return QString("%1;%2~%3")
+            .arg(_low_byte)
+            .arg(_low_byte_range[0])
+            .arg(_low_byte_range[1]);
+}
+
+QString Curve::Cell::sampleStr() const {
+    switch (_sample_type) {
+        case Sample::Timed:
+            return QString("时间;%1").arg(_sample);
+        case Sample::Framed:
+            return QString("帧数;%1").arg(_sample);
+        default:
+            return QString();
+    }
+}
+
+QString Curve::Cell::rangeInStr() const {
+    return QString("%1~%2")
+            .arg(_range_in[0])
+            .arg(_range_in[1]);
+}
+
+QString Curve::Cell::rangeOutStr() const {
+    return QString("%1~%2")
+            .arg(_range_out[0])
+            .arg(_range_out[1]);
+}
+
+QString Curve::Cell::logicMapStr() const {
+    if (_type == Type::Physical) {
+        return QString("非逻辑变量");
+    } else {
+        QStringList list;
+        for (const auto &iter : _logic_map.keys()) {
+            list.append(QString("%1:%2").arg(iter).arg(_logic_map[iter]));
         }
+        return qMove(list.join(QChar(';')));
     }
 }
 
-void Curve::names(QStringList &list) {
-    list.clear();
-    for (const auto &iter : _config) {
-        list.append(iter.name);
+QString Curve::Cell::remarkStr() const {
+    return QString(_remark);
+}
+
+//val getter
+
+unsigned short Curve::Cell::index() const {
+    return _index;
+}
+
+bool Curve::Cell::display() const {
+    return _display;
+}
+
+QString Curve::Cell::name() const {
+    return _name;
+}
+
+Curve::Cell::Type Curve::Cell::type() const {
+    return _type;
+}
+
+QString Curve::Cell::unit() const {
+    return _unit;
+}
+
+unsigned short Curve::Cell::width() const {
+    return _width;
+}
+
+unsigned long Curve::Cell::color() const {
+    return _color;
+}
+
+unsigned long Curve::Cell::canId() const {
+    return _can_id;
+}
+
+bool Curve::Cell::zeroByteExisted() const {
+    return _zero_byte_existed;
+}
+
+unsigned short Curve::Cell::zeroByte() const {
+    return _zero_byte;
+}
+
+bool Curve::Cell::highByteExisted() const {
+    return _high_byte_existed;
+}
+
+unsigned short Curve::Cell::highByte() const {
+    return _high_byte;
+}
+
+const unsigned short *Curve::Cell::highByteRange() const {
+    return _high_byte_range;
+}
+
+unsigned short Curve::Cell::lowByte() const {
+    return _low_byte;
+}
+
+const unsigned short *Curve::Cell::lowByteRange() const {
+    return _low_byte_range;
+}
+
+Curve::Cell::Sample Curve::Cell::sampleType() const {
+    return _sample_type;
+}
+
+unsigned long Curve::Cell::sample() const {
+    return _sample;
+}
+
+const long *Curve::Cell::rangeIn() const {
+    return _range_in;
+}
+
+const long *Curve::Cell::rangeOut() const {
+    return _range_out;
+}
+
+QMap<unsigned int, QString> Curve::Cell::logicMap() const {
+    return _logic_map;
+}
+
+QString Curve::Cell::remark() const {
+    return _remark;
+}
+
+//str setter
+
+void Curve::Cell::setIndexByStr(QString &s) {
+    _index = s.toUShort();
+}
+
+void Curve::Cell::setDisplayByStr(QString &s) {
+    _display = s == QString("是");
+}
+
+void Curve::Cell::setNameByStr(QString &s) {
+    _name = s;
+}
+
+void Curve::Cell::setTypeByStr(QString &s) {
+    if (s == QString("物理")) {
+        _type = Type::Physical;
+    } else {
+        _type = Type::Logical;
     }
 }
+
+void Curve::Cell::setUnitByStr(QString &s) {
+    _unit = s;
+}
+
+void Curve::Cell::setWidthByStr(QString &s) {
+    _width = s.toUShort();
+}
+
+void Curve::Cell::setColorByStr(QString &s) {
+    _color = s.toULong(nullptr, 16);
+}
+
+void Curve::Cell::setCanIdByStr(QString &s) {
+    _can_id = s.toULong(nullptr, 16);
+}
+
+void Curve::Cell::setZeroByteByStr(QString &s) {
+    if (s == QString("无")) {
+        _zero_byte_existed = false;
+    } else {
+        _zero_byte_existed = true;
+        _zero_byte = s.toUShort();
+    }
+}
+
+void Curve::Cell::setHighByteByStr(QString &s) {
+    if (s == QString("无")) {
+        _high_byte_existed = false;
+    } else {
+        _high_byte_existed = true;
+        QStringList list = s.split(QChar(';'));
+        _high_byte = list[0].toUShort();
+        list = list[1].split(QChar('~'));
+        _high_byte_range[0] = list[0].toUShort();
+        _high_byte_range[1] = list[1].toUShort();
+    }
+}
+
+void Curve::Cell::setLowByteByStr(QString &s) {
+    QStringList list = s.split(QChar(';'));
+    _low_byte = list[0].toUShort();
+    list = list[1].split(QChar('~'));
+    _low_byte_range[0] = list[0].toUShort();
+    _low_byte_range[1] = list[1].toUShort();
+}
+
+void Curve::Cell::setSampleByStr(QString &s) {
+    QStringList list = s.split(QChar(';'));
+    if (list[0] == QString("帧数")) {
+        _sample_type = Sample::Framed;
+    } else {
+        _sample_type = Sample::Timed;
+    }
+    _sample = list[1].toULong();
+}
+
+void Curve::Cell::setRangeInByStr(QString &s) {
+    QStringList list = s.split(QChar('~'));
+    _range_in[0] = list[0].toLong();
+    _range_in[1] = list[1].toLong();
+}
+
+void Curve::Cell::setRangeOutByStr(QString &s) {
+    QStringList list = s.split(QChar('~'));
+    _range_out[0] = list[0].toLong();
+    _range_out[1] = list[1].toLong();
+}
+
+void Curve::Cell::setLogicMapByStr(QString &s) {
+
+}
+
+void Curve::Cell::setRemarkByStr(QString &s) {
+    _remark = s;
+}
+
+void Curve::Cell::setIndexByVal(const unsigned short v) {
+    _index = v;
+}
+
+void Curve::Cell::setDisplayByVal(const bool v) {
+    _display = v;
+}
+
+void Curve::Cell::setNameByVal(const QString &v) {
+    _name = v;
+}
+
+void Curve::Cell::setTypeByVal(const Curve::Cell::Type v) {
+    _type = v;
+}
+
+void Curve::Cell::setUnitByVal(const QString &v) {
+    _unit = v;
+}
+
+void Curve::Cell::setWidthByVal(const unsigned short v) {
+    _width = v;
+}
+
+void Curve::Cell::setColorByVal(const unsigned long v) {
+    _color = v;
+}
+
+void Curve::Cell::setCanIdByVal(const unsigned long v) {
+    _can_id = v;
+}
+
+void Curve::Cell::setZeroByteExistedByVal(const bool v) {
+    _zero_byte_existed = v;
+}
+
+void Curve::Cell::setZeroByteByVal(const unsigned short v) {
+    _zero_byte = v;
+}
+
+void Curve::Cell::setHighByteExistedByVal(const bool v) {
+    _high_byte_existed = v;
+}
+
+void Curve::Cell::setHighByteByVal(const unsigned short v) {
+    _high_byte = v;
+}
+
+void Curve::Cell::setHighByteRangeByVal(const unsigned short *v) {
+    _high_byte_range[0] = v[0];
+    _high_byte_range[1] = v[1];
+}
+
+void Curve::Cell::setLowByteByVal(const unsigned short v) {
+    _low_byte = v;
+}
+
+void Curve::Cell::setLowByteRangeByVal(const unsigned short *v) {
+    _low_byte_range[0] = v[0];
+    _low_byte_range[1] = v[1];
+}
+
+void Curve::Cell::setSampleTypeByVal(const Curve::Cell::Sample v) {
+    _sample_type = v;
+}
+
+void Curve::Cell::setSampleByVal(const unsigned long v) {
+    _sample = v;
+}
+
+void Curve::Cell::setRangeInByVal(const long *v) {
+    _range_in[0] = v[0];
+    _range_in[1] = v[1];
+}
+
+void Curve::Cell::setRangeOutByVal(const long *v) {
+    _range_out[0] = v[0];
+    _range_out[1] = v[1];
+}
+
+void Curve::Cell::setLogicMapByVal(const Logic &v) {
+    _logic_map = v;
+}
+
+void Curve::Cell::setRemarkByVal(const QString &v) {
+    _remark = v;
+}
+
+

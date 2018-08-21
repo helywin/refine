@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/7/10.
 //
 
-#ifndef CORE_REFINE_H
-#define CORE_REFINE_H
+#ifndef REFINE_REFINE_H
+#define REFINE_REFINE_H
 
 #include "Tribe.h"
 

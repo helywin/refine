@@ -3,7 +3,6 @@
 //
 
 #include "Sketch.h"
-#include <QtGui/QPainter>
 
 void Sketch::paintEvent(QPaintEvent *event) {
     QPainter painter;
@@ -13,7 +12,7 @@ void Sketch::paintEvent(QPaintEvent *event) {
     painter.end();
 }
 
-Sketch::Sketch(QWidget *parent) : QOpenGLWidget(parent){
+Sketch::Sketch(QWidget *parent) : QOpenGLWidget(parent) {
 }
 
 void Sketch::animate() {

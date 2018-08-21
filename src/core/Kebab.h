@@ -1,78 +1,106 @@
 //
-// Created by jiang.wenqiang on 2018/7/4.
+// Created by jiang.wenqiang on 2018/8/8.
 //
 
-#ifndef CORE_KEBAB_H
-#define CORE_KEBAB_H
+#ifndef REFINE_KEBAB_H
+#define REFINE_KEBAB_H
+
+#include <QtCore/QVector>
+#include <QtCore/QThread>
+#include "Curve.h"
+#include "Dump.h"
 
 #define KEBAB_CELL_LENGTH 4096
 
-#include <QtCore/QMap>
-
-class Kebab {
+class Kebab : public QThread {
+Q_OBJECT
 public:
-    typedef QMap <unsigned short, double> Group;
-
     class Cell;
 
 private:
-    Cell *cells;
-
-    unsigned short cell_size;
-
-    unsigned int max_len;
+    QVector<QString> _index;
+    QVector<Cell> _cells;
+    int _cell_whole_size;
+    Dump *_dump;
 
 public:
-
-
     Kebab() = delete;
 
-    explicit Kebab(unsigned short size);
+    explicit Kebab(const Curve::Header &header, Dump *dump,
+                   int cell_len = KEBAB_CELL_LENGTH);
 
-    ~Kebab();
+    Cell &operator[](int index);
 
-    bool add(unsigned short index, double val);
+    Cell &operator[](const QString &name);
 
-    bool add(Group &&group);
+    int maxLen() const;
 
-    bool out(double *list);
+    int minLen() const;
 
-    unsigned short size() const;
+    void addCell(const QString &name);
 
-    unsigned int length() const;
+    void removeCell(const QString &name);
 
+    void removeCell(int index);
+
+    bool push(int index, const double &val);
+
+    bool push(const QString &name, const double &val);
+
+    bool isFull() const;
+
+    bool isEmpty() const;
+
+    int size() const;
+
+    int wholeLen() const;
+
+    bool popLine(QStringList &list);
+
+private:
+    void dump();
+
+    bool pop(int index, double &val);
+
+    bool pop(const QString &name, double &val);
 };
 
 class Kebab::Cell {
 public:
-    unsigned int size;
-
+    typedef double DataType;
 private:
-    double cell[KEBAB_CELL_LENGTH];
-
-    unsigned int head_index;
-
-    unsigned int tail_index;
+    DataType *_cell;
+    bool _is_alloc;
+    int _head;
+    int _tail;
+    int _whole_size;
 
 public:
     Cell();
 
-    double &operator[](unsigned int index);
+    Cell(const Cell &v) = default;
 
-    double &head();
+    Cell &operator=(const Cell &v) = default;
 
-    double &tail();
+    ~Cell();
 
-    void inc();
+    void initialize(int len);
 
-    void dec();
+    bool push(const double &val);
 
-    bool full();
+    bool pop(double &val);
 
-    bool empty();
+    bool isFull() const;
 
-    unsigned int length();
+    bool isEmpty() const;
+
+    int len() const;
+
+private:
+    void headForward();
+
+    void tailForward();
 };
 
 
-#endif //CORE_DATARAFT_H
+#endif //REFINE_KEBAB_H

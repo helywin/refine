@@ -4,7 +4,6 @@
 
 #include "CurveTable.h"
 #include <QtGui/QMouseEvent>
-#include <QtCore/QDebug>
 
 CurveTable::CurveTable(QWidget *parent) : QTableWidget(parent) {
     setupUi();
@@ -17,9 +16,10 @@ void CurveTable::setupUi() {
     setRowCount(0);
     setHorizontalHeaderLabels(QStringList(
             {QString("名称"), QString("类型"), QString("单位"),
-             QString("宽度"), QString("颜色"), QString("地址"), QString("零字节"),
-             QString("高字节"), QString("低字节"), QString("采样"),
-             QString("输入量程"), QString("输出量程"), QString("备注")}));
+             QString("宽度"), QString("颜色"), QString("地址"), 
+             QString("零字节"), QString("高字节"), QString("低字节"),
+             QString("采样"), QString("输入量程"), QString("输出量程"),
+             QString("备注")}));
     setSelectionMode(QAbstractItemView::SingleSelection);
     setColumnWidth(0, 150);
     setColumnWidth(1, 60);
@@ -73,7 +73,7 @@ void CurveTable::insert() {
     }
 //    qDebug() << "current row" << currentRow();
     insertRow(index);
-    for(int i = 0; i < columnCount(); ++i) {
+    for (int i = 0; i < columnCount(); ++i) {
         setItem(index, i, new QTableWidgetItem());
     }
     item(index, 1)->setFlags(item(index, 1)->flags() & ~Qt::ItemIsEditable);
@@ -97,7 +97,7 @@ void CurveTable::remove() {
 void CurveTable::add() {
     int index = rowCount();
     insertRow(index);
-    for(int i = 0; i < columnCount(); ++i) {
+    for (int i = 0; i < columnCount(); ++i) {
         setItem(index, i, new QTableWidgetItem());
     }
     item(index, 1)->setFlags(item(index, 1)->flags() & ~Qt::ItemIsEditable);

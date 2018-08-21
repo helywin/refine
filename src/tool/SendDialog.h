@@ -20,12 +20,7 @@
 
 
 class SendDialog : public QMainWindow {
-<<<<<<< HEAD
-    Q_OBJECT
-public:
-=======
 Q_OBJECT
->>>>>>> 07d1fd7... 发送数据小工具写完,还需测试
 private:
     QWidget *_widget_central;
     QMenuBar *_menu_bar;
@@ -45,6 +40,7 @@ protected:
 
 public:
     explicit SendDialog(QWidget *parent = nullptr);
+
     ~SendDialog() final = default;
 
 private:

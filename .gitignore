@@ -20,3 +20,5 @@ doxygen
 data
 # clion文件
 .idea
+# log文件
+log
