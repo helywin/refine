@@ -17,10 +17,16 @@ public:
         CanError = 1,
         BufferFull = 2
     };
+
+    enum Command {
+        Pause = 0,
+        Resume = 1,
+        Stop = 2
+    };
 private:
     Can *_can;
     Buffer *_buffer;
-
+    Command _cmd;
 public:
     Collect() = delete;
 
@@ -32,10 +38,6 @@ public:
 
 protected:
     void run() override;
-
-public slots:
-
-    void start() { QThread::start(); };
 
 signals:
 

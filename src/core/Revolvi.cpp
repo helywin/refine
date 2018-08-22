@@ -11,7 +11,6 @@ Revolvi::Revolvi(Collect *collect, Transfori *transfori,
     Q_ASSERT(collect != nullptr && transfori != nullptr);
     Q_ASSERT(limit > 0);
     Q_ASSERT(interval > 0);
-    connect(&_timer, &QTimer::timeout, _collect, &Collect::start);
 }
 
 void Revolvi::setTimeLimit(const int limit) {
@@ -21,9 +20,7 @@ void Revolvi::setTimeLimit(const int limit) {
 
 void Revolvi::setCollect(Collect *collect) {
     Q_ASSERT(collect != nullptr);
-    disconnect(&_timer, &QTimer::timeout, _collect, &Collect::start);
     _collect = collect;
-    connect(&_timer, &QTimer::timeout, _collect, &Collect::start);
 }
 
 void Revolvi::setTransfori(Transfori *transform) {
@@ -37,11 +34,11 @@ void Revolvi::setInterval(const int interval) {
 }
 
 void Revolvi::marvel() {
-    _timer.start(_interval);
+    _collect->start();
+    while (_collect->isRunning()) {}
 }
 
 void Revolvi::pulse() {
-    _timer.stop();
 }
 
 void Revolvi::pulse(int msec) {
@@ -49,7 +46,6 @@ void Revolvi::pulse(int msec) {
 }
 
 void Revolvi::resume() {
-    _timer.start(_interval);
 }
 
 void Revolvi::collectResult(Collect::Result result) {

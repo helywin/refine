@@ -42,7 +42,7 @@ public:
 
     bool reconnect();
 
-    bool collect(Buffer &buffer, int delay = -1);
+    bool collect(Buffer &buffer, int delay = 0);
 
     bool deliver(Buffer &buffer);
 

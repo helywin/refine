@@ -69,3 +69,6 @@ target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui Qt5OpenGL)
 
 add_executable(test_transmit test_transmit.cpp ${CORE})
 target_link_libraries(test_transmit Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
+
+add_executable(test_collect test_collect.cpp ${CORE})
+target_link_libraries(test_collect Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})

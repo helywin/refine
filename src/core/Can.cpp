@@ -70,7 +70,7 @@ bool Can::collect(Buffer &buffer, int delay) {
                          buffer.head(),
                          buffer.headWholeSize(),
                          delay);
-    bool flag = length < 0xFFFFFFFF;
+    bool flag = length < 0xFFFFFFFF && length > 0;
     if (flag) {
         buffer.setHeadDataSize(length);
         buffer.headForward();
@@ -142,6 +142,7 @@ bool Can::isConnected() {
 }
 
 void Can::getError(VCI_ERR_INFO *error) {
+    Q_ASSERT(error != nullptr);
     VCI_ReadErrInfo(_config->deviceType(),
                     _config->deviceIndex(),
                     _config->deviceChannel(),
@@ -158,7 +159,9 @@ Can::Config::Config(unsigned long channel) :
         _device_type(4), _device_index(0), _device_channel(channel),
         _baud_rate(500),
         _config(new VCI_INIT_CONFIG{0x00000000, 0xFFFFFFFF, 0, 0, 0x00,
-                                    0x1C, 0}) {}
+                                    0x1C, 0}) {
+    Q_ASSERT(channel == 0 || channel == 1);
+}
 
 Can::Config::~Config() {
     delete _config;
