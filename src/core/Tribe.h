@@ -8,6 +8,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QVector>
+#include "Define.h"
 
 class Tribe {
 public:
@@ -47,7 +48,7 @@ public:
 
     void addWholeCurve(const QStringList &name, Cell &&cell, DataType type);
 
-    void addWholeCurve(const QString &name, const double *data, int len,
+    void addWholeCurve(const QString &name, const float_u *data, int len,
                        DataType type);
 
     void removeWholeCurve(const QString &name, DataType type);
@@ -70,29 +71,29 @@ public:
 
 class Tribe::Cell {
 private:
-    QVector<double> _cell;
+    QVector<float_u> _cell;
 public:
     Cell() = default;
 
-    Cell(const double *data, int len);
+    Cell(const float_u *data, int len);
 
     Cell(const Cell &cell) = default;
 
     Cell &operator=(const Cell &cell) = default;
 
-    double &operator[](int index);
+    float_u & operator[](int index);
 
-    const double &operator[](int index) const;
+    const float_u & operator[](int index) const;
 
     int length() const;
 
-    double *data(int &len);
+    float_u *data(int &len);
 
-    const double *data(int &len) const;
+    const float_u *data(int &len) const;
 
-    void append(double &v);
+    void append(float_u &v);
 
-    void append(double &&v);
+    void append(float_u &&v);
 };
 
 #endif //CORE_TRIBE_H

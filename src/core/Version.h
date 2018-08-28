@@ -10,17 +10,17 @@
 class Version {
 private:
     enum class Id {
-        Demo = -1,
-        Alpha = 0,
-        Beta = 1,
-        Gamma = 2,
-        Release = 3,
+        Demo = 0xFF,
+        Alpha = 0x00,
+        Beta = 0x01,
+        Gamma = 0x02,
+        Release = 0x03,
     };
 
-private:
-    const static int major = 0;
-    const static int micro = 0;
-    const static int minor = 0;
+public:
+    const static unsigned char major = 0;
+    const static unsigned char micro = 0;
+    const static unsigned char minor = 0;
     const static Id identifier = Id::Demo;
 
 public:

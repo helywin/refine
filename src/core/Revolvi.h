@@ -42,7 +42,7 @@ public:
 
 public slots:
 
-    void collectResult(Collect::Result result);
+    void collectResult(int type);
 
 };
 

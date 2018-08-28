@@ -6,6 +6,7 @@
 #define REFINE_TRANSFORI_H
 
 #include <QtCore/QThread>
+#include "Define.h"
 #include "Curve.h"
 #include "Buffer.h"
 #include "Kebab.h"

@@ -46,7 +46,7 @@ private:
     QAction *menu_setting_skin;
     QAction *menu_setting_display_left;
     QAction *menu_setting_display_right;
-    QAction *menu_setting_display_statu;
+    QAction *menu_setting_display_status;
     QAction *menu_setting_display_bottom;
     QAction *menu_setting_fullscreen;
     QAction *menu_test_paint;

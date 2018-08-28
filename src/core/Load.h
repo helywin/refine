@@ -9,7 +9,7 @@
 #include <QtCore/QThread>
 #include "Tribe.h"
 #include "Csv.h"
-#include "Rf.h"
+#include "Ref.h"
 
 
 class Load : public QThread{
@@ -17,14 +17,14 @@ Q_OBJECT
 public:
     enum FileType {
         Csv,
-        Rf,
+        Ref,
     };
 private:
     Tribe *_tribe;
     QFile *_file;
     FileType _file_type;
     ::Csv *_csv;
-    ::Rf *_rf;
+    ::Ref *_ref;
 
 public:
     Load();

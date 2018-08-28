@@ -23,7 +23,7 @@ private:
     QSpinBox *point_num;
     QSpinBox *line_num;
     QSpinBox *line_width;
-    QSpinBox *freq;
+//    QSpinBox *freq;
     QPushButton *ok;
     QTimer *timer;
 public:

@@ -23,7 +23,7 @@ public:
 
     enum FileType {
         Csv,
-        Sqlite3,
+        Ref,
     };
 
     enum Bundle {
@@ -83,11 +83,11 @@ public:
 private:
     bool loadFromCsv(QFile &f);
 
-    bool loadFromSqlite3(QFile &f);
+    bool loadFromRef(QFile &f);
 
     bool dumpToCsv(QFile &f) const;
 
-    bool dumpToSqlite3(QFile &f) const;
+    bool dumpToRef(QFile &f) const;
 };
 
 

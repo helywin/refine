@@ -113,7 +113,7 @@ void Tribe::addWholeCurve(const QStringList &name, Cell &&cell,
     }
 }
 
-void Tribe::addWholeCurve(const QString &name, const double *data, int len,
+void Tribe::addWholeCurve(const QString &name, const float_u *data, int len,
                           Tribe::DataType type) {
     switch (type) {
         case DataType::Raw:
@@ -187,7 +187,7 @@ bool Tribe::isAligned() const {
     return maxLen() == minLen();
 }
 
-Tribe::Cell::Cell(const double *data, int len) {
+Tribe::Cell::Cell(const float_u *data, int len) {
     _cell.resize(len);
     memcpy(_cell.data(), data, len * sizeof(double));
 }
@@ -196,30 +196,30 @@ int Tribe::Cell::length() const {
     return _cell.size();
 }
 
-double *Tribe::Cell::data(int &len) {
+float_u *Tribe::Cell::data(int &len) {
     len = _cell.size();
     return _cell.data();
 }
 
-const double *Tribe::Cell::data(int &len) const {
+const float_u *Tribe::Cell::data(int &len) const {
     len = _cell.size();
     return _cell.data();
 }
 
-double &Tribe::Cell::operator[](int index) {
+float_u & Tribe::Cell::operator[](int index) {
     Q_ASSERT(index < _cell.size() && index >= 0);
     return _cell[index];
 }
 
-const double &Tribe::Cell::operator[](int index) const {
+const float_u & Tribe::Cell::operator[](int index) const {
     Q_ASSERT(index < _cell.size() && index >= 0);
     return _cell[index];
 }
 
-void Tribe::Cell::append(double &v) {
+void Tribe::Cell::append(float_u &v) {
     _cell.append(v);
 }
 
-void Tribe::Cell::append(double &&v) {
+void Tribe::Cell::append(float_u &&v) {
     _cell.append(v);
 }

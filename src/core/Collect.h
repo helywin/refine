@@ -41,7 +41,7 @@ protected:
 
 signals:
 
-    void result(Result r);
+    void result(int type);
 };
 
 

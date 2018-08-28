@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/8/8.
 //
 
+#include <QtCore/QDebug>
 #include "Revolvi.h"
 
 Revolvi::Revolvi(Collect *collect, Transfori *transfori,
@@ -11,6 +12,8 @@ Revolvi::Revolvi(Collect *collect, Transfori *transfori,
     Q_ASSERT(collect != nullptr && transfori != nullptr);
     Q_ASSERT(limit > 0);
     Q_ASSERT(interval > 0);
+    connect(_collect, &Collect::result, this, &Revolvi::collectResult,
+            Qt::DirectConnection);
 }
 
 void Revolvi::setTimeLimit(const int limit) {
@@ -20,7 +23,10 @@ void Revolvi::setTimeLimit(const int limit) {
 
 void Revolvi::setCollect(Collect *collect) {
     Q_ASSERT(collect != nullptr);
+    disconnect(_collect, &Collect::result, this, &Revolvi::collectResult);
     _collect = collect;
+    connect(_collect, &Collect::result, this, &Revolvi::collectResult,
+            Qt::DirectConnection);
 }
 
 void Revolvi::setTransfori(Transfori *transform) {
@@ -48,8 +54,8 @@ void Revolvi::pulse(int msec) {
 void Revolvi::resume() {
 }
 
-void Revolvi::collectResult(Collect::Result result) {
-    if (result == Collect::Result::Succeeded) {
+void Revolvi::collectResult(int type) {
+    if (type == 1) {
         _transfori->start();
     }
 }

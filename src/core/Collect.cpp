@@ -23,24 +23,29 @@ void Collect::setBuffer(Buffer *buffer) {
 void Collect::run() {
     while (true) {
         msleep(10);
-        qDebug("..");
-        if(_cmd == Command::Stop) {
+        if (_cmd == Command::Stop) {
             return;
-        } else if (_cmd == Command::Pause){
+        } else if (_cmd == Command::Pause) {
             continue;
         }
         if (_buffer->isFull()) {
             emit result(Result::BufferFull);
-            qDebug("buffer full");
+//            qDebug("buffer full");
             return;
         } else {
+            _buffer->tailCell()->setSendType(
+                    Buffer::Cell::SendType::SelfSendRecieve);
+            bool flag1 = _can->deliver(*_buffer);
+            if (!flag1) {
+                emit result(Result::CanError);
+                qDebug("empty");
+            }
             bool flag = _can->collect(*_buffer);
             if (flag) {
                 emit result(Result::Succeeded);
-                qDebug("succeeded");
             } else {
                 emit result(Result::CanError);
-                qDebug("can error");
+                qDebug("full");
             }
         }
     }

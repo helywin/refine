@@ -6,6 +6,7 @@
 #include "Log.h"
 #include <gsl/gsl_fft_real.h>
 #include <gsl/gsl_fft_halfcomplex.h>
+#include <fftw3.h>
 /*
 void Refine::smoothing(const Tribe::Cell &in, Tribe::Cell &out,
                        unsigned int point) {

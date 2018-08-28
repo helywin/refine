@@ -14,8 +14,8 @@ bool Curve::load(QFile &f, const Curve::FileType type) {
         case Curve::FileType::Csv:
             flag = loadFromCsv(f);
             break;
-        case Curve::FileType::Sqlite3:
-            flag = loadFromSqlite3(f);
+        case Curve::FileType::Ref:
+            flag = loadFromRef(f);
             break;
     }
     return flag;
@@ -27,8 +27,8 @@ bool Curve::dump(QFile &f, const Curve::FileType type) const {
         case Curve::FileType::Csv:
             flag = dumpToCsv(f);
             break;
-        case Curve::FileType::Sqlite3:
-            flag = dumpToSqlite3(f);
+        case Curve::FileType::Ref:
+            flag = dumpToRef(f);
             break;
     }
     return flag;
@@ -191,7 +191,7 @@ bool Curve::loadFromCsv(QFile &f) {
     return true;
 }
 
-bool Curve::loadFromSqlite3(QFile &f) {
+bool Curve::loadFromRef(QFile &f) {
     return false;
 }
 
@@ -212,7 +212,7 @@ bool Curve::dumpToCsv(QFile &f) const {
     return csv.finishWrite();
 }
 
-bool Curve::dumpToSqlite3(QFile &f) const {
+bool Curve::dumpToRef(QFile &f) const {
     return false;
 }
 

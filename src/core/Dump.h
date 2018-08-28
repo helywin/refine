@@ -8,7 +8,7 @@
 #include <QtCore/QThread>
 #include <QtCore/QFile>
 #include "Csv.h"
-#include "Rf.h"
+#include "Ref.h"
 
 class Kebab;
 
@@ -17,14 +17,14 @@ Q_OBJECT
 public:
     enum FileType {
         Csv,
-        Rf,
+        Ref,
     };
 private:
     Kebab *_kebab;
     QFile *_file;
     FileType _file_type;
     ::Csv *_csv;
-    ::Rf *_rf;
+    ::Ref *_ref;
 
 public:
     Dump();

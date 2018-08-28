@@ -6,7 +6,7 @@
 #include "Load.h"
 
 Load::Load() : _tribe(nullptr), _file(nullptr), _file_type(FileType::Csv),
-               _csv(nullptr), _rf(nullptr) {}
+               _csv(nullptr), _ref(nullptr) {}
 
 void Load::setTribe(Tribe* tribe) {
     Q_ASSERT(tribe != nullptr);
@@ -26,7 +26,7 @@ void Load::setFile(QFile *f, Load::FileType type) {
             _csv->setFile(f);
             _csv->startRead("gbk");
             break;
-        case FileType::Rf:
+        case FileType::Ref:
             break;
     }
 }

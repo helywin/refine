@@ -102,7 +102,7 @@ bool Kebab::isEmpty() const {
     return false;
 }
 
-bool Kebab::pop(int index, double &val) {
+bool Kebab::pop(int index, float_u &val) {
     Q_ASSERT(index < _cells.size());
     if (_cells[index].isEmpty()) {
         return false;
@@ -111,7 +111,7 @@ bool Kebab::pop(int index, double &val) {
     return true;
 }
 
-bool Kebab::pop(const QString &name, double &val) {
+bool Kebab::pop(const QString &name, float_u &val) {
     Q_ASSERT(_index.contains(name));
     if (_cells[_index.indexOf(name)].isFull()) {
         return false;
@@ -122,7 +122,7 @@ bool Kebab::pop(const QString &name, double &val) {
 
 bool Kebab::popLine(QStringList &list) {
     list.clear();
-    double v;
+    float_u v;
     for (int i = 0; i < size(); ++i) {
         if (pop(i, v)) {
             list.append(QString::number(v));
@@ -161,14 +161,14 @@ void Kebab::Cell::initialize(int len) {
     if (_is_alloc) {
         return;
     }
-    _cell = new DataType[len];
+    _cell = new float_u[len];
     _head = 0;
     _tail = 0;
     _is_alloc = true;
     _whole_size = len;
 }
 
-bool Kebab::Cell::push(const double &val) {
+bool Kebab::Cell::push(const float_u &val) {
     if (isFull()) {
         return false;
     }
@@ -177,7 +177,7 @@ bool Kebab::Cell::push(const double &val) {
     return true;
 }
 
-bool Kebab::Cell::pop(double &val) {
+bool Kebab::Cell::pop(float_u &val) {
     if (isEmpty()) {
         return false;
     }

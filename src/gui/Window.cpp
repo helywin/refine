@@ -128,10 +128,10 @@ void Window::setupUi() {
     menu_setting_display_right->setText(QString("右侧(&R)"));
     menu_setting_display_right->setCheckable(true);
     menu_setting_display_right->setChecked(true);
-    menu_setting_display_statu = new QAction(this);
-    menu_setting_display_statu->setText(QString("状态栏(&S)"));
-    menu_setting_display_statu->setCheckable(true);
-    menu_setting_display_statu->setChecked(true);
+    menu_setting_display_status = new QAction(this);
+    menu_setting_display_status->setText(QString("状态栏(&S)"));
+    menu_setting_display_status->setCheckable(true);
+    menu_setting_display_status->setChecked(true);
     menu_setting_display_bottom = new QAction(this);
     menu_setting_display_bottom->setText(QString("底部(&B)"));
     menu_setting_display_bottom->setCheckable(true);
@@ -162,7 +162,7 @@ void Window::setupUi() {
     menu_setting->addMenu(menu_setting_display);
     menu_setting_display->addAction(menu_setting_display_left);
     menu_setting_display->addAction(menu_setting_display_right);
-    menu_setting_display->addAction(menu_setting_display_statu);
+    menu_setting_display->addAction(menu_setting_display_status);
     menu_setting_display->addAction(menu_setting_display_bottom);
     menu_setting->addAction(menu_setting_fullscreen);
     menu_test->addAction(menu_test_paint);
@@ -189,8 +189,9 @@ void Window::setupUi() {
     curve_dialog = new CurveDialog(this);
     paint_test_dialog = new PaintTest(this);
 
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, opengl, &Sketch::animate);
+//    QTimer *timer = new QTimer(this);
+//    connect(timer, &QTimer::timeout, opengl, &Sketch::animate,
+//            Qt::DirectConnection);
 //    timer->start(10);
 
     connect(menu_collect_load, &QAction::triggered, new QFileDialog,
@@ -202,7 +203,7 @@ void Window::setupUi() {
             &Window::hideDisplay);
     connect(menu_setting_display_right, &QAction::triggered, this,
             &Window::hideDisplay);
-    connect(menu_setting_display_statu, &QAction::triggered, this,
+    connect(menu_setting_display_status, &QAction::triggered, this,
             &Window::hideDisplay);
     connect(menu_setting_display_bottom, &QAction::triggered, this,
             &Window::hideDisplay);
@@ -262,7 +263,7 @@ void Window::hideDisplay() {
     } else {
         right_widget->hide();
     }
-    if (menu_setting_display_statu->isChecked()) {
+    if (menu_setting_display_status->isChecked()) {
         status_bar->show();
     } else {
         status_bar->hide();

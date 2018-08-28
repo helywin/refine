@@ -28,13 +28,15 @@ void Transfori::setKebab(Kebab *kebab) {
 
 void Transfori::run() {
     if (_buffer->isEmpty()) {
+        qDebug(".");
         return;
     }
+    qDebug("tr");
     while (const Buffer::Cell * c = _buffer->tailCell()) {
         const Buffer::Cell &cell = *c;
         for (unsigned int i = 0; i < cell.dataSize(); ++i) {
             unsigned short index = 0;
-            double result;
+            float_u result;
             for (int j = 0; j < _curve->size(); ++j) {
                 const Curve::Cell &curve = (*_curve)[j];
                 bool flag = curve.canId() == cell[i]->ID &&
@@ -61,12 +63,12 @@ void Transfori::run() {
                                  curve.lowByteRange()[0];
                     full = high_byte + low_byte;
 //            qDebug() << full;
-                    double k;
-                    double b;
-                    k = (double) (curve.rangeOut()[1] - curve.rangeOut()[0]) /
-                        (double) (curve.rangeIn()[1] - curve.rangeIn()[0]);
-                    b = (double) curve.rangeOut()[0] - k * curve.rangeIn()[0];
-                    result = (double) full * k + b;
+                    float_u k;
+                    float_u b;
+                    k = (float_u) (curve.rangeOut()[1] - curve.rangeOut()[0]) /
+                        (float_u) (curve.rangeIn()[1] - curve.rangeIn()[0]);
+                    b = (float_u) curve.rangeOut()[0] - k * curve.rangeIn()[0];
+                    result = (float_u) full * k + b;
                     index = curve.index();
                     _kebab->push(index, result);
                 }

@@ -6,22 +6,25 @@
 #define REFINE_SKETCH_H
 
 #include <QtWidgets/QOpenGLWidget>
-#include <QtOpenGL/QGLFunctions>
+#include <QtCore/QThread>
+#include <QtGui/QOpenGLFunctions_4_0_Core>
 #include "Painter.h"
 
-class Sketch : public QOpenGLWidget, public QGLFunctions {
+class Sketch
+        : public QOpenGLWidget,
+          public QOpenGLFunctions_4_0_Core{
 Q_OBJECT
+private:
+    Painter paint;
 public:
     explicit Sketch(QWidget *parent = nullptr);
 
     ~Sketch() final = default;
 
-    inline void set_param(int freq, int num, int ps, int width) {
-        paint.setParams(freq, num, ps, width);
+    inline void set_param(int num, int ps, int width, int msec) {
+        paint.setParams(num, ps, width, msec);
     }
 
-private:
-    Painter paint;
 protected:
     void paintEvent(QPaintEvent *e) override;
 

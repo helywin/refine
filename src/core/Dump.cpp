@@ -6,7 +6,7 @@
 #include "Kebab.h"
 
 Dump::Dump() : _kebab(nullptr), _file(nullptr), _file_type(FileType::Csv),
-               _csv(nullptr), _rf(nullptr) {}
+               _csv(nullptr), _ref(nullptr) {}
 
 void Dump::setKebab(Kebab *kebab) {
     Q_ASSERT(kebab != nullptr);
@@ -26,7 +26,7 @@ void Dump::setFile(QFile *f, const FileType type) {
             _csv->setFile(f);
             _csv->startWrite("gbk", true);
             break;
-        case FileType::Rf:
+        case FileType::Ref:
             break;
     }
 }
