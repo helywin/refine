@@ -16,17 +16,17 @@ public:
 
     typedef QStringList Header;
 
-    enum Status {
+    enum class Status {
         Uninitialized,
         Initialized
     };
 
-    enum FileType {
+    enum class FileType {
         Csv,
         Ref,
     };
 
-    enum Bundle {
+    enum class Bundle {
         None,
         Acceleration,
         EngineSpeed,
@@ -79,6 +79,8 @@ public:
     void removeRow(int index);
 
     void removeAllRow();
+
+    void clear();
 
 private:
     bool loadFromCsv(QFile &f);

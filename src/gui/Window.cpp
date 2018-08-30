@@ -18,6 +18,7 @@ Window::Window(QWidget *parent) : QMainWindow(parent) {
 void Window::setupUi() {
     this->setDocumentMode(true);
     this->setWindowTitle(QString("Refine匹配软件"));
+    this->setWindowIcon(QIcon(":/res/ui/refine.ico"));
     buttom_widget = new QWidget(this);
     central_vsplitter = new QSplitter(Qt::Vertical, this);
     central_hsplitter = new QSplitter(Qt::Horizontal, central_vsplitter);

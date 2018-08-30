@@ -45,3 +45,9 @@ HEADERS += \
 RESOURCES += \
     res/ui.qrc
 
+OTHER_FILES += \
+        ./res/refine.rc
+
+RC_FILE += \
+        ./res/refine.rc
+

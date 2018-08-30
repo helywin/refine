@@ -12,7 +12,7 @@
 
 class Criteria {
 public:
-    enum ModeType {
+    enum class ModeType {
         Invalid,
         Acceleration,
         DriveAway,
@@ -22,7 +22,7 @@ public:
         CruiseControl
     };
 
-    enum Fail {
+    enum class Fail {
         File
     };
 

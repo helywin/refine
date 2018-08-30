@@ -16,14 +16,14 @@ public:
 
     enum class DataType {
         Raw = 0,
-        Calculated = 1
+        Pro = 1
     };
 
 private:
     QStringList _raw_index;
     QList<Cell> _raw_data;
-    QStringList _cal_index;
-    QList<Cell> _cal_data;
+    QStringList _pro_index;
+    QList<Cell> _pro_data;
 
 public:
     Tribe() = default;
@@ -36,7 +36,7 @@ public:
 
     int rawSize() const;
 
-    int calSize() const;
+    int proSize() const;
 
     int wholeSize() const;
 
@@ -57,13 +57,13 @@ public:
 
     const Cell &raw(const QString &name) const;
 
-    Cell &cal(const QString &name);
+    Cell &pro(const QString &name);
 
-    const Cell &cal(const QString &name) const;
+    const Cell &pro(const QString &name) const;
 
     QStringList rawIndex() const;
 
-    QStringList calIndex() const;
+    QStringList proIndex() const;
 
     int memory() const;
 

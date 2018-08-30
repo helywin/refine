@@ -252,6 +252,13 @@ const Curve::Cell &Curve::at(const QString &name) const {
     return (*this)[name];
 }
 
+void Curve::clear() {
+    _cells.clear();
+    _table_head.clear();
+    _header.clear();
+    _status = Status::Uninitialized;
+}
+
 Curve::Cell::Cell() : Cell(0) {}
 
 Curve::Cell::Cell(int index) {

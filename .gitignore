@@ -10,6 +10,7 @@ Desktop.ini
 *.o
 *.obj
 # 编译目录
+_build
 build
 debug
 #release #release加上dll后还挺大的，不过一般dll都不动
@@ -22,3 +23,4 @@ data
 .idea
 # log文件
 log
+doc/source/_static

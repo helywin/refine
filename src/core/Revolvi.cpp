@@ -54,8 +54,8 @@ void Revolvi::pulse(int msec) {
 void Revolvi::resume() {
 }
 
-void Revolvi::collectResult(int type) {
-    if (type == 1) {
+void Revolvi::collectResult(Collect::Result type) {
+    if (type == Collect::Result::Succeeded) {
         _transfori->start();
     }
 }

@@ -12,13 +12,13 @@
 class Collect : public QThread {
 Q_OBJECT
 public:
-    enum Result {
+    enum class Result {
         Succeeded = 0,
         CanError = 1,
         BufferFull = 2
     };
 
-    enum Command {
+    enum class Command {
         Pause = 0,
         Resume = 1,
         Stop = 2
@@ -41,7 +41,7 @@ protected:
 
 signals:
 
-    void result(int type);
+    void result(Result type);
 };
 
 

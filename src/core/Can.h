@@ -18,7 +18,7 @@ public:
 
     class RegStatus;
 
-    enum Status {
+    enum class Status {
         Disconnected = 0,
         Connected = 1,
     };

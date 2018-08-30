@@ -3,7 +3,6 @@
 //
 
 #include <QtCore/QDebug>
-#include <cstdio>
 #include "Curve.h"
 #include "Can.h"
 #include "Transfori.h"
@@ -22,7 +21,10 @@ int main() {
 //    if(can.init()){
 //        qDebug("初始化通道2成功");
 //    }
-    can.connect();
+    if(!can.connect()) {
+        qDebug("连接不上CAN盒！");
+        return -1;
+    }
 //    can.reset();
 //    if(can.start()){
 //        qDebug("启动通道2成功");

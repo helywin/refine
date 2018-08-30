@@ -15,7 +15,7 @@ class Kebab;
 class Dump : public QThread {
 Q_OBJECT
 public:
-    enum FileType {
+    enum class FileType {
         Csv,
         Ref,
     };
@@ -23,8 +23,8 @@ private:
     Kebab *_kebab;
     QFile *_file;
     FileType _file_type;
-    ::Csv *_csv;
-    ::Ref *_ref;
+    Csv *_csv;
+    Ref *_ref;
 
 public:
     Dump();

@@ -9,7 +9,7 @@
 
 class Version {
 private:
-    enum class Id {
+    enum class Id : std::uint8_t {
         Demo = 0xFF,
         Alpha = 0x00,
         Beta = 0x01,
@@ -20,7 +20,7 @@ private:
 public:
     const static unsigned char major = 0;
     const static unsigned char micro = 0;
-    const static unsigned char minor = 0;
+    const static unsigned char minor = 1;
     const static Id identifier = Id::Demo;
 
 public:
@@ -46,7 +46,7 @@ public:
                 s += QString("(Release)");
                 break;
         }
-        return s;
+        return qMove(s);
     }
 };
 

@@ -5,38 +5,89 @@
 #ifndef REFINE_REF_H
 #define REFINE_REF_H
 
+#include <QtCore/QList>
+#include <QtCore/QDataStream>
+#include <windows.h>
+#include "Curve.h"
+#include "Kebab.h"
+#include "Tribe.h"
+#include "Modes.h"
+
 
 class Ref {
 public:
-    struct Header {
-        unsigned char magic[8];                 // 8 byte
-        long crc32;                             // 4 byte
-        char user_info[32];                     // 32 byte
-        long long time;                         // 8 byte
-        unsigned char file_type;                // 1 byte
-        unsigned long seg_index[8];             // 32 byte
-        unsigned char reserved[128];            // 128 byte
-    };
-private:
-    Header _header;
+    class Header;
 
 public:
-    Ref();
+    Ref() = default;
 
-    void setFile();
+    bool loadCurveConfig(QFile &file, Curve &curve);
 
-    bool startWrite(const char *codec, bool is_append = false);
+    bool dumpCurveConfig(QFile &file, const Curve &curve);
 
-    void writeLine(const double *data) const;
+    bool loadRawData(QFile &file, Tribe &tribe);
 
-    bool finishWrite();
+    bool dumpRawData(QFile &file, const Kebab &kebab);
 
-    bool startRead(const char *codec);
+    bool loadModeConfig(QFile &file);
 
-    void readLine(const double *data) const;
+    bool dumpModeConfig(QFile &file);
 
-    bool finishRead();
+    bool loadProData(QFile &file, Tribe &tribe);
 
+    bool dumpProData(QFile &file, const Tribe &tribe);
+
+    bool loadResult(QFile &file);
+
+    bool dumpResult(QFile &file);
+
+};
+
+class Ref::Header {
+public:
+    enum class Type {
+        None = 0x00,
+        CurveConfig = 0x01,     //.cc
+        RawData = 0x02,         //.rd
+        ModeConfig = 0x04,      //.mc
+        ProData = 0x08,         //.cd
+        Result = 0x10           //.rs
+    };
+private:
+    //! \brief 四字节对齐
+    unsigned char _magic[8];                  // 8 byte
+    unsigned long _type;                      // 4 byte
+    long _crc32;                              // 4 byte
+    char _info[48];                           // 32 byte
+    unsigned int _time;                               // 4 byte
+    unsigned char _reserved[128];             // 128 byte
+public:
+    Header();
+
+    Header(unsigned int time, Type type);
+
+    Header(const Header &header) = default;
+
+    ~Header() = default;
+
+    //getter and setter
+    void setType(Type type);
+
+    void setCrc32(long crc32);
+
+    void setInfo(const QString &info);
+
+    void setInfo(const char *info, int len);
+
+    void setTime(unsigned int time);
+
+    Type type() const;
+
+    long crc32() const;
+
+    const char *info() const;
+
+    unsigned int time() const;
 };
 
 

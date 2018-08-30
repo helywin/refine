@@ -3,6 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+==============
 Refine手册
 ==============
 
@@ -12,4 +13,6 @@ Refine手册
        :maxdepth: 2
 
        chapter-1.rst
+       chapter-2.rst
+       chapter-3.rst
 
