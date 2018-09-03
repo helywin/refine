@@ -5,6 +5,8 @@
 #ifndef REFINE_REF_H
 #define REFINE_REF_H
 
+class QDataStream;
+
 class QStringList;
 
 class QString;
@@ -31,6 +33,18 @@ private:
 public:
     Ref();
 
+private:
+    bool loadFileHeader(QDataStream &stream, Header &header);
+
+    void dumpFileHeader(QDataStream &stream, const Header &header);
+
+    void dumpFileHeaderCrc32(QDataStream &stream, Ref::Header &header);
+
+    void convertCurveConfig(const Curve &in, QDataStream &out);
+
+    bool convertCurveConfig(QDataStream &in, Curve &out);
+
+public:
     bool loadCurveConfig(QFile &file, Curve &curve);
 
     bool dumpCurveConfig(QFile &file, const Curve &curve);
@@ -60,14 +74,14 @@ private:
 
 };
 
-#define MAGIC_LEN 8
-#define CRC32_LEN 4
-#define TYPE_LEN 4
-#define INFO_LEN 44
-#define TIME_LEN 4
-#define RESERVED_LEN 128
-#define HEADER_LEN (MAGIC_LEN + INFO_LEN + RESERVED_LEN + \
-                    TYPE_LEN + CRC32_LEN + TIME_LEN)
+#define HEADER_MAGIC_L 8
+#define HEADER_CRC32_L 4
+#define HEADER_TYPE_L 4
+#define HEADER_INFO_L 44
+#define HEADER_TIME_L 4
+#define HEADER_RESV_L 128
+#define HEADER_L (HEADER_MAGIC_L + HEADER_CRC32_L + HEADER_TYPE_L + \
+                   HEADER_INFO_L + HEADER_TIME_L + HEADER_RESV_L)
 
 class Ref::Header {
 public:
@@ -81,12 +95,12 @@ public:
     };
 private:
     //! \brief 四字节对齐
-    char _magic[MAGIC_LEN];                   // 8 byte
+    char _magic[HEADER_MAGIC_L];                // 8 byte
     unsigned int _crc_sum;                      // 4 byte
-    unsigned int _type;                       // 4 byte
-    char _info[INFO_LEN];                     // 48 byte
-    unsigned int _time;                       // 4 byte
-    char _reserved[RESERVED_LEN];             // 128 byte
+    unsigned int _type;                         // 4 byte
+    char _info[HEADER_INFO_L];                  // 48 byte
+    unsigned int _time;                         // 4 byte
+    char _reserved[HEADER_RESV_L];              // 128 byte
 public:
     Header();
 
@@ -137,6 +151,5 @@ public:
 
     QStringList str() const;
 };
-
 
 #endif //REFINE_REF_H

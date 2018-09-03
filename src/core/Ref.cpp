@@ -18,28 +18,18 @@ Ref::Ref() {
     initTable();
 }
 
-bool Ref::loadCurveConfig(QFile &file, Curve &curve) {
-    file.open(QIODevice::ReadOnly);
-    if (!file.isOpen()) {
-        return false;
-    }
-    QDataStream stream;
-    stream.setDevice(&file);
-    stream.setVersion(QDataStream::Qt_5_11);
-    stream.setByteOrder(QDataStream::ByteOrder::LittleEndian);
-    Header header;
-
-    file.seek(0);
-    stream.readRawData(header.magic(), MAGIC_LEN);
+bool Ref::loadFileHeader(QDataStream &stream, Ref::Header &header) {
+    stream.device()->seek(0);
+    stream.readRawData(header.magic(), HEADER_MAGIC_L);
     stream >> header.crc32();
     stream >> header.type();
-    stream.readRawData(header.info(), INFO_LEN);
+    stream.readRawData(header.info(), HEADER_INFO_L);
     stream >> header.time();
-    stream.readRawData(header.reserved(), RESERVED_LEN);
+    stream.readRawData(header.reserved(), HEADER_RESV_L);
 
     QByteArray byte_array;
     signed char byte;
-    file.seek(MAGIC_LEN + CRC32_LEN);
+    stream.device()->seek(HEADER_MAGIC_L + HEADER_CRC32_L);
     while (!stream.atEnd()) {
         stream >> byte;
         byte_array.append(byte);
@@ -52,41 +42,19 @@ bool Ref::loadCurveConfig(QFile &file, Curve &curve) {
     return true;
 }
 
-bool Ref::dumpCurveConfig(QFile &file, const Curve &curve) {
-    file.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    if (!file.isOpen()) {
-        return false;
-    }
-    Header header(QDateTime::currentDateTime().toTime_t(),
-                  Header::Type::CurveConfig);
-    char user[INFO_LEN];
-    char computer[INFO_LEN];
-    unsigned long user_l = INFO_LEN;
-    unsigned long computer_l = INFO_LEN;
-    GetUserNameA(user, &user_l);
-    GetComputerNameA(computer, &computer_l);
-    QString info = QString(user) + "@" + QString(computer);
-    header.setInfo(info);
-    const Header &header_c = header;
-    QDataStream stream(&file);
-    file.seek(0);
-    stream.setVersion(QDataStream::Qt_5_11);
-    //默认是BigEndian，坑爹
-    stream.setByteOrder(QDataStream::ByteOrder::LittleEndian);
-    stream.writeRawData(header_c.magic(), MAGIC_LEN);
+void Ref::dumpFileHeader(QDataStream &stream, const Ref::Header &header) {
+    stream.device()->seek(0);
+    stream.writeRawData(header.magic(), HEADER_MAGIC_L);
     //写string时最好用以上函数，不然长度每次都不一样
-    stream << header_c.crc32();
-    stream << header_c.type();
-    stream.writeRawData(header_c.info(), INFO_LEN);
+    stream << header.crc32();
+    stream << header.type();
+    stream.writeRawData(header.info(), HEADER_INFO_L);
     stream << header.time();
-    stream.writeRawData(header_c.reserved(), RESERVED_LEN);
+    stream.writeRawData(header.reserved(), HEADER_RESV_L);
+}
 
-    //其他数据读写
-    const char *b = "hello world!";
-    stream.writeRawData(b, strlen(b));
-
-
-    file.seek(MAGIC_LEN + CRC32_LEN);
+void Ref::dumpFileHeaderCrc32(QDataStream &stream, Ref::Header &header) {
+    stream.device()->seek(HEADER_MAGIC_L + HEADER_CRC32_L);
     QByteArray byte_array;
     signed char byte;
     byte_array.clear();
@@ -95,9 +63,274 @@ bool Ref::dumpCurveConfig(QFile &file, const Curve &curve) {
         byte_array.append(byte);
     }
     unsigned int check = crc32(byte_array);
-    file.seek(MAGIC_LEN);
+    stream.device()->seek(HEADER_MAGIC_L);
     stream << check;
+}
+
+#define CURVE_NAME_L 32
+#define CURVE_UNIT_L 16
+#define CURVE_REMARK_L 64
+
+void Ref::convertCurveConfig(const Curve &in, QDataStream &out) {
+
+/*    unsigned short _index;
+    bool _display;
+    QString _name;
+    Type _type;
+    QString _unit;
+    unsigned short _width;
+    unsigned long _color;
+    unsigned long _can_id;
+    bool _zero_byte_existed;
+    unsigned short _zero_byte;
+    bool _high_byte_existed;
+    unsigned short _high_byte;
+    unsigned short _high_byte_range[2];
+    unsigned short _low_byte;
+    unsigned short _low_byte_range[2];
+    Sample _sample_type;
+    unsigned long _sample;
+    long _range_in[2];
+    long _range_out[2];
+    Logic _logic_map;
+    QString _remark;
+    以上数据需要转换成可以更好的存储的数据，通过该函数
+    index - char 1(byte)(下同)
+    display - char 1
+    type - char 1
+    width - char 1
+    name - char[32] 32
+    unit - char[16] 16
+    color - unsigned long 4
+    can - unsigned long 4
+    zero_exist - char 1
+    zero_byte - char 1
+    char[2]
+    high_exist - char 1
+    high_byte - char 1
+    high_range - char[2] 2
+    char[1]
+    low_byte - char 1
+    low_range - char[2] 2
+
+    sample - char 1
+    char[1]
+    sample_rate short 2
+
+    range_in long[2] 8
+    range_out long[2] 8
+
+    remark char[64];
+    */
+
+    out.device()->seek(HEADER_L);
+    out.writeRawData("VC", 2);
+    out << (unsigned short) in.size();
+
+    for (int i = 0; i < in.size(); ++i) {
+        out << (unsigned char) in[i].index();
+        out << (unsigned char) in[i].display();
+        out << (unsigned char) in[i].type();
+        out << (unsigned char) in[i].width();
+
+        char name[CURVE_NAME_L];
+        memcpy(name, in[i].name().toStdString().c_str(), CURVE_NAME_L);
+        bool end = false;
+        for (auto &iter : name) {
+            if (iter == 0) {
+                end = true;
+            }
+            if (end) {
+                iter = 0;
+            }
+        }
+        out.writeRawData(name, CURVE_NAME_L);
+
+        char unit[CURVE_UNIT_L];
+        memcpy(unit, in[i].unit().toStdString().c_str(), CURVE_UNIT_L);
+        end = false;
+        for (auto &iter : name) {
+            if (iter == 0) {
+                end = true;
+            }
+            if (end) {
+                iter = 0;
+            }
+        }
+        out.writeRawData(unit, CURVE_UNIT_L);
+
+        out << (unsigned int) in[i].color();
+        out << (unsigned int) in[i].canId();
+
+        out << (unsigned char) in[i].zeroByteExisted();
+        out << (unsigned char) in[i].zeroByte();
+        out << (unsigned char) 0 << (unsigned char) 0;
+
+        out << (unsigned char) in[i].highByteExisted();
+        out << (unsigned char) in[i].highByte();
+        out << (unsigned char) in[i].highByteRange()[0];
+        out << (unsigned char) in[i].highByteRange()[1];
+
+        out << (unsigned char) 0;
+        out << (unsigned char) in[i].lowByte();
+        out << (unsigned char) in[i].lowByteRange()[0];
+        out << (unsigned char) in[i].lowByteRange()[1];
+
+        out << (unsigned char) in[i].sampleType();
+        out << (unsigned char) 0;
+        out << (unsigned short) in[i].sample();
+
+        out << (int) in[i].rangeIn()[0];
+        out << (int) in[i].rangeIn()[1];
+
+        out << (int) in[i].rangeOut()[0];
+        out << (int) in[i].rangeOut()[1];
+
+        char remark[64];
+        memcpy(remark, in[i].remark().toStdString().c_str(), 64);
+        end = false;
+        for (auto &iter : name) {
+            if (iter == 0) {
+                end = true;
+            }
+            if (end) {
+                iter = 0;
+            }
+        }
+        out.writeRawData(remark, 64);
+    }
+}
+
+bool Ref::convertCurveConfig(QDataStream &in, Curve &out) {
+    in.device()->seek(HEADER_L);
+    char vc[2];
+    in.readRawData(vc, 2);
+    if (!(vc[0] == 'V' && vc[1] == 'C')) {
+        return false;
+    }
+    unsigned short size;
+    in >> size;
+    unsigned char char_buf;
+    unsigned char char_buf1;
+    unsigned int uint_buf;
+    int int_buf;
+    int int_buf1;
+    unsigned short short_buf;
+    for (int i = 0; i < size; ++i) {
+        out.appendRow();
+        in >> char_buf;
+        out[i].setIndexByVal(char_buf);
+        in >> char_buf;
+        out[i].setDisplayByVal(char_buf);
+        in >> char_buf;
+        out[i].setTypeByVal((Curve::Cell::Type) char_buf);
+        in >> char_buf;
+        out[i].setWidthByVal(char_buf);
+
+        char name[CURVE_NAME_L];
+        in.readRawData(name, CURVE_NAME_L);
+        out[i].setNameByVal(QString::fromUtf8(name));
+
+        char unit[CURVE_UNIT_L];
+        in.readRawData(unit, CURVE_UNIT_L);
+        out[i].setNameByVal(QString::fromUtf8(unit));
+
+        in >> uint_buf;
+        out[i].setColorByVal(uint_buf);
+        in >> uint_buf;
+        out[i].setCanIdByVal(uint_buf);
+
+        in >> char_buf;
+        out[i].setZeroByteExistedByVal(char_buf);
+        in >> char_buf;
+        out[i].setZeroByteByVal(char_buf);
+        in >> char_buf;
+        in >> char_buf;
+
+        in >> char_buf;
+        out[i].setHighByteExistedByVal(char_buf);
+        in >> char_buf;
+        out[i].setHighByteByVal(char_buf);
+        in >> char_buf;
+        in >> char_buf1;
+        out[i].setHighByteRangeByVal(char_buf, char_buf1);
+
+        in >> char_buf;
+        in >> char_buf;
+        out[i].setLowByteByVal(char_buf);
+        in >> char_buf;
+        in >> char_buf1;
+        out[i].setLowByteRangeByVal(char_buf, char_buf1);
+
+        in >> char_buf;
+        out[i].setSampleTypeByVal((Curve::Cell::Sample) char_buf);
+        in >> char_buf;
+        in >> short_buf;
+        out[i].setSampleByVal(short_buf);
+
+        in >> int_buf;
+        in >> int_buf1;
+        out[i].setRangeInByVal(int_buf, int_buf1);
+
+        in >> int_buf;
+        in >> int_buf1;
+        out[i].setRangeOutByVal(int_buf, int_buf1);
+
+        char remark[CURVE_REMARK_L];
+        in.readRawData(remark, CURVE_REMARK_L);
+        out[i].setNameByVal(QString::fromUtf8(remark));
+    }
+    return true;
+}
+
+bool Ref::loadCurveConfig(QFile &file, Curve &curve) {
+    file.open(QIODevice::ReadOnly);
+    if (!file.isOpen()) {
+        return false;
+    }
+    QDataStream stream;
+    stream.setDevice(&file);
+    stream.setVersion(QDataStream::Qt_5_11);
+    stream.setByteOrder(QDataStream::ByteOrder::LittleEndian);
+    Header header;
+
+    loadFileHeader(stream, header);
+    convertCurveConfig(stream, curve);
+
+    stream.unsetDevice();
     file.close();
+    return true;
+}
+
+bool Ref::dumpCurveConfig(QFile &file, const Curve &curve) {
+    file.open(QIODevice::ReadWrite | QIODevice::Truncate);
+    if (!file.isOpen()) {
+        return false;
+    }
+    QDataStream stream;
+    stream.setVersion(QDataStream::Qt_5_11);
+    stream.setByteOrder(QDataStream::ByteOrder::LittleEndian);
+    stream.setDevice(&file);
+    Header header(QDateTime::currentDateTime().toTime_t(),
+                  Header::Type::CurveConfig);
+    char user[HEADER_INFO_L];
+    char computer[HEADER_INFO_L];
+    unsigned long user_l = HEADER_INFO_L;
+    unsigned long computer_l = HEADER_INFO_L;
+    GetUserNameA(user, &user_l);
+    GetComputerNameA(computer, &computer_l);
+    QString info = QString(user) + "@" + QString(computer);
+    header.setInfo(info);
+    dumpFileHeader(stream, header);
+
+    file.seek(HEADER_L);
+    convertCurveConfig(curve, stream);
+
+    dumpFileHeaderCrc32(stream, header);
+
+    stream.unsetDevice();
+    file.close();
+
     return true;
 }
 
@@ -181,7 +414,7 @@ Ref::Header::Header(const unsigned int time, const Ref::Header::Type type) {
     _time = time;
     _type = (unsigned int) type;
     memset(_reserved, '\0', sizeof(_reserved));
-    _reserved[RESERVED_LEN - 1] = (char) 0xFF;
+    _reserved[HEADER_RESV_L - 1] = (char) 0xFF;
 }
 
 void Ref::Header::setMagic(const char *magic) {
@@ -197,17 +430,24 @@ void Ref::Header::setCrc32(const unsigned int crc32) {
 }
 
 void Ref::Header::setInfo(const QString &info) {
-    if (info.length() < INFO_LEN) {
-        memcpy(_info, info.toStdString().c_str(), info.length() * sizeof(char));
+    if (info.size() < HEADER_INFO_L) {
+        memcpy(_info, info.toStdString().c_str(), info.size() * sizeof(char));
     } else {
-        memcpy(_info, info.toStdString().c_str(),
-               (INFO_LEN - 1) * sizeof(char));
-//        _info[47] = '\0';
+        memcpy(_info, info.toStdString().c_str(), sizeof(_info));
     }
 }
 
 void Ref::Header::setInfo(const char *info) {
     memcpy(_info, info, sizeof(_info));
+    bool end = false;
+    for (auto &iter : _info) {
+        if (iter == 0) {
+            end = true;
+        }
+        if (end) {
+            iter = 0;
+        }
+    }
 }
 
 void Ref::Header::setTime(const unsigned int time) {

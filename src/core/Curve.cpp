@@ -348,8 +348,6 @@ QString Curve::Cell::typeStr() const {
             return QString("物理");
         case Type::Logical:
             return QString("逻辑");
-        default:
-            return QString();
     }
 }
 
@@ -401,8 +399,6 @@ QString Curve::Cell::sampleStr() const {
             return QString("时间;%1").arg(_sample);
         case Sample::Framed:
             return QString("帧数;%1").arg(_sample);
-        default:
-            return QString();
     }
 }
 
@@ -704,6 +700,26 @@ void Curve::Cell::setLogicMapByVal(const Logic &v) {
 
 void Curve::Cell::setRemarkByVal(const QString &v) {
     _remark = v;
+}
+
+void Curve::Cell::setHighByteRangeByVal(unsigned short v0, unsigned short v1) {
+    _high_byte_range[0] = v0;
+    _high_byte_range[1] = v1;
+}
+
+void Curve::Cell::setLowByteRangeByVal(unsigned short v0, unsigned short v1) {
+    _low_byte_range[0] = v0;
+    _low_byte_range[1] = v1;
+}
+
+void Curve::Cell::setRangeInByVal(long v0, long v1) {
+    _range_in[0] = v0;
+    _range_in[1] = v1;
+}
+
+void Curve::Cell::setRangeOutByVal(long v0, long v1) {
+    _range_out[0] = v0;
+    _range_out[1] = v1;
 }
 
 
