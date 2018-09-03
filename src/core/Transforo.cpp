@@ -32,7 +32,7 @@ void Transforo::setTribe(Tribe *tribe) {
 }
 
 void Transforo::run() {
-    while (_index < _tribe->minLen()) {
+    while (_index < _tribe->length()) {
         while (_buffer->isFull()) {
             msleep(10);
         }
@@ -73,9 +73,9 @@ void Transforo::run() {
                 (float_u) (curve.rangeOut()[1] - curve.rangeOut()[0]);
             b = (float_u) curve.rangeIn()[0] - k * curve.rangeOut()[0];
             auto full = (long) (result * k + b);
-            int high_length
-                    = curve.highByteExisted() *
-                      (curve.highByteRange()[1] - curve.highByteRange()[0] + 1);
+//            int high_length
+//                    = curve.highByteExisted() *
+//                      (curve.highByteRange()[1] - curve.highByteRange()[0] + 1);
             int low_length
                     = (curve.lowByteRange()[1] - curve.lowByteRange()[0] + 1);
             auto low_byte =

@@ -7,18 +7,16 @@
 #include <gsl/gsl_fft_real.h>
 #include <gsl/gsl_fft_halfcomplex.h>
 #include <fftw3.h>
-/*
+
 void Refine::smoothing(const Tribe::Cell &in, Tribe::Cell &out,
                        unsigned int point) {
+    Q_ASSERT(in.length() > point);
+    Q_ASSERT(out.length() == in.length());
     const unsigned int half = point / 2;
-    double sum = 0;
+    float_u sum = 0;
     point += !(point % 2);
-    Q_ASSERT(in.size() > point);
-    if (out.size() != in.size()) {
-        out.resize(in.size());
-    }
-    for (int i = 0; i < in.size(); ++i) {
-        if (i < half || i > in.size() - half - 1) {
+    for (int i = 0; i < in.length(); ++i) {
+        if (i < half || i > in.length() - half - 1) {
             out[i] = in[i];
         } else if (i == half) {
             for (int j = 0; j < point; ++j) {
@@ -34,12 +32,10 @@ void Refine::smoothing(const Tribe::Cell &in, Tribe::Cell &out,
 }
 
 void Refine::derivation(const Tribe::Cell &in, Tribe::Cell &out) {
-    Q_ASSERT(in.size() > 1);
-    if (out.size() != in.size()) {
-        out.resize(in.size());
-    }
+    Q_ASSERT(in.length() > 1);
+    Q_ASSERT(out.length() == in.length());
     out[0] = in[0];
-    for (int i = 1; i < in.size(); ++i) {
+    for (int i = 1; i < in.length(); ++i) {
         out[i] = in[i] - in[i - 1];
     }
 }
@@ -47,15 +43,12 @@ void Refine::derivation(const Tribe::Cell &in, Tribe::Cell &out) {
 void Refine::filter(const Tribe::Cell &in, Tribe::Cell &out,
                     double s_freq, double l_freq,
                     unsigned int h_freq, bool band_pass) {
-    const auto size = (size_t) in.size();
+    const auto size = (size_t) in.length();
     unsigned int index_low = freqToIndex(s_freq, l_freq, size);
     unsigned int index_high = freqToIndex(s_freq, h_freq, size);
-    if (out.size() != in.size()) {
-        out.resize(size);
-    }
     //拷贝开始
     out = in;
-    double *data = out.data();
+    auto data = out.data();
     //拷贝完毕
     gsl_fft_real_wavetable *real;
     gsl_fft_halfcomplex_wavetable *hc;
@@ -65,7 +58,7 @@ void Refine::filter(const Tribe::Cell &in, Tribe::Cell &out,
     real = gsl_fft_real_wavetable_alloc(size);
     hc = gsl_fft_halfcomplex_wavetable_alloc(size);
     //开始频域变换
-    gsl_fft_real_transform(data, 1, size, real, work);
+//    gsl_fft_real_transform(data, 1, size, real, work);
     gsl_fft_real_wavetable_free(real);
     //完成频域变换
     //开始设置滤波窗
@@ -76,7 +69,7 @@ void Refine::filter(const Tribe::Cell &in, Tribe::Cell &out,
         }
     }
     //开始时域变换
-    gsl_fft_halfcomplex_inverse(data, 1, size, hc, work);
+//    gsl_fft_halfcomplex_inverse(data, 1, size, hc, work);
     gsl_fft_halfcomplex_wavetable_free(hc);
     gsl_fft_real_workspace_free(work);
     //完成时域变换
@@ -112,4 +105,3 @@ double Refine::vdv(const Tribe::Cell &in, Range &range) {
     }
     return sqrt(sqrt(sum));
 }
- */

@@ -75,3 +75,6 @@ add_executable(test_collect test_collect.cpp ${CORE})
 target_link_libraries(test_collect Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
 
 add_executable(test_username test_username.cpp)
+
+add_executable(test_ref test_ref.cpp ${CORE})
+target_link_libraries(test_ref Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})

@@ -40,10 +40,10 @@ void Load::run() {
         while (!_csv->finishRead()) {
             if(name.isEmpty()) {
                 _csv->readLine(name);
-                _tribe->setIndex(name, Tribe::DataType::Raw);
+                _tribe->addEmptyCurves(name, Tribe::DataType::Raw);
             }
             _csv->readLine(list);
-            _tribe->addSequence(list, Tribe::DataType::Raw);
+//            _tribe->addSequence(list, Tribe::DataType::Raw);
         }
     }
 }

@@ -5,21 +5,31 @@
 #ifndef REFINE_REF_H
 #define REFINE_REF_H
 
-#include <QtCore/QList>
-#include <QtCore/QDataStream>
-#include <windows.h>
-#include "Curve.h"
-#include "Kebab.h"
-#include "Tribe.h"
-#include "Modes.h"
+class QStringList;
 
+class QString;
+
+class QFile;
+
+class QByteArray;
+
+class Curve;
+
+class Tribe;
+
+class Modes;
+
+class Kebab;
 
 class Ref {
 public:
     class Header;
 
+private:
+    unsigned int _crc32[256];
+
 public:
-    Ref() = default;
+    Ref();
 
     bool loadCurveConfig(QFile &file, Curve &curve);
 
@@ -41,26 +51,42 @@ public:
 
     bool dumpResult(QFile &file);
 
+    unsigned int crc32(const QByteArray &array) const;
+
+    unsigned int crc32(const char *array, int len) const;
+
+private:
+    void initTable();
+
 };
+
+#define MAGIC_LEN 8
+#define CRC32_LEN 4
+#define TYPE_LEN 4
+#define INFO_LEN 44
+#define TIME_LEN 4
+#define RESERVED_LEN 128
+#define HEADER_LEN (MAGIC_LEN + INFO_LEN + RESERVED_LEN + \
+                    TYPE_LEN + CRC32_LEN + TIME_LEN)
 
 class Ref::Header {
 public:
     enum class Type {
         None = 0x00,
-        CurveConfig = 0x01,     //.cc
+        CurveConfig = 0x01,     //.vc
         RawData = 0x02,         //.rd
         ModeConfig = 0x04,      //.mc
-        ProData = 0x08,         //.cd
+        ProData = 0x08,         //.pd
         Result = 0x10           //.rs
     };
 private:
     //! \brief 四字节对齐
-    unsigned char _magic[8];                  // 8 byte
-    unsigned long _type;                      // 4 byte
-    long _crc32;                              // 4 byte
-    char _info[48];                           // 32 byte
-    unsigned int _time;                               // 4 byte
-    unsigned char _reserved[128];             // 128 byte
+    char _magic[MAGIC_LEN];                   // 8 byte
+    unsigned int _crc_sum;                      // 4 byte
+    unsigned int _type;                       // 4 byte
+    char _info[INFO_LEN];                     // 48 byte
+    unsigned int _time;                       // 4 byte
+    char _reserved[RESERVED_LEN];             // 128 byte
 public:
     Header();
 
@@ -71,23 +97,45 @@ public:
     ~Header() = default;
 
     //getter and setter
-    void setType(Type type);
+    void setMagic(const char *magic);
 
-    void setCrc32(long crc32);
+    void setCrc32(unsigned int crc32);
+
+    void setType(Type type);
 
     void setInfo(const QString &info);
 
-    void setInfo(const char *info, int len);
+    void setInfo(const char *info);
 
     void setTime(unsigned int time);
 
-    Type type() const;
+    void setReserved(const char *reserved);
 
-    long crc32() const;
+    const char *magic() const;
+
+    unsigned int crc32() const;
+
+    unsigned int type() const;
 
     const char *info() const;
 
     unsigned int time() const;
+
+    const char *reserved() const;
+
+    char *magic();
+
+    unsigned int &crc32();
+
+    unsigned int &type();
+
+    char *info();
+
+    unsigned int &time();
+
+    char *reserved();
+
+    QStringList str() const;
 };
 
 

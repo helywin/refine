@@ -10,7 +10,7 @@
 class Version {
 private:
     enum class Id : std::uint8_t {
-        Demo = 0xFF,
+        Demo = 0x0F,
         Alpha = 0x00,
         Beta = 0x01,
         Gamma = 0x02,

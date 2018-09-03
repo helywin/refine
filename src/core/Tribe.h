@@ -20,17 +20,16 @@ public:
     };
 
 private:
+    int _length;
     QStringList _raw_index;
     QList<Cell> _raw_data;
     QStringList _pro_index;
     QList<Cell> _pro_data;
 
 public:
-    Tribe() = default;
+    Tribe() = delete;
 
-    int maxLen() const;
-
-    int minLen() const;
+    explicit Tribe(int len);
 
     int length() const;
 
@@ -40,18 +39,16 @@ public:
 
     int wholeSize() const;
 
-    bool isAligned() const;
+    void addEmptyCurves(const QStringList &index, DataType type);
 
-    void setIndex(const QStringList &index, DataType type);
+    void addEmptyCurve(const QString &name, DataType type);
 
-    void addSequence(const QStringList &v, DataType type);
+    void addCurve(const QStringList &name, const Cell &&cell, DataType type);
 
-    void addWholeCurve(const QStringList &name, Cell &&cell, DataType type);
+    void addCurve(const QString &name, const float_u *data,
+                  Tribe::DataType type);
 
-    void addWholeCurve(const QString &name, const float_u *data, int len,
-                       DataType type);
-
-    void removeWholeCurve(const QString &name, DataType type);
+    void removeCurve(const QString &name, DataType type);
 
     Cell &raw(const QString &name);
 
@@ -77,19 +74,25 @@ public:
 
     Cell(const float_u *data, int len);
 
+    explicit Cell(int len);
+
     Cell(const Cell &cell) = default;
 
     Cell &operator=(const Cell &cell) = default;
 
-    float_u & operator[](int index);
+    float_u &operator[](int index);
 
-    const float_u & operator[](int index) const;
+    const float_u &operator[](int index) const;
 
     int length() const;
 
     float_u *data(int &len);
 
     const float_u *data(int &len) const;
+
+    float_u *data();
+
+    const float_u *data() const;
 
     void append(float_u &v);
 
