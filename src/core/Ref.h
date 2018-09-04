@@ -5,6 +5,8 @@
 #ifndef REFINE_REF_H
 #define REFINE_REF_H
 
+#include <QtCore/QVector>
+
 class QDataStream;
 
 class QStringList;
@@ -29,30 +31,54 @@ public:
 
 private:
     unsigned int _crc32[256];
+    Header *_header;
+    QDataStream *_stream;
 
 public:
     Ref();
 
+    Ref(const Ref &ref) = delete;
+
+    Ref &operator=(const Ref &ref) = delete;
+
 private:
-    bool loadFileHeader(QDataStream &stream, Header &header);
+    void initTable();
 
-    void dumpFileHeader(QDataStream &stream, const Header &header);
+    bool loadFileHeader();
 
-    void dumpFileHeaderCrc32(QDataStream &stream, Ref::Header &header);
+    void dumpFileHeader();
 
-    void convertCurveConfig(const Curve &in, QDataStream &out);
+    void dumpFileHeaderCrc32();
 
-    bool convertCurveConfig(QDataStream &in, Curve &out);
-
+    //curve config
 public:
     bool loadCurveConfig(QFile &file, Curve &curve);
 
     bool dumpCurveConfig(QFile &file, const Curve &curve);
 
+private:
+    void convertCurveConfigToRef(const Curve &curve);
+
+    bool convertRefToCurveConfig(Curve &curve);
+
+    //raw data
+public:
     bool loadRawData(QFile &file, Tribe &tribe);
 
-    bool dumpRawData(QFile &file, const Kebab &kebab);
+    bool pickRawData(QFile &file, Tribe &tribe, const QVector<int> &index);
 
+    bool beginDumpRawData(QFile &file, const Kebab &kebab);
+
+    bool dumpRawData(const Kebab &kebab);
+
+    bool finishDumpRawData(const Kebab &kebab);
+
+private:
+    void convertRawDataToRef(const Kebab &in);
+
+    bool convertRefToRawData(Tribe &out);
+
+public:
     bool loadModeConfig(QFile &file);
 
     bool dumpModeConfig(QFile &file);
@@ -68,9 +94,6 @@ public:
     unsigned int crc32(const QByteArray &array) const;
 
     unsigned int crc32(const char *array, int len) const;
-
-private:
-    void initTable();
 
 };
 
@@ -113,6 +136,8 @@ public:
     //getter and setter
     void setMagic(const char *magic);
 
+    void setMagic();
+
     void setCrc32(unsigned int crc32);
 
     void setType(Type type);
@@ -150,6 +175,10 @@ public:
     char *reserved();
 
     QStringList str() const;
+
+    bool check() const;
+
+    void clear();
 };
 
 #endif //REFINE_REF_H

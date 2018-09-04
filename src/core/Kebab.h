@@ -6,15 +6,13 @@
 #define REFINE_KEBAB_H
 
 #include <QtCore/QVector>
-#include <QtCore/QThread>
 #include "Define.h"
 #include "Curve.h"
 #include "Dump.h"
 
 #define KEBAB_CELL_LENGTH 4096
 
-class Kebab : public QThread {
-Q_OBJECT
+class Kebab {
 public:
     class Cell;
 

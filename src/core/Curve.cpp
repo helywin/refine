@@ -45,7 +45,7 @@ int Curve::size() const {
 QStringList Curve::str() const {
     QStringList list;
     for (const auto &cell : _cells) {
-        list.append(cell.str());
+        list.append(cell.str().join(QChar(',')));
     }
     return qMove(list);
 }
