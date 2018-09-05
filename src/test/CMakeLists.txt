@@ -63,6 +63,8 @@ set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
 set(LIBGSL D:/msys32/mingw32/lib/libgsl.a)
 set(LIBOPENGL D:/msys32/mingw32/i686-w64-mingw32/lib/libopengl32.a)
 set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.a)
+set(LIBZIP D:/msys32/mingw32/lib/libzip.a)
+set(LIBZ D:/msys32/mingw32/lib/libz.a)
 
 
 add_executable(test_window test_window.cpp ${GUI} ${RES})
@@ -78,3 +80,6 @@ add_executable(test_username test_username.cpp)
 
 add_executable(test_ref test_ref.cpp ${CORE})
 target_link_libraries(test_ref Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
+
+add_executable(test_unzip test_unzip.cpp)
+target_link_libraries(test_unzip Qt5Core ${LIBZIP} ${LIBZ})
