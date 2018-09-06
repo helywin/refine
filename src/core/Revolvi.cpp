@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/8/8.
 //
 
+#include <QtCore/QDebug>
 #include "Revolvi.h"
 
 Revolvi::Revolvi(Collect *collect, Transfori *transfori,
@@ -11,7 +12,8 @@ Revolvi::Revolvi(Collect *collect, Transfori *transfori,
     Q_ASSERT(collect != nullptr && transfori != nullptr);
     Q_ASSERT(limit > 0);
     Q_ASSERT(interval > 0);
-    connect(&_timer, &QTimer::timeout, _collect, &Collect::start);
+    connect(_collect, &Collect::result, this, &Revolvi::collectResult,
+            Qt::DirectConnection);
 }
 
 void Revolvi::setTimeLimit(const int limit) {
@@ -21,9 +23,10 @@ void Revolvi::setTimeLimit(const int limit) {
 
 void Revolvi::setCollect(Collect *collect) {
     Q_ASSERT(collect != nullptr);
-    disconnect(&_timer, &QTimer::timeout, _collect, &Collect::start);
+    disconnect(_collect, &Collect::result, this, &Revolvi::collectResult);
     _collect = collect;
-    connect(&_timer, &QTimer::timeout, _collect, &Collect::start);
+    connect(_collect, &Collect::result, this, &Revolvi::collectResult,
+            Qt::DirectConnection);
 }
 
 void Revolvi::setTransfori(Transfori *transform) {
@@ -37,11 +40,11 @@ void Revolvi::setInterval(const int interval) {
 }
 
 void Revolvi::marvel() {
-    _timer.start(_interval);
+    _collect->start();
+    while (_collect->isRunning()) {}
 }
 
 void Revolvi::pulse() {
-    _timer.stop();
 }
 
 void Revolvi::pulse(int msec) {
@@ -49,11 +52,10 @@ void Revolvi::pulse(int msec) {
 }
 
 void Revolvi::resume() {
-    _timer.start(_interval);
 }
 
-void Revolvi::collectResult(Collect::Result result) {
-    if (result == Collect::Result::Succeeded) {
+void Revolvi::collectResult(Collect::Result type) {
+    if (type == Collect::Result::Succeeded) {
         _transfori->start();
     }
 }

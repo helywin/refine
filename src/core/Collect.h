@@ -12,15 +12,21 @@
 class Collect : public QThread {
 Q_OBJECT
 public:
-    enum Result {
+    enum class Result {
         Succeeded = 0,
         CanError = 1,
         BufferFull = 2
     };
+
+    enum class Command {
+        Pause = 0,
+        Resume = 1,
+        Stop = 2
+    };
 private:
     Can *_can;
     Buffer *_buffer;
-
+    Command _cmd;
 public:
     Collect() = delete;
 
@@ -33,13 +39,9 @@ public:
 protected:
     void run() override;
 
-public slots:
-
-    void start() { QThread::start(); };
-
 signals:
 
-    void result(Result r);
+    void result(Result type);
 };
 
 

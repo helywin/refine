@@ -9,6 +9,7 @@
 #include "Curve.h"
 #include "Buffer.h"
 #include "Tribe.h"
+#include "Define.h"
 
 class Transforo : public QThread {
 Q_OBJECT

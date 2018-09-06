@@ -13,13 +13,13 @@
 class Transmit : public QThread {
 Q_OBJECT
 public:
-    enum Result {
+    enum class Result {
         Succeeded = 0,
         CanError = 1,
         BufferEmpty = 2
     };
 
-    enum Command {
+    enum class Command {
         Pause = 0,
         Resume = 1,
         Stop = 2

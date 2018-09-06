@@ -14,6 +14,7 @@ find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(Qt5Gui CONFIG REQUIRED)
 find_package(Qt5OpenGL CONFIG REQUIRED)
+find_package(Qt5PrintSupport CONFIG REQUIRED)
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_C_COMPILER gcc)
 set(DEFINES "-DUNICODE -D_UNICODE -DWIN32 -DQT_DEPRECATED_WARNINGS")
@@ -61,11 +62,28 @@ set(RES ${PROJECT_SOURCE_DIR}/res/ui.qrc)
 set(LIBLOG ${PROJECT_SOURCE_DIR}/src/core/Log.cpp)
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
 set(LIBGSL D:/msys32/mingw32/lib/libgsl.a)
+set(LIBOPENGL D:/msys32/mingw32/i686-w64-mingw32/lib/libopengl32.a)
 set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.a)
+set(LIBZIP D:/msys32/mingw32/lib/libzip.a)
+set(LIBZ D:/msys32/mingw32/lib/libz.a)
 
 
 add_executable(test_window test_window.cpp ${GUI} ${RES})
-target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui Qt5OpenGL)
+target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui Qt5OpenGL ${LIBOPENGL})
 
 add_executable(test_transmit test_transmit.cpp ${CORE})
 target_link_libraries(test_transmit Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
+
+add_executable(test_collect test_collect.cpp ${CORE})
+target_link_libraries(test_collect Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
+
+add_executable(test_username test_username.cpp)
+
+add_executable(test_ref test_ref.cpp ${CORE})
+target_link_libraries(test_ref Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
+
+add_executable(test_unzip test_unzip.cpp)
+target_link_libraries(test_unzip Qt5Core ${LIBZIP} ${LIBZ})
+
+add_executable(test_printer test_printer.cpp)
+target_link_libraries(test_printer Qt5Core Qt5Gui Qt5PrintSupport Qt5Widgets)

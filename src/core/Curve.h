@@ -16,17 +16,17 @@ public:
 
     typedef QStringList Header;
 
-    enum Status {
+    enum class Status {
         Uninitialized,
         Initialized
     };
 
-    enum FileType {
+    enum class FileType {
         Csv,
-        Sqlite3,
+        Ref,
     };
 
-    enum Bundle {
+    enum class Bundle {
         None,
         Acceleration,
         EngineSpeed,
@@ -80,27 +80,29 @@ public:
 
     void removeAllRow();
 
+    void clear();
+
 private:
     bool loadFromCsv(QFile &f);
 
-    bool loadFromSqlite3(QFile &f);
+    bool loadFromRef(QFile &f);
 
     bool dumpToCsv(QFile &f) const;
 
-    bool dumpToSqlite3(QFile &f) const;
+    bool dumpToRef(QFile &f) const;
 };
 
 
 class Curve::Cell {
 public:
-    enum Type {
-        Physical,
-        Logical
+    enum class Type {
+        Physical = 0,
+        Logical = 1
     };
 
-    enum Sample {
-        Timed,
-        Framed
+    enum class Sample {
+        Timed = 0,
+        Framed = 1
     };
 
     typedef QMap<unsigned int, QString> Logic;
@@ -285,9 +287,13 @@ public:
 
     void setHighByteRangeByVal(const unsigned short *v);
 
+    void setHighByteRangeByVal(unsigned short v0, unsigned short v1);
+
     void setLowByteByVal(unsigned short v);
 
     void setLowByteRangeByVal(const unsigned short *v);
+
+    void setLowByteRangeByVal(unsigned short v0, unsigned short v1);
 
     void setSampleTypeByVal(Sample v);
 
@@ -295,7 +301,11 @@ public:
 
     void setRangeInByVal(const long *v);
 
+    void setRangeInByVal(long v0, long v1);
+
     void setRangeOutByVal(const long *v);
+
+    void setRangeOutByVal(long v0, long v1);
 
     void setLogicMapByVal(const Logic &v);
 

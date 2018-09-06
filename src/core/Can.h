@@ -18,7 +18,7 @@ public:
 
     class RegStatus;
 
-    enum Status {
+    enum class Status {
         Disconnected = 0,
         Connected = 1,
     };
@@ -34,15 +34,21 @@ public:
 
     void setConfig(Config *config);
 
+    bool open();
+
+    bool init();
+
+    bool start();
+
     bool connect();
 
-    bool disconnect();
+    bool close();
 
     bool reset();
 
     bool reconnect();
 
-    bool collect(Buffer &buffer, int delay = -1);
+    bool collect(Buffer &buffer, int delay = 0);
 
     bool deliver(Buffer &buffer);
 
@@ -74,17 +80,12 @@ public:
 
     ~Config();
 
-    inline unsigned long deviceType() const { return _device_type; }
-
-    inline unsigned long deviceIndex() const { return _device_index; }
-
-    inline unsigned long deviceChannel() const { return _device_channel; }
-
-    inline unsigned long reserved() const { return _config->Reserved; }
-
-//    const VCI_INIT_CONFIG *initConfig() const { return _config; }
-
-    inline VCI_INIT_CONFIG *initConfig() { return _config; }
+    unsigned long deviceType() const;
+    unsigned long deviceIndex() const;
+    unsigned long deviceChannel() const;
+    unsigned long reserved() const;
+    const VCI_INIT_CONFIG *initConfig() const;
+    VCI_INIT_CONFIG *initConfig();
 
 };
 

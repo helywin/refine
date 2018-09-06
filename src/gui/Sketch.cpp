@@ -10,9 +10,16 @@ void Sketch::paintEvent(QPaintEvent *event) {
 //    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.paint(&painter, event);
     painter.end();
+//    glDrawArrays(, )
 }
 
 Sketch::Sketch(QWidget *parent) : QOpenGLWidget(parent) {
+//    initializeOpenGLFunctions();
+//    create();
+//    _context = new QOpenGLContext;
+//    _context->create();
+//    _context->makeCurrent(this.);
+//    initializeOpenGLFunctions();
 }
 
 void Sketch::animate() {

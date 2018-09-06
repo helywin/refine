@@ -10,7 +10,7 @@
 
 class Rate {
 public:
-    enum ModeType {
+    enum class ModeType {
         Invalid,
         Acceleration,
         DriveAway,
@@ -23,7 +23,7 @@ private:
     ModeType mode_type;
 
 public:
-    Rate() : mode_type(Invalid) {};
+    Rate() : mode_type(ModeType::Invalid) {};
 };
 
 

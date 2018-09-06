@@ -6,14 +6,13 @@
 #define REFINE_KEBAB_H
 
 #include <QtCore/QVector>
-#include <QtCore/QThread>
+#include "Define.h"
 #include "Curve.h"
 #include "Dump.h"
 
 #define KEBAB_CELL_LENGTH 4096
 
-class Kebab : public QThread {
-Q_OBJECT
+class Kebab {
 public:
     class Cell;
 
@@ -60,16 +59,14 @@ public:
 private:
     void dump();
 
-    bool pop(int index, double &val);
+    bool pop(int index, float_u &val);
 
-    bool pop(const QString &name, double &val);
+    bool pop(const QString &name, float_u &val);
 };
 
 class Kebab::Cell {
-public:
-    typedef double DataType;
 private:
-    DataType *_cell;
+    float_u *_cell;
     bool _is_alloc;
     int _head;
     int _tail;
@@ -86,9 +83,9 @@ public:
 
     void initialize(int len);
 
-    bool push(const double &val);
+    bool push(const float_u &val);
 
-    bool pop(double &val);
+    bool pop(float_u &val);
 
     bool isFull() const;
 

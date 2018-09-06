@@ -41,7 +41,9 @@ void Transmit::run() {
     while (true) {
 //        qDebug(".");
         msleep(10);
-        if (_cmd == Command::Pause) {
+        if (_cmd == Command::Stop) {
+            return;
+        } else if (_cmd == Command::Pause) {
             continue;
         }
         if (_buffer->isEmpty()) {
@@ -58,9 +60,6 @@ void Transmit::run() {
                 emit result(Result::CanError);
                 qDebug("canerror");
             }
-        }
-        if (_cmd == Command::Stop) {
-            return;
         }
     }
 }

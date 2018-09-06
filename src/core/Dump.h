@@ -8,23 +8,23 @@
 #include <QtCore/QThread>
 #include <QtCore/QFile>
 #include "Csv.h"
-#include "Rf.h"
+#include "Ref.h"
 
 class Kebab;
 
 class Dump : public QThread {
 Q_OBJECT
 public:
-    enum FileType {
+    enum class FileType {
         Csv,
-        Rf,
+        Ref,
     };
 private:
     Kebab *_kebab;
     QFile *_file;
     FileType _file_type;
-    ::Csv *_csv;
-    ::Rf *_rf;
+    Csv *_csv;
+    Ref *_ref;
 
 public:
     Dump();

@@ -13,7 +13,6 @@
 class Revolvi : public QObject {
 Q_OBJECT
 private:
-    QTimer _timer;
     Collect *_collect;
     Transfori *_transfori;
     int _time_limit;
@@ -43,7 +42,7 @@ public:
 
 public slots:
 
-    void collectResult(Collect::Result result);
+    void collectResult(Collect::Result type);
 
 };
 

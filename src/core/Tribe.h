@@ -8,6 +8,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QVector>
+#include "Define.h"
 
 class Tribe {
 public:
@@ -15,54 +16,51 @@ public:
 
     enum class DataType {
         Raw = 0,
-        Calculated = 1
+        Pro = 1
     };
 
 private:
+    int _length;
     QStringList _raw_index;
     QList<Cell> _raw_data;
-    QStringList _cal_index;
-    QList<Cell> _cal_data;
+    QStringList _pro_index;
+    QList<Cell> _pro_data;
 
 public:
-    Tribe() = default;
+    Tribe() = delete;
 
-    int maxLen() const;
-
-    int minLen() const;
+    explicit Tribe(int len);
 
     int length() const;
 
     int rawSize() const;
 
-    int calSize() const;
+    int proSize() const;
 
     int wholeSize() const;
 
-    bool isAligned() const;
+    void addEmptyCurves(const QStringList &index, DataType type);
 
-    void setIndex(const QStringList &index, DataType type);
+    void addEmptyCurve(const QString &name, DataType type);
 
-    void addSequence(const QStringList &v, DataType type);
+    void addCurve(const QStringList &name, const Cell &&cell, DataType type);
 
-    void addWholeCurve(const QStringList &name, Cell &&cell, DataType type);
+    void addCurve(const QString &name, const float_u *data,
+                  Tribe::DataType type);
 
-    void addWholeCurve(const QString &name, const double *data, int len,
-                       DataType type);
-
-    void removeWholeCurve(const QString &name, DataType type);
+    void removeCurve(const QString &name, DataType type);
 
     Cell &raw(const QString &name);
 
     const Cell &raw(const QString &name) const;
 
-    Cell &cal(const QString &name);
+    Cell &pro(const QString &name);
 
-    const Cell &cal(const QString &name) const;
+    const Cell &pro(const QString &name) const;
 
     QStringList rawIndex() const;
 
-    QStringList calIndex() const;
+    QStringList proIndex() const;
 
     int memory() const;
 
@@ -70,29 +68,35 @@ public:
 
 class Tribe::Cell {
 private:
-    QVector<double> _cell;
+    QVector<float_u> _cell;
 public:
     Cell() = default;
 
-    Cell(const double *data, int len);
+    Cell(const float_u *data, int len);
+
+    explicit Cell(int len);
 
     Cell(const Cell &cell) = default;
 
     Cell &operator=(const Cell &cell) = default;
 
-    double &operator[](int index);
+    float_u &operator[](int index);
 
-    const double &operator[](int index) const;
+    const float_u &operator[](int index) const;
 
     int length() const;
 
-    double *data(int &len);
+    float_u *data(int &len);
 
-    const double *data(int &len) const;
+    const float_u *data(int &len) const;
 
-    void append(double &v);
+    float_u *data();
 
-    void append(double &&v);
+    const float_u *data() const;
+
+    void append(float_u &v);
+
+    void append(float_u &&v);
 };
 
 #endif //CORE_TRIBE_H

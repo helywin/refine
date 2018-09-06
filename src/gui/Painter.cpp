@@ -9,46 +9,32 @@
 void Painter::paint(QPainter *painter, QPaintEvent *event) {
     painter->fillRect(event->rect(), background);
     circlePen.setWidth(line_width);
-    constexpr double pi2 = 3.141592653 * 2;
-    double k = sin(pi2 * t);
-    t += pi2 / 1000 * freq;
-    points.append({t, k});
-//    painter->save();
     painter->setPen(circlePen);
-    int start = 0;
-    ps = event->rect().width();
-    if (points.size() < ps) {
-        start = 0;
-    } else {
-        start = points.size() - ps;
-    }
-
-    for (int i = start; i < points.size() - 2; ++i) {
-        if (i == start) {
-            x = (int) ((points[i].x - points[start].x) / pi2 / freq *
-                       event->rect().width()) * 1000 / ps;
-            xx = (int) ((points[i + 1].x - points[start].x) / pi2 / freq *
-                        event->rect().width()) * 1000 / ps;
-            y = (int) (points[i].y * event->rect().height() / num);
-            yy = (int) (points[i + 1].y * event->rect().height() / num);
-        } else {
-            x = xx;
-            xx = (int) ((points[i + 1].x - points[start].x) / pi2 / freq *
-                        event->rect().width()) * 1000 / ps;
-            y = yy;
-            yy = (int) (points[i + 1].y * event->rect().height() / num);
+    double x = 0;
+    double y = 50;
+    double step = 0.5;
+    static double offset = 0;
+//    ps = event->rect().width();
+    lines.clear();
+    while (x < ps) {
+        double x1 = x;
+        double y1 = y;
+        x += step;
+        y = sin(x / 8 + offset) / 3;
+        for (int j = 0; j < num; ++j) {
+            lines.append(QLineF(x / ps * event->rect().width() *0.98,
+                                (y + j + 0.5) * event->rect().height() / num,
+                                x1 / ps * event->rect().width() *0.98,
+                                (y1 + j + 0.5) * event->rect().height() / num));
         }
-        for (int j = 1; j <= num; ++j) {
-            painter->drawLine(x, y + event->rect().height() / num * j, xx,
-                              yy + event->rect().height() / num * j);
-        }
-
     }
+    painter->drawLines(lines);
+    offset += 0.008 * msec;
     update_time += 1;
-    if (update_time == 10) {
+    if (update_time == 5) {
         double inter = last.msecsTo(QTime::currentTime());
         last = QTime::currentTime();
-        s = QString("fps: %1").arg(inter == 0 ? 0 : 10000 / inter);
+        s = QString("msec: %1").arg(inter == 0 ? 0 : inter / 5);
         update_time = 0;
     }
 
@@ -75,8 +61,8 @@ Painter::Painter() {
     textFont.setFamily(QString("微软雅黑"));
     fps = 0;
     last = QTime::currentTime();
-    freq = 5;
     num = 20;
+    msec = 10;
     ps = 1000;
     t = 0;
     x = 0;
@@ -86,11 +72,11 @@ Painter::Painter() {
     update_time = 0;
 }
 
-void Painter::setParams(int freq, int num, int ps, int width) {
-    this->freq = freq;
+void Painter::setParams(int num, int ps, int width, int msec) {
     this->num = num;
     this->ps = ps;
     this->line_width = width;
+    this->msec = msec;
     points.clear();
     qDebug("清空点数");
     t = 0;

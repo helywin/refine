@@ -14,8 +14,8 @@ bool Curve::load(QFile &f, const Curve::FileType type) {
         case Curve::FileType::Csv:
             flag = loadFromCsv(f);
             break;
-        case Curve::FileType::Sqlite3:
-            flag = loadFromSqlite3(f);
+        case Curve::FileType::Ref:
+            flag = loadFromRef(f);
             break;
     }
     return flag;
@@ -27,8 +27,8 @@ bool Curve::dump(QFile &f, const Curve::FileType type) const {
         case Curve::FileType::Csv:
             flag = dumpToCsv(f);
             break;
-        case Curve::FileType::Sqlite3:
-            flag = dumpToSqlite3(f);
+        case Curve::FileType::Ref:
+            flag = dumpToRef(f);
             break;
     }
     return flag;
@@ -45,7 +45,7 @@ int Curve::size() const {
 QStringList Curve::str() const {
     QStringList list;
     for (const auto &cell : _cells) {
-        list.append(cell.str());
+        list.append(cell.str().join(QChar(',')));
     }
     return qMove(list);
 }
@@ -191,7 +191,7 @@ bool Curve::loadFromCsv(QFile &f) {
     return true;
 }
 
-bool Curve::loadFromSqlite3(QFile &f) {
+bool Curve::loadFromRef(QFile &f) {
     return false;
 }
 
@@ -212,7 +212,7 @@ bool Curve::dumpToCsv(QFile &f) const {
     return csv.finishWrite();
 }
 
-bool Curve::dumpToSqlite3(QFile &f) const {
+bool Curve::dumpToRef(QFile &f) const {
     return false;
 }
 
@@ -250,6 +250,13 @@ Curve::Cell &Curve::at(const QString &name) {
 
 const Curve::Cell &Curve::at(const QString &name) const {
     return (*this)[name];
+}
+
+void Curve::clear() {
+    _cells.clear();
+    _table_head.clear();
+    _header.clear();
+    _status = Status::Uninitialized;
 }
 
 Curve::Cell::Cell() : Cell(0) {}
@@ -341,8 +348,6 @@ QString Curve::Cell::typeStr() const {
             return QString("物理");
         case Type::Logical:
             return QString("逻辑");
-        default:
-            return QString();
     }
 }
 
@@ -394,8 +399,6 @@ QString Curve::Cell::sampleStr() const {
             return QString("时间;%1").arg(_sample);
         case Sample::Framed:
             return QString("帧数;%1").arg(_sample);
-        default:
-            return QString();
     }
 }
 
@@ -697,6 +700,26 @@ void Curve::Cell::setLogicMapByVal(const Logic &v) {
 
 void Curve::Cell::setRemarkByVal(const QString &v) {
     _remark = v;
+}
+
+void Curve::Cell::setHighByteRangeByVal(unsigned short v0, unsigned short v1) {
+    _high_byte_range[0] = v0;
+    _high_byte_range[1] = v1;
+}
+
+void Curve::Cell::setLowByteRangeByVal(unsigned short v0, unsigned short v1) {
+    _low_byte_range[0] = v0;
+    _low_byte_range[1] = v1;
+}
+
+void Curve::Cell::setRangeInByVal(long v0, long v1) {
+    _range_in[0] = v0;
+    _range_in[1] = v1;
+}
+
+void Curve::Cell::setRangeOutByVal(long v0, long v1) {
+    _range_out[0] = v0;
+    _range_out[1] = v1;
 }
 
 

@@ -32,13 +32,13 @@ void Transforo::setTribe(Tribe *tribe) {
 }
 
 void Transforo::run() {
-    while (_index < _tribe->minLen()) {
+    while (_index < _tribe->length()) {
         while (_buffer->isFull()) {
             msleep(10);
         }
         auto p = _buffer->headCell();
         for (const auto &iter : _tribe->rawIndex()) {
-            double result = _tribe->raw(iter)[_index];
+            float_u result = _tribe->raw(iter)[_index];
             const Curve::Cell &curve = _curve->at(iter);
             unsigned long id = curve.canId();
             int index = -1;
@@ -67,15 +67,15 @@ void Transforo::run() {
                     p->at(index)->Data[0] = (unsigned char) curve.zeroByte();
                 }
             }
-            double k;
-            double b;
-            k = (double) (curve.rangeIn()[1] - curve.rangeIn()[0]) /
-                (double) (curve.rangeOut()[1] - curve.rangeOut()[0]);
-            b = (double) curve.rangeIn()[0] - k * curve.rangeOut()[0];
+            float_u k;
+            float_u b;
+            k = (float_u) (curve.rangeIn()[1] - curve.rangeIn()[0]) /
+                (float_u) (curve.rangeOut()[1] - curve.rangeOut()[0]);
+            b = (float_u) curve.rangeIn()[0] - k * curve.rangeOut()[0];
             auto full = (long) (result * k + b);
-            int high_length
-                    = curve.highByteExisted() *
-                      (curve.highByteRange()[1] - curve.highByteRange()[0] + 1);
+//            int high_length
+//                    = curve.highByteExisted() *
+//                      (curve.highByteRange()[1] - curve.highByteRange()[0] + 1);
             int low_length
                     = (curve.lowByteRange()[1] - curve.lowByteRange()[0] + 1);
             auto low_byte =

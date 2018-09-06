@@ -1,9 +1,9 @@
-//
-
-#include "Buffer.h"
 
 //
 // Created by jiang.wenqiang on 2018/8/3.
+//
+
+#include "Buffer.h"
 
 Buffer::Buffer() : Buffer(50, 100) {}
 
