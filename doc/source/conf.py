@@ -24,9 +24,9 @@ copyright = '2018, 姜文强'
 author = '姜文强'
 
 # The short X.Y version
-version = '0.0.1'
+version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.0.1 demo'
+release = ''
 
 
 # -- General configuration ---------------------------------------------------
@@ -83,7 +83,7 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -196,10 +196,3 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
-
-# 显示数学公式的插件
-mathjax_path = 'MathJax/MathJax.js'
-mathjax_config = {
-    'extensions' : ['tex2jax.js'],
-    'jax' : ['input/TeX', 'output/HTML-CSS'],
-}
