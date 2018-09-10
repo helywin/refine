@@ -3,14 +3,60 @@
 //
 
 #include <QtCore/QFile>
+#include <QtCore/QVector>
+#include <QtCore/QDebug>
 #include <QtWidgets/QApplication>
 #include <QtPrintSupport/QPrinter>
-#include <QtGui/QTextDocument>
-#include <QtGui/QPdfWriter>
-#include <QtGui/QPainter>
 #include <QtGui/QTextBlock>
+#include <QtTextToSpeech/QTextToSpeech>
+#include <MRange.h>
+#include <QtCore/QProcess>
+#include <QtCore/QSettings>
 
 int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+    app.setOrganizationName("BYD");
+    app.setApplicationName("printer");
+    app.setOrganizationDomain("byd.com.cn");
+    app.setApplicationDisplayName("Refine");
+/*    QTextToSpeech speech;
+    speech.setLocale(QLocale::Chinese);
+    qDebug() << speech.availableVoices()[0].name();
+
+//    speech.setVoice();
+    speech.say(
+            QString("从2016年3月开始，陆陆续续接到售后关于唐车型电动油泵电机控制器"
+                    "失效的投诉，目前数量已达到57例，经过对这57例失效件的分析，发现"
+                    "失效原因大概分为四大类：电机控制器进水腐蚀、假焊、撞件、功率管"
+                    "损坏，其中功率管损坏故障格外引人注意，因为它们失效表现模式完全"
+                    "一样，都是在 MOSFET 的基板与塑料基材的结合处开裂同时外观并没有"
+                    "出现碳化、色泽暗淡等现象，这与我们之前遇到的过流、静电损坏失效"
+                    "表现完全不一样，由于失效模式不确定，这就给产品品质改善带来很大"
+                    "的困难，同时电动油泵电机控制器在整车又属于关重器件，它的失效将"
+                    "导致车辆无 EV 模式，直接影响用户驾乘体验，如果不解决失效问题，"
+                    "将带来客户极大的抱怨及严重影响公司产品口碑。 "));*/
+//    while (speech.state() == QTextToSpeech::Speaking) {}
+    MRange range({1,2,3,4,5,6,7,8,9,10});
+    int i = 0;
+//    for (auto &iter : range) {
+//        i += 1;
+//        iter = i;
+//    }
+
+    for (const auto &iter : range) {
+        qDebug() << iter;
+    }
+    qDebug() << *range.end();
+    qDebug() << QProcess::execute(QString("D:\\software\\7-Zip\\7zFM.exe"));
+    QSettings settings;
+    settings.setValue("key", QPoint(1,2));
+    settings.
+//    QProcess::execute(QString("D:\\software\\7-Zip\\7zFM.exe"));
+//    proc.
+    return QApplication::exec();
+}
+
+/*int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     QString fileName = "test.pdf";
     QFile pdfFile(fileName);
@@ -69,7 +115,7 @@ int main(int argc, char *argv[]) {
     pdfFile.close();
     qDebug("生成完毕");
     return QApplication::exec();
-}
+}*/
 
 /*
 int main(int argc, char **argv) {

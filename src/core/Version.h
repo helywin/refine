@@ -21,14 +21,16 @@ public:
     const static unsigned char major = 0;
     const static unsigned char micro = 0;
     const static unsigned char minor = 1;
+    const static unsigned char build = 1;
     const static Id identifier = Id::Demo;
 
 public:
     static const QString str() {
-        QString s = QString("Version: %1.%2.%3 ")
+        QString s = QString("Version: %1.%2.%3.%4 ")
                 .arg(major)
                 .arg(micro)
-                .arg(minor);
+                .arg(minor)
+                .arg(build);
         switch (identifier) {
             case Id::Demo:
                 s += QString("(Demo)");

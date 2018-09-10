@@ -22,9 +22,9 @@ void Painter::paint(QPainter *painter, QPaintEvent *event) {
         x += step;
         y = sin(x / 8 + offset) / 3;
         for (int j = 0; j < num; ++j) {
-            lines.append(QLineF(x / ps * event->rect().width() *0.98,
+            lines.append(QLineF(x / ps * event->rect().width() * 0.98,
                                 (y + j + 0.5) * event->rect().height() / num,
-                                x1 / ps * event->rect().width() *0.98,
+                                x1 / ps * event->rect().width() * 0.98,
                                 (y1 + j + 0.5) * event->rect().height() / num));
         }
     }
