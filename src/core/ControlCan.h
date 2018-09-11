@@ -1,5 +1,9 @@
-#ifndef CORE_CONTROLCAN_H
-#define CORE_CONTROLCAN_H
+//
+// Created by jiang.wenqiang on 2018/9/10.
+//
+
+#ifndef REFINE_CONTROLCAN_H
+#define REFINE_CONTROLCAN_H
 
 //接口卡类型定义
 #define VCI_PCI5121        1
@@ -245,4 +249,5 @@ VCI_Receive(DWORD DeviceType,
             ULONG Len,
             INT WaitTime = -1);
 
-#endif
+
+#endif //REFINE_CONTROLCAN_H

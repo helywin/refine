@@ -1,5 +1,5 @@
 //
-// Created by jiang.wenqiang on 2018/8/6.
+// Created by jiang.wenqiang on 2018/9/11.
 //
 
 #ifndef REFINE_CURVE_H
@@ -42,9 +42,13 @@ private:
 public:
     Curve();
 
-    bool load(QFile &f, FileType type);
+    bool loadFromCsv(QFile &f);
 
-    bool dump(QFile &f, FileType type) const;
+    bool loadFromRef(QFile &f);
+
+    bool dumpToCsv(QFile &f) const;
+
+    bool dumpToRef(QFile &f) const;
 
     Cell &operator[](int index);
 
@@ -81,15 +85,6 @@ public:
     void removeAllRow();
 
     void clear();
-
-private:
-    bool loadFromCsv(QFile &f);
-
-    bool loadFromRef(QFile &f);
-
-    bool dumpToCsv(QFile &f) const;
-
-    bool dumpToRef(QFile &f) const;
 };
 
 

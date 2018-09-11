@@ -1,12 +1,13 @@
 //
-// Created by jiang.wenqiang on 2018/8/3.
+// Created by jiang.wenqiang on 2018/9/10.
 //
 
 #include <QtCore/QDebug>
+#include "Buffer.h"
 #include "Can.h"
 
 Can::Can(Can::Config *config) :
-        _status(Status::Disconnected), _config(config) {}
+        _status(Status::Closed), _config(config) {}
 
 void Can::setConfig(Can::Config *config) {
     _config = config;
@@ -17,6 +18,9 @@ bool Can::open() {
     flag = VCI_OpenDevice(_config->deviceType(),
                           _config->deviceIndex(),
                           _config->reserved());
+    if (flag) {
+        _status = Status::Opened;
+    }
     return (bool) flag;
 }
 
@@ -26,6 +30,9 @@ bool Can::init() {
                        _config->deviceIndex(),
                        _config->deviceChannel(),
                        _config->initConfig());
+    if (flag) {
+        _status = Status::Initialized;
+    }
     return (bool) flag;
 }
 
@@ -34,6 +41,9 @@ bool Can::start() {
     flag = VCI_StartCAN(_config->deviceType(),
                         _config->deviceIndex(),
                         _config->deviceChannel());
+    if (flag) {
+        _status = Status::Started;
+    }
     return (bool) flag;
 }
 
@@ -58,7 +68,6 @@ bool Can::connect() {
     flag = VCI_StartCAN(_config->deviceType(),
                         _config->deviceIndex(),
                         _config->deviceChannel());
-    _status = Status::Connected;
     return (bool) flag;
 }
 
@@ -66,7 +75,7 @@ bool Can::close() {
     unsigned long flag = 0;
     flag = VCI_CloseDevice(_config->deviceType(),
                            _config->deviceIndex());
-    _status = Status::Disconnected;
+    _status = Status::Closed;
     return (bool) flag;
 }
 
@@ -75,20 +84,21 @@ bool Can::reset() {
     flag = VCI_ResetCAN(_config->deviceType(),
                         _config->deviceIndex(),
                         _config->deviceChannel());
+    if (flag) {
+        _status = Status::Initialized;
+    }
     return bool(flag);
 }
 
 bool Can::reconnect() {
     close();
     bool flag = connect();
-    if (flag) {
-        _status = Status::Connected;
-    }
     return flag;
 }
 
 bool Can::collect(Buffer &buffer, int delay) {
     unsigned long length;
+    _status |= Status::Collecting;
     length = VCI_Receive(_config->deviceType(),
                          _config->deviceIndex(),
                          _config->deviceChannel(),
@@ -103,11 +113,14 @@ bool Can::collect(Buffer &buffer, int delay) {
         VCI_ERR_INFO error;
         getError(&error);
     }
+    // todo 
+    _status ^= Status::Collecting;
     return flag;
 }
 
 bool Can::deliver(Buffer &buffer) {
     unsigned long length;
+    _status |= Status::Transmitting;
     length = VCI_Transmit(_config->deviceType(),
                           _config->deviceIndex(),
                           _config->deviceChannel(),
@@ -121,11 +134,13 @@ bool Can::deliver(Buffer &buffer) {
         VCI_ERR_INFO error;
         getError(&error);
     }
+    _status ^= Status::Transmitting;
     return flag;
 }
 
 bool Can::command(unsigned int id, QString &&cmd) {
     Q_ASSERT(id < 0x800);
+    _status |= Status::Command;
     VCI_CAN_OBJ frame;
     frame.ID = id;
     frame.TimeStamp = 0;
@@ -154,6 +169,7 @@ bool Can::command(unsigned int id, QString &&cmd) {
                           _config->deviceChannel(),
                           &frame,
                           1);
+    _status ^= Status::Command;
     return length == frame.DataLen;
 }
 
@@ -174,10 +190,14 @@ void Can::getError(VCI_ERR_INFO *error) {
                     error);
 }
 
-void Can::clear() {
+void Can::clear() const {
     VCI_ClearBuffer(_config->deviceType(),
                     _config->deviceIndex(),
                     _config->deviceChannel());
+}
+
+int Can::status() const {
+    return _status;
 }
 
 Can::Config::Config(unsigned long channel) :

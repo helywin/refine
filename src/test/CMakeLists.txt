@@ -69,23 +69,6 @@ set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.a)
 set(LIBZIP D:/msys32/mingw32/lib/libzip.a)
 set(LIBZ D:/msys32/mingw32/lib/libz.a)
 
-
-add_executable(test_window test_window.cpp ${GUI} ${RES})
-target_link_libraries(test_window Qt5Widgets Qt5Core Qt5Gui Qt5OpenGL ${LIBOPENGL})
-
-add_executable(test_transmit test_transmit.cpp ${CORE})
-target_link_libraries(test_transmit Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
-
-add_executable(test_collect test_collect.cpp ${CORE})
-target_link_libraries(test_collect Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
-
-add_executable(test_username test_username.cpp)
-
-add_executable(test_ref test_ref.cpp ${CORE})
-target_link_libraries(test_ref Qt5Core ${LIBCAN} ${LIBGSL} ${LIBOMP})
-
-add_executable(test_unzip test_unzip.cpp)
-target_link_libraries(test_unzip Qt5Core ${LIBZIP} ${LIBZ})
-
-add_executable(test_printer test_printer.cpp)
-target_link_libraries(test_printer Qt5Core Qt5Gui Qt5PrintSupport Qt5Widgets Qt5TextToSpeech)
+add_executable(main main.cpp ${CORE})
+target_link_libraries(main ${LIBCAN}
+        Qt5Core)

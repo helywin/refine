@@ -1,5 +1,5 @@
 //
-// Created by jiang.wenqiang on 2018/8/6.
+// Created by jiang.wenqiang on 2018/9/11.
 //
 
 #include "Curve.h"
@@ -7,32 +7,6 @@
 #include <QtCore/QDebug>
 
 Curve::Curve() : _status(Status::Uninitialized) {}
-
-bool Curve::load(QFile &f, const Curve::FileType type) {
-    bool flag = false;
-    switch (type) {
-        case Curve::FileType::Csv:
-            flag = loadFromCsv(f);
-            break;
-        case Curve::FileType::Ref:
-            flag = loadFromRef(f);
-            break;
-    }
-    return flag;
-}
-
-bool Curve::dump(QFile &f, const Curve::FileType type) const {
-    bool flag = false;
-    switch (type) {
-        case Curve::FileType::Csv:
-            flag = dumpToCsv(f);
-            break;
-        case Curve::FileType::Ref:
-            flag = dumpToRef(f);
-            break;
-    }
-    return flag;
-}
 
 QStringList Curve::header() const {
     return _header;

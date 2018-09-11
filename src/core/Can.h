@@ -1,12 +1,15 @@
 //
-// Created by jiang.wenqiang on 2018/8/3.
+// Created by jiang.wenqiang on 2018/9/10.
 //
 
 #ifndef REFINE_CAN_H
 #define REFINE_CAN_H
 
+
+#include <QtCore/QString>
 #include "ControlCan.h"
-#include "Buffer.h"
+
+class Buffer;
 
 class Can {
 public:
@@ -18,13 +21,18 @@ public:
 
     class RegStatus;
 
-    enum class Status {
-        Disconnected = 0,
-        Connected = 1,
+    enum Status {
+        Closed = 0x00,
+        Opened = 0x01,
+        Initialized = 0x02,
+        Started = 0x04,
+        Collecting = 0x08,
+        Transmitting = 0x10,
+        Command = 0x20
     };
 
 private:
-    Status _status;
+    int _status;
     Config *_config;
 
 public:
@@ -56,7 +64,9 @@ public:
 
     bool isConnected();
 
-    void clear();
+    void clear() const;
+
+    int status() const;
 
 private:
     void getError(VCI_ERR_INFO *error);
@@ -81,10 +91,15 @@ public:
     ~Config();
 
     unsigned long deviceType() const;
+
     unsigned long deviceIndex() const;
+
     unsigned long deviceChannel() const;
+
     unsigned long reserved() const;
+
     const VCI_INIT_CONFIG *initConfig() const;
+
     VCI_INIT_CONFIG *initConfig();
 
 };
@@ -97,8 +112,6 @@ class Can::ErrorInfo {
 
 class Can::RegStatus {
 };
-
-
 
 
 #endif //REFINE_CAN_H

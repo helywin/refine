@@ -9,47 +9,35 @@
 
 class Version {
 private:
-    enum class Id : std::uint8_t {
-        Demo = 0x0F,
+    enum Identifier {
         Alpha = 0x00,
         Beta = 0x01,
         Gamma = 0x02,
         Release = 0x03,
+        Demo = 0x0F
     };
 
-public:
-    const static unsigned char major = 0;
-    const static unsigned char micro = 0;
-    const static unsigned char minor = 1;
-    const static unsigned char build = 1;
-    const static Id identifier = Id::Demo;
+private:
+    const static unsigned char _major = 0;
+    const static unsigned char _micro = 0;
+    const static unsigned char _minor = 1;
+    const static unsigned char _build[4] = {18, 9, 11, 1};
+    const static Identifier _identifier = Identifier::Demo;
 
 public:
-    static const QString str() {
-        QString s = QString("Version: %1.%2.%3.%4 ")
-                .arg(major)
-                .arg(micro)
-                .arg(minor)
-                .arg(build);
-        switch (identifier) {
-            case Id::Demo:
-                s += QString("(Demo)");
-                break;
-            case Id::Alpha:
-                s += QString("(Alpha)");
-                break;
-            case Id::Beta:
-                s += QString("(Beta)");
-                break;
-            case Id::Gamma:
-                s += QString("(Gamma)");
-                break;
-            case Id::Release:
-                s += QString("(Release)");
-                break;
-        }
-        return qMove(s);
-    }
+    Version();
+
+    static const QString str() const;
+
+    static unsigned char major() const;
+
+    static unsigned char micro() const;
+
+    static unsigned char minor() const;
+
+    static const unsigned char *build() const;
+
+    static unsigned char identifier() const;
 };
 
 #endif //REFINE_VERSION_H

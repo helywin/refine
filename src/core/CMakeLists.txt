@@ -1,7 +1,0 @@
-#cmake_minimum_required(VERSION 3.10.1)
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#set(CMAKE_AUTOMOC ON)
-#set(CMAKE_AUTOUIC ON)
-#find_package(Qt5Core CONFIG REQUIRED)
-#find_package(Qt5Widgets CONFIG REQUIRED)
-#add_compile_options(-fexec-charset=gbk)
