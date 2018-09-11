@@ -6,16 +6,19 @@
 #include "Log.h"
 
 Log::Log(const QString &path) :
-        _log(), _path(path), _file(path) {
+        _log(), _path(path), _file(path)
+{
     Q_ASSERT(_file.open(QIODevice::WriteOnly | QIODevice::Append));
 }
 
-Log::~Log() {
+Log::~Log()
+{
     _file.close();
 }
 
 void Log::handler(QtMsgType type, const QMessageLogContext &context,
-                  const QString &msg) {
+                  const QString &msg)
+{
     Cell cell(type, msg);
     _log.append(cell);
     QTextStream steam(&_file);
@@ -30,7 +33,8 @@ Log::Cell::Cell(QtMsgType type, const QString &&msg) : _type(type), _msg(msg) {}
 
 Log::Cell::Cell(QtMsgType type, const QString &msg) : _type(type), _msg(msg) {}
 
-QString Log::Cell::str() const {
+QString Log::Cell::str() const
+{
     QString s;
     s += "[";
     s += _time.toString(QString("yyyy/MM/dd HH:mm:ss"));

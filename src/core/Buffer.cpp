@@ -8,7 +8,8 @@ Buffer::Buffer() : Buffer(50, 100) {}
 
 Buffer::Buffer(int buffer_len, unsigned long cell_size) :
         _size(buffer_len), _index(0), _cells(new Cell[buffer_len]),
-        _head(_cells), _tail(_cells) {
+        _head(_cells), _tail(_cells)
+{
     Q_ASSERT(buffer_len > 0);
     Q_ASSERT(cell_size > 0);
     for (int i = 0; i < _size; ++i) {
@@ -17,42 +18,51 @@ Buffer::Buffer(int buffer_len, unsigned long cell_size) :
 }
 
 
-Buffer::~Buffer() {
+Buffer::~Buffer()
+{
     delete[] _cells;
 }
 
-Buffer::Cell* Buffer::operator[](int index) {
+Buffer::Cell *Buffer::operator[](int index)
+{
     Q_ASSERT(index >= 0);
     return _cells + index;
 }
 
-const Buffer::Cell* Buffer::operator[](int index) const {
+const Buffer::Cell *Buffer::operator[](int index) const
+{
     Q_ASSERT(index >= 0);
     return _cells + index;
 }
 
-int Buffer::size() const {
+int Buffer::size() const
+{
     return _size;
 }
 
-const VCI_CAN_OBJ* Buffer::head() const {
+const VCI_CAN_OBJ *Buffer::head() const
+{
     return _head->cell();
 }
 
 
-VCI_CAN_OBJ* Buffer::head() {
+VCI_CAN_OBJ *Buffer::head()
+{
     return _head->cell();
 }
 
-const VCI_CAN_OBJ* Buffer::tail() const {
+const VCI_CAN_OBJ *Buffer::tail() const
+{
     return _tail->cell();
 }
 
-VCI_CAN_OBJ* Buffer::tail() {
+VCI_CAN_OBJ *Buffer::tail()
+{
     return _tail->cell();
 }
 
-void Buffer::headForward() {
+void Buffer::headForward()
+{
     if (_head == _cells + _size - 1) {
         _head = _cells;
     } else {
@@ -60,7 +70,8 @@ void Buffer::headForward() {
     }
 }
 
-void Buffer::tailForward() {
+void Buffer::tailForward()
+{
     _tail->setDataSize(0);
     if (_tail == _cells + _size - 1) {
         _tail = _cells;
@@ -69,65 +80,79 @@ void Buffer::tailForward() {
     }
 }
 
-unsigned long Buffer::headWholeSize() const {
+unsigned long Buffer::headWholeSize() const
+{
     return _head->wholeSize();
 }
 
-unsigned long Buffer::headDataSize() const {
+unsigned long Buffer::headDataSize() const
+{
     return _head->dataSize();
 }
 
-void Buffer::setHeadDataSize(const unsigned long size) {
+void Buffer::setHeadDataSize(const unsigned long size)
+{
     _head->setDataSize(size);
 }
 
-unsigned long Buffer::tailWholeSize() const {
+unsigned long Buffer::tailWholeSize() const
+{
     return _tail->wholeSize();
 }
 
-unsigned long Buffer::tailDataSize() const {
+unsigned long Buffer::tailDataSize() const
+{
     return _tail->dataSize();
 }
 
-void Buffer::setTailDataSize(const unsigned long size) {
+void Buffer::setTailDataSize(const unsigned long size)
+{
     _tail->setDataSize(size);
 }
 
-bool Buffer::isFull() const {
+bool Buffer::isFull() const
+{
     return _head - _tail == _size - 1 ||
            _head - _tail == -1;
 }
 
-bool Buffer::isEmpty() const {
+bool Buffer::isEmpty() const
+{
     return _head == _tail;
 }
 
-Buffer::Cell * Buffer::tailCell() {
+Buffer::Cell *Buffer::tailCell()
+{
     return _tail;
 }
 
-const Buffer::Cell * Buffer::tailCell() const {
+const Buffer::Cell *Buffer::tailCell() const
+{
     return _tail;
 }
 
-Buffer::Cell * Buffer::headCell() {
+Buffer::Cell *Buffer::headCell()
+{
     return _head;
 }
 
-const Buffer::Cell * Buffer::headCell() const {
+const Buffer::Cell *Buffer::headCell() const
+{
     return _head;
 }
 
 Buffer::Cell::Cell() : _status(Status::UnInitialized), _cell(nullptr),
                        _whole_size(0), _data_size(0) {}
 
-Buffer::Cell::~Cell() {
+Buffer::Cell::~Cell()
+{
     if (_status != Status::UnInitialized) {
         delete[] _cell;
     }
 }
 
-void Buffer::Cell::initialize(unsigned long size) {
+void Buffer::Cell::initialize(unsigned long size)
+{
     Q_ASSERT(size > 0);
     if (_status == Status::UnInitialized) {
         _cell = new VCI_CAN_OBJ[size];
@@ -147,43 +172,52 @@ void Buffer::Cell::initialize(unsigned long size) {
     }
 }
 
-VCI_CAN_OBJ* Buffer::Cell::operator[](int index) {
+VCI_CAN_OBJ *Buffer::Cell::operator[](int index)
+{
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
 
-const VCI_CAN_OBJ* Buffer::Cell::operator[](int index) const {
+const VCI_CAN_OBJ *Buffer::Cell::operator[](int index) const
+{
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
 
-VCI_CAN_OBJ* Buffer::Cell::at(int index) {
+VCI_CAN_OBJ *Buffer::Cell::at(int index)
+{
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
 
-const VCI_CAN_OBJ* Buffer::Cell::at(int index) const {
+const VCI_CAN_OBJ *Buffer::Cell::at(int index) const
+{
     Q_ASSERT(index >= 0);
     return _cell + index;
 }
 
-VCI_CAN_OBJ* Buffer::Cell::cell() {
+VCI_CAN_OBJ *Buffer::Cell::cell()
+{
     return _cell;
 }
 
-const VCI_CAN_OBJ* Buffer::Cell::cell() const {
+const VCI_CAN_OBJ *Buffer::Cell::cell() const
+{
     return _cell;
 }
 
-unsigned long Buffer::Cell::wholeSize() const {
+unsigned long Buffer::Cell::wholeSize() const
+{
     return _whole_size;
 }
 
-unsigned long Buffer::Cell::dataSize() const {
+unsigned long Buffer::Cell::dataSize() const
+{
     return _data_size;
 }
 
-void Buffer::Cell::setDataSize(const unsigned long size) {
+void Buffer::Cell::setDataSize(const unsigned long size)
+{
     Q_ASSERT(size <= _whole_size);
     _data_size = size;
 }
@@ -200,7 +234,8 @@ void Buffer::Cell::setDataSize(const unsigned long size) {
 //    return _delay;
 //}
 
-QStringList Buffer::Cell::str() const {
+QStringList Buffer::Cell::str() const
+{
     QStringList list;
     for (unsigned int i = 0; i < _data_size; ++i) {
         QString str;
@@ -221,7 +256,8 @@ QStringList Buffer::Cell::str() const {
     return qMove(list);
 }
 
-void Buffer::Cell::setSendType(Buffer::Cell::SendType type) {
+void Buffer::Cell::setSendType(Buffer::Cell::SendType type)
+{
     unsigned char send_type = 0;
     switch (type) {
         case SendType::Normal:

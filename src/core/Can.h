@@ -11,7 +11,8 @@
 
 class Buffer;
 
-class Can {
+class Can
+{
 public:
     class Config;
 
@@ -21,7 +22,8 @@ public:
 
     class RegStatus;
 
-    enum Status {
+    enum Status
+    {
         Closed = 0x00,
         Opened = 0x01,
         Initialized = 0x02,
@@ -72,7 +74,8 @@ private:
     void getError(VCI_ERR_INFO *error);
 };
 
-class Can::Config {
+class Can::Config
+{
 private:
     unsigned long _device_type;      //! \brief 设备类型
     unsigned long _device_index;     //! \brief 设备索引号
@@ -104,13 +107,16 @@ public:
 
 };
 
-class Can::BoardInfo {
+class Can::BoardInfo
+{
 };
 
-class Can::ErrorInfo {
+class Can::ErrorInfo
+{
 };
 
-class Can::RegStatus {
+class Can::RegStatus
+{
 };
 
 

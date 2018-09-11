@@ -10,23 +10,27 @@
 #include <QtCore/QMap>
 #include <QtCore/QFile>
 
-class Curve {
+class Curve
+{
 public:
     class Cell;
 
     typedef QStringList Header;
 
-    enum class Status {
+    enum class Status
+    {
         Uninitialized,
         Initialized
     };
 
-    enum class FileType {
+    enum class FileType
+    {
         Csv,
         Ref,
     };
 
-    enum class Bundle {
+    enum class Bundle
+    {
         None,
         Acceleration,
         EngineSpeed,
@@ -41,61 +45,42 @@ private:
 
 public:
     Curve();
-
     bool loadFromCsv(QFile &f);
-
     bool loadFromRef(QFile &f);
-
     bool dumpToCsv(QFile &f) const;
-
     bool dumpToRef(QFile &f) const;
-
     Cell &operator[](int index);
-
-    const Cell &operator[](int index) const;
-
     Cell &operator[](const QString &name);
-
+    const Cell &operator[](int index) const;
     const Cell &operator[](const QString &name) const;
-
     Cell &at(int index);
-
-    const Cell &at(int index) const;
-
     Cell &at(const QString &name);
-
+    const Cell &at(int index) const;
     const Cell &at(const QString &name) const;
-
     QStringList header() const;
-
     int size() const;
-
     QStringList str() const;
-
     void appendRow();
-
     void appendRow(Bundle bundle);
-
     void insertRow(int index);
-
     void insertRow(int index, Bundle bundle);
-
     void removeRow(int index);
-
     void removeAllRow();
-
     void clear();
 };
 
 
-class Curve::Cell {
+class Curve::Cell
+{
 public:
-    enum class Type {
+    enum class Type
+    {
         Physical = 0,
         Logical = 1
     };
 
-    enum class Sample {
+    enum class Sample
+    {
         Timed = 0,
         Framed = 1
     };
@@ -129,181 +114,97 @@ private:
 
 public:
     Cell();
-
     explicit Cell(int index);
-
     Cell(int index, Bundle bundle);
-
     Cell(const Cell &cell) = default;
-
     Cell &operator=(Cell const &cell) = default;
-
     bool check() const;
-
     QStringList str() const;
 
     //str getter
-
     QString indexStr() const;
-
     QString displayStr() const;
-
     QString nameStr() const;
-
     QString typeStr() const;
-
     QString unitStr() const;
-
     QString widthStr() const;
-
     QString colorStr() const;
-
     QString canIdStr() const;
-
     QString zeroByteStr() const;
-
     QString highByteStr() const;
-
     QString lowByteStr() const;
-
     QString sampleStr() const;
-
     QString rangeInStr() const;
-
     QString rangeOutStr() const;
-
     QString logicMapStr() const;
-
     QString remarkStr() const;
 
     //val getter
-
     unsigned short index() const;
-
     bool display() const;
-
     QString name() const;
-
     Type type() const;
-
     QString unit() const;
-
     unsigned short width() const;
-
     unsigned long color() const;
-
     unsigned long canId() const;
-
     bool zeroByteExisted() const;
-
     unsigned short zeroByte() const;
-
     bool highByteExisted() const;
-
     unsigned short highByte() const;
-
     const unsigned short *highByteRange() const;
-
     unsigned short lowByte() const;
-
     const unsigned short *lowByteRange() const;
-
     Sample sampleType() const;
-
     unsigned long sample() const;
-
     const long *rangeIn() const;
-
     const long *rangeOut() const;
-
     QMap<unsigned int, QString> logicMap() const;
-
     QString remark() const;
 
     //str setter
-
     void setIndexByStr(QString &s);
-
     void setDisplayByStr(QString &s);
-
     void setNameByStr(QString &s);
-
     void setTypeByStr(QString &s);
-
     void setUnitByStr(QString &s);
-
     void setWidthByStr(QString &s);
-
     void setColorByStr(QString &s);
-
     void setCanIdByStr(QString &s);
-
     void setZeroByteByStr(QString &s);
-
     void setHighByteByStr(QString &s);
-
     void setLowByteByStr(QString &s);
-
     void setSampleByStr(QString &s);
-
     void setRangeInByStr(QString &s);
-
     void setRangeOutByStr(QString &s);
-
     void setLogicMapByStr(QString &s);
-
     void setRemarkByStr(QString &s);
 
     //val setter
-
     void setIndexByVal(unsigned short v);
-
     void setDisplayByVal(bool v);
-
     void setNameByVal(const QString &v);
-
     void setTypeByVal(Type v);
-
     void setUnitByVal(const QString &v);
-
     void setWidthByVal(unsigned short v);
-
     void setColorByVal(unsigned long v);
-
     void setCanIdByVal(unsigned long v);
-
     void setZeroByteExistedByVal(bool v);
-
     void setZeroByteByVal(unsigned short v);
-
     void setHighByteExistedByVal(bool v);
-
     void setHighByteByVal(unsigned short v);
-
     void setHighByteRangeByVal(const unsigned short *v);
-
     void setHighByteRangeByVal(unsigned short v0, unsigned short v1);
-
     void setLowByteByVal(unsigned short v);
-
     void setLowByteRangeByVal(const unsigned short *v);
-
     void setLowByteRangeByVal(unsigned short v0, unsigned short v1);
-
     void setSampleTypeByVal(Sample v);
-
     void setSampleByVal(unsigned long v);
-
     void setRangeInByVal(const long *v);
-
     void setRangeInByVal(long v0, long v1);
-
     void setRangeOutByVal(const long *v);
-
     void setRangeOutByVal(long v0, long v1);
-
     void setLogicMapByVal(const Logic &v);
-
     void setRemarkByVal(const QString &v);
 };
 

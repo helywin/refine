@@ -82,7 +82,8 @@ typedef signed char CHAR;
 typedef void *PVOID;
 
 
-typedef struct {//tagRemoteClient {
+typedef struct
+{//tagRemoteClient {
     int iIndex;
     DWORD port;
     HANDLE hClient;
@@ -91,7 +92,8 @@ typedef struct {//tagRemoteClient {
 
 
 //! \brief 1.ZLGCAN系列接口卡信息的数据类型。
-typedef struct {//_VCI_BOARD_INFO {
+typedef struct
+{//_VCI_BOARD_INFO {
     USHORT hw_Version;                //! \brief hardware version
     USHORT fw_Version;                //! \brief firmware version
     USHORT dr_Version;                //! \brief driver version
@@ -104,7 +106,8 @@ typedef struct {//_VCI_BOARD_INFO {
 } VCI_BOARD_INFO;//, *PVCI_BOARD_INFO;
 
 //! \brief 2.定义CAN信息帧的数据类型。
-typedef struct {//_VCI_CAN_OBJ {
+typedef struct
+{//_VCI_CAN_OBJ {
     UINT ID;                            //! \brief 报文id
     UINT TimeStamp;                     //! \brief 收到信息帧时的时间标识
     BYTE TimeFlag;                      //! \brief 是否使用时间标识
@@ -121,7 +124,8 @@ typedef struct {//_VCI_CAN_OBJ {
 } VCI_CAN_OBJ;//, *PVCI_CAN_OBJ;
 
 //! \brief 3.定义CAN控制器状态的数据类型。
-typedef struct {//_VCI_CAN_STATUS {
+typedef struct
+{//_VCI_CAN_STATUS {
     UCHAR ErrInterrupt;
     UCHAR regMode;
     UCHAR regStatus;
@@ -134,14 +138,16 @@ typedef struct {//_VCI_CAN_STATUS {
 } VCI_CAN_STATUS;//, *PVCI_CAN_STATUS;
 
 //! \brief 4.定义错误信息的数据类型。
-typedef struct {//_VCI_ERR_INFO {
+typedef struct
+{//_VCI_ERR_INFO {
     UINT ErrCode;
     BYTE Passive_ErrData[3];
     BYTE ArLost_ErrData;
 } VCI_ERR_INFO;//, *PVCI_ERR_INFO;
 
 //! \brief 5.定义初始化CAN的数据类型
-typedef struct {//_VCI_INIT_CONFIG {
+typedef struct
+{//_VCI_INIT_CONFIG {
     DWORD AccCode;
     DWORD AccMask;
     DWORD Reserved;
@@ -151,7 +157,8 @@ typedef struct {//_VCI_INIT_CONFIG {
     UCHAR Mode;
 } VCI_INIT_CONFIG;//, *PVCI_INIT_CONFIG;
 
-typedef struct {//_tagChgDesIPAndPort {
+typedef struct
+{//_tagChgDesIPAndPort {
     char szpwd[10];
     char szdesip[20];
     int desport;
@@ -159,7 +166,8 @@ typedef struct {//_tagChgDesIPAndPort {
 } CHGDESIPANDPORT;
 
 ///////// new add struct for filter /////////
-typedef struct {//_VCI_FILTER_RECORD {
+typedef struct
+{//_VCI_FILTER_RECORD {
     DWORD ExtFrame;    //是否为扩展帧
     DWORD Start;
     DWORD End;

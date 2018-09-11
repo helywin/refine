@@ -9,7 +9,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QDateTime>
 
-class Log {
+class Log
+{
 private:
     class Cell;
 
@@ -26,18 +27,14 @@ public:
                  const QString &msg);
 };
 
-class Log::Cell {
+class Log::Cell
+{
 public:
     Cell();
-
     Cell(QtMsgType type, const QString &&msg);
-
     Cell(QtMsgType type, const QString &msg);
-
     Cell(const Cell &cell) = default;
-
     Cell &operator=(const Cell &cell) = default;
-
     QString str() const;
 
 private:

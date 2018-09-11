@@ -7,9 +7,11 @@
 
 #include <QtCore/QString>
 
-class Version {
+class Version
+{
 private:
-    enum Identifier {
+    enum Identifier
+    {
         Alpha = 0x00,
         Beta = 0x01,
         Gamma = 0x02,
@@ -26,17 +28,12 @@ private:
 
 public:
     Version();
-
+public:
     static const QString str() const;
-
     static unsigned char major() const;
-
     static unsigned char micro() const;
-
     static unsigned char minor() const;
-
     static const unsigned char *build() const;
-
     static unsigned char identifier() const;
 };
 
