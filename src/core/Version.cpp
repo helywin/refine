@@ -2,28 +2,18 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#include <QtWidgets/QApplication>
 #include "Version.h"
 
-Version::Version()
-{
-    QApplication::setApplicationDisplayName("refine");
-    QApplication::setOrganizationDomain("byd.com.cn");
-    QApplication::setApplicationName("refine");
-    QApplication::setOrganizationName("byd");
-}
 
-const QString Version::str() const
+QString Version::str()
 {
     QString s = QString("Version: %1.%2.%3.%4_%5%6%7_%8 ")
             .arg(_major)
             .arg(_micro)
-            .arg(_minor)
-            .arg(_build[0], 2, 10, QChar('0'))
-            .arg(_build[1], 2, 10, QChar('0'))
-            .arg(_build[2], 2, 10, QChar('0'))
-            .arg(_build[3], 2, 10, QChar('0'));
+            .arg(_minor);
     switch (_identifier) {
+        case Identifier::None:
+            break;
         case Identifier::Demo:
             s += QString("(Demo)");
             break;
@@ -43,27 +33,47 @@ const QString Version::str() const
     return qMove(s);
 }
 
-unsigned char Version::major() const
+unsigned char Version::major()
 {
     return _major;
 }
 
-unsigned char Version::micro() const
+unsigned char Version::micro()
 {
     return _micro;
 }
 
-unsigned char Version::minor() const
+unsigned char Version::minor()
 {
     return _minor;
 }
 
-const unsigned char *Version::build() const
+unsigned char Version::build()
 {
     return _build;
 }
 
-unsigned char Version::identifier() const
+unsigned char Version::identifier()
 {
     return _identifier;
+}
+
+QDate Version::date()
+{
+    return QDate(_year + 2000, _month, _day);
+}
+
+unsigned char Version::year()
+{
+    return _year;
+}
+
+unsigned char Version::month()
+{
+    return _month;
+}
+
+unsigned char Version::day()
+{
+    return _day;
 }

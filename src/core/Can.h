@@ -15,11 +15,8 @@ class Can
 {
 public:
     class Config;
-
     class BoardInfo;
-
     class ErrorInfo;
-
     class RegStatus;
 
     enum Status
@@ -39,35 +36,20 @@ private:
 
 public:
     Can() = delete;
-
     explicit Can(Config *config);
-
     void setConfig(Config *config);
-
     bool open();
-
     bool init();
-
     bool start();
-
     bool connect();
-
     bool close();
-
     bool reset();
-
     bool reconnect();
-
     bool collect(Buffer &buffer, int delay = 0);
-
     bool deliver(Buffer &buffer);
-
     bool command(unsigned int id, QString &&cmd);
-
     bool isConnected();
-
     void clear() const;
-
     int status() const;
 
 private:
@@ -84,27 +66,16 @@ private:
     VCI_INIT_CONFIG *_config;
 public:
     Config() = delete;
-
     explicit Config(unsigned long channel);
-
     Config(const Config &config) = delete;
-
     Config &operator=(const Config &config) = delete;
-
     ~Config();
-
     unsigned long deviceType() const;
-
     unsigned long deviceIndex() const;
-
     unsigned long deviceChannel() const;
-
     unsigned long reserved() const;
-
     const VCI_INIT_CONFIG *initConfig() const;
-
     VCI_INIT_CONFIG *initConfig();
-
 };
 
 class Can::BoardInfo

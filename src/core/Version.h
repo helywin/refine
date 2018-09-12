@@ -6,35 +6,45 @@
 #define REFINE_VERSION_H
 
 #include <QtCore/QString>
+#include <QtCore/QDate>
 
 class Version
 {
-private:
+public:
     enum Identifier
     {
-        Alpha = 0x00,
-        Beta = 0x01,
-        Gamma = 0x02,
-        Release = 0x03,
-        Demo = 0x0F
+        None = 0x00,
+        Demo = 0x01,
+        Alpha = 0x02,
+        Beta = 0x04,
+        Gamma = 0x08,
+        Release = 0x10
     };
 
 private:
     const static unsigned char _major = 0;
     const static unsigned char _micro = 0;
     const static unsigned char _minor = 1;
-    const static unsigned char _build[4] = {18, 9, 11, 1};
+    const static unsigned char _build = 1;
+    const static unsigned char _year = 18;
+    const static unsigned char _month = 9;
+    const static unsigned char _day = 12;
     const static Identifier _identifier = Identifier::Demo;
 
 public:
-    Version();
+    Version() = default;
+
 public:
-    static const QString str() const;
-    static unsigned char major() const;
-    static unsigned char micro() const;
-    static unsigned char minor() const;
-    static const unsigned char *build() const;
-    static unsigned char identifier() const;
+    static QString str();
+    static unsigned char major();
+    static unsigned char micro();
+    static unsigned char minor();
+    static unsigned char build();
+    static unsigned char year();
+    static unsigned char month();
+    static unsigned char day();
+    static QDate date();
+    static unsigned char identifier();
 };
 
 #endif //REFINE_VERSION_H
