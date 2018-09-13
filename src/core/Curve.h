@@ -7,6 +7,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QVector>
+#include <QtCore/QPoint>
 #include <QtCore/QMap>
 #include <QtCore/QFile>
 
@@ -17,19 +18,13 @@ public:
 
     typedef QStringList Header;
 
-    enum class Status
+    enum Status
     {
         Uninitialized,
         Initialized
     };
 
-    enum class FileType
-    {
-        Csv,
-        Ref,
-    };
-
-    enum class Bundle
+    enum Bundle
     {
         None,
         Acceleration,
@@ -46,13 +41,20 @@ private:
 public:
     Curve();
     bool loadFromCsv(QFile &f);
-    bool loadFromRef(QFile &f);
+    bool loadFromCsv(QFile &&f);
+    bool loadFromCsv(QString &f);
+    bool loadFromCsv(QString &&f);
     bool dumpToCsv(QFile &f) const;
-    bool dumpToRef(QFile &f) const;
+    bool dumpToCsv(QFile &&f) const;
+    bool dumpToCsv(QString &f) const;
+    bool dumpToCsv(QString &&f) const;
     Cell &operator[](int index);
     Cell &operator[](const QString &name);
     const Cell &operator[](int index) const;
     const Cell &operator[](const QString &name) const;
+//    friend QDataStream;
+    friend QDataStream &operator<<(QDataStream &stream, const Curve &curve);
+    friend QDataStream &operator>>(QDataStream &stream, Curve &curve);
     Cell &at(int index);
     Cell &at(const QString &name);
     const Cell &at(int index) const;
@@ -60,6 +62,8 @@ public:
     QStringList header() const;
     int size() const;
     QStringList str() const;
+    void append(const Cell &cell);
+    void append(Cell &&cell);
     void appendRow();
     void appendRow(Bundle bundle);
     void insertRow(int index);
@@ -69,17 +73,23 @@ public:
     void clear();
 };
 
+QDataStream &operator<<(QDataStream &stream, const Curve &curve);
+QDataStream &operator>>(QDataStream &stream, Curve &curve);
+
+#define CURVE_NAME_L 32
+#define CURVE_UNIT_L 16
+#define CURVE_REMARK_L 64
 
 class Curve::Cell
 {
 public:
-    enum class Type
+    enum Type
     {
         Physical = 0,
         Logical = 1
     };
 
-    enum class Sample
+    enum Sample
     {
         Timed = 0,
         Framed = 1
@@ -117,6 +127,8 @@ public:
     explicit Cell(int index);
     Cell(int index, Bundle bundle);
     Cell(const Cell &cell) = default;
+    friend QDataStream &operator<<(QDataStream &stream, const Cell &cell);
+    friend QDataStream &operator>>(QDataStream &stream, Cell &cell);
     Cell &operator=(Cell const &cell) = default;
     bool check() const;
     QStringList str() const;
@@ -184,8 +196,10 @@ public:
     void setIndexByVal(unsigned short v);
     void setDisplayByVal(bool v);
     void setNameByVal(const QString &v);
+    void setNameByVal(QString &&v);
     void setTypeByVal(Type v);
     void setUnitByVal(const QString &v);
+    void setUnitByVal(QString &&v);
     void setWidthByVal(unsigned short v);
     void setColorByVal(unsigned long v);
     void setCanIdByVal(unsigned long v);
@@ -206,7 +220,10 @@ public:
     void setRangeOutByVal(long v0, long v1);
     void setLogicMapByVal(const Logic &v);
     void setRemarkByVal(const QString &v);
+    void setRemarkByVal(QString &&v);
 };
 
+QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell);
+QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell);
 
 #endif //REFINE_CURVE_H

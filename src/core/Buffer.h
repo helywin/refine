@@ -55,7 +55,7 @@ class Buffer::Cell
     friend class Buffer;
 
 public:
-    enum class SendType
+    enum SendType
     {
         Normal = 0,     //! \brief 正常发送
         Once = 1,       //! \brief 单次发送
@@ -64,7 +64,7 @@ public:
     };
 
 private:
-    enum class Status
+    enum Status
     {
         UnInitialized,
         Initialized,

@@ -33,27 +33,27 @@ QString Version::str()
     return qMove(s);
 }
 
-unsigned char Version::major()
+char Version::major()
 {
     return _major;
 }
 
-unsigned char Version::micro()
+char Version::micro()
 {
     return _micro;
 }
 
-unsigned char Version::minor()
+char Version::minor()
 {
     return _minor;
 }
 
-unsigned char Version::build()
+char Version::build()
 {
     return _build;
 }
 
-unsigned char Version::identifier()
+char Version::identifier()
 {
     return _identifier;
 }
@@ -63,17 +63,17 @@ QDate Version::date()
     return QDate(_year + 2000, _month, _day);
 }
 
-unsigned char Version::year()
+char Version::year()
 {
     return _year;
 }
 
-unsigned char Version::month()
+char Version::month()
 {
     return _month;
 }
 
-unsigned char Version::day()
+char Version::day()
 {
     return _day;
 }

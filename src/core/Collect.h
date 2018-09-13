@@ -18,27 +18,56 @@ Q_OBJECT
 public:
     enum CollectManner
     {
-        CollectFromCanWithDelay = 0x00,
-        CollectFromFileWithDelay = 0x01,
-        CollectFromFileWithoutDelay = 0x02
+        FromCan,
+        FromFile
+    };
+
+    enum ErrorCode
+    {
+        BufferFull,
+        ConnectionLost,
+        CanFailed,
+        CrcError
+    };
+
+    enum CollectControl
+    {
+        Resume,
+        Suspend,
+        Interrupt,
+        Stop,
     };
 
 private:
     Can *_can;
     Buffer *_buffer;
     CollectManner _manner;
-    int _delay;
+    unsigned long _delay;
     File *_file;
+    CollectControl _control;
 
 public:
     Collect() = delete;
     Collect(Can *can, Buffer *buffer);
-    void setMode(CollectManner manner, int delay = 10, File *file = nullptr);
-    void setDelay(int delay);
+    void setMode(CollectManner manner, unsigned long delay = 10,
+                 File *file = nullptr);
+    void setDelay(unsigned long delay);
     void setFile(File *file);
+    void reset();
+
+    void startCollection();
+    void suspendCollection();
+    void resumeCollection();
+    void interruptCollection();
+    void stopCollection();
 
 protected:
     void run() override;
+
+signals:
+    void error(int code);
+    void framesGot();
+    void collectionFinish();
 };
 
 

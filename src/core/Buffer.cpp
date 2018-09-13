@@ -159,7 +159,7 @@ void Buffer::Cell::initialize(unsigned long size)
 //        _delay = delay;
         _status = Status::Initialized;
         _whole_size = size;
-        for (auto i = 0; i < size; ++i) {
+        for (auto i = 0U; i < size; ++i) {
             _cell[i].Data[0] = 0;
             _cell[i].Data[1] = 0;
             _cell[i].Data[2] = 0;
@@ -272,7 +272,7 @@ void Buffer::Cell::setSendType(Buffer::Cell::SendType type)
             send_type = 3;
             break;
     }
-    for (auto i = 0; i < dataSize(); ++i) {
+    for (auto i = 0U; i < dataSize(); ++i) {
         _cell[i].SendType = send_type;
     }
 }

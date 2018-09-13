@@ -72,3 +72,7 @@ set(LIBZ D:/msys32/mingw32/lib/libz.a)
 add_executable(main main.cpp ${CORE})
 target_link_libraries(main ${LIBCAN}
         Qt5Core)
+
+add_executable(file test_file.cpp ${CORE})
+target_link_libraries(file ${LIBCAN}
+        Qt5Core)

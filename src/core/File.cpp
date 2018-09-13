@@ -8,6 +8,7 @@
 #include <windows.h>
 #include "File.h"
 #include "Version.h"
+#include "Curve.h"
 
 File::File()
         : _header(new File::Header()),
@@ -61,56 +62,84 @@ unsigned int File::crc32(const char *array, int len) const
     return ret;
 }
 
-bool File::loadFileHeader()
+void File::loadHeaderMagic()
 {
-    _stream->device()->seek(0);
-    _header->clear();
+    _stream->device()->seek(HEADER_MAGIC_POS);
     _stream->readRawData(_header->magic(), HEADER_MAGIC_L);
+}
+
+void File::loadHeaderVersion()
+{
+    _stream->device()->seek(HEADER_VERSION_POS);
     _stream->readRawData(_header->version(), HEADER_VERSION_L);
+}
+
+void File::loadHeaderCrc32()
+{
+    _stream->device()->seek(HEADER_CRC32_POS);
     (*_stream) >> _header->crc32();
+}
+
+void File::loadHeaderType()
+{
+    _stream->device()->seek(HEADER_TYPE_POS);
     (*_stream) >> _header->type();
+}
+
+void File::loadHeaderInfo()
+{
+    _stream->device()->seek(HEADER_INFO_POS);
     _stream->readRawData(_header->info(), HEADER_INFO_L);
-    (*_stream) >> _header->time();
+}
+
+void File::loadHeaderBirth()
+{
+    _stream->device()->seek(HEADER_BIRTH_POS);
+    (*_stream) >> _header->birth();
+}
+
+void File::loadHeaderModified()
+{
+    _stream->device()->seek(HEADER_MODIFIED_POS);
+    (*_stream) >> _header->modified();
+}
+
+void File::loadHeaderReserved()
+{
+    _stream->device()->seek(HEADER_RESV_POS);
     _stream->readRawData(_header->reserved(), HEADER_RESV_L);
-    if (!_header->check()) {
-        qDebug("bad header");
-        return false;
-    }
+}
+
+bool File::loadCheckSum()
+{
     QByteArray byte_array;
     signed char byte;
-    _stream->device()->seek(HEADER_MAGIC_L +
-                            HEADER_VERSION_L +
-                            HEADER_CRC32_L);
+    unsigned int checksum;
+     _stream->device()->seek(HEADER_CRC32_POS);
+    (*_stream) >> checksum;
     while (!_stream->atEnd()) {
         (*_stream) >> byte;
         byte_array.append(byte);
     }
     unsigned int check = crc32(byte_array);
-    if (check != _header->crc32()) {
-        qDebug() << "failed";
-        return false;
-    }
-    return true;
+    return check == checksum;
 }
 
-void File::dumpFileHeader()
+void File::dumpHeaderMagic()
 {
-    _stream->device()->seek(0);
-    //写char[]时最好用以上函数，不然长度每次都不一样
+    _stream->device()->seek(HEADER_MAGIC_POS);
     _stream->writeRawData(_header->magic(), HEADER_MAGIC_L);
-    _stream->writeRawData(_header->version(), HEADER_VERSION_L);
-    (*_stream) << _header->crc32();
-    (*_stream) << _header->type();
-    _stream->writeRawData(_header->info(), HEADER_INFO_L);
-    (*_stream) << _header->time();
-    _stream->writeRawData(_header->reserved(), HEADER_RESV_L);
 }
 
-void File::dumpFileHeaderCrc32()
+void File::dumpHeaderVersion()
 {
-    _stream->device()->seek(HEADER_MAGIC_L +
-                            HEADER_VERSION_L +
-                            HEADER_CRC32_L);
+    _stream->device()->seek(HEADER_VERSION_POS);
+    _stream->writeRawData(_header->version(), HEADER_VERSION_L);
+}
+
+void File::dumpHeaderCrc32()
+{
+    _stream->device()->seek(HEADER_CRC32_POS + HEADER_CRC32_L);
     QByteArray byte_array;
     signed char byte;
     byte_array.clear();
@@ -119,8 +148,60 @@ void File::dumpFileHeaderCrc32()
         byte_array.append(byte);
     }
     unsigned int check = crc32(byte_array);
-    _stream->device()->seek(HEADER_MAGIC_L);
+    _stream->device()->seek(HEADER_CRC32_POS);
     (*_stream) << check;
+}
+
+void File::dumpHeaderType()
+{
+    _stream->device()->seek(HEADER_TYPE_POS);
+    (*_stream) << _header->type();
+}
+
+void File::dumpHeaderInfo()
+{
+    _stream->device()->seek(HEADER_INFO_POS);
+    _stream->writeRawData(_header->info(), HEADER_INFO_L);
+}
+
+void File::dumpHeaderBirth()
+{
+    _stream->device()->seek(HEADER_BIRTH_POS);
+    (*_stream) << _header->birth();
+}
+
+void File::dumpHeaderModified()
+{
+    _stream->device()->seek(HEADER_MODIFIED_POS);
+    (*_stream) << _header->modified();
+}
+
+void File::dumpHeaderReserved()
+{
+    _stream->device()->seek(HEADER_RESV_POS);
+    _stream->writeRawData(_header->reserved(), HEADER_RESV_L);
+}
+
+void File::loadFileHeader()
+{
+    loadHeaderMagic();
+    loadHeaderVersion();
+    loadHeaderType();
+    loadHeaderInfo();
+    loadHeaderBirth();
+    loadHeaderModified();
+    loadHeaderReserved();
+}
+
+void File::dumpFileHeader()
+{
+    dumpHeaderMagic();
+    dumpHeaderVersion();
+    dumpHeaderType();
+    dumpHeaderInfo();
+    dumpHeaderBirth();
+    dumpHeaderModified();
+    dumpHeaderReserved();
 }
 
 bool File::loadCurveConfig(QFile &file, Curve &curve)
@@ -131,12 +212,12 @@ bool File::loadCurveConfig(QFile &file, Curve &curve)
     }
     _stream->setDevice(&file);
 
-    if (!loadFileHeader()) {
+    loadFileHeader();
+    if (!loadCheckSum()) {
         return false;
     }
-    if (!convertRefToCurveConfig(curve)) {
-        return false;
-    }
+    file.seek(DATA_POS);
+    (*_stream) >> curve;
     _stream->unsetDevice();
     file.close();
     return true;
@@ -144,48 +225,43 @@ bool File::loadCurveConfig(QFile &file, Curve &curve)
 
 bool File::dumpCurveConfig(QFile &file, const Curve &curve)
 {
+    _header->clear();
+    if (file.exists()) {
+        file.open(QIODevice::ReadOnly);
+        if (file.isOpen()) {
+            _stream->setDevice(&file);
+            loadFileHeader();
+            _stream->unsetDevice();
+            file.close();
+        }
+    } else {
+        _header->setBirth();
+    }
     file.open(QIODevice::ReadWrite | QIODevice::Truncate);
     if (!file.isOpen()) {
+        qDebug("false");
         return false;
     }
     _stream->setDevice(&file);
-    _header->clear();
     _header->setMagic();
     _header->setVersion();
-    _header->setTime(QDateTime::currentDateTime().toTime_t());
-    _header->setType(Header::FileType ::CurveConfig);
-    char user[HEADER_INFO_L];
-    char computer[HEADER_INFO_L];
-    unsigned long user_l = HEADER_INFO_L;
-    unsigned long computer_l = HEADER_INFO_L;
-    GetUserNameA(user, &user_l);
-    GetComputerNameA(computer, &computer_l);
-    QString info = QString(user) + "@" + QString(computer);
-    _header->setInfo(info);
+    _header->setModified();
+    _header->setType(Header::FileType::CurveConfig);
+    _header->setInfo();
 
     dumpFileHeader();
 
-    file.seek(HEADER_L);
-    convertCurveConfigToRef(curve);
+    file.seek(DATA_POS);
 
-    dumpFileHeaderCrc32();
+    (*_stream) << curve;
+
+    dumpHeaderCrc32();
 
     _stream->unsetDevice();
     file.close();
 
     return true;
 }
-
-void File::convertCurveConfigToRef(const Curve &curve)
-{
-
-}
-
-bool File::convertRefToCurveConfig(Curve &curve)
-{
-    return false;
-}
-
 
 File::Header::Header()
 {
@@ -198,7 +274,8 @@ File::Header::Header(unsigned int time, File::Header::FileType type)
     setVersion();
     _crc_sum = 0;
     memset(_info, '\0', sizeof(_info));
-    _time = time;
+    _birth_time = time;
+    _modified_time = time;
     _type = static_cast<unsigned int> (type);
     memset(_reserved, '\0', sizeof(_reserved));
     _reserved[HEADER_RESV_L - 1] = static_cast<char> (0xFF);
@@ -218,7 +295,7 @@ void File::Header::setMagic()
     _magic[4] = 'I';
     _magic[5] = 'N';
     _magic[6] = 'E';
-    _magic[7] = static_cast<char>(0x00);
+    _magic[7] = '0';
 }
 
 void File::Header::setVersion(const char *version)
@@ -271,9 +348,52 @@ void File::Header::setInfo(const char *info)
     }
 }
 
-void File::Header::setTime(unsigned int time)
+void File::Header::setInfo()
 {
-    _time = time;
+    char user[50];
+    char computer[50];
+    unsigned long user_l = 50;
+    unsigned long computer_l = 50;
+    GetUserNameA(user, &user_l);
+    GetComputerNameA(computer, &computer_l);
+    if (user_l > HEADER_INFO_L) {
+        memcpy(_info, user, sizeof(_info));
+        return;
+    } else {
+        memcpy(_info, user, sizeof(char) * user_l);
+    }
+    if (user_l < HEADER_INFO_L) {
+        _info[user_l - 1] = '@';
+    }
+    if (user_l + computer_l > HEADER_INFO_L) {
+        memcpy(_info + user_l, computer,
+               sizeof(char) * (HEADER_INFO_L - user_l));
+    } else {
+        memcpy(_info + user_l, computer,
+                sizeof(char) * computer_l);
+        memset(_info + user_l + computer_l, 0,
+                HEADER_INFO_L - user_l - computer_l);
+    }
+}
+
+void File::Header::setBirth(unsigned int birth)
+{
+    _birth_time = birth;
+}
+
+void File::Header::setBirth()
+{
+    _birth_time = QDateTime::currentDateTime().toTime_t();
+}
+
+void File::Header::setModified(unsigned int modified)
+{
+    _modified_time = modified;
+}
+
+void File::Header::setModified()
+{
+    _modified_time = QDateTime::currentDateTime().toTime_t();
 }
 
 void File::Header::setReserved(const char *reserved)
@@ -306,9 +426,14 @@ const char *File::Header::info() const
     return _info;
 }
 
-unsigned int File::Header::time() const
+unsigned int File::Header::birth() const
 {
-    return _time;
+    return _birth_time;
+}
+
+unsigned int File::Header::modified() const
+{
+    return _modified_time;
 }
 
 const char *File::Header::reserved() const
@@ -341,9 +466,14 @@ char *File::Header::info()
     return _info;
 }
 
-unsigned int &File::Header::time()
+unsigned int &File::Header::birth()
 {
-    return _time;
+    return _birth_time;
+}
+
+unsigned int &File::Header::modified()
+{
+    return _modified_time;
 }
 
 char *File::Header::reserved()
@@ -416,7 +546,7 @@ QStringList File::Header::str() const
     }
     list.append(qMove(type));
     list.append(_info);
-    QString date = QDateTime::fromTime_t(_time).
+    QString date = QDateTime::fromTime_t(_birth_time).
             toString(QString("yyyy/MM/dd hh:mm:ss"));
     list.append(qMove(date));
     return qMove(list);
@@ -436,7 +566,28 @@ void File::Header::clear()
     _crc_sum = 0;
     _type = 0;
     memset(_info, 0, sizeof(_info));
-    _time = 0;
+    _birth_time = 0;
+    _modified_time = 0;
     memset(_reserved, 0, sizeof(_reserved));
     _reserved[HEADER_RESV_L - 1] = (char) 0xFF;
+}
+
+int File::Header::versionCompare(char major, char micro, char minor)
+{
+    if (_version[0] < major) {
+        return -1;
+    } else if (_version[0] > major){
+        return 1;
+    }
+    if (_version[1] < micro) {
+        return -1;
+    } else if (_version[1] > micro){
+        return 1;
+    }
+    if (_version[2] < minor) {
+        return -1;
+    } else if (_version[2] > minor){
+        return 1;
+    }
+    return 0;
 }

@@ -2,9 +2,11 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
+#include <QtCore/QDebug>
+#include <QtCore/QDataStream>
 #include "Curve.h"
 #include "Csv.h"
-#include <QtCore/QDebug>
+#include "File.h"
 
 Curve::Curve() : _status(Status::Uninitialized) {}
 
@@ -175,9 +177,17 @@ bool Curve::loadFromCsv(QFile &f)
     return true;
 }
 
-bool Curve::loadFromRef(QFile &f)
-{
-    return false;
+bool Curve::loadFromCsv(QFile &&f) {
+    return loadFromCsv(f);
+}
+
+bool Curve::loadFromCsv(QString &f) {
+    QFile file(f);
+    return loadFromCsv(file);
+}
+
+bool Curve::loadFromCsv(QString &&f) {
+    return loadFromCsv(f);
 }
 
 bool Curve::dumpToCsv(QFile &f) const
@@ -198,9 +208,17 @@ bool Curve::dumpToCsv(QFile &f) const
     return csv.finishWrite();
 }
 
-bool Curve::dumpToRef(QFile &f) const
-{
-    return false;
+bool Curve::dumpToCsv(QFile &&f) const {
+    return dumpToCsv(f);
+}
+
+bool Curve::dumpToCsv(QString &f) const {
+    QFile file(f);
+    return dumpToCsv(file);
+}
+
+bool Curve::dumpToCsv(QString &&f) const {
+    return dumpToCsv(f);
 }
 
 Curve::Cell &Curve::operator[](const int index)
@@ -254,6 +272,50 @@ void Curve::clear()
     _header.clear();
     _status = Status::Uninitialized;
 }
+
+QDataStream &operator<<(QDataStream &stream, const Curve &curve)
+{
+    stream.device()->seek(HEADER_L);
+    stream.writeRawData("VC", 2);
+    stream << (unsigned short) curve.size();
+    for (auto &iter : curve._cells) {
+        stream << iter;
+    }
+    char end[9] = "ENDOFILE";
+    stream.writeRawData(end, 8);
+    return stream;
+}
+
+void Curve::append(const Curve::Cell &cell)
+{
+    _header.append(cell.name());
+    _cells.append(cell);
+}
+
+void Curve::append(Curve::Cell &&cell)
+{
+    _header.append(cell.name());
+    _cells.append(cell);
+}
+
+QDataStream &operator>>(QDataStream &stream, Curve &curve)
+{
+    stream.device()->seek(HEADER_L);
+    char sign[2];
+    stream.readRawData(sign, 2);
+    if (sign[0] != 'V' || sign[1] != 'C') {
+        qCritical("bad file!");
+    }
+    unsigned short size;
+    stream >> size;
+    for (unsigned int i = 0; i < size; ++i) {
+        Curve::Cell cell;
+        stream >> cell;
+        curve.append(cell);
+    }
+    return stream;
+}
+
 
 Curve::Cell::Cell() : Cell(0) {}
 
@@ -348,10 +410,11 @@ QString Curve::Cell::nameStr() const
 QString Curve::Cell::typeStr() const
 {
     switch (_type) {
-        case Type::Physical:
-            return QString("物理");
         case Type::Logical:
             return QString("逻辑");
+        case Type::Physical:
+        default:
+            return QString("物理");
     }
 }
 
@@ -407,10 +470,11 @@ QString Curve::Cell::lowByteStr() const
 QString Curve::Cell::sampleStr() const
 {
     switch (_sample_type) {
-        case Sample::Timed:
-            return QString("时间;%1").arg(_sample);
         case Sample::Framed:
             return QString("帧数;%1").arg(_sample);
+        case Sample::Timed:
+        default:
+            return QString("时间;%1").arg(_sample);
     }
 }
 
@@ -682,12 +746,22 @@ void Curve::Cell::setNameByVal(const QString &v)
     _name = v;
 }
 
+void Curve::Cell::setNameByVal(QString &&v)
+{
+    _name = v;
+}
+
 void Curve::Cell::setTypeByVal(const Curve::Cell::Type v)
 {
     _type = v;
 }
 
 void Curve::Cell::setUnitByVal(const QString &v)
+{
+    _unit = v;
+}
+
+void Curve::Cell::setUnitByVal(QString &&v)
 {
     _unit = v;
 }
@@ -776,6 +850,12 @@ void Curve::Cell::setRemarkByVal(const QString &v)
     _remark = v;
 }
 
+void Curve::Cell::setRemarkByVal(QString &&v)
+{
+    _remark = v;
+}
+
+
 void Curve::Cell::setHighByteRangeByVal(unsigned short v0, unsigned short v1)
 {
     _high_byte_range[0] = v0;
@@ -798,6 +878,153 @@ void Curve::Cell::setRangeOutByVal(long v0, long v1)
 {
     _range_out[0] = v0;
     _range_out[1] = v1;
+}
+
+QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)
+{
+    stream << (unsigned char) cell._index;
+    stream << (unsigned char) cell._display;
+    stream << (unsigned char) cell._type;
+    stream << (unsigned char) cell._width;
+
+    char name[CURVE_NAME_L];
+    memcpy(name, cell._name.toStdString().c_str(), CURVE_NAME_L);
+    bool end = false;
+    for (auto &iter : name) {
+        if (iter == 0) {
+            end = true;
+        }
+        if (end) {
+            iter = 0;
+        }
+    }
+    stream.writeRawData(name, CURVE_NAME_L);
+
+    char unit[CURVE_UNIT_L];
+    memcpy(unit, cell._unit.toStdString().c_str(), CURVE_UNIT_L);
+    end = false;
+    for (auto &iter : name) {
+        if (iter == 0) {
+            end = true;
+        }
+        if (end) {
+            iter = 0;
+        }
+    }
+    stream.writeRawData(unit, CURVE_UNIT_L);
+
+    stream << (unsigned int) cell._color;
+    stream << (unsigned int) cell._can_id;
+
+    stream << (unsigned char) cell._zero_byte_existed;
+    stream << (unsigned char) cell._zero_byte;
+    stream << (unsigned char) 0 << (unsigned char) 0;
+
+    stream << (unsigned char) cell._high_byte_existed;
+    stream << (unsigned char) cell._high_byte;
+    stream << (unsigned char) cell._high_byte_range[0];
+    stream << (unsigned char) cell._high_byte_range[1];
+
+    stream << (unsigned char) 0;
+    stream << (unsigned char) cell._low_byte;
+    stream << (unsigned char) cell._low_byte_range[0];
+    stream << (unsigned char) cell._low_byte_range[1];
+
+    stream << (unsigned char) cell._sample_type;
+    stream << (unsigned char) 0;
+    stream << (unsigned short) cell._sample;
+
+    stream << (int) cell._range_in[0];
+    stream << (int) cell._range_in[1];
+
+    stream << (int) cell._range_out[0];
+    stream << (int) cell._range_out[1];
+
+    char remark[64];
+    memcpy(remark, cell._remark.toStdString().c_str(), 64);
+    end = false;
+    for (auto &iter : name) {
+        if (iter == 0) {
+            end = true;
+        }
+        if (end) {
+            iter = 0;
+        }
+    }
+    stream.writeRawData(remark, 64);
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell)
+{
+    unsigned char char_buf;
+    unsigned char char_buf1;
+    unsigned int uint_buf;
+    int int_buf;
+    int int_buf1;
+    unsigned short short_buf;
+    stream >> char_buf;
+    cell.setIndexByVal(char_buf);
+    stream >> char_buf;
+    cell.setDisplayByVal(char_buf);
+    stream >> char_buf;
+    cell.setTypeByVal((Curve::Cell::Type) char_buf);
+    stream >> char_buf;
+    cell.setWidthByVal(char_buf);
+
+    char name[CURVE_NAME_L];
+    stream.readRawData(name, CURVE_NAME_L);
+    cell.setNameByVal(QString::fromUtf8(name));
+
+    char unit[CURVE_UNIT_L];
+    stream.readRawData(unit, CURVE_UNIT_L);
+    cell.setUnitByVal(QString::fromUtf8(unit));
+
+    stream >> uint_buf;
+    cell.setColorByVal(uint_buf);
+    stream >> uint_buf;
+    cell.setCanIdByVal(uint_buf);
+
+    stream >> char_buf;
+    cell.setZeroByteExistedByVal(char_buf);
+    stream >> char_buf;
+    cell.setZeroByteByVal(char_buf);
+    stream >> char_buf;
+    stream >> char_buf;
+
+    stream >> char_buf;
+    cell.setHighByteExistedByVal(char_buf);
+    stream >> char_buf;
+    cell.setHighByteByVal(char_buf);
+    stream >> char_buf;
+    stream >> char_buf1;
+    cell.setHighByteRangeByVal(char_buf, char_buf1);
+
+    stream >> char_buf;
+    stream >> char_buf;
+    cell.setLowByteByVal(char_buf);
+    stream >> char_buf;
+    stream >> char_buf1;
+    cell.setLowByteRangeByVal(char_buf, char_buf1);
+
+    stream >> char_buf;
+    cell.setSampleTypeByVal((Curve::Cell::Sample) char_buf);
+    stream >> char_buf;
+    stream >> short_buf;
+    cell.setSampleByVal(short_buf);
+
+    stream >> int_buf;
+    stream >> int_buf1;
+    cell.setRangeInByVal(int_buf, int_buf1);
+
+    stream >> int_buf;
+    stream >> int_buf1;
+    cell.setRangeOutByVal(int_buf, int_buf1);
+
+    char remark[CURVE_REMARK_L];
+    stream.readRawData(remark, CURVE_REMARK_L);
+    cell.setRemarkByVal(QString::fromUtf8(remark));
+    return stream;
 }
 
 

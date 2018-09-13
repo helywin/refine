@@ -3,27 +3,31 @@
 //
 
 #include "Collect.h"
+#include "Can.h"
+#include "File.h"
+#include "Buffer.h"
 
 Collect::Collect(Can *can, Buffer *buffer)
         : _can(can), _buffer(buffer),
-          _manner(CollectFromCanWithDelay),
+          _manner(FromCan),
           _delay(10),
-          _file(nullptr)
+          _file(nullptr),
+          _control(Resume)
 {
 
 }
 
-void Collect::setMode(const Collect::CollectManner manner, const int delay,
-                      File *file)
+void
+Collect::setMode(const Collect::CollectManner manner, const unsigned long delay,
+                 File *file)
 {
     _manner = manner;
     _delay = delay;
     _file = file;
 }
 
-void Collect::setDelay(const int delay)
+void Collect::setDelay(const unsigned long delay)
 {
-    Q_ASSERT(delay >= 0);
     _delay = delay;
 }
 
@@ -33,7 +37,66 @@ void Collect::setFile(File *file)
     _file = file;
 }
 
+void Collect::reset()
+{
+
+}
+
+void Collect::startCollection()
+{
+    start(HighestPriority);
+}
+
+void Collect::suspendCollection()
+{
+    _control = Suspend;
+}
+
+void Collect::resumeCollection()
+{
+    _control = Resume;
+}
+
+void Collect::interruptCollection()
+{
+    _control = Interrupt;
+}
+
+void Collect::stopCollection()
+{
+    _control = Stop;
+}
+
 void Collect::run()
 {
-    QThread::run();
+    if (_manner == FromCan) {
+        int cnt = 0;
+        while (_control != Stop && _control != Interrupt) {
+            msleep(_delay);
+            cnt += 1;
+            if (_control == Stop) {
+                break;
+            } else if (_control == Suspend) {
+                continue;
+            }
+            if (cnt == 10) {
+                cnt = 0;
+                if (!_can->isConnected()) {
+                    emit error(ConnectionLost);
+                }
+            }
+            if (_buffer->isFull()) {
+                emit error(BufferFull);
+            }
+            if (!_can->collect(*_buffer)) {
+                emit error(CanFailed);
+            } else {
+                emit framesGot();
+            }
+        }
+    } else if (_manner == FromFile) {
+        _file->crc32("12", 2);
+    } else {}
+
+    emit collectionFinish();
 }

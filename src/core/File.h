@@ -13,7 +13,7 @@ class QByteArray;
 class Curve;
 class Tribe;
 class Modes;
-
+class Buffer;
 
 class File
 {
@@ -37,34 +37,68 @@ public:
 
 private:
     void initTable();
-    bool loadFileHeader();
+private:
+    void loadHeaderMagic();
+    void loadHeaderVersion();
+    void loadHeaderCrc32();
+    void loadHeaderType();
+    void loadHeaderInfo();
+    void loadHeaderBirth();
+    void loadHeaderModified();
+    void loadHeaderReserved();
+    bool loadCheckSum();
+
+    void dumpHeaderMagic();
+    void dumpHeaderVersion();
+    void dumpHeaderCrc32();
+    void dumpHeaderType();
+    void dumpHeaderInfo();
+    void dumpHeaderBirth();
+    void dumpHeaderModified();
+    void dumpHeaderReserved();
+
+    void loadFileHeader();
     void dumpFileHeader();
-    void dumpFileHeaderCrc32();
 
 public:
     bool loadCurveConfig(QFile &file, Curve &curve);
     bool dumpCurveConfig(QFile &file, const Curve &curve);
 
-private:
-    void convertCurveConfigToRef(const Curve &curve);
-    bool convertRefToCurveConfig(Curve &curve);
+public:
+    bool loadFrameRecordBegin(QFile &file);
+    void loadFrameRecord(Buffer &buffer);
+    bool loadFrameRecordFinish();
 
+    bool dumpFrameRecordBegin(QFile &file);
+    void dumpFrameRecord(Buffer &buffer);
+    bool dumpFrameRecordFinish();
 
 };
 
 
 
-
+#define HEADER_START_POS 0
+#define HEADER_MAGIC_POS HEADER_START_POS
 #define HEADER_MAGIC_L 8
+#define HEADER_VERSION_POS HEADER_MAGIC_L
 #define HEADER_VERSION_L 8
+#define HEADER_CRC32_POS (HEADER_VERSION_POS + HEADER_VERSION_L)
 #define HEADER_CRC32_L 4
+#define HEADER_TYPE_POS (HEADER_CRC32_POS + HEADER_CRC32_L)
 #define HEADER_TYPE_L 4
-#define HEADER_INFO_L 44
-#define HEADER_TIME_L 4
+#define HEADER_INFO_POS (HEADER_TYPE_POS + HEADER_TYPE_L)
+#define HEADER_INFO_L 48
+#define HEADER_BIRTH_POS (HEADER_INFO_POS + HEADER_INFO_L)
+#define HEADER_BIRTH_L 4
+#define HEADER_MODIFIED_POS (HEADER_BIRTH_POS + HEADER_BIRTH_L)
+#define HEADER_MODIFIED_L 4
+#define HEADER_RESV_POS (HEADER_MODIFIED_POS + HEADER_MODIFIED_L)
 #define HEADER_RESV_L 128
 
 #define HEADER_L (HEADER_MAGIC_L + HEADER_VERSION_L + HEADER_CRC32_L + \
-                  HEADER_TYPE_L + HEADER_INFO_L + HEADER_TIME_L + HEADER_RESV_L)
+                  HEADER_TYPE_L + HEADER_INFO_L + HEADER_BIRTH_L + \
+                  HEADER_MODIFIED_L + HEADER_RESV_L)
+#define DATA_POS HEADER_L
 
 
 class File::Header
@@ -87,7 +121,8 @@ private:
     unsigned int _crc_sum;                      // 4 byte
     unsigned int _type;                         // 4 byte
     char _info[HEADER_INFO_L];                  // 48 byte
-    unsigned int _time;                         // 4 byte
+    unsigned int _birth_time;                   // 4 byte
+    unsigned int _modified_time;                // 4 byte
     char _reserved[HEADER_RESV_L];              // 128 byte
 
 public:
@@ -105,7 +140,11 @@ public:
     void setType(FileType type);
     void setInfo(const QString &info);
     void setInfo(const char *info);
-    void setTime(unsigned int time);
+    void setInfo();
+    void setBirth(unsigned int birth);
+    void setBirth();
+    void setModified(unsigned int modified);
+    void setModified();
     void setReserved(const char *reserved);
 
     const char *magic() const;
@@ -113,7 +152,8 @@ public:
     unsigned int crc32() const;
     unsigned int type() const;
     const char *info() const;
-    unsigned int time() const;
+    unsigned int birth() const;
+    unsigned int modified() const;
     const char *reserved() const;
 
     char *magic();
@@ -121,11 +161,13 @@ public:
     unsigned int &crc32();
     unsigned int &type();
     char *info();
-    unsigned int &time();
+    unsigned int &birth();
+    unsigned int &modified();
     char *reserved();
     QStringList str() const;
     bool check() const;
     void clear();
+    int versionCompare(char major, char micro, char minor);
 };
 
 #endif //REFINE_FILE_H

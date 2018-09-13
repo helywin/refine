@@ -22,13 +22,13 @@ public:
     };
 
 private:
-    const static unsigned char _major = 0;
-    const static unsigned char _micro = 0;
-    const static unsigned char _minor = 1;
-    const static unsigned char _build = 1;
-    const static unsigned char _year = 18;
-    const static unsigned char _month = 9;
-    const static unsigned char _day = 12;
+    const static char _major = 0;
+    const static char _micro = 0;
+    const static char _minor = 1;
+    const static char _build = 1;
+    const static char _year = 18;
+    const static char _month = 9;
+    const static char _day = 12;
     const static Identifier _identifier = Identifier::Demo;
 
 public:
@@ -36,15 +36,15 @@ public:
 
 public:
     static QString str();
-    static unsigned char major();
-    static unsigned char micro();
-    static unsigned char minor();
-    static unsigned char build();
-    static unsigned char year();
-    static unsigned char month();
-    static unsigned char day();
+    static char major();
+    static char micro();
+    static char minor();
+    static char build();
+    static char year();
+    static char month();
+    static char day();
     static QDate date();
-    static unsigned char identifier();
+    static char identifier();
 };
 
 #endif //REFINE_VERSION_H
