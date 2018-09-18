@@ -69,13 +69,13 @@ public:
     explicit Config(unsigned long channel);
     Config(const Config &config) = delete;
     Config &operator=(const Config &config) = delete;
-    ~Config();
-    unsigned long deviceType() const;
-    unsigned long deviceIndex() const;
-    unsigned long deviceChannel() const;
-    unsigned long reserved() const;
-    const VCI_INIT_CONFIG *initConfig() const;
-    VCI_INIT_CONFIG *initConfig();
+    ~Config() { delete _config; }
+    inline unsigned long deviceType() const { return _device_type; }
+    inline unsigned long deviceIndex() const { return _device_index; }
+    inline unsigned long deviceChannel() const { return _device_channel; }
+    inline unsigned long reserved() const { return _config->Reserved; }
+    inline const VCI_INIT_CONFIG *config() const { return _config; }
+    inline VCI_INIT_CONFIG *config() { return _config; }
 };
 
 class Can::BoardInfo

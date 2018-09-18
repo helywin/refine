@@ -1,0 +1,1 @@
+cppcheck --enable=warning,performance,portability,style --language=c++ --xml-version=2 -ID:\jiang.wenqiang\code\refine\src\core -ID:\jiang.wenqiang\code\refine\src\gui D:\jiang.wenqiang\code\refine\src 2> .\report\cppcheck.xml

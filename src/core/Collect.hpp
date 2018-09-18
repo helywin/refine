@@ -7,7 +7,7 @@
 
 #include <QtCore/QThread>
 #include <QtCore/QFile>
-#include "File.h"
+#include "File.hpp"
 
 class Can;
 class Buffer;
@@ -45,6 +45,7 @@ private:
     unsigned long _delay;
     File *_file;
     CollectControl _control;
+    QFile *_data;
 
 public:
     Collect() = delete;

@@ -3,7 +3,7 @@
 //
 
 #include <QtCore/QDebug>
-#include <Version.h>
+#include "Version.hpp"
 
 int main() {
     int a = 0x00;

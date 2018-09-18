@@ -6,13 +6,17 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <windows.h>
-#include "File.h"
-#include "Version.h"
-#include "Curve.h"
+#include "File.hpp"
+#include "Version.hpp"
+#include "Curve.hpp"
+#include "Buffer.hpp"
+
 
 File::File()
         : _header(new File::Header()),
-          _stream(new QDataStream())
+          _stream(new QDataStream()),
+          _frame_obj_num(0),
+          _frame_cell_num(0)
 {
     initTable();
     _stream->setVersion(QDataStream::Qt_5_11);
@@ -263,6 +267,67 @@ bool File::dumpCurveConfig(QFile &file, const Curve &curve)
     return true;
 }
 
+bool File::loadFrameRecordBegin(QFile &file)
+{
+    return false;
+}
+
+void File::loadFrameRecord(Buffer &buffer)
+{
+
+}
+
+bool File::loadFrameRecordFinish()
+{
+    return false;
+}
+
+bool File::dumpFrameRecordBegin(QFile &file)
+{
+    _header->clear();
+    file.open(QIODevice::ReadWrite | QIODevice::Truncate);
+    if (!file.isOpen()) {
+        qDebug("false");
+        return false;
+    }
+    _stream->setDevice(&file);
+    _header->setMagic();
+    _header->setVersion();
+    _header->setModified();
+    _header->setType(Header::FileType::FrameData);
+    _header->setInfo();
+
+    _frame_obj_num = 0;
+    _frame_cell_num = 0;
+    _stream->writeRawData("FMDF", 4);
+    (*_stream) << _frame_obj_num
+               << _frame_cell_num;
+    return false;
+}
+
+void File::dumpFrameRecord(Buffer &buffer)
+{
+    int cell_n;
+    int obj_n;
+    buffer.size(cell_n, obj_n);
+    _frame_cell_num += cell_n;
+    _frame_obj_num += obj_n;
+    (*_stream) << buffer;
+    auto pos = _stream->device()->pos();
+    _stream->device()->seek(DATA_POS + 4);
+    (*_stream) << _frame_obj_num
+               << _frame_cell_num;
+    _stream->device()->seek(pos);
+}
+
+void File::dumpFrameRecordFinish()
+{
+    _stream->device()->seek(DATA_POS + 4);
+    (*_stream) << _frame_obj_num
+               << _frame_cell_num;
+    dumpHeaderCrc32();
+}
+
 File::Header::Header()
 {
     clear();
@@ -281,11 +346,6 @@ File::Header::Header(unsigned int time, File::Header::FileType type)
     _reserved[HEADER_RESV_L - 1] = static_cast<char> (0xFF);
 }
 
-void File::Header::setMagic(const char *magic)
-{
-    memcpy(_magic, magic, sizeof(_magic));
-}
-
 void File::Header::setMagic()
 {
     _magic[0] = static_cast<char>(0x89);
@@ -298,11 +358,6 @@ void File::Header::setMagic()
     _magic[7] = '0';
 }
 
-void File::Header::setVersion(const char *version)
-{
-    memcpy(_version, version, sizeof(_version));
-}
-
 void File::Header::setVersion()
 {
     _version[0] = Version::major();
@@ -313,16 +368,6 @@ void File::Header::setVersion()
     _version[5] = Version::month();
     _version[6] = Version::day();
     _version[7] = Version::identifier();
-}
-
-void File::Header::setCrc32(unsigned int crc32)
-{
-    _crc_sum = crc32;
-}
-
-void File::Header::setType(File::Header::FileType type)
-{
-    _type = type;
 }
 
 void File::Header::setInfo(const QString &info)
@@ -374,111 +419,6 @@ void File::Header::setInfo()
         memset(_info + user_l + computer_l, 0,
                 HEADER_INFO_L - user_l - computer_l);
     }
-}
-
-void File::Header::setBirth(unsigned int birth)
-{
-    _birth_time = birth;
-}
-
-void File::Header::setBirth()
-{
-    _birth_time = QDateTime::currentDateTime().toTime_t();
-}
-
-void File::Header::setModified(unsigned int modified)
-{
-    _modified_time = modified;
-}
-
-void File::Header::setModified()
-{
-    _modified_time = QDateTime::currentDateTime().toTime_t();
-}
-
-void File::Header::setReserved(const char *reserved)
-{
-    memcpy(_reserved, reserved, sizeof(_reserved));
-}
-
-const char *File::Header::magic() const
-{
-    return _magic;
-}
-
-const char *File::Header::version() const
-{
-    return _version;
-}
-
-unsigned int File::Header::crc32() const
-{
-    return _crc_sum;
-}
-
-unsigned int File::Header::type() const
-{
-    return _type;
-}
-
-const char *File::Header::info() const
-{
-    return _info;
-}
-
-unsigned int File::Header::birth() const
-{
-    return _birth_time;
-}
-
-unsigned int File::Header::modified() const
-{
-    return _modified_time;
-}
-
-const char *File::Header::reserved() const
-{
-    return _reserved;
-}
-
-char *File::Header::magic()
-{
-    return _magic;
-}
-
-char *File::Header::version()
-{
-    return _version;
-}
-
-unsigned int &File::Header::crc32()
-{
-    return _crc_sum;
-}
-
-unsigned int &File::Header::type()
-{
-    return _type;
-}
-
-char *File::Header::info()
-{
-    return _info;
-}
-
-unsigned int &File::Header::birth()
-{
-    return _birth_time;
-}
-
-unsigned int &File::Header::modified()
-{
-    return _modified_time;
-}
-
-char *File::Header::reserved()
-{
-    return _reserved;
 }
 
 QStringList File::Header::str() const

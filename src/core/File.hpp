@@ -5,6 +5,8 @@
 #ifndef REFINE_FILE_H
 #define REFINE_FILE_H
 
+#include <QtCore/QDateTime>
+
 class QDataStream;
 class QStringList;
 class QString;
@@ -24,6 +26,8 @@ private:
     unsigned int _crc32[256];
     Header *_header;
     QDataStream *_stream;
+    unsigned int _frame_obj_num;
+    unsigned int _frame_cell_num;
 
 public:
     File();
@@ -71,7 +75,7 @@ public:
 
     bool dumpFrameRecordBegin(QFile &file);
     void dumpFrameRecord(Buffer &buffer);
-    bool dumpFrameRecordFinish();
+    void dumpFrameRecordFinish();
 
 };
 
@@ -132,38 +136,40 @@ public:
     ~Header() = default;
 
 public:
-    void setMagic(const char *magic);
+    inline void setMagic(const char *magic)
+    { memcpy(_magic, magic, sizeof(_magic)); }
     void setMagic();
-    void setVersion(const char *version);
+    inline void setVersion(const char *version)
+    { memcpy(_version, version, sizeof(_version)); }
     void setVersion();
-    void setCrc32(unsigned int crc32);
-    void setType(FileType type);
+    inline void setCrc32(unsigned int crc32) { _crc_sum = crc32; }
+    inline void setType(FileType type) { _type = type; }
     void setInfo(const QString &info);
     void setInfo(const char *info);
     void setInfo();
-    void setBirth(unsigned int birth);
-    void setBirth();
-    void setModified(unsigned int modified);
-    void setModified();
-    void setReserved(const char *reserved);
+    inline void setBirth(unsigned int birth) { _birth_time = birth; }
+    inline void setBirth() { _birth_time = QDateTime::currentDateTime().toTime_t(); }
+    inline void setModified(unsigned int modified) { _modified_time = modified; }
+    inline void setModified() { _modified_time = QDateTime::currentDateTime().toTime_t(); }
+    inline void setReserved(const char *reserved) { memcpy(_reserved, reserved, sizeof(_reserved)); }
 
-    const char *magic() const;
-    const char *version() const;
-    unsigned int crc32() const;
-    unsigned int type() const;
-    const char *info() const;
-    unsigned int birth() const;
-    unsigned int modified() const;
-    const char *reserved() const;
+    inline const char *magic() const { return _magic; }
+    inline const char *version() const { return _version; }
+    inline unsigned int crc32() const { return _crc_sum; }
+    inline unsigned int type() const { return _type; }
+    inline const char *info() const { return _info; }
+    inline unsigned int birth() const { return _birth_time;}
+    inline unsigned int modified() const { return _modified_time; }
+    inline const char *reserved() const { return _reserved; }
 
-    char *magic();
-    char *version();
-    unsigned int &crc32();
-    unsigned int &type();
-    char *info();
-    unsigned int &birth();
-    unsigned int &modified();
-    char *reserved();
+    inline char *magic() { return _magic; }
+    inline char *version() { return _version; }
+    inline unsigned int &crc32() { return _crc_sum; }
+    inline unsigned int &type() { return _type; }
+    inline char *info() { return _info; }
+    inline unsigned int &birth() { return _birth_time;}
+    inline unsigned int &modified() { return _modified_time; }
+    inline char *reserved() { return _reserved; }
     QStringList str() const;
     bool check() const;
     void clear();

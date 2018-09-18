@@ -2,10 +2,10 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#include "Collect.h"
-#include "Can.h"
-#include "File.h"
-#include "Buffer.h"
+#include "Collect.hpp"
+#include "Can.hpp"
+#include "File.hpp"
+#include "Buffer.hpp"
 
 Collect::Collect(Can *can, Buffer *buffer)
         : _can(can), _buffer(buffer),
@@ -95,7 +95,7 @@ void Collect::run()
             }
         }
     } else if (_manner == FromFile) {
-        _file->crc32("12", 2);
+        _file->loadFrameRecordBegin(QFile());
     } else {}
 
     emit collectionFinish();

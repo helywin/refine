@@ -4,21 +4,11 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QDataStream>
-#include "Curve.h"
-#include "Csv.h"
-#include "File.h"
+#include "Curve.hpp"
+#include "Csv.hpp"
+#include "File.hpp"
 
 Curve::Curve() : _status(Status::Uninitialized) {}
-
-QStringList Curve::header() const
-{
-    return _header;
-}
-
-int Curve::size() const
-{
-    return _cells.size();
-}
 
 QStringList Curve::str() const
 {
@@ -72,11 +62,6 @@ void Curve::removeRow(const int index)
     } else if (index >= 0) {
         _cells.remove(index);
     }
-}
-
-void Curve::removeAllRow()
-{
-    _cells.clear();
 }
 
 bool Curve::loadFromCsv(QFile &f)
@@ -177,19 +162,6 @@ bool Curve::loadFromCsv(QFile &f)
     return true;
 }
 
-bool Curve::loadFromCsv(QFile &&f) {
-    return loadFromCsv(f);
-}
-
-bool Curve::loadFromCsv(QString &f) {
-    QFile file(f);
-    return loadFromCsv(file);
-}
-
-bool Curve::loadFromCsv(QString &&f) {
-    return loadFromCsv(f);
-}
-
 bool Curve::dumpToCsv(QFile &f) const
 {
     if (f.isOpen()) {
@@ -208,82 +180,12 @@ bool Curve::dumpToCsv(QFile &f) const
     return csv.finishWrite();
 }
 
-bool Curve::dumpToCsv(QFile &&f) const {
-    return dumpToCsv(f);
-}
-
-bool Curve::dumpToCsv(QString &f) const {
-    QFile file(f);
-    return dumpToCsv(file);
-}
-
-bool Curve::dumpToCsv(QString &&f) const {
-    return dumpToCsv(f);
-}
-
-Curve::Cell &Curve::operator[](const int index)
-{
-    Q_ASSERT(index >= 0 && index < _cells.size());
-    return _cells[index];
-}
-
-const Curve::Cell &Curve::operator[](const int index) const
-{
-    Q_ASSERT(index >= 0 && index < _cells.size());
-    return _cells[index];
-}
-
-Curve::Cell &Curve::operator[](const QString &name)
-{
-    Q_ASSERT(_header.contains(name));
-    return _cells[_header.indexOf(name)];
-}
-
-const Curve::Cell &Curve::operator[](const QString &name) const
-{
-    Q_ASSERT(_header.contains(name));
-    return _cells[_header.indexOf(name)];
-}
-
-Curve::Cell &Curve::at(int index)
-{
-    return (*this)[index];
-}
-
-const Curve::Cell &Curve::at(int index) const
-{
-    return (*this)[index];
-}
-
-Curve::Cell &Curve::at(const QString &name)
-{
-    return (*this)[name];
-}
-
-const Curve::Cell &Curve::at(const QString &name) const
-{
-    return (*this)[name];
-}
-
 void Curve::clear()
 {
     _cells.clear();
     _table_head.clear();
     _header.clear();
     _status = Status::Uninitialized;
-}
-
-QDataStream &operator<<(QDataStream &stream, const Curve &curve)
-{
-    stream.device()->seek(HEADER_L);
-    stream.writeRawData("VC", 2);
-    stream << (unsigned short) curve.size();
-    for (auto &iter : curve._cells) {
-        stream << iter;
-    }
-    char end[9] = "ENDOFILE";
-    stream.writeRawData(end, 8);
-    return stream;
 }
 
 void Curve::append(const Curve::Cell &cell)
@@ -298,12 +200,26 @@ void Curve::append(Curve::Cell &&cell)
     _cells.append(cell);
 }
 
+QDataStream &operator<<(QDataStream &stream, const Curve &curve)
+{
+    stream.device()->seek(HEADER_L);
+    stream.writeRawData("CVCF", 4);
+    stream << (unsigned int) curve.size();
+    for (auto &iter : curve._cells) {
+        stream << iter;
+    }
+    char end[5] = "ENDF";
+    stream.writeRawData(end, 4);
+    return stream;
+}
+
 QDataStream &operator>>(QDataStream &stream, Curve &curve)
 {
     stream.device()->seek(HEADER_L);
-    char sign[2];
-    stream.readRawData(sign, 2);
-    if (sign[0] != 'V' || sign[1] != 'C') {
+    char sign[4];
+    stream.readRawData(sign, 4);
+    if (sign[0] != 'C' || sign[1] != 'V' ||
+        sign[2] != 'C' || sign[3] != 'F') {
         qCritical("bad file!");
     }
     unsigned short size;
@@ -390,108 +306,6 @@ QStringList Curve::Cell::str() const
     return qMove(list);
 }
 
-//str getter
-
-QString Curve::Cell::indexStr() const
-{
-    return QString::number(_index);
-}
-
-QString Curve::Cell::displayStr() const
-{
-    return QString::number(_display);
-}
-
-QString Curve::Cell::nameStr() const
-{
-    return QString(_name);
-}
-
-QString Curve::Cell::typeStr() const
-{
-    switch (_type) {
-        case Type::Logical:
-            return QString("逻辑");
-        case Type::Physical:
-        default:
-            return QString("物理");
-    }
-}
-
-QString Curve::Cell::unitStr() const
-{
-    return QString(_unit);
-}
-
-QString Curve::Cell::widthStr() const
-{
-    return QString::number(_width);
-}
-
-QString Curve::Cell::colorStr() const
-{
-    return QString("0x%1").arg(_color, 6, 16, QChar('0'));
-}
-
-QString Curve::Cell::canIdStr() const
-{
-    return QString("0x%1").arg(_can_id, 3, 16, QChar('0'));
-}
-
-QString Curve::Cell::zeroByteStr() const
-{
-    if (_zero_byte_existed) {
-        return QString("%1").arg(_zero_byte);
-    } else {
-        return QString("无");
-    }
-}
-
-QString Curve::Cell::highByteStr() const
-{
-    if (_high_byte_existed) {
-        return QString("%1;%2~%3")
-                .arg(_high_byte)
-                .arg(_high_byte_range[0])
-                .arg(_high_byte_range[1]);
-    } else {
-        return QString("无");
-    }
-}
-
-QString Curve::Cell::lowByteStr() const
-{
-    return QString("%1;%2~%3")
-            .arg(_low_byte)
-            .arg(_low_byte_range[0])
-            .arg(_low_byte_range[1]);
-}
-
-QString Curve::Cell::sampleStr() const
-{
-    switch (_sample_type) {
-        case Sample::Framed:
-            return QString("帧数;%1").arg(_sample);
-        case Sample::Timed:
-        default:
-            return QString("时间;%1").arg(_sample);
-    }
-}
-
-QString Curve::Cell::rangeInStr() const
-{
-    return QString("%1~%2")
-            .arg(_range_in[0])
-            .arg(_range_in[1]);
-}
-
-QString Curve::Cell::rangeOutStr() const
-{
-    return QString("%1~%2")
-            .arg(_range_out[0])
-            .arg(_range_out[1]);
-}
-
 QString Curve::Cell::logicMapStr() const
 {
     if (_type == Type::Physical) {
@@ -505,173 +319,6 @@ QString Curve::Cell::logicMapStr() const
     }
 }
 
-QString Curve::Cell::remarkStr() const
-{
-    return QString(_remark);
-}
-
-//val getter
-
-unsigned short Curve::Cell::index() const
-{
-    return _index;
-}
-
-bool Curve::Cell::display() const
-{
-    return _display;
-}
-
-QString Curve::Cell::name() const
-{
-    return _name;
-}
-
-Curve::Cell::Type Curve::Cell::type() const
-{
-    return _type;
-}
-
-QString Curve::Cell::unit() const
-{
-    return _unit;
-}
-
-unsigned short Curve::Cell::width() const
-{
-    return _width;
-}
-
-unsigned long Curve::Cell::color() const
-{
-    return _color;
-}
-
-unsigned long Curve::Cell::canId() const
-{
-    return _can_id;
-}
-
-bool Curve::Cell::zeroByteExisted() const
-{
-    return _zero_byte_existed;
-}
-
-unsigned short Curve::Cell::zeroByte() const
-{
-    return _zero_byte;
-}
-
-bool Curve::Cell::highByteExisted() const
-{
-    return _high_byte_existed;
-}
-
-unsigned short Curve::Cell::highByte() const
-{
-    return _high_byte;
-}
-
-const unsigned short *Curve::Cell::highByteRange() const
-{
-    return _high_byte_range;
-}
-
-unsigned short Curve::Cell::lowByte() const
-{
-    return _low_byte;
-}
-
-const unsigned short *Curve::Cell::lowByteRange() const
-{
-    return _low_byte_range;
-}
-
-Curve::Cell::Sample Curve::Cell::sampleType() const
-{
-    return _sample_type;
-}
-
-unsigned long Curve::Cell::sample() const
-{
-    return _sample;
-}
-
-const long *Curve::Cell::rangeIn() const
-{
-    return _range_in;
-}
-
-const long *Curve::Cell::rangeOut() const
-{
-    return _range_out;
-}
-
-QMap<unsigned int, QString> Curve::Cell::logicMap() const
-{
-    return _logic_map;
-}
-
-QString Curve::Cell::remark() const
-{
-    return _remark;
-}
-
-//str setter
-
-void Curve::Cell::setIndexByStr(QString &s)
-{
-    _index = s.toUShort();
-}
-
-void Curve::Cell::setDisplayByStr(QString &s)
-{
-    _display = s == QString("是");
-}
-
-void Curve::Cell::setNameByStr(QString &s)
-{
-    _name = s;
-}
-
-void Curve::Cell::setTypeByStr(QString &s)
-{
-    if (s == QString("物理")) {
-        _type = Type::Physical;
-    } else {
-        _type = Type::Logical;
-    }
-}
-
-void Curve::Cell::setUnitByStr(QString &s)
-{
-    _unit = s;
-}
-
-void Curve::Cell::setWidthByStr(QString &s)
-{
-    _width = s.toUShort();
-}
-
-void Curve::Cell::setColorByStr(QString &s)
-{
-    _color = s.toULong(nullptr, 16);
-}
-
-void Curve::Cell::setCanIdByStr(QString &s)
-{
-    _can_id = s.toULong(nullptr, 16);
-}
-
-void Curve::Cell::setZeroByteByStr(QString &s)
-{
-    if (s == QString("无")) {
-        _zero_byte_existed = false;
-    } else {
-        _zero_byte_existed = true;
-        _zero_byte = s.toUShort();
-    }
-}
 
 void Curve::Cell::setHighByteByStr(QString &s)
 {
@@ -705,179 +352,6 @@ void Curve::Cell::setSampleByStr(QString &s)
         _sample_type = Sample::Timed;
     }
     _sample = list[1].toULong();
-}
-
-void Curve::Cell::setRangeInByStr(QString &s)
-{
-    QStringList list = s.split(QChar('~'));
-    _range_in[0] = list[0].toLong();
-    _range_in[1] = list[1].toLong();
-}
-
-void Curve::Cell::setRangeOutByStr(QString &s)
-{
-    QStringList list = s.split(QChar('~'));
-    _range_out[0] = list[0].toLong();
-    _range_out[1] = list[1].toLong();
-}
-
-void Curve::Cell::setLogicMapByStr(QString &s)
-{
-
-}
-
-void Curve::Cell::setRemarkByStr(QString &s)
-{
-    _remark = s;
-}
-
-void Curve::Cell::setIndexByVal(const unsigned short v)
-{
-    _index = v;
-}
-
-void Curve::Cell::setDisplayByVal(const bool v)
-{
-    _display = v;
-}
-
-void Curve::Cell::setNameByVal(const QString &v)
-{
-    _name = v;
-}
-
-void Curve::Cell::setNameByVal(QString &&v)
-{
-    _name = v;
-}
-
-void Curve::Cell::setTypeByVal(const Curve::Cell::Type v)
-{
-    _type = v;
-}
-
-void Curve::Cell::setUnitByVal(const QString &v)
-{
-    _unit = v;
-}
-
-void Curve::Cell::setUnitByVal(QString &&v)
-{
-    _unit = v;
-}
-
-void Curve::Cell::setWidthByVal(const unsigned short v)
-{
-    _width = v;
-}
-
-void Curve::Cell::setColorByVal(const unsigned long v)
-{
-    _color = v;
-}
-
-void Curve::Cell::setCanIdByVal(const unsigned long v)
-{
-    _can_id = v;
-}
-
-void Curve::Cell::setZeroByteExistedByVal(const bool v)
-{
-    _zero_byte_existed = v;
-}
-
-void Curve::Cell::setZeroByteByVal(const unsigned short v)
-{
-    _zero_byte = v;
-}
-
-void Curve::Cell::setHighByteExistedByVal(const bool v)
-{
-    _high_byte_existed = v;
-}
-
-void Curve::Cell::setHighByteByVal(const unsigned short v)
-{
-    _high_byte = v;
-}
-
-void Curve::Cell::setHighByteRangeByVal(const unsigned short *v)
-{
-    _high_byte_range[0] = v[0];
-    _high_byte_range[1] = v[1];
-}
-
-void Curve::Cell::setLowByteByVal(const unsigned short v)
-{
-    _low_byte = v;
-}
-
-void Curve::Cell::setLowByteRangeByVal(const unsigned short *v)
-{
-    _low_byte_range[0] = v[0];
-    _low_byte_range[1] = v[1];
-}
-
-void Curve::Cell::setSampleTypeByVal(const Curve::Cell::Sample v)
-{
-    _sample_type = v;
-}
-
-void Curve::Cell::setSampleByVal(const unsigned long v)
-{
-    _sample = v;
-}
-
-void Curve::Cell::setRangeInByVal(const long *v)
-{
-    _range_in[0] = v[0];
-    _range_in[1] = v[1];
-}
-
-void Curve::Cell::setRangeOutByVal(const long *v)
-{
-    _range_out[0] = v[0];
-    _range_out[1] = v[1];
-}
-
-void Curve::Cell::setLogicMapByVal(const Logic &v)
-{
-    _logic_map = v;
-}
-
-void Curve::Cell::setRemarkByVal(const QString &v)
-{
-    _remark = v;
-}
-
-void Curve::Cell::setRemarkByVal(QString &&v)
-{
-    _remark = v;
-}
-
-
-void Curve::Cell::setHighByteRangeByVal(unsigned short v0, unsigned short v1)
-{
-    _high_byte_range[0] = v0;
-    _high_byte_range[1] = v1;
-}
-
-void Curve::Cell::setLowByteRangeByVal(unsigned short v0, unsigned short v1)
-{
-    _low_byte_range[0] = v0;
-    _low_byte_range[1] = v1;
-}
-
-void Curve::Cell::setRangeInByVal(long v0, long v1)
-{
-    _range_in[0] = v0;
-    _range_in[1] = v1;
-}
-
-void Curve::Cell::setRangeOutByVal(long v0, long v1)
-{
-    _range_out[0] = v0;
-    _range_out[1] = v1;
 }
 
 QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)

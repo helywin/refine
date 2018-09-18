@@ -3,8 +3,8 @@
 //
 
 #include <QtCore/QDebug>
-#include "Buffer.h"
-#include "Can.h"
+#include "Buffer.hpp"
+#include "Can.hpp"
 
 Can::Can(Can::Config *config) :
         _status(Status::Closed), _config(config) {}
@@ -32,7 +32,7 @@ bool Can::init()
     flag = VCI_InitCAN(_config->deviceType(),
                        _config->deviceIndex(),
                        _config->deviceChannel(),
-                       _config->initConfig());
+                       _config->config());
     if (flag) {
         _status = Status::Initialized;
     }
@@ -65,7 +65,7 @@ bool Can::connect()
     flag = VCI_InitCAN(_config->deviceType(),
                        _config->deviceIndex(),
                        _config->deviceChannel(),
-                       _config->initConfig());
+                       _config->config());
     if (!flag) {
         return false;
     }
@@ -222,39 +222,4 @@ Can::Config::Config(unsigned long channel) :
                                     0x1C, 0})
 {
     Q_ASSERT(channel == 0 || channel == 1);
-}
-
-Can::Config::~Config()
-{
-    delete _config;
-}
-
-unsigned long Can::Config::deviceType() const
-{
-    return _device_type;
-}
-
-unsigned long Can::Config::deviceIndex() const
-{
-    return _device_index;
-}
-
-unsigned long Can::Config::deviceChannel() const
-{
-    return _device_channel;
-}
-
-unsigned long Can::Config::reserved() const
-{
-    return _config->Reserved;;
-}
-
-const VCI_INIT_CONFIG *Can::Config::initConfig() const
-{
-    return _config;;
-}
-
-VCI_INIT_CONFIG *Can::Config::initConfig()
-{
-    return _config;
 }

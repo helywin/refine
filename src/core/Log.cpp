@@ -3,7 +3,7 @@
 //
 
 #include <QtCore/QFile>
-#include "Log.h"
+#include "Log.hpp"
 
 Log::Log(const QString &path) :
         _log(), _path(path), _file(path)

@@ -2,7 +2,7 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#include "Version.h"
+#include "Version.hpp"
 
 
 QString Version::str()

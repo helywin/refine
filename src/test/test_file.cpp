@@ -3,8 +3,11 @@
 //
 
 #include <QtCore/QDebug>
-#include "File.h"
-#include "Curve.h"
+#include <QtCore/QDataStream>
+#include "File.hpp"
+#include "Curve.hpp"
+#include "Can.hpp"
+#include "Buffer.hpp"
 
 int main() {
     Curve curve;
@@ -16,5 +19,11 @@ int main() {
     f.loadCurveConfig(cvc, curve1);
     qDebug() << curve.str();
     qDebug() << curve1.str();
+    QFile objf("D:/jiang.wenqiang/code/refine/data/obj.cvc");
+    objf.open(QIODevice::WriteOnly);
+    QDataStream s(&objf);
+    VCI_CAN_OBJ obj({0x777, 1, 2, 3, 4, 5, 6, {1,2,3,4,5,6,7,8}, {1,2,3}});
+    s << obj;
+    objf.close();
     return 0;
 }
