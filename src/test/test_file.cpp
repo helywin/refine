@@ -25,5 +25,8 @@ int main() {
     objf.open(QIODevice::WriteOnly);
     QDataStream s(&objf);
     Buffer buffer;
+    for (auto &iter : buffer) {
+
+    }
     return 0;
 }

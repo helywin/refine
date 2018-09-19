@@ -14,10 +14,27 @@ class Buffer;
 class Can
 {
 public:
-    class Config;
-    class BoardInfo;
-    class ErrorInfo;
-    class RegStatus;
+    class Config
+    {
+    private:
+        unsigned long _device_type;      //! \brief 设备类型
+        unsigned long _device_index;     //! \brief 设备索引号
+        unsigned long _device_channel;   //! \brief 第几路
+        unsigned int _baud_rate;         //! \brief 波特率
+        VCI_INIT_CONFIG *_config;
+    public:
+        Config() = delete;
+        explicit Config(unsigned long channel);
+        Config(const Config &config) = delete;
+        Config &operator=(const Config &config) = delete;
+        ~Config() { delete _config; }
+        inline unsigned long deviceType() const { return _device_type; }
+        inline unsigned long deviceIndex() const { return _device_index; }
+        inline unsigned long deviceChannel() const { return _device_channel; }
+        inline unsigned long reserved() const { return _config->Reserved; }
+        inline const VCI_INIT_CONFIG *config() const { return _config; }
+        inline VCI_INIT_CONFIG *config() { return _config; }
+    };
 
     enum Status
     {
@@ -56,39 +73,6 @@ private:
     void getError(VCI_ERR_INFO *error);
 };
 
-class Can::Config
-{
-private:
-    unsigned long _device_type;      //! \brief 设备类型
-    unsigned long _device_index;     //! \brief 设备索引号
-    unsigned long _device_channel;   //! \brief 第几路
-    unsigned int _baud_rate;         //! \brief 波特率
-    VCI_INIT_CONFIG *_config;
-public:
-    Config() = delete;
-    explicit Config(unsigned long channel);
-    Config(const Config &config) = delete;
-    Config &operator=(const Config &config) = delete;
-    ~Config() { delete _config; }
-    inline unsigned long deviceType() const { return _device_type; }
-    inline unsigned long deviceIndex() const { return _device_index; }
-    inline unsigned long deviceChannel() const { return _device_channel; }
-    inline unsigned long reserved() const { return _config->Reserved; }
-    inline const VCI_INIT_CONFIG *config() const { return _config; }
-    inline VCI_INIT_CONFIG *config() { return _config; }
-};
-
-class Can::BoardInfo
-{
-};
-
-class Can::ErrorInfo
-{
-};
-
-class Can::RegStatus
-{
-};
 
 
 #endif //REFINE_CAN_HPP

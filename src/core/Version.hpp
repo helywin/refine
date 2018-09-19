@@ -32,19 +32,16 @@ private:
     const static Identifier _identifier = Identifier::Demo;
 
 public:
-    Version() = default;
-
-public:
     static QString str();
-    static char major();
-    static char micro();
-    static char minor();
-    static char build();
-    static char year();
-    static char month();
-    static char day();
-    static QDate date();
-    static char identifier();
+    inline static char major() { return _major; }
+    inline static char micro() { return _micro; }
+    inline static char minor() { return _minor; }
+    inline static char build() { return _build; }
+    inline static char year() { return _year; }
+    inline static char month() { return _month; }
+    inline static char day() { return _day; }
+    inline static QDate date() { return QDate(_year + 2000, _month, _day); }
+    inline static char identifier() { return _identifier; }
 };
 
 #endif //REFINE_VERSION_HPP

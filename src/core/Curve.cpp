@@ -22,7 +22,7 @@ bool Curve::loadFromCsv(QFile &f)
     if (f.isOpen()) {
         f.close();
     }
-    ::Csv csv;
+    Csv csv;
     csv.setFile(&f);
     if (!csv.startRead("gbk")) {
         qCritical("文件打开失败");
@@ -123,7 +123,7 @@ bool Curve::dumpToCsv(QFile &f) const
     if (f.isOpen()) {
         f.close();
     }
-    ::Csv csv;
+    Csv csv;
     csv.setFile(&f);
     if (!csv.startWrite("gbk")) {
         qCritical("文件打开失败");

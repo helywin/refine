@@ -7,7 +7,6 @@
 
 #include <QtCore/QThread>
 #include <QtCore/QFile>
-#include "File.hpp"
 
 class Can;
 class Buffer;
@@ -43,24 +42,36 @@ private:
     Buffer *_buffer;
     CollectManner _manner;
     unsigned long _delay;
-    File *_file;
+    QFile *_file;
     CollectControl _control;
-    QFile *_data;
 
 public:
     Collect() = delete;
     Collect(Can *can, Buffer *buffer);
-    void setMode(CollectManner manner, unsigned long delay = 10,
-                 File *file = nullptr);
-    void setDelay(unsigned long delay);
-    void setFile(File *file);
-    void reset();
 
-    void startCollection();
-    void suspendCollection();
-    void resumeCollection();
-    void interruptCollection();
-    void stopCollection();
+    inline void setMode(CollectManner manner, unsigned long delay = 10,
+                        QFile *file = nullptr)
+    {
+        _manner = manner;
+        _delay = delay;
+        _file = file;
+    }
+
+    inline void setDelay(unsigned long delay) { _delay = delay; }
+
+    inline void setFile(QFile *file) { _file = file; }
+
+    inline void reset() {}
+
+    inline void startCollection() { start(HighestPriority); }
+
+    inline void suspendCollection() { _control = Suspend; }
+
+    inline void resumeCollection() { _control = Resume; }
+
+    inline void interruptCollection() { _control = Interrupt; }
+
+    inline void stopCollection() { _control = Stop; }
 
 protected:
     void run() override;
