@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/7/31.
 //
 
-#ifndef REFINE_VERSION_H
-#define REFINE_VERSION_H
+#ifndef REFINE_VERSION_HPP
+#define REFINE_VERSION_HPP
 
 #include <QtCore/QString>
 #include <QtCore/QDate>
@@ -47,4 +47,4 @@ public:
     static char identifier();
 };
 
-#endif //REFINE_VERSION_H
+#endif //REFINE_VERSION_HPP

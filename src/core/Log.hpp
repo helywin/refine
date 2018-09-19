@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#ifndef REFINE_LOG_H
-#define REFINE_LOG_H
+#ifndef REFINE_LOG_HPP
+#define REFINE_LOG_HPP
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
@@ -44,4 +44,4 @@ private:
 };
 
 
-#endif //REFINE_LOG_H
+#endif //REFINE_LOG_HPP

@@ -95,7 +95,8 @@ void Collect::run()
             }
         }
     } else if (_manner == FromFile) {
-        _file->loadFrameRecordBegin(QFile());
+        QFile f;
+        _file->loadFrameRecordBegin(f);
     } else {}
 
     emit collectionFinish();

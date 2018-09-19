@@ -68,25 +68,25 @@
 
 //! \brief 添加基础类型 by jiang.wenqiang
 //! \date 2018/6/15
-typedef unsigned long DWORD;
-typedef unsigned long ULONG;
-typedef signed long LONG;
-typedef unsigned long HANDLE;
-typedef unsigned short USHORT;
-typedef signed short SHORT;
-typedef unsigned char BYTE;
-typedef unsigned int UINT;
-typedef signed int INT;
-typedef unsigned char UCHAR;
-typedef signed char CHAR;
-typedef void *PVOID;
+typedef unsigned long DWORD_T;
+typedef unsigned long ULONG_T;
+typedef signed long LONG_T;
+typedef unsigned long HANDLE_T;
+typedef unsigned short USHORT_T;
+typedef signed short SHORT_T;
+typedef unsigned char BYTE_T;
+typedef unsigned int UINT_T;
+typedef signed int INT_T;
+typedef unsigned char UCHAR_T;
+typedef signed char CHAR_T;
+typedef void *PVOID_T;
 
 
 typedef struct
 {//tagRemoteClient {
     int iIndex;
-    DWORD port;
-    HANDLE hClient;
+    DWORD_T port;
+    HANDLE_T hClient;
     char szip[32];
 } REMOTE_CLIENT;
 
@@ -94,67 +94,67 @@ typedef struct
 //! \brief 1.ZLGCAN系列接口卡信息的数据类型。
 typedef struct
 {//_VCI_BOARD_INFO {
-    USHORT hw_Version;                //! \brief hardware version
-    USHORT fw_Version;                //! \brief firmware version
-    USHORT dr_Version;                //! \brief driver version
-    USHORT in_Version;                //! \brief interface version
-    USHORT irq_Num;                   //! \brief interrupt number
-    BYTE can_Num;                     //! \brief can channels number
-    CHAR str_Serial_Num[20];          //! \brief serial number
-    CHAR str_hw_Type[40];             //! \brief hardware type
-    USHORT Reserved[4];               //! \brief reserved
+    USHORT_T hw_Version;                //! \brief hardware version
+    USHORT_T fw_Version;                //! \brief firmware version
+    USHORT_T dr_Version;                //! \brief driver version
+    USHORT_T in_Version;                //! \brief interface version
+    USHORT_T irq_Num;                   //! \brief interrupt number
+    BYTE_T can_Num;                     //! \brief can channels number
+    CHAR_T str_Serial_Num[20];          //! \brief serial number
+    CHAR_T str_hw_Type[40];             //! \brief hardware type
+    USHORT_T Reserved[4];               //! \brief reserved
 } VCI_BOARD_INFO;//, *PVCI_BOARD_INFO;
 
 //! \brief 2.定义CAN信息帧的数据类型。
 typedef struct
 {//_VCI_CAN_OBJ {
-    UINT ID;                            //! \brief 报文id
-    UINT TimeStamp;                     //! \brief 收到信息帧时的时间标识
-    BYTE TimeFlag;                      //! \brief 是否使用时间标识
-    BYTE SendType;                      //! \brief 送帧类型
+    UINT_T ID;                            //! \brief 报文id
+    UINT_T TimeStamp;                     //! \brief 收到信息帧时的时间标识
+    BYTE_T TimeFlag;                      //! \brief 是否使用时间标识
+    BYTE_T SendType;                      //! \brief 送帧类型
     //!  =0 正常发送，
     //!  =1 单次发送，
     //!  =2 自发自收，
     //!  =3 单次自发自收，只在为发送帧时有意义。
-    BYTE RemoteFlag;                    //! \brief 是否是远程帧
-    BYTE ExternFlag;                    //! \brief 是否是扩展帧
-    BYTE DataLen;                       //! \brief 数据长度(<=8)，即Data的长度
-    BYTE Data[8];                      //! \brief 报文数据
-    BYTE Reserved[3];                   //! \brief 保留字
+    BYTE_T RemoteFlag;                    //! \brief 是否是远程帧
+    BYTE_T ExternFlag;                    //! \brief 是否是扩展帧
+    BYTE_T DataLen;                       //! \brief 数据长度(<=8)，即Data的长度
+    BYTE_T Data[8];                      //! \brief 报文数据
+    BYTE_T Reserved[3];                   //! \brief 保留字
 } VCI_CAN_OBJ;//, *PVCI_CAN_OBJ;
 
 //! \brief 3.定义CAN控制器状态的数据类型。
 typedef struct
 {//_VCI_CAN_STATUS {
-    UCHAR ErrInterrupt;
-    UCHAR regMode;
-    UCHAR regStatus;
-    UCHAR regALCapture;
-    UCHAR regECCapture;
-    UCHAR regEWLimit;
-    UCHAR regRECounter;
-    UCHAR regTECounter;
-    DWORD Reserved;
+    UCHAR_T ErrInterrupt;
+    UCHAR_T regMode;
+    UCHAR_T regStatus;
+    UCHAR_T regALCapture;
+    UCHAR_T regECCapture;
+    UCHAR_T regEWLimit;
+    UCHAR_T regRECounter;
+    UCHAR_T regTECounter;
+    DWORD_T Reserved;
 } VCI_CAN_STATUS;//, *PVCI_CAN_STATUS;
 
 //! \brief 4.定义错误信息的数据类型。
 typedef struct
 {//_VCI_ERR_INFO {
-    UINT ErrCode;
-    BYTE Passive_ErrData[3];
-    BYTE ArLost_ErrData;
+    UINT_T ErrCode;
+    BYTE_T Passive_ErrData[3];
+    BYTE_T ArLost_ErrData;
 } VCI_ERR_INFO;//, *PVCI_ERR_INFO;
 
 //! \brief 5.定义初始化CAN的数据类型
 typedef struct
 {//_VCI_INIT_CONFIG {
-    DWORD AccCode;
-    DWORD AccMask;
-    DWORD Reserved;
-    UCHAR Filter;
-    UCHAR Timing0;
-    UCHAR Timing1;
-    UCHAR Mode;
+    DWORD_T AccCode;
+    DWORD_T AccMask;
+    DWORD_T Reserved;
+    UCHAR_T Filter;
+    UCHAR_T Timing0;
+    UCHAR_T Timing1;
+    UCHAR_T Mode;
 } VCI_INIT_CONFIG;//, *PVCI_INIT_CONFIG;
 
 typedef struct
@@ -162,100 +162,100 @@ typedef struct
     char szpwd[10];
     char szdesip[20];
     int desport;
-    BYTE blistenonly;
+    BYTE_T blistenonly;
 } CHGDESIPANDPORT;
 
 ///////// new add struct for filter /////////
 typedef struct
 {//_VCI_FILTER_RECORD {
-    DWORD ExtFrame;    //是否为扩展帧
-    DWORD Start;
-    DWORD End;
+    DWORD_T ExtFrame;    //是否为扩展帧
+    DWORD_T Start;
+    DWORD_T End;
 } VCI_FILTER_RECORD;//, *PVCI_FILTER_RECORD;
 
 
 #define EXTERNC        extern "C"
 
-EXTERNC DWORD __stdcall
-VCI_OpenDevice(DWORD DeviceType,
-               DWORD DeviceInd,
-               DWORD Reserved);
+EXTERNC DWORD_T __stdcall
+VCI_OpenDevice(DWORD_T DeviceType,
+               DWORD_T DeviceInd,
+               DWORD_T Reserved);
 
-EXTERNC DWORD __stdcall
-VCI_CloseDevice(DWORD DeviceType,
-                DWORD DeviceInd);
+EXTERNC DWORD_T __stdcall
+VCI_CloseDevice(DWORD_T DeviceType,
+                DWORD_T DeviceInd);
 
-EXTERNC DWORD __stdcall
-VCI_InitCAN(DWORD DeviceType,
-            DWORD DeviceInd,
-            DWORD CANInd,
+EXTERNC DWORD_T __stdcall
+VCI_InitCAN(DWORD_T DeviceType,
+            DWORD_T DeviceInd,
+            DWORD_T CANInd,
             VCI_INIT_CONFIG *pInitConfig);
 
-EXTERNC DWORD __stdcall
-VCI_ReadBoardInfo(DWORD DeviceType,
-                  DWORD DeviceInd,
+EXTERNC DWORD_T __stdcall
+VCI_ReadBoardInfo(DWORD_T DeviceType,
+                  DWORD_T DeviceInd,
                   VCI_BOARD_INFO *pInfo);
 
-EXTERNC DWORD __stdcall
-VCI_ReadErrInfo(DWORD DeviceType,
-                DWORD DeviceInd,
-                DWORD CANInd,
+EXTERNC DWORD_T __stdcall
+VCI_ReadErrInfo(DWORD_T DeviceType,
+                DWORD_T DeviceInd,
+                DWORD_T CANInd,
                 VCI_ERR_INFO *pErrInfo);
 
-EXTERNC DWORD __stdcall
-VCI_ReadCANStatus(DWORD DeviceType,
-                  DWORD DeviceInd,
-                  DWORD CANInd,
+EXTERNC DWORD_T __stdcall
+VCI_ReadCANStatus(DWORD_T DeviceType,
+                  DWORD_T DeviceInd,
+                  DWORD_T CANInd,
                   VCI_CAN_STATUS *pCANStatus);
 
-EXTERNC DWORD __stdcall
-VCI_GetReference(DWORD DeviceType,
-                 DWORD DeviceInd,
-                 DWORD CANInd,
-                 DWORD RefType,
-                 PVOID pData);
+EXTERNC DWORD_T __stdcall
+VCI_GetReference(DWORD_T DeviceType,
+                 DWORD_T DeviceInd,
+                 DWORD_T CANInd,
+                 DWORD_T RefType,
+                 PVOID_T pData);
 
-EXTERNC DWORD __stdcall
-VCI_SetReference(DWORD DeviceType,
-                 DWORD DeviceInd,
-                 DWORD CANInd,
-                 DWORD RefType,
-                 PVOID pData);
+EXTERNC DWORD_T __stdcall
+VCI_SetReference(DWORD_T DeviceType,
+                 DWORD_T DeviceInd,
+                 DWORD_T CANInd,
+                 DWORD_T RefType,
+                 PVOID_T pData);
 
-EXTERNC ULONG __stdcall
-VCI_GetReceiveNum(DWORD DeviceType,
-                  DWORD DeviceInd,
-                  DWORD CANInd);
+EXTERNC ULONG_T __stdcall
+VCI_GetReceiveNum(DWORD_T DeviceType,
+                  DWORD_T DeviceInd,
+                  DWORD_T CANInd);
 
-EXTERNC DWORD __stdcall
-VCI_ClearBuffer(DWORD DeviceType,
-                DWORD DeviceInd,
-                DWORD CANInd);
+EXTERNC DWORD_T __stdcall
+VCI_ClearBuffer(DWORD_T DeviceType,
+                DWORD_T DeviceInd,
+                DWORD_T CANInd);
 
-EXTERNC DWORD __stdcall
-VCI_StartCAN(DWORD DeviceType,
-             DWORD DeviceInd,
-             DWORD CANInd);
+EXTERNC DWORD_T __stdcall
+VCI_StartCAN(DWORD_T DeviceType,
+             DWORD_T DeviceInd,
+             DWORD_T CANInd);
 
-EXTERNC DWORD __stdcall
-VCI_ResetCAN(DWORD DeviceType,
-             DWORD DeviceInd,
-             DWORD CANInd);
+EXTERNC DWORD_T __stdcall
+VCI_ResetCAN(DWORD_T DeviceType,
+             DWORD_T DeviceInd,
+             DWORD_T CANInd);
 
-EXTERNC ULONG __stdcall
-VCI_Transmit(DWORD DeviceType,
-             DWORD DeviceInd,
-             DWORD CANInd,
+EXTERNC ULONG_T __stdcall
+VCI_Transmit(DWORD_T DeviceType,
+             DWORD_T DeviceInd,
+             DWORD_T CANInd,
              VCI_CAN_OBJ *pSend,
-             ULONG Len);
+             ULONG_T Len);
 
-EXTERNC ULONG __stdcall
-VCI_Receive(DWORD DeviceType,
-            DWORD DeviceInd,
-            DWORD CANInd,
+EXTERNC ULONG_T __stdcall
+VCI_Receive(DWORD_T DeviceType,
+            DWORD_T DeviceInd,
+            DWORD_T CANInd,
             VCI_CAN_OBJ *pReceive,
-            ULONG Len,
-            INT WaitTime = -1);
+            ULONG_T Len,
+            INT_T WaitTime = -1);
 
 
 #endif //REFINE_CONTROLCAN_H

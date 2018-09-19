@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#ifndef REFINE_TRIBE_H
-#define REFINE_TRIBE_H
+#ifndef REFINE_TRIBE_HPP
+#define REFINE_TRIBE_HPP
 
 
 class Tribe
@@ -12,4 +12,4 @@ class Tribe
 };
 
 
-#endif //REFINE_TRIBE_H
+#endif //REFINE_TRIBE_HPP

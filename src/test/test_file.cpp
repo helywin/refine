@@ -18,12 +18,12 @@ int main() {
     f.dumpCurveConfig(cvc, curve);
     f.loadCurveConfig(cvc, curve1);
     qDebug() << curve.str();
-    qDebug() << curve1.str();
+    for (auto &it : curve) {
+        qDebug() << it.str();
+    }
     QFile objf("D:/jiang.wenqiang/code/refine/data/obj.cvc");
     objf.open(QIODevice::WriteOnly);
     QDataStream s(&objf);
-    VCI_CAN_OBJ obj({0x777, 1, 2, 3, 4, 5, 6, {1,2,3,4,5,6,7,8}, {1,2,3}});
-    s << obj;
-    objf.close();
+    Buffer buffer;
     return 0;
 }

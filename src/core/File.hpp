@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/9/12.
 //
 
-#ifndef REFINE_FILE_H
-#define REFINE_FILE_H
+#ifndef REFINE_FILE_HPP
+#define REFINE_FILE_HPP
 
 #include <QtCore/QDateTime>
 
@@ -148,10 +148,14 @@ public:
     void setInfo(const char *info);
     void setInfo();
     inline void setBirth(unsigned int birth) { _birth_time = birth; }
-    inline void setBirth() { _birth_time = QDateTime::currentDateTime().toTime_t(); }
-    inline void setModified(unsigned int modified) { _modified_time = modified; }
-    inline void setModified() { _modified_time = QDateTime::currentDateTime().toTime_t(); }
-    inline void setReserved(const char *reserved) { memcpy(_reserved, reserved, sizeof(_reserved)); }
+    inline void setBirth()
+    { _birth_time = QDateTime::currentDateTime().toTime_t(); }
+    inline void setModified(unsigned int modified)
+    { _modified_time = modified; }
+    inline void setModified()
+    { _modified_time = QDateTime::currentDateTime().toTime_t(); }
+    inline void setReserved(const char *reserved)
+    { memcpy(_reserved, reserved, sizeof(_reserved)); }
 
     inline const char *magic() const { return _magic; }
     inline const char *version() const { return _version; }
@@ -176,4 +180,4 @@ public:
     int versionCompare(char major, char micro, char minor);
 };
 
-#endif //REFINE_FILE_H
+#endif //REFINE_FILE_HPP

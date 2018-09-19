@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#ifndef REFINE_TRANSFORM_H
-#define REFINE_TRANSFORM_H
+#ifndef REFINE_TRANSFORM_HPP
+#define REFINE_TRANSFORM_HPP
 
 #include <QtCore/QThread>
 #include <QtCore/QFile>
@@ -27,4 +27,4 @@ public:
 };
 
 
-#endif //REFINE_TRANSFORM_H
+#endif //REFINE_TRANSFORM_HPP

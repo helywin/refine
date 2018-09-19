@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#ifndef REFINE_COLLECT_H
-#define REFINE_COLLECT_H
+#ifndef REFINE_COLLECT_HPP
+#define REFINE_COLLECT_HPP
 
 #include <QtCore/QThread>
 #include <QtCore/QFile>
@@ -72,4 +72,4 @@ signals:
 };
 
 
-#endif //REFINE_COLLECT_H
+#endif //REFINE_COLLECT_HPP

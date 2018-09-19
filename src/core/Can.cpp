@@ -111,7 +111,7 @@ bool Can::collect(Buffer &buffer, int delay)
     length = VCI_Receive(_config->deviceType(),
                          _config->deviceIndex(),
                          _config->deviceChannel(),
-                         buffer.head(),
+                         buffer.head().obj(),
                          buffer.headWholeSize(),
                          delay);
     bool flag = length < 0xFFFFFFFF && length > 0;
@@ -134,7 +134,7 @@ bool Can::deliver(Buffer &buffer)
     length = VCI_Transmit(_config->deviceType(),
                           _config->deviceIndex(),
                           _config->deviceChannel(),
-                          buffer.tail(),
+                          buffer.tail().obj(),
                           buffer.tailDataSize());
     bool flag = length == buffer.tailDataSize();
     if (flag) {

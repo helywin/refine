@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#ifndef REFINE_DESPATCH_H
-#define REFINE_DESPATCH_H
+#ifndef REFINE_DESPATCH_HPP
+#define REFINE_DESPATCH_HPP
 
 #include <QtCore/QObject>
 
@@ -22,4 +22,4 @@ private:
 };
 
 
-#endif //REFINE_DESPATCH_H
+#endif //REFINE_DESPATCH_HPP

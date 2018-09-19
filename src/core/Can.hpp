@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/9/10.
 //
 
-#ifndef REFINE_CAN_H
-#define REFINE_CAN_H
+#ifndef REFINE_CAN_HPP
+#define REFINE_CAN_HPP
 
 
 #include <QtCore/QString>
@@ -91,4 +91,4 @@ class Can::RegStatus
 };
 
 
-#endif //REFINE_CAN_H
+#endif //REFINE_CAN_HPP
