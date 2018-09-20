@@ -47,6 +47,13 @@ public:
         Command = 0x20
     };
 
+    enum ReceiveResult
+    {
+        ReceiveFailed = -1,
+        ReceiveSucceededWithNoFrame = 0,
+        ReceiveSucceededWithFrames = 1
+    };
+
 private:
     int _status;
     Config *_config;
@@ -62,7 +69,7 @@ public:
     bool close();
     bool reset();
     bool reconnect();
-    bool collect(Buffer &buffer, int delay = 0);
+    int collect(Buffer &buffer, int delay = 0);
     bool deliver(Buffer &buffer);
     bool command(unsigned int id, QString &&cmd);
     bool isConnected();

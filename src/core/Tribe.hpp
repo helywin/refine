@@ -91,27 +91,63 @@ public:
 
     friend QDataStream &operator>>(QDataStream &stream, Tribe &tribe);
 
-    Cell &operator[](int index);
+    inline Cell &operator[](int index) { return _cells[index]; }
 
-    Cell &operator[](const QString &name);
+    inline Cell &operator[](const QString &name)
+    {
+        return _cells[_header.indexOf(name)];
+    }
 
-    const Cell &operator[](int index) const;
+    inline const Cell &operator[](int index) const { return _cells[index]; }
 
-    const Cell &operator[](const QString &name) const;
+    inline const Cell &operator[](const QString &name) const
+    {
+        return _cells[_header.indexOf(name)];
+    }
 
-    void append(const QString &name, const Cell &cell);
+    inline void append(const QString &name, const Cell &cell)
+    {
+        _cells.append(cell);
+        _header.append(name);
+    }
 
-    void append(const QString &name, Cell &&cell);
+    inline void append(const QString &name, Cell &&cell)
+    {
+        _cells.append(cell);
+        _header.append(name);
+    }
 
-    void append(const QStringList &names);
+    inline void append(const QStringList &names)
+    {
+        _header.append(names);
+        for (int i = 0; i < names.size(); ++i) {
+            _cells.append(Cell());
+        }
+    }
 
-    void insert(const QString &name, const Cell &cell, int index);
+    inline void insert(int index, const QString &name, const Cell &cell)
+    {
+        _cells.insert(index, cell);
+        _header.insert(index, name);
+    }
 
-    void insert(const QString &name, Cell &&cell, int index);
+    inline void insert(int index, const QString &name, Cell &&cell)
+    {
+        _cells.insert(index, cell);
+        _header.insert(index, name);
+    }
 
-    void remove(const QString &name);
+    inline void remove(const QString &name)
+    {
+        _cells.removeAt(_header.indexOf(name));
+        _header.removeOne(name);
+    }
 
-    void remove(int index);
+    inline void remove(int index)
+    {
+        _cells.removeAt(index);
+        _header.removeAt(index);
+    }
 
     void trim();
 };

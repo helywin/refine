@@ -72,10 +72,11 @@ void Buffer::Cell::setSendType(Buffer::Cell::SendType type)
 
 QDataStream &operator<<(QDataStream &stream, const Buffer::Cell &cell)
 {
+    int reserved = 0;
     stream << cell._index
            << cell._data_size
-           << int(0)
-           << int(0);
+           << reserved
+           << reserved;
     for (unsigned int i = 0; i < cell._data_size; ++i) {
         stream << cell._objs[i];
     }
@@ -84,11 +85,11 @@ QDataStream &operator<<(QDataStream &stream, const Buffer::Cell &cell)
 
 QDataStream &operator>>(QDataStream &stream, Buffer::Cell &cell)
 {
-    int buf;
+    int reserved;
     stream >> cell._index
            >> cell._data_size
-           >> buf
-           >> buf;
+           >> reserved
+           >> reserved;
     for (unsigned int i = 0; i < cell._data_size; ++i) {
         stream >> cell._objs[i];
     }

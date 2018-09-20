@@ -67,6 +67,7 @@ public:
         inline void setDataSize(unsigned int size) { _data_size = size; }
 
         void setSendType(SendType type);
+
         QStringList str() const;
 
         inline void setIndex(int index) { _index = index; }

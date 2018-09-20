@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
+#include <QtCore/QDebug>
 #include "Transform.hpp"
 #include "Buffer.hpp"
 #include "Curve.hpp"
@@ -18,11 +19,13 @@ Transform::Transform(Buffer *buffer, Curve *curve, Tribe *tribe,
 
 void Transform::run()
 {
+//    qDebug("dump");
     if (_frames_stored) {
         _file.dumpFrameRecord(*_buffer);
     }
+
     for (const auto &buf : *_buffer) {
-        for (int i = 0; i < buf.dataSize(); ++i) {
+    /*    for (int i = 0; i < buf.dataSize(); ++i) {
 //            unsigned short index = 0;
             float result = 0;
             for (const auto &cur : *_curve) {
@@ -55,11 +58,12 @@ void Transform::run()
                         (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
                     b = (float) cur.rangeOut()[0] - k * cur.rangeIn()[0];
                     result = (float) full * k + b;
+//                    qDebug() << result;
 //                    index = cur.index();
                     (*_tribe)[cur.name()].data().append(result);
                 }
-                _buffer->tailForward();
             }
-        }
+        }*/
+        _buffer->tailForward();
     }
 }

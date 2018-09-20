@@ -267,24 +267,58 @@ bool File::dumpCurveConfig(QFile &file, const Curve &curve)
     return true;
 }
 
-bool File::loadFrameRecordBegin(QFile &file)
+bool File::loadFrameRecordBegin(QFile &file, int *pack, int *frame)
 {
-    return false;
+    file.open(QIODevice::ReadOnly);
+    if (!file.isOpen()) {
+        return false;
+    }
+    _stream->setDevice(&file);
+
+    loadFileHeader();
+    if(!loadCheckSum()) {
+        return false;
+        qDebug("bad checksum!");
+    }
+    _stream->device()->seek(DATA_POS);
+    char str[4];
+    _stream->readRawData(str, 4);
+    (*_stream) >> _frame_obj_num;
+    (*_stream) >> _frame_cell_num;
+    if (pack) {
+        *pack = _frame_cell_num;
+    }
+    if (frame) {
+        *frame = _frame_obj_num;
+    }
+    return true;
 }
 
-void File::loadFrameRecord(Buffer &buffer)
+bool File::loadFrameRecord(Buffer &buffer)
 {
-
+    (*_stream) >> buffer;
+    if (_stream->atEnd()) {
+        return false;
+    }
+    char sign[4];
+    _stream->readRawData(sign, 4);
+    if (sign[0] == 'E' && sign[1] == 'N' &&
+            sign[2] == 'D' && sign[3] == 'F') {
+        return false;
+    } else {
+        _stream->device()->seek(_stream->device()->pos() - 4);
+        return true;
+    }
 }
 
-bool File::loadFrameRecordFinish()
+void File::loadFrameRecordFinish(QFile &file)
 {
-    return false;
+    _stream->unsetDevice();
+    file.close();
 }
 
 bool File::dumpFrameRecordBegin(QFile &file)
 {
-    _header->clear();
     file.open(QIODevice::ReadWrite | QIODevice::Truncate);
     if (!file.isOpen()) {
         qDebug("false");
@@ -293,16 +327,18 @@ bool File::dumpFrameRecordBegin(QFile &file)
     _stream->setDevice(&file);
     _header->setMagic();
     _header->setVersion();
+    _header->setBirth();
     _header->setModified();
     _header->setType(Header::FileType::FrameData);
     _header->setInfo();
 
+    dumpFileHeader();
     _frame_obj_num = 0;
     _frame_cell_num = 0;
     _stream->writeRawData("FMDF", 4);
     (*_stream) << _frame_obj_num
                << _frame_cell_num;
-    return false;
+    return true;
 }
 
 void File::dumpFrameRecord(Buffer &buffer)
@@ -320,12 +356,15 @@ void File::dumpFrameRecord(Buffer &buffer)
     _stream->device()->seek(pos);
 }
 
-void File::dumpFrameRecordFinish()
+void File::dumpFrameRecordFinish(QFile &file)
 {
+    _stream->writeRawData("ENDF", 4);
     _stream->device()->seek(DATA_POS + 4);
     (*_stream) << _frame_obj_num
                << _frame_cell_num;
     dumpHeaderCrc32();
+    _stream->unsetDevice();
+    file.close();
 }
 
 File::Header::Header()

@@ -76,3 +76,11 @@ target_link_libraries(main ${LIBCAN}
 add_executable(file test_file.cpp ${CORE})
 target_link_libraries(file ${LIBCAN}
         Qt5Core)
+
+add_executable(collect test_collect.cpp ${CORE})
+target_link_libraries(collect ${LIBCAN}
+        Qt5Core)
+
+add_executable(frame frame_viewer_main.cpp ${CORE} ${GUI})
+target_link_libraries(frame ${LIBCAN}
+        Qt5Core Qt5Widgets Qt5Gui)

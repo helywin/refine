@@ -69,16 +69,16 @@ public:
     bool dumpCurveConfig(QFile &file, const Curve &curve);
 
 public:
-    bool loadFrameRecordBegin(QFile &file);
-    void loadFrameRecord(Buffer &buffer);
-    bool loadFrameRecordFinish();
+    bool loadFrameRecordBegin(QFile &file, int *pack = nullptr,
+                              int *frame = nullptr);
+    bool loadFrameRecord(Buffer &buffer);
+    void loadFrameRecordFinish(QFile &file);
 
     bool dumpFrameRecordBegin(QFile &file);
     void dumpFrameRecord(Buffer &buffer);
-    void dumpFrameRecordFinish();
+    void dumpFrameRecordFinish(QFile &file);
 
 };
-
 
 
 #define HEADER_START_POS 0
@@ -137,43 +137,75 @@ public:
 
 public:
     inline void setMagic(const char *magic)
-    { memcpy(_magic, magic, sizeof(_magic)); }
+    {
+        memcpy(_magic, magic, sizeof(_magic));
+    }
+
     void setMagic();
+
     inline void setVersion(const char *version)
-    { memcpy(_version, version, sizeof(_version)); }
+    {
+        memcpy(_version, version, sizeof(_version));
+    }
+
     void setVersion();
+
     inline void setCrc32(unsigned int crc32) { _crc_sum = crc32; }
+
     inline void setType(FileType type) { _type = type; }
+
     void setInfo(const QString &info);
     void setInfo(const char *info);
     void setInfo();
+
     inline void setBirth(unsigned int birth) { _birth_time = birth; }
-    inline void setBirth()
-    { _birth_time = QDateTime::currentDateTime().toTime_t(); }
-    inline void setModified(unsigned int modified)
-    { _modified_time = modified; }
-    inline void setModified()
-    { _modified_time = QDateTime::currentDateTime().toTime_t(); }
+
+    inline void
+    setBirth() { _birth_time = QDateTime::currentDateTime().toTime_t(); }
+
+    inline void
+    setModified(unsigned int modified) { _modified_time = modified; }
+
+    inline void
+    setModified() { _modified_time = QDateTime::currentDateTime().toTime_t(); }
+
     inline void setReserved(const char *reserved)
-    { memcpy(_reserved, reserved, sizeof(_reserved)); }
+    {
+        memcpy(_reserved, reserved, sizeof(_reserved));
+    }
 
     inline const char *magic() const { return _magic; }
+
     inline const char *version() const { return _version; }
+
     inline unsigned int crc32() const { return _crc_sum; }
+
     inline unsigned int type() const { return _type; }
+
     inline const char *info() const { return _info; }
-    inline unsigned int birth() const { return _birth_time;}
+
+    inline unsigned int birth() const { return _birth_time; }
+
     inline unsigned int modified() const { return _modified_time; }
+
     inline const char *reserved() const { return _reserved; }
 
     inline char *magic() { return _magic; }
+
     inline char *version() { return _version; }
+
     inline unsigned int &crc32() { return _crc_sum; }
+
     inline unsigned int &type() { return _type; }
+
     inline char *info() { return _info; }
-    inline unsigned int &birth() { return _birth_time;}
+
+    inline unsigned int &birth() { return _birth_time; }
+
     inline unsigned int &modified() { return _modified_time; }
+
     inline char *reserved() { return _reserved; }
+
     QStringList str() const;
     bool check() const;
     void clear();

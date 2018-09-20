@@ -43,7 +43,9 @@ public:
         return _file.dumpFrameRecordBegin(*_file_frames);
     }
 
-    inline void finishFramesStored() { _file.dumpFrameRecordFinish(); }
+    inline void finishFramesStored() {
+        _file.dumpFrameRecordFinish(*_file_frames);
+    }
 
 protected:
     void run() override;

@@ -104,7 +104,7 @@ bool Can::reconnect()
     return flag;
 }
 
-bool Can::collect(Buffer &buffer, int delay)
+int Can::collect(Buffer &buffer, int delay)
 {
     unsigned long length;
     _status |= Status::Collecting;
@@ -114,17 +114,21 @@ bool Can::collect(Buffer &buffer, int delay)
                          buffer.head().obj(),
                          buffer.headWholeSize(),
                          delay);
-    bool flag = length < 0xFFFFFFFF && length > 0;
-    if (flag) {
+    int rtn;
+    if (length > 0 && length != 0xFFFFFFFF) {
         buffer.setHeadDataSize(length);
         buffer.headForward();
-    } else {
+        rtn = ReceiveResult::ReceiveSucceededWithFrames;
+    } else if (length == 0xFFFFFFFF) {
         VCI_ERR_INFO error;
         getError(&error);
+        rtn = ReceiveResult::ReceiveFailed;
+    } else {
+        rtn = ReceiveResult::ReceiveSucceededWithNoFrame;
     }
     // todo 
     _status ^= Status::Collecting;
-    return flag;
+    return rtn;
 }
 
 bool Can::deliver(Buffer &buffer)
