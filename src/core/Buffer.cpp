@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/9/10.
 //
 
+#include <QtCore/QDebug>
 #include "Buffer.hpp"
 
 Buffer::Cell::Cell() : _status(Status::UnInitialized), _objs(nullptr),
@@ -127,13 +128,14 @@ QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj)
 
 Buffer::Buffer(int cell_space, unsigned int cell_size) :
         _cell_space(cell_space), _index(0), _cells(new Cell[cell_space]),
-        _head(0), _tail(0)
+        _head(0), _tail(0), _mark_head(0), _mark_tail(0), _read_cell(new Cell)
 {
     Q_ASSERT(cell_space > 0);
     Q_ASSERT(cell_size > 0);
     for (int i = 0; i < _cell_space; ++i) {
         _cells[i].initialize(cell_size);
     }
+    _read_cell->initialize(cell_size);
 }
 
 
@@ -152,14 +154,12 @@ void Buffer::size(int &cell_n, int &obj_n) const
     obj_n = 0;
     auto p = _tail;
     while (p != _head) {
-        if (p == _cell_space - 1) {
-            p = 0;
-        } else {
-            p += 1;
-        }
         cell_n += 1;
         obj_n += (p + _cells)->dataSize();
+        p += 1;
+        p %= _cell_space;
     }
+    qDebug() << obj_n;
 }
 
 
@@ -181,22 +181,18 @@ void Buffer::tailForward()
 
 QDataStream &operator<<(QDataStream &stream, const Buffer &buffer)
 {
-    auto p = buffer._tail;
-    while (p != buffer._head) {
+    auto p = buffer._mark_tail;
+    while (p != buffer._mark_head) {
         stream << *(p + buffer._cells);
-        if (p == buffer.space() - 1) {
-            p = 0;
-        } else {
-            p += 1;
-        }
+        p += 1;
+        p %= buffer._cell_space;
     }
     return stream;
 }
 
 QDataStream &operator>>(QDataStream &stream, Buffer &buffer)
 {
-    stream >> *(buffer._head + buffer._cells);
-    buffer.headForward();
+    stream >> *buffer._read_cell;
     return stream;
 }
 

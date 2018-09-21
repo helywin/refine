@@ -22,5 +22,5 @@ void Revolve::collectFramesGot()
 void Revolve::run()
 {
     _collect->start();
-    while (_collect->isRunning()) {}
+    while (_collect->isRunning() || _transform->isRunning()) {}
 }

@@ -96,6 +96,7 @@ public:
         inline const Iter &operator++()
         {
             _pos += 1;
+            _pos %= _buffer->_cell_space;  //!很重要
             return *this;
         }
     };
@@ -106,6 +107,9 @@ private:
     Cell *_cells;
     int _head;
     int _tail;
+    int _mark_head;
+    int _mark_tail;
+    Cell *_read_cell;
 
 public:
     inline Buffer() : Buffer(50, 100) {}
@@ -184,9 +188,15 @@ public:
 
     inline const Cell &head() const { return _cells[_head]; }
 
-    inline Iter begin() { return Iter(this, 0); }
+    inline Iter begin() { return Iter(this, _tail); }
 
-    inline Iter end() { return Iter(this, size() - 1); }
+    inline Iter end() { return Iter(this, _head); }
+
+    inline void mark() { _mark_head = _head; _mark_tail = _tail; }
+
+    inline Cell &readCell() { return *_read_cell; }
+
+    inline const Cell &readCell() const { return *_read_cell; }
 
 };
 

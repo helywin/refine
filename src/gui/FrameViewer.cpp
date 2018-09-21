@@ -95,7 +95,8 @@ void FrameViewer::readFrameData(const QString &fname)
     for (int i = 0; i < size; ++i) {
         QString str;
         file.loadFrameRecord(buffer);
-        for (int j = 0; j < buffer.head().dataSize(); ++j) {
+        const Buffer::Cell &cell = buffer.readCell();
+        for (int j = 0; j < cell.dataSize(); ++j) {
             auto item = new QTableWidgetItem(QString::number(index));
             item->setFont(consolas);
             _table_central->setItem(index, 0, item);
@@ -105,20 +106,20 @@ void FrameViewer::readFrameData(const QString &fname)
             _table_central->setItem(index, 1, item);
             item = new QTableWidgetItem(
                     QString("0x") +
-                    QString::number(buffer.head()[j]->ID, 16).toUpper());
+                    QString::number(cell[j]->ID, 16).toUpper());
             item->setFont(consolas);
             _table_central->setItem(index, 2, item);
             item = new QTableWidgetItem(
-                    QString::number(buffer.head()[j]->TimeStamp));
+                    QString::number(cell[j]->TimeStamp));
             item->setFont(consolas);
             _table_central->setItem(index, 3, item);
-            if (buffer.head()[j]->TimeFlag) {
+            if (cell[j]->TimeFlag) {
                 str = QString("√");
             } else {
                 str = QString("×");
             }
             _table_central->setItem(index, 4, new QTableWidgetItem(str));
-            switch (buffer.head()[j]->SendType) {
+            switch (cell[j]->SendType) {
                 case 0:
                     str = QString("正常");
                     break;
@@ -135,13 +136,13 @@ void FrameViewer::readFrameData(const QString &fname)
                     str = QString("?");
             }
             _table_central->setItem(index, 5, new QTableWidgetItem(str));
-            if (buffer.head()[j]->RemoteFlag) {
+            if (cell[j]->RemoteFlag) {
                 str = QString("√");
             } else {
                 str = QString("×");
             }
             _table_central->setItem(index, 6, new QTableWidgetItem(str));
-            if (buffer.head()[j]->ExternFlag) {
+            if (cell[j]->ExternFlag) {
                 str = QString("√");
             } else {
                 str = QString("×");
@@ -149,16 +150,16 @@ void FrameViewer::readFrameData(const QString &fname)
             _table_central->setItem(index, 7, new QTableWidgetItem(str));
             _table_central->
                     setItem(index, 8, new QTableWidgetItem(
-                    QString::number(buffer.head()[j]->DataLen)));
+                    QString::number(cell[j]->DataLen)));
             str.clear();
-            for (const auto &data : buffer.head()[j]->Data) {
+            for (const auto &data : cell[j]->Data) {
                 str += QString(" %1").arg(data, 2, 16, QChar('0')).toUpper();
             }
             item = new QTableWidgetItem(str);
             item->setFont(consolas);
             _table_central->setItem(index, 9, item);
             str.clear();
-            for (const auto &data : buffer.head()[j]->Reserved) {
+            for (const auto &data : cell[j]->Reserved) {
                 str += QString(" %1").arg(data, 2, 16, QChar('0')).toUpper();
             }
             item = new QTableWidgetItem(str);
