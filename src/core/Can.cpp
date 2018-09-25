@@ -1,43 +1,58 @@
 //
-// Created by jiang.wenqiang on 2018/8/3.
+// Created by jiang.wenqiang on 2018/9/10.
 //
 
 #include <QtCore/QDebug>
-#include "Can.h"
+#include "Buffer.hpp"
+#include "Can.hpp"
 
 Can::Can(Can::Config *config) :
-        _status(Status::Disconnected), _config(config) {}
+        _status(Status::Closed), _config(config) {}
 
-void Can::setConfig(Can::Config *config) {
+void Can::setConfig(Can::Config *config)
+{
     _config = config;
 }
 
-bool Can::open() {
+bool Can::open()
+{
     unsigned long flag;
     flag = VCI_OpenDevice(_config->deviceType(),
                           _config->deviceIndex(),
                           _config->reserved());
+    if (flag) {
+        _status = Status::Opened;
+    }
     return (bool) flag;
 }
 
-bool Can::init() {
+bool Can::init()
+{
     unsigned long flag;
     flag = VCI_InitCAN(_config->deviceType(),
                        _config->deviceIndex(),
                        _config->deviceChannel(),
-                       _config->initConfig());
+                       _config->config());
+    if (flag) {
+        _status = Status::Initialized;
+    }
     return (bool) flag;
 }
 
-bool Can::start() {
+bool Can::start()
+{
     unsigned long flag;
     flag = VCI_StartCAN(_config->deviceType(),
                         _config->deviceIndex(),
                         _config->deviceChannel());
+    if (flag) {
+        _status = Status::Started;
+    }
     return (bool) flag;
 }
 
-bool Can::connect() {
+bool Can::connect()
+{
     VCI_CloseDevice(_config->deviceType(),
                     _config->deviceIndex());
     unsigned long flag = 0;
@@ -50,7 +65,7 @@ bool Can::connect() {
     flag = VCI_InitCAN(_config->deviceType(),
                        _config->deviceIndex(),
                        _config->deviceChannel(),
-                       _config->initConfig());
+                       _config->config());
     if (!flag) {
         return false;
     }
@@ -58,60 +73,72 @@ bool Can::connect() {
     flag = VCI_StartCAN(_config->deviceType(),
                         _config->deviceIndex(),
                         _config->deviceChannel());
-    _status = Status::Connected;
     return (bool) flag;
 }
 
-bool Can::close() {
+bool Can::close()
+{
     unsigned long flag = 0;
     flag = VCI_CloseDevice(_config->deviceType(),
                            _config->deviceIndex());
-    _status = Status::Disconnected;
+    _status = Status::Closed;
     return (bool) flag;
 }
 
-bool Can::reset() {
+bool Can::reset()
+{
     unsigned long flag = 0;
     flag = VCI_ResetCAN(_config->deviceType(),
                         _config->deviceIndex(),
                         _config->deviceChannel());
+    if (flag) {
+        _status = Status::Initialized;
+    }
     return bool(flag);
 }
 
-bool Can::reconnect() {
+bool Can::reconnect()
+{
     close();
     bool flag = connect();
-    if (flag) {
-        _status = Status::Connected;
-    }
     return flag;
 }
 
-bool Can::collect(Buffer &buffer, int delay) {
+int Can::collect(Buffer &buffer, int delay)
+{
     unsigned long length;
+    _status |= Status::Collecting;
     length = VCI_Receive(_config->deviceType(),
                          _config->deviceIndex(),
                          _config->deviceChannel(),
-                         buffer.head(),
+                         buffer.head().obj(),
                          buffer.headWholeSize(),
                          delay);
-    bool flag = length < 0xFFFFFFFF && length > 0;
-    if (flag) {
+    int rtn;
+    if (length > 0 && length != 0xFFFFFFFF) {
         buffer.setHeadDataSize(length);
         buffer.headForward();
-    } else {
+        rtn = ReceiveResult::ReceiveSucceededWithFrames;
+    } else if (length == 0xFFFFFFFF) {
         VCI_ERR_INFO error;
         getError(&error);
+        rtn = ReceiveResult::ReceiveFailed;
+    } else {
+        rtn = ReceiveResult::ReceiveSucceededWithNoFrame;
     }
-    return flag;
+    // todo 
+    _status ^= Status::Collecting;
+    return rtn;
 }
 
-bool Can::deliver(Buffer &buffer) {
+bool Can::deliver(Buffer &buffer)
+{
     unsigned long length;
+    _status |= Status::Transmitting;
     length = VCI_Transmit(_config->deviceType(),
                           _config->deviceIndex(),
                           _config->deviceChannel(),
-                          buffer.tail(),
+                          buffer.tail().obj(),
                           buffer.tailDataSize());
     bool flag = length == buffer.tailDataSize();
     if (flag) {
@@ -121,11 +148,14 @@ bool Can::deliver(Buffer &buffer) {
         VCI_ERR_INFO error;
         getError(&error);
     }
+    _status ^= Status::Transmitting;
     return flag;
 }
 
-bool Can::command(unsigned int id, QString &&cmd) {
+bool Can::command(unsigned int id, QString &&cmd)
+{
     Q_ASSERT(id < 0x800);
+    _status |= Status::Command;
     VCI_CAN_OBJ frame;
     frame.ID = id;
     frame.TimeStamp = 0;
@@ -154,10 +184,12 @@ bool Can::command(unsigned int id, QString &&cmd) {
                           _config->deviceChannel(),
                           &frame,
                           1);
+    _status ^= Status::Command;
     return length == frame.DataLen;
 }
 
-bool Can::isConnected() {
+bool Can::isConnected()
+{
     VCI_BOARD_INFO info;
     unsigned long flag;
     flag = VCI_ReadBoardInfo(_config->deviceType(),
@@ -166,7 +198,8 @@ bool Can::isConnected() {
     return (bool) flag;
 }
 
-void Can::getError(VCI_ERR_INFO *error) {
+void Can::getError(VCI_ERR_INFO *error)
+{
     Q_ASSERT(error != nullptr);
     VCI_ReadErrInfo(_config->deviceType(),
                     _config->deviceIndex(),
@@ -174,44 +207,23 @@ void Can::getError(VCI_ERR_INFO *error) {
                     error);
 }
 
-void Can::clear() {
+void Can::clear() const
+{
     VCI_ClearBuffer(_config->deviceType(),
                     _config->deviceIndex(),
                     _config->deviceChannel());
+}
+
+int Can::status() const
+{
+    return _status;
 }
 
 Can::Config::Config(unsigned long channel) :
         _device_type(4), _device_index(0), _device_channel(channel),
         _baud_rate(500),
         _config(new VCI_INIT_CONFIG{0x00000000, 0xFFFFFFFF, 0, 0, 0x00,
-                                    0x1C, 0}) {
+                                    0x1C, 0})
+{
     Q_ASSERT(channel == 0 || channel == 1);
-}
-
-Can::Config::~Config() {
-    delete _config;
-}
-
-unsigned long Can::Config::deviceType() const {
-    return _device_type;
-}
-
-unsigned long Can::Config::deviceIndex() const {
-    return _device_index;
-}
-
-unsigned long Can::Config::deviceChannel() const {
-    return _device_channel;
-}
-
-unsigned long Can::Config::reserved() const {
-    return _config->Reserved;;
-}
-
-const VCI_INIT_CONFIG *Can::Config::initConfig() const {
-    return _config;;
-}
-
-VCI_INIT_CONFIG *Can::Config::initConfig() {
-    return _config;
 }

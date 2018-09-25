@@ -1,52 +1,62 @@
 //
-// Created by jiang.wenqiang on 2018/8/8.
+// Created by jiang.wenqiang on 2018/9/11.
 //
 
-#include <QtCore/QDebug>
-#include "Collect.h"
+#include "Collect.hpp"
+#include "Can.hpp"
+#include "File.hpp"
+#include "Buffer.hpp"
 
 Collect::Collect(Can *can, Buffer *buffer) :
-        _can(can), _buffer(buffer), _cmd(Command::Resume) {
-    Q_ASSERT(can != nullptr && buffer != nullptr);
-}
+        _can(can),
+        _buffer(buffer),
+        _manner(CollectManner::FromCan),
+        _delay(10),
+        _file(nullptr),
+        _control(CollectControl::Resume) {}
 
-void Collect::setCan(Can *can) {
-    Q_ASSERT(can != nullptr);
-    _can = can;
-}
 
-void Collect::setBuffer(Buffer *buffer) {
-    Q_ASSERT(buffer != nullptr);
-    _buffer = buffer;
-}
-
-void Collect::run() {
-    while (true) {
-        msleep(10);
-        if (_cmd == Command::Stop) {
-            return;
-        } else if (_cmd == Command::Pause) {
-            continue;
-        }
-        if (_buffer->isFull()) {
-            emit result(Result::BufferFull);
-//            qDebug("buffer full");
-            return;
-        } else {
-            _buffer->tailCell()->setSendType(
-                    Buffer::Cell::SendType::SelfSendRecieve);
-            bool flag1 = _can->deliver(*_buffer);
-            if (!flag1) {
-                emit result(Result::CanError);
-                qDebug("empty");
+void Collect::run()
+{
+    if (_manner == FromCan) {
+        _can->clear();
+        int cnt = 0;
+        while (_control != Stop && _control != Interrupt) {
+            msleep(_delay);
+            if (_control == Stop) {
+                break;
+            } else if (_control == Suspend) {
+                continue;
             }
-            bool flag = _can->collect(*_buffer);
-            if (flag) {
-                emit result(Result::Succeeded);
+            if (_buffer->isFull()) {
+                emit error(BufferFull);
+                qCritical("缓冲区满了！");
+            }
+            int flag = _can->collect(*_buffer);
+            if (flag == Can::ReceiveFailed) {
+                emit error(CanFailed);
+                qCritical("CAN没连接上！");
+            } else if(flag == Can::ReceiveSucceededWithFrames) {
+                emit framesGot();
+//                qDebug("采集到！");
             } else {
-                emit result(Result::CanError);
-                qDebug("full");
+                cnt += 1;
+                if (cnt == 100) {
+                    cnt = 0;
+                    if (!_can->isConnected()) {
+                        emit error(ConnectionLost);
+                        qCritical("CAN没连接上！");
+                        break;
+                    }
+                }
             }
         }
-    }
+    } else if (_manner == FromFile) {
+        QFile f;
+        File file;
+        file.loadFrameRecordBegin(f, nullptr);
+        while (1) { file.loadFrameRecord(*_buffer); }
+    } else {}
+
+    emit collectionFinish();
 }

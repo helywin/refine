@@ -1,57 +1,30 @@
 //
-// Created by jiang.wenqiang on 2018/8/22.
+// Created by jiang.wenqiang on 2018/9/20.
 //
 
 #include <QtCore/QDebug>
-#include "Curve.h"
-#include "Can.h"
-#include "Transfori.h"
-#include "Revolvi.h"
-#include "Dump.h"
-#include "Collect.h"
+#include "Buffer.hpp"
+#include "Curve.hpp"
+#include "Can.hpp"
+#include "Revolve.hpp"
+#include "Tribe.hpp"
+#include "Collect.hpp"
 
-int main() {
-    Can::Config config(1);
-    Can can(&config);
-    can.close();
-//    if(can.open()){
-//        qDebug("打开化CAN盒成功");
-//    }
-//    getchar();
-//    if(can.init()){
-//        qDebug("初始化通道2成功");
-//    }
-    if(!can.connect()) {
-        qDebug("连接不上CAN盒！");
-        return -1;
-    }
-//    can.reset();
-//    if(can.start()){
-//        qDebug("启动通道2成功");
-//    }
-    Buffer buffer;
+int main()
+{
+    Can::Config cfg(0);
+    Can can(&cfg);
     Curve curve;
-    QFile f_config(QString("D:/jiang.wenqiang/code/refine/config/配置.csv"));
-    QFile f_data(QString("D:/jiang.wenqiang/code/refine/config/采集数据.csv"));
-    curve.load(f_config, Curve::FileType::Csv);
-    Dump dump;
-    dump.setFile(&f_data, Dump::FileType::Csv);
-    Kebab kebab(curve.header(), &dump);
-    Transfori transfori(&curve, &buffer, &kebab);
+    curve.loadFromCsv(QString("D:/jiang.wenqiang/code/refine/config/配置.csv"));
+    QFile file_frames(QString("D:/jiang.wenqiang/code/refine/data/data.fmd"));
+    Buffer buffer;
     Collect collect(&can, &buffer);
-    Revolvi revolvi(&collect, &transfori);
-
-    buffer.headCell()->setDataSize(5);
-    buffer.headCell()->setSendType(
-            Buffer::Cell::SendType::SelfSendRecieve);
-    buffer.headForward();
-
-    buffer.headCell()->setDataSize(5);
-    buffer.headCell()->setSendType(
-            Buffer::Cell::SendType::SelfSendRecieve);
-    buffer.headForward();
-
-    revolvi.marvel();
-
+    Tribe tribe;
+    Transform transform(&buffer, &curve, &tribe, &file_frames, true);
+    transform.initializeFramesStored();
+    Revolve revolve(&collect, &transform, nullptr);
+    qDebug() << can.connect();
+    revolve.run();
+    transform.finishFramesStored();
     return 0;
 }
