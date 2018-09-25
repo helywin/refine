@@ -19,7 +19,7 @@ Transform::Transform(Buffer *buffer, Curve *curve, Tribe *tribe,
 
 void Transform::run()
 {
-//    qDebug("dump");
+    _buffer->mark();
     if (_frames_stored) {
         _file.dumpFrameRecord(*_buffer);
     }

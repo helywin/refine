@@ -2,9 +2,13 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
     <generated>
-      <config projectName="refine" targetName="file" />
+      <config projectName="refine" targetName="frame_autogen" />
       <config projectName="refine" targetName="main" />
+      <config projectName="refine" targetName="file" />
+      <config projectName="refine" targetName="collect" />
       <config projectName="refine" targetName="file_autogen" />
+      <config projectName="refine" targetName="collect_autogen" />
+      <config projectName="refine" targetName="frame" />
       <config projectName="refine" targetName="main_autogen" />
     </generated>
   </component>
@@ -17,20 +21,12 @@
   <component name="ChangeListManager">
     <list default="true" id="c8df582f-ff05-4a08-93ac-c38a1e4137e7" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lint.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Can.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Can.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Buffer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Buffer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Buffer.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/Collect.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Collect.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Collect.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Collect.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Curve.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Curve.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/Revolve.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Revolve.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Revolve.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Revolve.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/Transform.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Transform.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Transform.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Transform.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Tribe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Tribe.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Tribe.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Tribe.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Version.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Version.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Version.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Version.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test_file.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/test_file.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/FrameViewer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/FrameViewer.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -60,7 +56,7 @@
     <session id="204827935">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="25" />
+          <entry key="project.closed" value="26" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.1" value="2" />
           <entry key="project.open.time.10" value="3" />
@@ -70,6 +66,7 @@
           <entry key="project.open.time.156" value="1" />
           <entry key="project.open.time.167" value="1" />
           <entry key="project.open.time.23" value="1" />
+          <entry key="project.open.time.29" value="1" />
           <entry key="project.open.time.30" value="1" />
           <entry key="project.open.time.31" value="1" />
           <entry key="project.open.time.33" value="1" />
@@ -84,7 +81,7 @@
           <entry key="project.open.time.64" value="2" />
           <entry key="project.open.time.67" value="1" />
           <entry key="project.open.time.9" value="2" />
-          <entry key="project.opened" value="34" />
+          <entry key="project.opened" value="35" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -97,7 +94,7 @@
           <entry key="QString" value="1" />
           <entry key="adoc" value="1" />
           <entry key="bat" value="1" />
-          <entry key="cpp" value="209" />
+          <entry key="cpp" value="212" />
           <entry key="csv" value="5" />
           <entry key="exclude" value="1" />
           <entry key="gitignore" value="1" />
@@ -121,7 +118,7 @@
           <entry key="Git exclude file" value="1" />
           <entry key="Git file" value="1" />
           <entry key="Markdown" value="10" />
-          <entry key="ObjectiveC" value="527" />
+          <entry key="ObjectiveC" value="530" />
           <entry key="PLAIN_TEXT" value="13" />
           <entry key="Scratch" value="2" />
         </counts>
@@ -130,10 +127,10 @@
         <counts>
           <entry key="LICENSE" value="42" />
           <entry key="bat" value="60" />
-          <entry key="cpp" value="11647" />
+          <entry key="cpp" value="11698" />
           <entry key="gitignore" value="12" />
           <entry key="h" value="7282" />
-          <entry key="hpp" value="4103" />
+          <entry key="hpp" value="4107" />
           <entry key="md" value="28" />
           <entry key="mm" value="45" />
           <entry key="rst" value="2" />
@@ -148,7 +145,7 @@
           <entry key="Doxygen file" value="2" />
           <entry key="Git file" value="12" />
           <entry key="Markdown" value="28" />
-          <entry key="ObjectiveC" value="23075" />
+          <entry key="ObjectiveC" value="23130" />
           <entry key="PLAIN_TEXT" value="67" />
         </counts>
       </usages-collector>
@@ -156,11 +153,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/core/Collect.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+            <state relative-caret-position="64">
+              <caret line="42" column="25" selection-start-line="42" selection-start-column="25" selection-end-line="42" selection-end-column="25" />
               <folding>
                 <element signature="e#50#72#0" expanded="true" />
               </folding>
@@ -169,22 +166,82 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/core/Tribe.hpp">
+        <entry file="file://$PROJECT_DIR$/src/gui/FrameViewer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="313">
-              <caret line="97" column="44" lean-forward="true" selection-start-line="97" selection-start-column="44" selection-end-line="97" selection-end-column="44" />
+            <state relative-caret-position="843">
+              <caret line="102" column="28" selection-start-line="102" selection-start-column="28" selection-end-line="102" selection-end-column="28" />
               <folding>
-                <element signature="e#101#124#0" expanded="true" />
+                <element signature="e#50#74#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/core/Tribe.cpp">
+        <entry file="file://$PROJECT_DIR$/src/core/Buffer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="20" column="5" selection-start-line="20" selection-start-column="5" selection-end-line="20" selection-end-column="5" />
+            <state relative-caret-position="246">
+              <caret line="164" column="25" selection-start-line="164" selection-start-column="25" selection-end-line="164" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/Transform.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="234">
+              <caret line="49" column="20" selection-start-line="49" selection-start-column="14" selection-end-line="49" selection-end-column="20" />
+              <folding>
+                <element signature="e#50#74#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/Can.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="64">
+              <caret line="209" column="10" selection-start-line="209" selection-start-column="10" selection-end-line="209" selection-end-column="10" />
+              <folding>
+                <element signature="e#50#74#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/File.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="525" column="17" selection-start-line="525" selection-start-column="17" selection-end-line="525" selection-end-column="17" />
+              <folding>
+                <element signature="e#50#79#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/main.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="95">
+              <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
+              <folding>
+                <element signature="e#50#74#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/core/Revolve.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="387">
+              <caret line="23" selection-start-line="23" selection-end-line="23" />
+              <folding>
+                <element signature="e#50#74#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -192,8 +249,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/core/Transform.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
+            <state relative-caret-position="665">
+              <caret line="50" column="9" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
               <folding>
                 <element signature="e#109#134#0" expanded="true" />
               </folding>
@@ -201,35 +258,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/core/Transform.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1224">
-              <caret line="60" column="39" selection-start-line="60" selection-start-column="39" selection-end-line="60" selection-end-column="39" />
-              <folding>
-                <element signature="e#50#74#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/test_file.cpp">
+        <entry file="file://$PROJECT_DIR$/src/core/Buffer.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="411">
-              <caret line="27" column="31" lean-forward="true" selection-start-line="27" selection-start-column="31" selection-end-line="27" selection-end-column="31" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/core/Curve.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="122" column="21" selection-start-line="122" selection-start-column="21" selection-end-line="122" selection-end-column="21" />
-              <folding>
-                <element signature="e#50#74#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="311">
+              <caret line="119" column="14" selection-start-line="119" selection-start-column="14" selection-end-line="119" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -252,7 +285,6 @@
       <find>switch</find>
       <find>get_val</find>
       <find>SRC</find>
-      <find>qdebug</find>
       <find>float</find>
       <find>QOpenglwidget</find>
       <find>Qglfunctions</find>
@@ -276,6 +308,7 @@
       <find>csv</find>
       <find>long</find>
       <find>_index</find>
+      <find>qdebug</find>
     </findStrings>
     <replaceStrings>
       <replace>core</replace>
@@ -298,7 +331,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/core/Revolvi.cpp" />
         <option value="$PROJECT_DIR$/src/core/Transmit.h" />
         <option value="$PROJECT_DIR$/src/core/Tribe.h" />
         <option value="$PROJECT_DIR$/src/core/Ref.h" />
@@ -327,8 +359,6 @@
         <option value="$PROJECT_DIR$/src/test/main.cpp" />
         <option value="$PROJECT_DIR$/src/core/File.cpp" />
         <option value="$PROJECT_DIR$/src/core/Can.cpp" />
-        <option value="$PROJECT_DIR$/src/core/Buffer.cpp" />
-        <option value="$PROJECT_DIR$/src/core/Buffer.hpp" />
         <option value="$PROJECT_DIR$/src/core/ControlCan.h" />
         <option value="$PROJECT_DIR$/src/core/Curve.hpp" />
         <option value="$PROJECT_DIR$/src/core/Despatch.hpp" />
@@ -337,10 +367,8 @@
         <option value="$PROJECT_DIR$/src/core/Trigger.hpp" />
         <option value="$PROJECT_DIR$/src/core/Version.cpp" />
         <option value="$PROJECT_DIR$/src/core/Version.hpp" />
-        <option value="$PROJECT_DIR$/src/core/Collect.cpp" />
         <option value="$PROJECT_DIR$/src/core/Collect.hpp" />
         <option value="$PROJECT_DIR$/src/core/Revolve.hpp" />
-        <option value="$PROJECT_DIR$/src/core/Revolve.cpp" />
         <option value="$PROJECT_DIR$/debug/src/test/file_autogen/MV7IEL3DTJ/moc_Transform.cpp" />
         <option value="$PROJECT_DIR$/src/core/Curve.cpp" />
         <option value="$PROJECT_DIR$/src/core/Can.hpp" />
@@ -348,7 +376,12 @@
         <option value="$PROJECT_DIR$/src/test/test_file.cpp" />
         <option value="$PROJECT_DIR$/src/core/Transform.hpp" />
         <option value="$PROJECT_DIR$/src/core/Tribe.hpp" />
+        <option value="$PROJECT_DIR$/src/core/Buffer.hpp" />
+        <option value="$PROJECT_DIR$/src/gui/FrameViewer.cpp" />
         <option value="$PROJECT_DIR$/src/core/Transform.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Buffer.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Revolve.cpp" />
+        <option value="$PROJECT_DIR$/src/core/Collect.cpp" />
       </list>
     </option>
   </component>
@@ -378,6 +411,11 @@
             <path>
               <item name="refine" type="b2602c69:ProjectViewProjectNode" />
               <item name="refine" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="refine" type="b2602c69:ProjectViewProjectNode" />
+              <item name="refine" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -385,6 +423,12 @@
               <item name="refine" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="core" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="refine" type="b2602c69:ProjectViewProjectNode" />
+              <item name="refine" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="gui" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="refine" type="b2602c69:ProjectViewProjectNode" />
@@ -435,8 +479,18 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.file">
+  <component name="RunManager" selected="Application.frame">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="main" EXPLICIT_BUILD_TARGET_NAME="all">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="collect" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="collect" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="collect">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="collect_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="collect_autogen" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -447,6 +501,16 @@
       </method>
     </configuration>
     <configuration name="file_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="file_autogen" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="frame" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="frame" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="refine" RUN_TARGET_NAME="frame">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="frame_autogen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="refine" TARGET_NAME="frame_autogen" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -463,8 +527,12 @@
     </configuration>
     <list>
       <item itemvalue="Application.Build All" />
+      <item itemvalue="Application.collect" />
+      <item itemvalue="Application.collect_autogen" />
       <item itemvalue="Application.file" />
       <item itemvalue="Application.file_autogen" />
+      <item itemvalue="Application.frame" />
+      <item itemvalue="Application.frame_autogen" />
       <item itemvalue="Application.main" />
       <item itemvalue="Application.main_autogen" />
     </list>
@@ -525,11 +593,12 @@
       <workItem from="1537334343285" duration="7482000" />
       <workItem from="1537342249524" duration="171000" />
       <workItem from="1537342576326" duration="5547000" />
+      <workItem from="1537842601752" duration="3207000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="403307000" />
+    <option name="totallyTimeSpent" value="406591000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -544,12 +613,12 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2065053" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2246596" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32569557" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49924356" weight="0.82160395" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49924356" visible="true" weight="0.34369886" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39770868" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -640,13 +709,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://D:/msys32/mingw32/include/QtCore/qpoint.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="821">
-          <caret line="211" column="14" lean-forward="true" selection-start-line="211" selection-start-column="14" selection-end-line="211" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://D:/msys32/mingw32/include/QtCore/QPoint">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -725,13 +787,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sonar-project.properties">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -773,13 +828,6 @@
     <entry file="file://$PROJECT_DIR$/src/core/Csv.hpp">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/Buffer.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="51" column="16" selection-start-line="51" selection-start-column="16" selection-end-line="51" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/core/Log.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="874">
@@ -815,13 +863,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/Revolve.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/debug/src/test/file_autogen/MV7IEL3DTJ/moc_Transform.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="369">
@@ -850,26 +891,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/Can.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="109" column="13" selection-start-line="109" selection-start-column="13" selection-end-line="109" selection-end-column="13" />
-          <folding>
-            <element signature="e#50#74#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/Collect.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-          <folding>
-            <element signature="e#50#72#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/core/Curve.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -877,30 +898,6 @@
           <folding>
             <element signature="e#50#74#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/File.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="14" column="6" selection-start-line="14" selection-start-column="6" selection-end-line="14" selection-end-column="6" />
-          <folding>
-            <element signature="e#50#79#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/Buffer.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="109" column="11" selection-start-line="109" selection-start-column="11" selection-end-line="109" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/File.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="15" column="6" selection-start-line="15" selection-start-column="6" selection-end-line="15" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -917,16 +914,6 @@
           <caret line="97" column="44" lean-forward="true" selection-start-line="97" selection-start-column="44" selection-end-line="97" selection-end-column="44" />
           <folding>
             <element signature="e#101#124#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/Transform.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
-          <folding>
-            <element signature="e#109#134#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -955,12 +942,103 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/Transform.cpp">
+    <entry file="file://$PROJECT_DIR$/src/core/File.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1224">
-          <caret line="60" column="39" selection-start-line="60" selection-start-column="39" selection-end-line="60" selection-end-column="39" />
+        <state relative-caret-position="1349">
+          <caret line="71" column="63" selection-start-line="71" selection-start-column="63" selection-end-line="71" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Buffer.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="119" column="14" selection-start-line="119" selection-start-column="14" selection-end-line="119" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Transform.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="665">
+          <caret line="50" column="9" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
+          <folding>
+            <element signature="e#109#134#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Revolve.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
           <folding>
             <element signature="e#50#74#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gui/FrameViewer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="843">
+          <caret line="102" column="28" selection-start-line="102" selection-start-column="28" selection-end-line="102" selection-end-column="28" />
+          <folding>
+            <element signature="e#50#74#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Buffer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="246">
+          <caret line="164" column="25" selection-start-line="164" selection-start-column="25" selection-end-line="164" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Transform.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="49" column="20" selection-start-line="49" selection-start-column="14" selection-end-line="49" selection-end-column="20" />
+          <folding>
+            <element signature="e#50#74#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Can.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="64">
+          <caret line="209" column="10" selection-start-line="209" selection-start-column="10" selection-end-line="209" selection-end-column="10" />
+          <folding>
+            <element signature="e#50#74#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/File.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="525" column="17" selection-start-line="525" selection-start-column="17" selection-end-line="525" selection-end-column="17" />
+          <folding>
+            <element signature="e#50#79#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
+          <folding>
+            <element signature="e#50#74#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/Collect.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="64">
+          <caret line="42" column="25" selection-start-line="42" selection-start-column="25" selection-end-line="42" selection-end-column="25" />
+          <folding>
+            <element signature="e#50#72#0" expanded="true" />
           </folding>
         </state>
       </provider>

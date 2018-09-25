@@ -19,23 +19,14 @@ Collect::Collect(Can *can, Buffer *buffer) :
 void Collect::run()
 {
     if (_manner == FromCan) {
-        int cnt = 0;
         _can->clear();
+        int cnt = 0;
         while (_control != Stop && _control != Interrupt) {
             msleep(_delay);
-            cnt += 1;
             if (_control == Stop) {
                 break;
             } else if (_control == Suspend) {
                 continue;
-            }
-            if (cnt == 10) {
-                cnt = 0;
-                if (!_can->isConnected()) {
-                    emit error(ConnectionLost);
-                    qCritical("CAN没连接上！");
-                    break;
-                }
             }
             if (_buffer->isFull()) {
                 emit error(BufferFull);
@@ -44,10 +35,21 @@ void Collect::run()
             int flag = _can->collect(*_buffer);
             if (flag == Can::ReceiveFailed) {
                 emit error(CanFailed);
+                qCritical("CAN没连接上！");
             } else if(flag == Can::ReceiveSucceededWithFrames) {
                 emit framesGot();
 //                qDebug("采集到！");
-            } else {}
+            } else {
+                cnt += 1;
+                if (cnt == 100) {
+                    cnt = 0;
+                    if (!_can->isConnected()) {
+                        emit error(ConnectionLost);
+                        qCritical("CAN没连接上！");
+                        break;
+                    }
+                }
+            }
         }
     } else if (_manner == FromFile) {
         QFile f;

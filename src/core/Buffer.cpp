@@ -138,6 +138,11 @@ Buffer::Buffer(int cell_space, unsigned int cell_size) :
     _read_cell->initialize(cell_size);
 }
 
+Buffer::~Buffer()
+{
+    delete[] _cells;
+    delete _read_cell;
+}
 
 int Buffer::size() const
 {
@@ -159,7 +164,6 @@ void Buffer::size(int &cell_n, int &obj_n) const
         p += 1;
         p %= _cell_space;
     }
-    qDebug() << obj_n;
 }
 
 

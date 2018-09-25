@@ -117,7 +117,7 @@ public:
     Buffer(const Buffer &buffer) = delete;
     explicit Buffer(int cell_space, unsigned int cell_size = 100);
 
-    ~Buffer() { delete[] _cells; }
+    ~Buffer();
 
     Buffer &operator=(const Buffer &buffer) = delete;
 

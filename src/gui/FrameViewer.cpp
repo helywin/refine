@@ -100,7 +100,6 @@ void FrameViewer::readFrameData(const QString &fname)
             auto item = new QTableWidgetItem(QString::number(index));
             item->setFont(consolas);
             _table_central->setItem(index, 0, item);
-            qDebug() << i;
             item = new QTableWidgetItem(QString::number(i));
             item->setFont(consolas);
             _table_central->setItem(index, 1, item);
