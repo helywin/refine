@@ -8,6 +8,7 @@
 #include <QtCore/QList>
 #include <QtCore/QStringList>
 #include <QtCore/QVector>
+#include <QtCore/QFile>
 
 class Tribe
 {
@@ -22,8 +23,8 @@ public:
         };
     private:
         QString _name;
-        QVector<float> _data;
         int _data_type;
+        QVector<float> _data;
 
     public:
         Cell() : Cell(DataType::RawData) {}
@@ -33,6 +34,8 @@ public:
         inline QVector<float> &data() { return _data; }
 
         inline const QVector<float> &data() const { return _data; }
+
+        inline QString name() const { return _name; }
 
         inline int dataType() const { return _data_type; }
 
@@ -83,6 +86,38 @@ private:
 public:
     Tribe() = default;
 
+    bool loadFromCsv(QFile &f);
+
+    inline bool loadFromCsv(QFile &&f) { loadFromCsv(f); }
+
+    inline bool loadFromCsv(const QString &f)
+    {
+        QFile file(f);
+        return loadFromCsv(file);
+    }
+
+    inline bool loadFromCsv(QString &&f)
+    {
+        QFile file(f);
+        return loadFromCsv(file);
+    }
+
+    bool dumpToCsv(QFile &f) const;
+
+    inline bool dumpToCsv(QFile &&f) const { dumpToCsv(f); }
+
+    inline bool dumpToCsv(const QString &f) const
+    {
+        QFile file(f);
+        dumpToCsv(file);
+    }
+
+    inline bool dumpToCsv(QString &&f) const
+    {
+        QFile file(f);
+        dumpToCsv(file);
+    }
+
     inline Iter begin() { return Iter(this, 0); }
 
     inline Iter end() { return Iter(this, _cells.size()); }
@@ -114,6 +149,12 @@ public:
     inline void append(const QString &name, Cell &&cell)
     {
         _cells.append(cell);
+        _header.append(name);
+    }
+
+    inline void append(const QString &name)
+    {
+        _cells.append(Cell());
         _header.append(name);
     }
 
@@ -150,6 +191,11 @@ public:
     }
 
     void trim();
+
+    int minLen() const;
+    int maxLen() const;
+
+    QStringList zeroLenData() const;
 };
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);

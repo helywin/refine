@@ -267,7 +267,7 @@ public:
 
     inline bool loadFromCsv(QFile &&f) { return loadFromCsv(f); }
 
-    inline bool loadFromCsv(QString &f)
+    inline bool loadFromCsv(const QString &f)
     {
         QFile file(f);
         return loadFromCsv(file);
@@ -279,7 +279,7 @@ public:
 
     inline bool dumpToCsv(QFile &&f) const { return dumpToCsv(f); }
 
-    inline bool dumpToCsv(QString &f) const
+    inline bool dumpToCsv(const QString &f) const
     {
         QFile file(f);
         return dumpToCsv(file);
@@ -292,10 +292,14 @@ public:
     inline Cell &
     operator[](const QString &name) { return _cells[_header.indexOf(name)]; }
 
-    inline const Cell &operator[](int index) const { return _cells[index]; }
+    inline const Cell &operator[](int index) const {
+        Q_ASSERT(index >= 0 && index < _cells.size());
+        return _cells[index];
+    }
 
     inline const Cell &operator[](const QString &name) const
     {
+        Q_ASSERT(_header.contains(name));
         return _cells[_header.indexOf(name)];
     }
 

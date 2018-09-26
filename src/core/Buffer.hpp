@@ -109,7 +109,6 @@ private:
     int _tail;
     int _mark_head;
     int _mark_tail;
-    Cell *_read_cell;
 
 public:
     inline Buffer() : Buffer(50, 100) {}
@@ -123,12 +122,12 @@ public:
 
     inline Cell &operator[](int index)
     {
-        return *(_cells + (index + _tail) % _cell_space);
+        return *(_cells + ((index + _tail) % _cell_space));
     }
 
     inline const Cell &operator[](int index) const
     {
-        return *(_cells + (index + _tail) % _cell_space);
+        return *(_cells + ((index + _tail) % _cell_space));
     }
 
     friend QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
@@ -141,6 +140,7 @@ public:
 
     void headForward();
     void tailForward();
+    inline void closeMark() { _tail = _mark_head; }
 
     inline unsigned int headWholeSize() const
     {
@@ -188,15 +188,11 @@ public:
 
     inline const Cell &head() const { return _cells[_head]; }
 
-    inline Iter begin() { return Iter(this, _tail); }
+    inline Iter begin() { return Iter(this, _mark_tail); }
 
-    inline Iter end() { return Iter(this, _head); }
+    inline Iter end() { return Iter(this, _mark_head); }
 
     inline void mark() { _mark_head = _head; _mark_tail = _tail; }
-
-    inline Cell &readCell() { return *_read_cell; }
-
-    inline const Cell &readCell() const { return *_read_cell; }
 
 };
 

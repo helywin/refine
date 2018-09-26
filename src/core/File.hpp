@@ -78,6 +78,10 @@ public:
     void dumpFrameRecord(Buffer &buffer);
     void dumpFrameRecordFinish(QFile &file);
 
+public:
+    bool loadCurveRecord(QFile &file, Tribe &tribe);
+    bool dumpCurveRecord(QFile &file, const Tribe &tribe);
+
 };
 
 

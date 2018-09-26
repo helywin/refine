@@ -24,11 +24,13 @@ void Transform::run()
         _file.dumpFrameRecord(*_buffer);
     }
 
-    for (const auto &buf : *_buffer) {
-    /*    for (int i = 0; i < buf.dataSize(); ++i) {
+    for (const auto &buf : (*_buffer)) {
+        for (int i = 0; i < buf.dataSize(); ++i) {
 //            unsigned short index = 0;
             float result = 0;
+//            qDebug() << i;
             for (const auto &cur : *_curve) {
+//                qDebug() << cur.str();
                 bool flag = cur.canId() == buf[i]->ID &&
                             (cur.zeroByte() == -1 ||
                              buf[i]->Data[0] == cur.zeroByte());
@@ -47,7 +49,7 @@ void Transform::run()
                         high_byte = 0;
                     }
                     low_byte = buf[i]->Data[cur.lowByte()];
-//            qDebug() << "low byte " << low_byte;
+////            qDebug() << "low byte " << low_byte;
                     low_byte <<= 7 - cur.lowByteRange()[1];
                     low_byte >>= 7 - cur.lowByteRange()[1] +
                                  cur.lowByteRange()[0];
@@ -59,11 +61,10 @@ void Transform::run()
                     b = (float) cur.rangeOut()[0] - k * cur.rangeIn()[0];
                     result = (float) full * k + b;
 //                    qDebug() << result;
-//                    index = cur.index();
                     (*_tribe)[cur.name()].data().append(result);
                 }
             }
-        }*/
-        _buffer->tailForward();
+        }
     }
+    _buffer->closeMark();
 }

@@ -22,10 +22,7 @@ void Collect::run()
         _can->clear();
         int cnt = 0;
         while (_control != Stop && _control != Interrupt) {
-            msleep(_delay);
-            if (_control == Stop) {
-                break;
-            } else if (_control == Suspend) {
+            if (_control == Suspend) {
                 continue;
             }
             if (_buffer->isFull()) {
@@ -50,12 +47,23 @@ void Collect::run()
                     }
                 }
             }
+            msleep(_delay);
         }
     } else if (_manner == FromFile) {
-        QFile f;
         File file;
-        file.loadFrameRecordBegin(f, nullptr);
-        while (1) { file.loadFrameRecord(*_buffer); }
+        file.loadFrameRecordBegin(*_file);
+        while (_control != Stop && _control != Interrupt) {
+            if (_control == Suspend) {
+                continue;
+            }
+            if (!file.loadFrameRecord(*_buffer)) {
+                break;
+            } else {
+                qDebug("a frame");
+                emit framesGot();
+            }
+            msleep(_delay);
+        }
     } else {}
 
     emit collectionFinish();

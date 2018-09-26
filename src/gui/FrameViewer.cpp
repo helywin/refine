@@ -4,6 +4,7 @@
 
 #include <QtCore/QDebug>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QMessageBox>
 #include <QtWidgets/QHeaderView>
 #include "FrameViewer.hpp"
 #include "Buffer.hpp"
@@ -71,6 +72,10 @@ void FrameViewer::readFrameData(const QString &fname)
     consolas.setPointSize(12);
     _table_central->clear();
     _table_central->setColumnCount(11);
+    if (frame_num > 100000) {
+        frame_num = 100000;
+        QMessageBox::warning(this, QString("警告"), QString("数据超过10w条，只显示前10w条！"));
+    }
     _table_central->setRowCount(frame_num);
     _table_central->setHorizontalHeaderLabels(
             QStringList({"序号", "帧包", "ID", "时间", "标识", "类型",
@@ -93,9 +98,12 @@ void FrameViewer::readFrameData(const QString &fname)
             QAbstractItemView::SelectionBehavior::SelectRows);
     _table_central->verticalHeader()->hide();
     for (int i = 0; i < size; ++i) {
+        if (index > frame_num) {
+            break;
+        }
         QString str;
         file.loadFrameRecord(buffer);
-        const Buffer::Cell &cell = buffer.readCell();
+        const Buffer::Cell &cell = buffer.tail();
         for (int j = 0; j < cell.dataSize(); ++j) {
             auto item = new QTableWidgetItem(QString::number(index));
             item->setFont(consolas);
@@ -166,5 +174,6 @@ void FrameViewer::readFrameData(const QString &fname)
             _table_central->setItem(index, 10, item);
             index += 1;
         }
+        buffer.tailForward();
     }
 }

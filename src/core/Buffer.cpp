@@ -128,20 +128,18 @@ QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj)
 
 Buffer::Buffer(int cell_space, unsigned int cell_size) :
         _cell_space(cell_space), _index(0), _cells(new Cell[cell_space]),
-        _head(0), _tail(0), _mark_head(0), _mark_tail(0), _read_cell(new Cell)
+        _head(0), _tail(0), _mark_head(0), _mark_tail(0)
 {
     Q_ASSERT(cell_space > 0);
     Q_ASSERT(cell_size > 0);
     for (int i = 0; i < _cell_space; ++i) {
         _cells[i].initialize(cell_size);
     }
-    _read_cell->initialize(cell_size);
 }
 
 Buffer::~Buffer()
 {
     delete[] _cells;
-    delete _read_cell;
 }
 
 int Buffer::size() const
@@ -196,7 +194,8 @@ QDataStream &operator<<(QDataStream &stream, const Buffer &buffer)
 
 QDataStream &operator>>(QDataStream &stream, Buffer &buffer)
 {
-    stream >> *buffer._read_cell;
+    stream >> *(buffer._cells + buffer._head);
+    buffer.headForward();
     return stream;
 }
 

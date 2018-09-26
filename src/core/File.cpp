@@ -243,7 +243,7 @@ bool File::dumpCurveConfig(QFile &file, const Curve &curve)
     }
     file.open(QIODevice::ReadWrite | QIODevice::Truncate);
     if (!file.isOpen()) {
-        qDebug("false");
+        qDebug("打开文件失败！");
         return false;
     }
     _stream->setDevice(&file);
