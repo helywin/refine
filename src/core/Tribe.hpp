@@ -196,6 +196,8 @@ public:
     int maxLen() const;
 
     QStringList zeroLenData() const;
+
+    inline void clear() { _cells.clear(); _header.clear(); }
 };
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);

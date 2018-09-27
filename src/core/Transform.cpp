@@ -19,7 +19,7 @@ Transform::Transform(Buffer *buffer, Curve *curve, Tribe *tribe,
 
 void Transform::run()
 {
-    _buffer->mark();
+    _buffer->setMark();
     if (_frames_stored) {
         _file.dumpFrameRecord(*_buffer);
     }

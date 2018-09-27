@@ -10,6 +10,7 @@
 #include "Version.hpp"
 #include "Curve.hpp"
 #include "Buffer.hpp"
+#include "Tribe.hpp"
 
 
 File::File()
@@ -267,7 +268,7 @@ bool File::dumpCurveConfig(QFile &file, const Curve &curve)
     return true;
 }
 
-bool File::loadFrameRecordBegin(QFile &file, int *pack, int *frame)
+bool File::loadFrameRecordBegin(QFile &file, Buffer &buffer, int *pack, int *frame)
 {
     file.open(QIODevice::ReadOnly);
     if (!file.isOpen()) {
@@ -277,8 +278,8 @@ bool File::loadFrameRecordBegin(QFile &file, int *pack, int *frame)
 
     loadFileHeader();
     if(!loadCheckSum()) {
-        return false;
         qDebug("bad checksum!");
+        return false;
     }
     _stream->device()->seek(DATA_POS);
     char str[4];
@@ -291,6 +292,7 @@ bool File::loadFrameRecordBegin(QFile &file, int *pack, int *frame)
     if (frame) {
         *frame = _frame_obj_num;
     }
+    buffer.clear();
     return true;
 }
 
@@ -365,6 +367,48 @@ void File::dumpFrameRecordFinish(QFile &file)
     dumpHeaderCrc32();
     _stream->unsetDevice();
     file.close();
+}
+
+bool File::loadCurveRecord(QFile &file, Tribe &tribe)
+{
+    file.open(QIODevice::ReadOnly);
+    if (!file.isOpen()) {
+        return false;
+    }
+    _stream->setDevice(&file);
+
+    loadFileHeader();
+    if(!loadCheckSum()) {
+        qDebug("bad checksum!");
+        return false;
+    }
+    _stream->device()->seek(DATA_POS);
+    char str[4];
+    _stream->readRawData(str, 4);
+    tribe.clear();
+    (*_stream) >> tribe;
+    return true;
+}
+
+bool File::dumpCurveRecord(QFile &file, const Tribe &tribe)
+{
+    file.open(QIODevice::ReadWrite | QIODevice::Truncate);
+    if (!file.isOpen()) {
+        qDebug("false");
+        return false;
+    }
+    _stream->setDevice(&file);
+    _header->setMagic();
+    _header->setVersion();
+    _header->setBirth();
+    _header->setModified();
+    _header->setType(Header::FileType::RawData | Header::FileType::ProData);
+    _header->setInfo();
+
+    dumpFileHeader();
+    _stream->writeRawData("RPDF", 4);
+    (*_stream) << tribe;
+    return true;
 }
 
 File::Header::Header()

@@ -109,6 +109,7 @@ private:
     int _tail;
     int _mark_head;
     int _mark_tail;
+    bool _is_marked;
 
 public:
     inline Buffer() : Buffer(50, 100) {}
@@ -140,7 +141,6 @@ public:
 
     void headForward();
     void tailForward();
-    inline void closeMark() { _tail = _mark_head; }
 
     inline unsigned int headWholeSize() const
     {
@@ -188,12 +188,26 @@ public:
 
     inline const Cell &head() const { return _cells[_head]; }
 
-    inline Iter begin() { return Iter(this, _mark_tail); }
+    Iter begin();
 
-    inline Iter end() { return Iter(this, _mark_head); }
+    Iter end();
 
-    inline void mark() { _mark_head = _head; _mark_tail = _tail; }
+    inline void setMark()
+    {
+        _mark_head = _head;
+        _mark_tail = _tail;
+        _is_marked = true;
+    }
 
+    inline void closeMark()
+    {
+        _tail = _mark_head;
+        _is_marked = false;
+    }
+
+    inline bool isMarked() const { return _is_marked; }
+
+    void clear();
 };
 
 QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);

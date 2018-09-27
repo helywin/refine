@@ -64,7 +64,7 @@ void FrameViewer::readFrameData(const QString &fname)
     int size;
     int frame_num;
     int index = 0;
-    if (!file.loadFrameRecordBegin(f, &size, &frame_num)) {
+    if (!file.loadFrameRecordBegin(f, buffer, &size, &frame_num)) {
         qDebug("file error!");
         return;
     }

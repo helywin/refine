@@ -51,7 +51,7 @@ void Collect::run()
         }
     } else if (_manner == FromFile) {
         File file;
-        file.loadFrameRecordBegin(*_file);
+        file.loadFrameRecordBegin(*_file, <#initializer#>, nullptr, nullptr);
         while (_control != Stop && _control != Interrupt) {
             if (_control == Suspend) {
                 continue;

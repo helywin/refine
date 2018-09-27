@@ -69,8 +69,8 @@ public:
     bool dumpCurveConfig(QFile &file, const Curve &curve);
 
 public:
-    bool loadFrameRecordBegin(QFile &file, int *pack = nullptr,
-                              int *frame = nullptr);
+    bool loadFrameRecordBegin(QFile &file, Buffer &buffer,
+                              int *pack = nullptr, int *frame = nullptr);
     bool loadFrameRecord(Buffer &buffer);
     void loadFrameRecordFinish(QFile &file);
 
