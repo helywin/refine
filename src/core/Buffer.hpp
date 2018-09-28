@@ -207,7 +207,25 @@ public:
 
     inline bool isMarked() const { return _is_marked; }
 
-    void clear();
+    inline int headMarked() const
+    {
+        if (_is_marked){
+            return _mark_head;
+        } else {
+            return -1;
+        }
+    }
+
+    inline int tailMarked() const
+    {
+        if (_is_marked){
+            return _mark_tail;
+        } else {
+            return -1;
+        }
+    }
+
+    void reset();
 };
 
 QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);

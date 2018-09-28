@@ -41,15 +41,14 @@ int main()
         tribe.append(iter.name());
     }
     Transform transform(&buffer, &curve, &tribe, &file_frames, true);
-    transform.initializeFramesStored();
     Revolve revolve(&collect, &transform, nullptr);
     if (!can.connect()) {
         qDebug("can没连接！");
         return -1;
     }
-    revolve.run();
+    revolve.startRevolve();
+    while (revolve.isRunning()) {}
     can.close();
-    transform.finishFramesStored();
     tribe.dumpToCsv("D:/jiang.wenqiang/code/refine/data/data.csv");
 #endif
     return 0;

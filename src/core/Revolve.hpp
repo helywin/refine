@@ -6,11 +6,12 @@
 #define REFINE_REVOLVE_HPP
 
 #include <QtCore/QObject>
+#include <QtCore/QThread>
 #include "Collect.hpp"
 #include "Transform.hpp"
 #include "Trigger.hpp"
 
-class Revolve : public QObject
+class Revolve : public QThread
 {
 Q_OBJECT
 private:
@@ -21,9 +22,15 @@ private:
 public:
     Revolve(Collect *collect, Transform *transform, Trigger *trigger);
     void reset();
-    void run();
+
+protected:
+    void run() override;
 
 public slots:
+    inline void startRevolve() { start(HighestPriority); }
+    inline void pauseRevolve() { _collect->suspendCollection(); }
+    inline void stopRevolve() { _collect->stopCollection(); }
+    inline void resumeRevolve() { _collect->resumeCollection(); }
     void collectFramesGot();
 };
 

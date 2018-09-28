@@ -83,4 +83,12 @@ target_link_libraries(collect ${LIBCAN}
 
 add_executable(frame frame_viewer_main.cpp ${CORE} ${GUI})
 target_link_libraries(frame ${LIBCAN}
-        Qt5Core Qt5Widgets Qt5Gui)
+        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
+
+add_executable(scope test_scope.cpp ${CORE} ${GUI})
+target_link_libraries(scope ${LIBCAN}
+        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
+
+add_executable(buffer test_buffer.cpp ${CORE} ${GUI})
+target_link_libraries(buffer ${LIBCAN}
+        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})

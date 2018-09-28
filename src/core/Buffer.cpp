@@ -155,7 +155,7 @@ void Buffer::size(int &cell_n, int &obj_n) const
 {
     cell_n = 0;
     obj_n = 0;
-    auto p = _tail;
+    int p = _tail;
     while (p != _head) {
         cell_n += 1;
         obj_n += (p + _cells)->dataSize();
@@ -225,7 +225,7 @@ Buffer::Iter Buffer::end()
     }
 }
 
-void Buffer::clear()
+void Buffer::reset()
 {
     _index = 0;
     _head = 0;

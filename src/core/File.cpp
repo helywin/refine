@@ -292,7 +292,7 @@ bool File::loadFrameRecordBegin(QFile &file, Buffer &buffer, int *pack, int *fra
     if (frame) {
         *frame = _frame_obj_num;
     }
-    buffer.clear();
+    buffer.reset();
     return true;
 }
 
@@ -385,7 +385,7 @@ bool File::loadCurveRecord(QFile &file, Tribe &tribe)
     _stream->device()->seek(DATA_POS);
     char str[4];
     _stream->readRawData(str, 4);
-    tribe.clear();
+    tribe.reset();
     (*_stream) >> tribe;
     return true;
 }
@@ -402,7 +402,7 @@ bool File::dumpCurveRecord(QFile &file, const Tribe &tribe)
     _header->setVersion();
     _header->setBirth();
     _header->setModified();
-    _header->setType(Header::FileType::RawData | Header::FileType::ProData);
+    _header->setType(Header::FileType::RawData);
     _header->setInfo();
 
     dumpFileHeader();

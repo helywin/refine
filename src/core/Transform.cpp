@@ -21,24 +21,27 @@ void Transform::run()
 {
     _buffer->setMark();
     if (_frames_stored) {
+        qDebug() << "1: head:" << _buffer->headMarked() << " tail:" << _buffer->tailMarked();
         _file.dumpFrameRecord(*_buffer);
     }
-
+    qDebug() << "2: head:" << _buffer->headMarked() << " tail:" << _buffer->tailMarked();
     for (const auto &buf : (*_buffer)) {
+//        qDebug() << buf.str();
+        qDebug() << buf.index();
         for (int i = 0; i < buf.dataSize(); ++i) {
 //            unsigned short index = 0;
             float result = 0;
 //            qDebug() << i;
             for (const auto &cur : *_curve) {
 //                qDebug() << cur.str();
-                bool flag = cur.canId() == buf[i]->ID &&
+                bool flag = (cur.canId() == buf[i]->ID) &&
                             (cur.zeroByte() == -1 ||
                              buf[i]->Data[0] == cur.zeroByte());
                 if (flag) {
                     unsigned int full;
                     unsigned int high_byte;
                     unsigned int low_byte;
-                    if (cur.highByte()) {
+                    if (cur.highByte() != -1) {
                         high_byte = buf[i]->Data[cur.highByte()];
                         high_byte <<= 7 - cur.highByteRange()[1];
                         high_byte >>= 7 - cur.highByteRange()[1] +
@@ -59,7 +62,7 @@ void Transform::run()
                     k = (float) (cur.rangeOut()[1] - cur.rangeOut()[0]) /
                         (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
                     b = (float) cur.rangeOut()[0] - k * cur.rangeIn()[0];
-                    result = (float) full * k + b;
+                    result = full * k + b;
 //                    qDebug() << result;
                     (*_tribe)[cur.name()].data().append(result);
                 }

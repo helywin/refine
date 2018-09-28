@@ -69,6 +69,9 @@ bool Can::connect()
     if (!flag) {
         return false;
     }
+    VCI_ResetCAN(_config->deviceType(),
+                 _config->deviceIndex(),
+                 _config->deviceChannel());
     clear();
     flag = VCI_StartCAN(_config->deviceType(),
                         _config->deviceIndex(),

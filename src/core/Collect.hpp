@@ -7,6 +7,7 @@
 
 #include <QtCore/QThread>
 #include <QtCore/QFile>
+#include "Buffer.hpp"
 
 class Can;
 class Buffer;
@@ -61,7 +62,7 @@ public:
 
     inline void setFile(QFile *file) { _file = file; }
 
-    inline void reset() {}
+    inline void reset() { _buffer->reset(); }
 
     inline void startCollection() { start(HighestPriority); }
 

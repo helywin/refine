@@ -8,6 +8,8 @@
 
 class Trigger
 {
+public:
+    inline void reset() {}
 
 };
 
