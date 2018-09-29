@@ -4,7 +4,7 @@
 
 #include "Display.hpp"
 
-#define X_AXIS_POINT 500
+#define X_AXIS_POINT 1000
 #define Y_AXIS_POINT 10000
 
 Display::Display(QWidget *parent) : QGLWidget(parent)

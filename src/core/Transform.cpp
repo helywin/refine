@@ -21,13 +21,10 @@ void Transform::run()
 {
     _buffer->setMark();
     if (_frames_stored) {
-        qDebug() << "1: head:" << _buffer->headMarked() << " tail:" << _buffer->tailMarked();
         _file.dumpFrameRecord(*_buffer);
     }
-    qDebug() << "2: head:" << _buffer->headMarked() << " tail:" << _buffer->tailMarked();
     for (const auto &buf : (*_buffer)) {
-//        qDebug() << buf.str();
-        qDebug() << buf.index();
+//#pragma omp parallel for
         for (int i = 0; i < buf.dataSize(); ++i) {
 //            unsigned short index = 0;
             float result = 0;
@@ -52,7 +49,6 @@ void Transform::run()
                         high_byte = 0;
                     }
                     low_byte = buf[i]->Data[cur.lowByte()];
-////            qDebug() << "low byte " << low_byte;
                     low_byte <<= 7 - cur.lowByteRange()[1];
                     low_byte >>= 7 - cur.lowByteRange()[1] +
                                  cur.lowByteRange()[0];
@@ -63,7 +59,6 @@ void Transform::run()
                         (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
                     b = (float) cur.rangeOut()[0] - k * cur.rangeIn()[0];
                     result = full * k + b;
-//                    qDebug() << result;
                     (*_tribe)[cur.name()].data().append(result);
                 }
             }

@@ -123,12 +123,14 @@ public:
 
     inline Cell &operator[](int index)
     {
-        return *(_cells + ((index + _tail) % _cell_space));
+        Q_ASSERT(index >= 0 && index < _cell_space);
+        return *(_cells + index);
     }
 
     inline const Cell &operator[](int index) const
     {
-        return *(_cells + ((index + _tail) % _cell_space));
+        Q_ASSERT(index >= 0 && index < _cell_space);
+        return *(_cells + index);
     }
 
     friend QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);

@@ -70,11 +70,11 @@ private:
 
 private slots:
 
-    void start() { _revolve->startRevolve(); _timer->setInterval(10); _timer->start(); }
+    void start() { _revolve->startRevolve(); _timer->setInterval(100); _timer->start(); }
 
     void pause() { _revolve->pauseRevolve(); _timer->stop(); }
 
-    void resume() { _revolve->resumeRevolve(); _timer->setInterval(10); _timer->start(); }
+    void resume() { _revolve->resumeRevolve(); _timer->setInterval(100); _timer->start(); }
 
     void stop() { _revolve->stopRevolve(); _timer->stop(); }
 };
