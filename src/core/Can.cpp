@@ -51,10 +51,12 @@ bool Can::start()
     return (bool) flag;
 }
 
-bool Can::connect()
+bool Can::connect(const bool close)
 {
-    VCI_CloseDevice(_config->deviceType(),
-                    _config->deviceIndex());
+    if (close) {
+        VCI_CloseDevice(_config->deviceType(),
+                        _config->deviceIndex());
+    }
     unsigned long flag = 0;
     flag = VCI_OpenDevice(_config->deviceType(),
                           _config->deviceIndex(),

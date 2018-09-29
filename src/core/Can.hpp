@@ -65,7 +65,7 @@ public:
     bool open();
     bool init();
     bool start();
-    bool connect();
+    bool connect(bool close = false);
     bool close();
     bool reset();
     bool reconnect();

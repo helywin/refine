@@ -6,3 +6,4 @@
 - [x] 重新开发refine底层
 - [x] 开发根据CSV数据发送报文的小工具来测试refine
 - [x] range-based loop重写容器Curve，还有其他的存储容器
+- [ ] 单线程采集和数据转换

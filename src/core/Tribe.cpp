@@ -173,3 +173,19 @@ bool Tribe::dumpToCsv(QFile &f) const
     }
     return csv.finishWrite();
 }
+
+void Tribe::reset()
+{
+    for (auto &iter : _cells) {
+        iter.reset();
+    }
+}
+
+void Tribe::addGap()
+{
+    for (auto &cell : _cells) {
+        for (int i = 0; i < 100; ++i) {
+            cell.data().append(0);
+        }
+    }
+}

@@ -69,7 +69,7 @@ public:
 
     inline void reset() { _buffer->reset(); }
 
-    inline void startCollection() { start(HighestPriority); }
+    inline void startCollection() { start(HighestPriority); _control = Resume; }
 
     inline void suspendCollection() { _control = Suspend; }
 

@@ -5,7 +5,7 @@
 #include "Display.hpp"
 
 #define X_AXIS_POINT 1000
-#define Y_AXIS_POINT 10000
+#define Y_AXIS_POINT 5000
 
 Display::Display(QWidget *parent) : QGLWidget(parent)
 {
@@ -29,6 +29,7 @@ void Display::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1.0, 1.0, 1.0);
+    glLineWidth(2);
     int min_len = _tribe->minLen();
     int len =  min_len;
     if (len > X_AXIS_POINT) {

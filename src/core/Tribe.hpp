@@ -59,10 +59,7 @@ public:
 
         inline void resize(int size) { _data.resize(size); }
 
-        inline float last(int index) const
-        {
-            return _data[_data.size() - 1 - index];
-        }
+        inline void reset() { _data.clear(); }
     };
 
     class Iter
@@ -202,11 +199,15 @@ public:
 
     QStringList zeroLenData() const;
 
-    inline void reset()
+    inline void clear()
     {
         _cells.clear();
         _header.clear();
     }
+
+    void reset();
+
+    void addGap();
 };
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);

@@ -26,6 +26,8 @@ void Collect::run()
         int cnt = 0;
         while (_control != Stop && _control != Interrupt) {
             if (_control == Suspend) {
+                msleep(_delay);
+                _can->clear();
                 continue;
             }
             if (_buffer->isFull()) {
