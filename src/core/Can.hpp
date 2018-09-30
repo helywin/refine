@@ -34,6 +34,7 @@ public:
         inline unsigned long reserved() const { return _config->Reserved; }
         inline const VCI_INIT_CONFIG *config() const { return _config; }
         inline VCI_INIT_CONFIG *config() { return _config; }
+        inline void setChannel(unsigned long chann) { _device_channel = chann; }
     };
 
     enum Status
@@ -65,7 +66,7 @@ public:
     bool open();
     bool init();
     bool start();
-    bool connect();
+    bool connect(bool close = false);
     bool close();
     bool reset();
     bool reconnect();

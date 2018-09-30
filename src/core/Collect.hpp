@@ -7,6 +7,9 @@
 
 #include <QtCore/QThread>
 #include <QtCore/QFile>
+#include "Buffer.hpp"
+#include "Curve.hpp"
+#include "Tribe.hpp"
 
 class Can;
 class Buffer;
@@ -44,6 +47,9 @@ private:
     unsigned long _delay;
     QFile *_file;
     CollectControl _control;
+    Tribe *_tribe;
+    Curve *_curve;
+    bool _single_thread;
 
 public:
     Collect() = delete;
@@ -61,9 +67,9 @@ public:
 
     inline void setFile(QFile *file) { _file = file; }
 
-    inline void reset() {}
+    inline void reset() { _buffer->reset(); }
 
-    inline void startCollection() { start(HighestPriority); }
+    inline void startCollection() { start(HighestPriority); _control = Resume; }
 
     inline void suspendCollection() { _control = Suspend; }
 
@@ -72,6 +78,12 @@ public:
     inline void interruptCollection() { _control = Interrupt; }
 
     inline void stopCollection() { _control = Stop; }
+
+    inline void setTribe(Tribe *tribe) { _tribe = tribe; }
+
+    inline void setCurve(Curve *curve) { _curve = curve; }
+
+    inline void enableSingleThread() { _single_thread = true; }
 
 protected:
     void run() override;

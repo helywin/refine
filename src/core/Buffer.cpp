@@ -128,20 +128,18 @@ QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj)
 
 Buffer::Buffer(int cell_space, unsigned int cell_size) :
         _cell_space(cell_space), _index(0), _cells(new Cell[cell_space]),
-        _head(0), _tail(0), _mark_head(0), _mark_tail(0), _read_cell(new Cell)
+        _head(0), _tail(0), _mark_head(0), _mark_tail(0), _is_marked(false)
 {
     Q_ASSERT(cell_space > 0);
     Q_ASSERT(cell_size > 0);
     for (int i = 0; i < _cell_space; ++i) {
         _cells[i].initialize(cell_size);
     }
-    _read_cell->initialize(cell_size);
 }
 
 Buffer::~Buffer()
 {
     delete[] _cells;
-    delete _read_cell;
 }
 
 int Buffer::size() const
@@ -157,7 +155,7 @@ void Buffer::size(int &cell_n, int &obj_n) const
 {
     cell_n = 0;
     obj_n = 0;
-    auto p = _tail;
+    int p = _tail;
     while (p != _head) {
         cell_n += 1;
         obj_n += (p + _cells)->dataSize();
@@ -185,8 +183,16 @@ void Buffer::tailForward()
 
 QDataStream &operator<<(QDataStream &stream, const Buffer &buffer)
 {
-    auto p = buffer._mark_tail;
-    while (p != buffer._mark_head) {
+    int p;
+    int end;
+    if (buffer._is_marked) {
+        p = buffer._mark_tail;
+        end = buffer._mark_head;
+    } else {
+        p = buffer._tail;
+        end = buffer._head;
+    }
+    while (p != end) {
         stream << *(p + buffer._cells);
         p += 1;
         p %= buffer._cell_space;
@@ -196,8 +202,35 @@ QDataStream &operator<<(QDataStream &stream, const Buffer &buffer)
 
 QDataStream &operator>>(QDataStream &stream, Buffer &buffer)
 {
-    stream >> *buffer._read_cell;
+    stream >> *(buffer._cells + buffer._head);
+    buffer.headForward();
     return stream;
+}
+
+Buffer::Iter Buffer::begin()
+{
+    if (_is_marked) {
+        return Iter(this, _mark_tail);
+    } else {
+        return Iter(this, _tail);
+    }
+}
+
+Buffer::Iter Buffer::end()
+{
+    if (_is_marked) {
+        return Iter(this, _mark_head);
+    } else {
+        return Iter(this, _head);
+    }
+}
+
+void Buffer::reset()
+{
+    _index = 0;
+    _head = 0;
+    _tail = 0;
+    _is_marked = false;
 }
 
 

@@ -109,7 +109,7 @@ private:
     int _tail;
     int _mark_head;
     int _mark_tail;
-    Cell *_read_cell;
+    bool _is_marked;
 
 public:
     inline Buffer() : Buffer(50, 100) {}
@@ -123,12 +123,14 @@ public:
 
     inline Cell &operator[](int index)
     {
-        return *(_cells + (index + _tail) % _cell_space);
+        Q_ASSERT(index >= 0 && index < _cell_space);
+        return *(_cells + index);
     }
 
     inline const Cell &operator[](int index) const
     {
-        return *(_cells + (index + _tail) % _cell_space);
+        Q_ASSERT(index >= 0 && index < _cell_space);
+        return *(_cells + index);
     }
 
     friend QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
@@ -188,16 +190,44 @@ public:
 
     inline const Cell &head() const { return _cells[_head]; }
 
-    inline Iter begin() { return Iter(this, _tail); }
+    Iter begin();
 
-    inline Iter end() { return Iter(this, _head); }
+    Iter end();
 
-    inline void mark() { _mark_head = _head; _mark_tail = _tail; }
+    inline void setMark()
+    {
+        _mark_head = _head;
+        _mark_tail = _tail;
+        _is_marked = true;
+    }
 
-    inline Cell &readCell() { return *_read_cell; }
+    inline void closeMark()
+    {
+        _tail = _mark_head;
+        _is_marked = false;
+    }
 
-    inline const Cell &readCell() const { return *_read_cell; }
+    inline bool isMarked() const { return _is_marked; }
 
+    inline int headMarked() const
+    {
+        if (_is_marked){
+            return _mark_head;
+        } else {
+            return -1;
+        }
+    }
+
+    inline int tailMarked() const
+    {
+        if (_is_marked){
+            return _mark_tail;
+        } else {
+            return -1;
+        }
+    }
+
+    void reset();
 };
 
 QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);

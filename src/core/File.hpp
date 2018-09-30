@@ -69,14 +69,18 @@ public:
     bool dumpCurveConfig(QFile &file, const Curve &curve);
 
 public:
-    bool loadFrameRecordBegin(QFile &file, int *pack = nullptr,
-                              int *frame = nullptr);
+    bool loadFrameRecordBegin(QFile &file, Buffer &buffer,
+                              int *pack = nullptr, int *frame = nullptr);
     bool loadFrameRecord(Buffer &buffer);
     void loadFrameRecordFinish(QFile &file);
 
     bool dumpFrameRecordBegin(QFile &file);
     void dumpFrameRecord(Buffer &buffer);
     void dumpFrameRecordFinish(QFile &file);
+
+public:
+    bool loadCurveRecord(QFile &file, Tribe &tribe);
+    bool dumpCurveRecord(QFile &file, const Tribe &tribe);
 
 };
 
