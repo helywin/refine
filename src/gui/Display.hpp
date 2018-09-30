@@ -6,9 +6,10 @@
 #define REFINE_DISPLAY_HPP
 
 #include <QtOpenGL/QGLWidget>
+#include <QtOpenGL/QGLFunctions>
 #include "Tribe.hpp"
 
-class Display : public QGLWidget
+class Display : public QGLWidget, public QGLFunctions
 {
 Q_OBJECT
 private:

@@ -41,7 +41,7 @@ int main()
         tribe.append(iter.name());
     }
     Transform transform(&buffer, &curve, &tribe, &file_frames, true);
-    Revolve revolve(&collect, &transform, nullptr);
+    Revolve revolve(&collect, &transform, nullptr, &tribe);
     if (!can.connect()) {
         qDebug("can没连接！");
         return -1;

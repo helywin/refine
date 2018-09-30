@@ -128,17 +128,27 @@ public:
 
     friend QDataStream &operator>>(QDataStream &stream, Tribe &tribe);
 
-    inline Cell &operator[](int index) { return _cells[index]; }
+    inline Cell &operator[](int index)
+    {
+        Q_ASSERT(index >= 0 && index < _cells.size());
+        return _cells[index];
+    }
 
     inline Cell &operator[](const QString &name)
     {
+        Q_ASSERT(_header.contains(name));
         return _cells[_header.indexOf(name)];
     }
 
-    inline const Cell &operator[](int index) const { return _cells[index]; }
+    inline const Cell &operator[](int index) const
+    {
+        Q_ASSERT(index >= 0 && index < _cells.size());
+        return _cells[index];
+    }
 
     inline const Cell &operator[](const QString &name) const
     {
+        Q_ASSERT(_header.contains(name));
         return _cells[_header.indexOf(name)];
     }
 

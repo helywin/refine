@@ -49,11 +49,11 @@ void FrameViewer::setupUi()
             &QFileDialog::show);
     connect(_file_dialog, &QFileDialog::fileSelected, this,
             &FrameViewer::readFrameData);
-    QString fname("D:/jiang.wenqiang/code/refine/data/data.fmd");
-    QFile f(fname);
-    if (f.exists()) {
-        readFrameData(fname);
-    }
+//    QString fname("D:/jiang.wenqiang/code/refine/data/data.fmd");
+//    QFile f(fname);
+//    if (f.exists()) {
+//        readFrameData(fname);
+//    }
 }
 
 void FrameViewer::readFrameData(const QString &fname)
