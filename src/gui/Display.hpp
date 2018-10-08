@@ -8,17 +8,21 @@
 #include <QtOpenGL/QGLWidget>
 #include <QtOpenGL/QGLFunctions>
 #include "Tribe.hpp"
+#include "Curve.hpp"
 
 class Display : public QGLWidget, public QGLFunctions
 {
 Q_OBJECT
 private:
     Tribe *_tribe;
+    Curve *_curve;
 
 public:
-    explicit Display(QWidget *parent = nullptr);
+    explicit Display(QWidget *parent = nullptr, Tribe *tribe = nullptr,
+                     Curve *curve = nullptr);
 
     inline void setTribe(Tribe *tribe) { _tribe = tribe; }
+    inline void setCurve(Curve *curve) { _curve = curve; }
 
 protected:
     void initializeGL() override;
@@ -26,6 +30,8 @@ protected:
     void paintGL() override;
 public:
 //    void updateGL() override;
+    void enableSmooth();
+    void disableSmooth();
 };
 
 

@@ -4,6 +4,7 @@
 
 #include <QtCore/QProcess>
 #include <QtWidgets/QMessageBox>
+#include <QtCore/QStandardPaths>
 #include "Scope.hpp"
 
 Scope::Scope(QWidget *parent) : QMainWindow(parent)
@@ -32,10 +33,13 @@ void Scope::setupUi()
     _menu_init_connection->setCheckable(true);
     _menu_init_curve = new QAction(QString("曲线配置(&V)"), _menu_init);
     _menu_init_curve->setCheckable(true);
+    _menu_init_softcan = new QAction(QString("SoftCAN配置(&S)"), _menu_init);
+    _menu_init_softcan->setCheckable(true);
     _menu_init->addMenu(_menu_init_channel);
     _menu_init->addAction(_menu_init_channel->menuAction());
     _menu_init->addAction(_menu_init_connection);
     _menu_init->addAction(_menu_init_curve);
+    _menu_init->addAction(_menu_init_softcan);
     _menu_collect = new QMenu(QString("采集(&C)"), _menubar);
     _menu_collect_start = new QAction(QString("开始(&B)"), _menu_collect);
     _menu_collect_pause = new QAction(QString("暂停(&P)"), _menu_collect);
@@ -66,9 +70,13 @@ void Scope::setupUi()
     _menu_view_msec->addAction(_menu_view_msec_30);
     _menu_view_msec->addAction(_menu_view_msec_50);
     _menu_view_msec->addAction(_menu_view_msec_100);
+    _menu_view_smooth = new QAction(QString("抗锯齿(&S)"), _menu_view);
+    _menu_view_smooth->setCheckable(true);
+    _menu_view_smooth->setChecked(true);
     _menu_view->addAction(_menu_view_fixed);
     _menu_view->addMenu(_menu_view_msec);
     _menu_view->addAction(_menu_view_msec->menuAction());
+    _menu_view->addAction(_menu_view_smooth);
     _menu_data = new QMenu(QString("数据(&D)"), _menubar);
     _menu_data_frame = new QAction(QString("报文(&F)"), _menu_data);
     _menu_data_curve = new QAction(QString("曲线(&C)"), _menu_data);
@@ -99,7 +107,15 @@ void Scope::setupUi()
     _statusbar = new QStatusBar(this);
     this->setStatusBar(_statusbar);
     _timer = new QTimer(this);
-    _file_dialog = new QFileDialog(this, "打开配置文件", ".", "csv配置文件(*.csv)");
+    _file_curve = new QFileDialog(this, "打开配置文件", ".", "csv配置文件(*.csv)");
+    static QList<QUrl> urls;
+    urls.append(QUrl::fromLocalFile(QStandardPaths::standardLocations(
+                 QStandardPaths::DesktopLocation).first()));
+    _file_curve->setSidebarUrls(urls);
+
+    _file_softcan = new QFileDialog(this, "导入SoftCAN配置文件", ".",
+                                    "SoftCAN配置文件(*.cfg)");
+//    _file_softcan->setSidebarUrls(urls);
     _core_initialized = false;
     _curve_initialized = false;
     _refresh_msec = 10;
@@ -115,8 +131,14 @@ void Scope::setupUi()
             &Scope::setViewFixed, Qt::DirectConnection);
     connect(_menu_init_curve, &QAction::triggered, this,
             &Scope::openCurveConfig, Qt::DirectConnection);
-    connect(_file_dialog, &QFileDialog::fileSelected, this,
+    connect(_menu_init_softcan, &QAction::triggered, _file_softcan,
+            &QFileDialog::show, Qt::DirectConnection);
+    connect(_file_curve, &QFileDialog::fileSelected, this,
             &Scope::loadCurveConfig, Qt::DirectConnection);
+    connect(_file_softcan, &QFileDialog::fileSelected, this,
+            &Scope::importSoftcan, Qt::DirectConnection);
+    connect(_menu_view_smooth, &QAction::triggered, this,
+            &Scope::setupSmooth, Qt::DirectConnection);
 }
 
 bool Scope::setupCore()
@@ -131,8 +153,10 @@ bool Scope::setupCore()
     _tribe = new Tribe;
     _transform = new Transform(_buffer, _curve, _tribe, _file_frames, true);
     _revolve = new Revolve(_collect, _transform, nullptr, _tribe);
+    _softcan = new Softcan;
     _core_initialized = true;
     _display->setTribe(_tribe);
+    _display->setCurve(_curve);
     _frame_viewer = new FrameViewer(this);
     connect(_timer, &QTimer::timeout, _display, &Display::updateGL);
     connect(_menu_collect_start, &QAction::triggered, this,
@@ -165,6 +189,7 @@ bool Scope::setupCore()
 void Scope::releseCore()
 {
     _can->close();
+    delete _softcan;
     delete _revolve;
     delete _transform;
     delete _tribe;
@@ -202,7 +227,8 @@ void Scope::connectCan()
             if (previous_connection_status) {
                 QMessageBox::warning(this, QString("警告"), QString("CAN断开失败"));
             } else {
-                QMessageBox::warning(this, QString("警告"), QString("CAN被占用"));
+                QMessageBox::warning(this, QString("警告"),
+                                     QString("CAN没连接或被占用"));
             }
             _menu_init_connection->setChecked(previous_connection_status);
         }
@@ -325,30 +351,58 @@ void Scope::openCurveConfig()
     if (_curve_initialized) {
         return;
     }
-    QString file_name("配置.csv");
+    QString file_name("config.csv");
     QFile f(file_name);
     if (f.exists()) {
         loadCurveConfig(file_name);
-    }
-    else {
-        _file_dialog->show();
+    } else {
+        _file_curve->show();
     }
 }
 
 void Scope::loadCurveConfig(const QString &file_name)
 {
-    _curve->loadFromCsv(file_name);
+    if (!_curve->loadFromCsv(file_name)) {
+        QMessageBox::warning(this, "警告", "加载曲线配置失败");
+        _menu_init_curve->setChecked(false);
+    }
     for (const auto &iter : *_curve) {
         _tribe->append(iter.name());
     }
     qDebug("曲线配置加载成功");
+    qDebug() << _curve->str();
     _curve_initialized = true;
     _menu_init_curve->setChecked(true);
     _menu_init_curve->setDisabled(true);
+    _menu_init_softcan->setDisabled(true);
 }
 
 void Scope::showAbout()
 {
     QMessageBox::information(this, "关于", "Refine软件底层采集转换功能测试");
+}
+
+void Scope::setupSmooth()
+{
+    if (_menu_view_smooth->isChecked()) {
+        _display->enableSmooth();
+    } else {
+        _display->disableSmooth();
+    }
+}
+
+void Scope::importSoftcan(const QString &file_name)
+{
+    if (_softcan->load(file_name)) {
+        _softcan->toCurve(*_curve);
+        for (const auto &iter : *_curve) {
+            _tribe->append(iter.name());
+        }
+        qDebug() << _softcan->str();
+        qDebug() << _curve->str();
+        _curve_initialized = true;
+        _menu_init_softcan->setDisabled(true);
+        _menu_init_curve->setDisabled(true);
+    }
 }
 

@@ -5,17 +5,23 @@
 #include <QtCore/QDebug>
 #include "Display.hpp"
 
-#define X_AXIS_POINT 2000
-#define Y_AXIS_POINT 5000
+#define X_AXIS_MIN 0
+#define X_AXIS_MAX 2000
+#define Y_AXIS_MIN 0
+#define Y_AXIS_MAX 5000
 
-Display::Display(QWidget *parent) : QGLWidget(parent), _tribe(nullptr)
+
+Display::Display(QWidget *parent, Tribe *tribe, Curve *curve) :
+        QGLWidget(parent), _tribe(tribe), _curve(curve)
 {
+
 }
 
 void Display::initializeGL()
 {
     qglClearColor(Qt::black);
     setAutoBufferSwap(true);
+    enableSmooth();
 }
 
 void Display::resizeGL(int w, int h)
@@ -24,7 +30,7 @@ void Display::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glOrtho(0, X_AXIS_POINT, 0, Y_AXIS_POINT, 0, 100);
+    glOrtho(X_AXIS_MIN, X_AXIS_MAX, Y_AXIS_MIN, Y_AXIS_MAX, 0, 100);
 }
 
 void Display::paintGL()
@@ -32,23 +38,54 @@ void Display::paintGL()
     glClear(GL_COLOR_BUFFER_BIT);
 //    glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
-    glLineWidth(1);
+    glLineWidth(2);
     int min_len = _tribe->minLen();
     int len = min_len;
-    if (len > X_AXIS_POINT) {
-        len = X_AXIS_POINT;
+    if (len > X_AXIS_MAX) {
+        len = X_AXIS_MAX;
     }
     int start_pos = min_len - len;
     for (const auto &iter : *_tribe) {
+        if (!_curve->at(iter.name()).display()) {
+            continue;
+        }
+        Curve::Cell &cfg = _curve->at(iter.name());
+        qglColor(QColor(cfg.color()));
         glBegin(GL_LINES);
+        float y_cal = 0;
         for (int i = 0; i < len - 1; ++i) {
-            glVertex2f(i, iter[i + start_pos]);
-            glVertex2f(i + 1, iter[i + start_pos + 1]);
+            if (i) {
+                glVertex2f(i, y_cal);
+            } else {
+                glVertex2f(i, iter[i + start_pos]);
+            }
+            y_cal = (iter[i + start_pos + 1] -
+                     cfg.rangeOut()[0]) * (Y_AXIS_MAX - Y_AXIS_MIN) /
+                    (cfg.rangeOut()[1] - cfg.rangeOut()[0]) + Y_AXIS_MIN;
+            glVertex2f(i + 1, y_cal);
         }
         glEnd();
     }
 //    glPopMatrix();
 //    swapBuffers();
+//    swapBuffers();
     glFlush();
 }
+
+void Display::enableSmooth()
+{
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    updateGL();
+}
+
+void Display::disableSmooth()
+{
+    glDisable(GL_LINE_SMOOTH);
+    glDisable(GL_BLEND);
+    updateGL();
+}
+
 

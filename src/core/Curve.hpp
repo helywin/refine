@@ -69,7 +69,13 @@ public:
         //str getter
         inline QString indexStr() const { return QString::number(_index); }
 
-        inline QString displayStr() const { return QString::number(_display); }
+        inline QString displayStr() const {
+            if (_display) {
+                return QString("是");
+            } else {
+                return QString("否");
+            }
+        }
 
         inline QString nameStr() const { return QString(_name); }
 
@@ -95,13 +101,13 @@ public:
 
         inline QString zeroByteStr() const
         {
-            if (_zero_byte == -1) return QString("%1").arg(_zero_byte);
+            if (_zero_byte != -1) return QString("%1").arg(_zero_byte);
             else return QString("无");
         }
 
         inline QString highByteStr() const
         {
-            if (_high_byte == -1)
+            if (_high_byte != -1)
                 return QString("%1;%2~%3").arg(_high_byte)
                         .arg(_high_range[0]).arg(_high_range[1]);
             else return QString("无");
@@ -174,6 +180,46 @@ public:
         inline QString remark() const { return _remark; }
 
         inline int bundle() const { return _bundle; }
+
+        //getter
+
+        inline short &index() { return _index; }
+
+        inline bool &display() { return _display; }
+
+        inline QString &name() { return _name; }
+
+        inline int &type() { return _type; }
+
+        inline QString &unit() { return _unit; }
+
+        inline short &width() { return _width; }
+
+        inline unsigned int &color() { return _color; }
+
+        inline unsigned short &canId() { return _can_id; }
+
+        inline short &zeroByte() { return _zero_byte; }
+
+        inline short &highByte() { return _high_byte; }
+
+        inline unsigned char *highByteRange() { return _high_range; }
+
+        inline short &lowByte() { return _low_byte; }
+
+        inline unsigned char *lowByteRange() { return _low_range; }
+
+        inline int &sampleType() { return _sample_type; }
+
+        inline int &sample() { return _sample; }
+
+        inline int *rangeIn() { return _range_in; }
+
+        inline int *rangeOut() { return _range_out; }
+
+        inline QString &remark() { return _remark; }
+
+        inline int &bundle() { return _bundle; }
 
 
         //str setter
@@ -292,7 +338,8 @@ public:
     inline Cell &
     operator[](const QString &name) { return _cells[_header.indexOf(name)]; }
 
-    inline const Cell &operator[](int index) const {
+    inline const Cell &operator[](int index) const
+    {
         Q_ASSERT(index >= 0 && index < _cells.size());
         return _cells[index];
     }

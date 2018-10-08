@@ -27,9 +27,15 @@ public:
         QVector<float> _data;
 
     public:
-        Cell() : Cell(DataType::RawData) {}
+        explicit Cell(const QString &name) : Cell(name, DataType::RawData) {}
 
-        explicit Cell(DataType type) : _data_type(type) {}
+        explicit Cell(QString &&name) : Cell(name, DataType::RawData) {}
+
+        Cell(const QString &name, DataType type) :
+        _name(name), _data_type(type) {}
+
+        Cell(QString &&name, DataType type) :
+                _name(name), _data_type(type) {}
 
         inline QVector<float> &data() { return _data; }
 
@@ -90,7 +96,7 @@ public:
 
     bool loadFromCsv(QFile &f);
 
-    inline bool loadFromCsv(QFile &&f) { loadFromCsv(f); }
+    inline bool loadFromCsv(QFile &&f) { return loadFromCsv(f); }
 
     inline bool loadFromCsv(const QString &f)
     {
@@ -106,18 +112,18 @@ public:
 
     bool dumpToCsv(QFile &f) const;
 
-    inline bool dumpToCsv(QFile &&f) const { dumpToCsv(f); }
+    inline bool dumpToCsv(QFile &&f) const { return dumpToCsv(f); }
 
     inline bool dumpToCsv(const QString &f) const
     {
         QFile file(f);
-        dumpToCsv(file);
+        return dumpToCsv(file);
     }
 
     inline bool dumpToCsv(QString &&f) const
     {
         QFile file(f);
-        dumpToCsv(file);
+        return dumpToCsv(file);
     }
 
     inline Iter begin() { return Iter(this, 0); }
@@ -166,7 +172,7 @@ public:
 
     inline void append(const QString &name)
     {
-        _cells.append(Cell());
+        _cells.append(Cell(name));
         _header.append(name);
     }
 
@@ -174,7 +180,7 @@ public:
     {
         _header.append(names);
         for (int i = 0; i < names.size(); ++i) {
-            _cells.append(Cell());
+            _cells.append(Cell(names[i]));
         }
     }
 

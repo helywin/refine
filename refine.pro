@@ -40,6 +40,7 @@ SOURCES += \
         ./src/core/Tribe.cpp \
         ./src/core/Trigger.cpp \
         ./src/core/Version.cpp \
+        ./src/core/Softcan.cpp \
         ./src/test/test_scope.cpp
 
 HEADERS += \
@@ -59,6 +60,7 @@ HEADERS += \
         ./src/core/Tribe.hpp \
         ./src/core/Trigger.hpp \
         ./src/core/Version.hpp \
+        ./src/core/Softcan.hpp \
 
 RESOURCES += \
     res/ui.qrc

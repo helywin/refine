@@ -52,7 +52,7 @@ QDataStream &operator>>(QDataStream &stream, Tribe &tribe)
         tribe._header.append(name);
     }
     for (int i = 0; i < size; ++i) {
-        Tribe::Cell cell;
+        Tribe::Cell cell(tribe._header[i]);
         stream >> cell;
         tribe._cells.append(cell);
     }

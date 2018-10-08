@@ -25,6 +25,7 @@
 #include "Scope.hpp"
 #include "Display.hpp"
 #include "FrameViewer.hpp"
+#include "Softcan.hpp"
 
 class Scope : public QMainWindow
 {
@@ -35,8 +36,9 @@ private:
     QMenu *_menu_init_channel;
     QAction *_menu_init_channel_ch0;
     QAction *_menu_init_channel_ch1;
-    QAction *_menu_init_curve;
     QAction *_menu_init_connection;
+    QAction *_menu_init_curve;
+    QAction *_menu_init_softcan;
     QMenu *_menu_collect;
     QAction *_menu_collect_start;
     QAction *_menu_collect_pause;
@@ -45,6 +47,7 @@ private:
     QMenu *_menu_view;
     QAction *_menu_view_fixed;
     QMenu *_menu_view_msec;
+    QAction *_menu_view_smooth;
     QAction *_menu_view_msec_10;
     QAction *_menu_view_msec_20;
     QAction *_menu_view_msec_30;
@@ -59,7 +62,8 @@ private:
     Display *_display;
     QStatusBar *_statusbar;
     QTimer *_timer;
-    QFileDialog *_file_dialog;
+    QFileDialog *_file_curve;
+    QFileDialog *_file_softcan;
 
 private:
     Can::Config *_config;
@@ -71,6 +75,7 @@ private:
     Tribe *_tribe;
     Transform *_transform;
     Revolve *_revolve;
+    Softcan *_softcan;
     FrameViewer *_frame_viewer;
     bool _core_initialized;
     bool _curve_initialized;
@@ -135,9 +140,6 @@ private slots:
         _config->setChannel(1);
     }
 
-protected:
-    void closeEvent(QCloseEvent *event) override;
-private:
     void setViewFixed();
 
     void openFrameData();
@@ -145,9 +147,13 @@ private:
     void openCurveData();
 
     void setViewRefreshMsec10();
+
     void setViewRefreshMsec20();
+
     void setViewRefreshMsec30();
+
     void setViewRefreshMsec50();
+
     void setViewRefreshMsec100();
 
     void openCurveConfig();
@@ -155,6 +161,13 @@ private:
     void loadCurveConfig(const QString &file_name);
 
     void showAbout();
+
+    void setupSmooth();
+
+    void importSoftcan(const QString &file_name);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 
 
