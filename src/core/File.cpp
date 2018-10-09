@@ -572,7 +572,7 @@ QStringList File::Header::str() const
     QString date = QDateTime::fromTime_t(_birth_time).
             toString(QString("yyyy/MM/dd hh:mm:ss"));
     list.append(qMove(date));
-    return qMove(list);
+    return list;
 }
 
 bool File::Header::check() const

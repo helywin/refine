@@ -62,7 +62,7 @@ QString Log::Cell::str() const
     }
     s += "\t";
     s += _msg;
-    return qMove(s);
+    return s;
 }
 
 

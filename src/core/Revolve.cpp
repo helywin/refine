@@ -17,7 +17,7 @@ Revolve::Revolve(Collect *collect, Transform *transform, Trigger *trigger,
 void Revolve::collectFramesGot()
 {
     if (!_transform->isRunning()) {
-        _transform->start();
+        _transform->start(QThread::HighestPriority);
     } else {
         qDebug("busy");
     }
@@ -39,6 +39,7 @@ void Revolve::run()
     if (_transform->isFramesStored()) {
         _transform->finishFramesStored();
     }
+    qDebug() << _tribe->zeroLenData();
     qDebug("结束采集");
 }
 

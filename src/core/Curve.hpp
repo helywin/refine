@@ -21,12 +21,6 @@ public:
             Logical = 1
         };
 
-        enum Sample
-        {
-            Timed = 0,
-            Framed = 1
-        };
-
         enum Bundle
         {
             None,
@@ -48,8 +42,7 @@ public:
         unsigned char _high_range[2];
         short _low_byte;
         unsigned char _low_range[2];
-        int _sample_type;
-        int _sample;
+        int _frame_msec;
         int _range_in[2];
         int _range_out[2];
         QString _remark;
@@ -121,10 +114,7 @@ public:
 
         inline QString sampleStr() const
         {
-            if (_sample_type == Sample::Framed)
-                return QString("帧数;%1")
-                        .arg(_sample);
-            else return QString("时间;%1").arg(_sample);
+            return QString::number(_frame_msec);
         }
 
         inline QString rangeInStr() const
@@ -169,9 +159,7 @@ public:
 
         inline const unsigned char *lowByteRange() const { return _low_range; }
 
-        inline int sampleType() const { return _sample_type; }
-
-        inline int sample() const { return _sample; }
+        inline int frameMsec() const { return _frame_msec; }
 
         inline const int *rangeIn() const { return _range_in; }
 
@@ -209,9 +197,7 @@ public:
 
         inline unsigned char *lowByteRange() { return _low_range; }
 
-        inline int &sampleType() { return _sample_type; }
-
-        inline int &sample() { return _sample; }
+        inline int &frameMsec() { return _frame_msec; }
 
         inline int *rangeIn() { return _range_in; }
 
@@ -260,7 +246,7 @@ public:
 
         void setHighByteByStr(QString &s);
         void setLowByteByStr(QString &s);
-        void setSampleByStr(QString &s);
+        void setFrameMsecByStr(QString &s);
 
         inline void setRangeInByStr(QString &s)
         {

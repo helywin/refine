@@ -57,7 +57,7 @@ QStringList Softcan::tab() const
     list.append(QString("纵轴临时"));
     list.append(QString("简介"));
     list.append(QString("保存标志"));
-    return qMove(list);
+    return list;
 }
 
 void Softcan::add()
@@ -131,7 +131,7 @@ QStringList Softcan::Cell::str() const
     list.append(QString("纵轴临时:%1").arg(_y_temp));
     list.append(QString("简介:") + _intro);
     list.append(QString("保存标志:%1").arg(_save_flag));
-    return qMove(list);
+    return list;
 }
 
 QStringList Softcan::Cell::strClean() const
@@ -165,7 +165,7 @@ QStringList Softcan::Cell::strClean() const
     list.append(QString("%1").arg(_y_temp));
     list.append(_intro);
     list.append(QString("%1").arg(_save_flag));
-    return qMove(list);
+    return list;
 }
 
 QString Softcan::Cell::readWString(QDataStream &stream)
@@ -180,7 +180,7 @@ QString Softcan::Cell::readWString(QDataStream &stream)
     stream >> char_buf;
     for (unsigned int i = 0; i < char_buf; ++i) {
         stream >> short_buf;
-        str[i] = (wchar_t) short_buf;
+        str[i] = static_cast<wchar_t>(short_buf);
     }
     return QString::fromWCharArray(str, char_buf);
 }
@@ -246,24 +246,21 @@ void Softcan::toCurve(Curve &curve)
         cell.name() = iter.name();
         cell.type() = Curve::Cell::Type::Physical;
         cell.unit() = iter.unit();
-        cell.width() = (short)iter.width();
+        cell.width() = static_cast<short>(iter.width());
         cell.color() = iter.color();
-        cell.canId() = (unsigned short)iter.canId();
-        cell.zeroByte() = (short)iter.zeroByte();
-        cell.highByte() = (short)(iter.highByte() - iter.lowByte()); //很重要
+        cell.canId() = static_cast<unsigned short>(iter.canId());
+        cell.zeroByte() = static_cast<short>(iter.zeroByte());
+        cell.highByte() = static_cast<short>(iter.highByte() - 2); //很重要
         cell.highByteRange()[0] = 0;
-        cell.highByteRange()[1] = (unsigned char)iter.firstBit();
-        cell.lowByte() = (short)iter.lowByte();
-        cell.lowByteRange()[0] = (unsigned char)iter.thirdBit();
-        cell.lowByteRange()[1] = (unsigned char)iter.secondBit();
-        if (iter.sampleMode() == 1) {
-            cell.sampleType() = Curve::Cell::Sample::Timed;
-        }
-        cell.sample() = iter.sampleNum();
+        cell.highByteRange()[1] = static_cast<unsigned char>(iter.firstBit());
+        cell.lowByte() = static_cast<short>(iter.lowByte());
+        cell.lowByteRange()[0] = static_cast<unsigned char>(iter.thirdBit());
+        cell.lowByteRange()[1] = static_cast<unsigned char>(iter.secondBit());
+        cell.frameMsec() = iter.sampleNum();
         cell.rangeIn()[0] = iter.inputMin();
         cell.rangeIn()[1] = iter.inputMax();
-        cell.rangeOut()[0] = (int)iter.yMin();
-        cell.rangeOut()[1] = (int)iter.yMax();
+        cell.rangeOut()[0] = static_cast<int>(iter.yMin());
+        cell.rangeOut()[1] = static_cast<int>(iter.yMax());
         cell.remark() = iter.intro();
         cell.bundle() = Curve::Cell::Bundle::None;
         curve.append(qMove(cell));
@@ -276,5 +273,5 @@ QStringList Softcan::str() const
     for (const auto &iter : _cells) {
         list.append(iter.str());
     }
-    return qMove(list);
+    return list;
 }

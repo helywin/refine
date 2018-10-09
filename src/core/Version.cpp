@@ -30,5 +30,5 @@ QString Version::str()
             s += QString("(Release)");
             break;
     }
-    return qMove(s);
+    return s;
 }

@@ -103,7 +103,7 @@ int Tribe::minLen() const
             len = iter.size();
         }
     }
-    return qMove(len);
+    return len;
 }
 
 int Tribe::maxLen() const
@@ -114,7 +114,7 @@ int Tribe::maxLen() const
             len = iter.size();
         }
     }
-    return qMove(len);
+    return len;
 }
 
 QStringList Tribe::zeroLenData() const
@@ -125,7 +125,7 @@ QStringList Tribe::zeroLenData() const
             list.append(iter.name());
         }
     }
-    return qMove(list);
+    return list;
 }
 
 bool Tribe::loadFromCsv(QFile &f)

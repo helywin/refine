@@ -32,7 +32,7 @@ public:
         explicit Cell(QString &&name) : Cell(name, DataType::RawData) {}
 
         Cell(const QString &name, DataType type) :
-        _name(name), _data_type(type) {}
+        _name(name), _data_type(type), _data() {}
 
         Cell(QString &&name, DataType type) :
                 _name(name), _data_type(type) {}

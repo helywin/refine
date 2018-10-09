@@ -14,7 +14,7 @@ QStringList Curve::str() const
     for (const auto &cell : _cells) {
         list.append(cell.str().join(QChar(',')));
     }
-    return qMove(list);
+    return list;
 }
 
 bool Curve::loadFromCsv(QFile &f)
@@ -87,7 +87,7 @@ bool Curve::loadFromCsv(QFile &f)
                 continue;
             }
             if (iter == "采样") {
-                cell.setSampleByStr(list[i]);
+                cell.setFrameMsecByStr(list[i]);
                 continue;
             }
             if (iter == "输入量程") {
@@ -232,8 +232,7 @@ Curve::Cell::Cell(int index, Bundle bundle) :
         _high_range({0, 7}),
         _low_byte(0),
         _low_range({0, 7}),
-        _sample_type(Sample::Timed),
-        _sample(10),
+        _frame_msec(10),
         _range_in({0, 100}),
         _range_out({0, 100}),
         _remark(QString("无")),
@@ -280,7 +279,7 @@ QStringList Curve::Cell::str() const
     list.append(rangeOutStr());
     list.append(remarkStr());
     list.append(bundleStr());
-    return qMove(list);
+    return list;
 }
 
 void Curve::Cell::setHighByteByStr(QString &s)
@@ -305,15 +304,9 @@ void Curve::Cell::setLowByteByStr(QString &s)
     _low_range[1] = static_cast<unsigned char> (list[1].toUShort());
 }
 
-void Curve::Cell::setSampleByStr(QString &s)
+void Curve::Cell::setFrameMsecByStr(QString &s)
 {
-    QStringList list = s.split(QChar(';'));
-    if (list[0] == QString("帧数")) {
-        _sample_type = Sample::Framed;
-    } else {
-        _sample_type = Sample::Timed;
-    }
-    _sample = list[1].toInt();
+    _frame_msec = s.toInt();
 }
 
 QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)
@@ -333,8 +326,7 @@ QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)
            << cell._low_byte
            << cell._low_range[0]
            << cell._low_range[1]
-           << cell._sample_type
-           << cell._sample
+           << cell._frame_msec
            << cell._range_in[0]
            << cell._range_in[1]
            << cell._range_out[0]
@@ -362,8 +354,7 @@ QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell)
            >> cell._low_byte
            >> cell._low_range[0]
            >> cell._low_range[1]
-           >> cell._sample_type
-           >> cell._sample
+           >> cell._frame_msec
            >> cell._range_in[0]
            >> cell._range_in[1]
            >> cell._range_out[0]

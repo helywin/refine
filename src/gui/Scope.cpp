@@ -41,10 +41,13 @@ void Scope::setupUi()
     _menu_init->addAction(_menu_init_curve);
     _menu_init->addAction(_menu_init_softcan);
     _menu_collect = new QMenu(QString("采集(&C)"), _menubar);
+    _menu_collect_frame = new QAction(QString("帧文件(&F)"), _menu_collect);
+    _menu_collect_frame->setCheckable(true);
     _menu_collect_start = new QAction(QString("开始(&B)"), _menu_collect);
     _menu_collect_pause = new QAction(QString("暂停(&P)"), _menu_collect);
     _menu_collect_resume = new QAction(QString("继续(&R)"), _menu_collect);
     _menu_collect_stop = new QAction(QString("结束(&E)"), _menu_collect);
+    _menu_collect->addAction(_menu_collect_frame);
     _menu_collect->addAction(_menu_collect_start);
     _menu_collect->addAction(_menu_collect_pause);
     _menu_collect->addAction(_menu_collect_resume);
@@ -110,7 +113,7 @@ void Scope::setupUi()
     _file_curve = new QFileDialog(this, "打开配置文件", ".", "csv配置文件(*.csv)");
     static QList<QUrl> urls;
     urls.append(QUrl::fromLocalFile(QStandardPaths::standardLocations(
-                 QStandardPaths::DesktopLocation).first()));
+            QStandardPaths::DesktopLocation).first()));
     _file_curve->setSidebarUrls(urls);
 
     _file_softcan = new QFileDialog(this, "导入SoftCAN配置文件", ".",
@@ -127,6 +130,8 @@ void Scope::setupUi()
             &Scope::changeToChannel0, Qt::DirectConnection);
     connect(_menu_init_channel_ch1, &QAction::triggered, this,
             &Scope::changeToChannel1, Qt::DirectConnection);
+    connect(_menu_collect_frame, &QAction::triggered, this,
+            &Scope::setCollectFrame, Qt::DirectConnection);
     connect(_menu_view_fixed, &QAction::triggered, this,
             &Scope::setViewFixed, Qt::DirectConnection);
     connect(_menu_init_curve, &QAction::triggered, this,
@@ -148,6 +153,7 @@ bool Scope::setupCore()
     _menu_init_connection->setChecked(_can->isConnected());
     _curve = new Curve;
     _file_frames = new QFile("data.fmd");
+    _collect_frames = new QFile("frame.fmd");
     _buffer = new Buffer(100, 100);
     _collect = new Collect(_can, _buffer);
     _tribe = new Tribe;
@@ -225,7 +231,8 @@ void Scope::connectCan()
             _menu_init_channel->setDisabled(true);
         } else {
             if (previous_connection_status) {
-                QMessageBox::warning(this, QString("警告"), QString("CAN断开失败"));
+                QMessageBox::warning(this, QString("警告"),
+                                     QString("CAN断开失败"));
             } else {
                 QMessageBox::warning(this, QString("警告"),
                                      QString("CAN没连接或被占用"));
@@ -403,6 +410,17 @@ void Scope::importSoftcan(const QString &file_name)
         _curve_initialized = true;
         _menu_init_softcan->setDisabled(true);
         _menu_init_curve->setDisabled(true);
+    }
+}
+
+void Scope::setCollectFrame()
+{
+    if (_collect_frames->exists()) {
+        _collect->setMode(Collect::CollectManner::FromFile, 10,
+                          _collect_frames);
+        _menu_collect_frame->setDisabled(true);
+    } else {
+        _menu_collect_frame->setChecked(false);
     }
 }
 

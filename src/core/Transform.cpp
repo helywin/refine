@@ -23,6 +23,9 @@ void Transform::run()
     if (_frames_stored) {
         _file.dumpFrameRecord(*_buffer);
     }
+//    for (auto &iter : *_tribe) {
+//        iter.data().append(0);
+//    }
     for (const auto &buf : (*_buffer)) {
 //#pragma omp parallel for
         for (int i = 0; i < buf.dataSize(); ++i) {
@@ -35,6 +38,7 @@ void Transform::run()
                             (cur.zeroByte() == -1 ||
                              buf[i]->Data[0] == cur.zeroByte());
                 if (flag) {
+//                    qDebug() << "transform" << flag;
                     unsigned int full;
                     unsigned int high_byte;
                     unsigned int low_byte;

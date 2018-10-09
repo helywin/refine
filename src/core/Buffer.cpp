@@ -47,7 +47,7 @@ QStringList Buffer::Cell::str() const
                 .arg(_objs[i].Data[7], 2, 16, QChar('0'));
         list.append(str);
     }
-    return qMove(list);
+    return list;
 }
 
 void Buffer::Cell::setSendType(Buffer::Cell::SendType type)
@@ -148,7 +148,7 @@ int Buffer::size() const
     if (i < 0) {
         i += _cell_space;
     }
-    return qMove(i);
+    return i;
 }
 
 void Buffer::size(int &cell_n, int &obj_n) const

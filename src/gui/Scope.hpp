@@ -40,6 +40,7 @@ private:
     QAction *_menu_init_curve;
     QAction *_menu_init_softcan;
     QMenu *_menu_collect;
+    QAction *_menu_collect_frame;
     QAction *_menu_collect_start;
     QAction *_menu_collect_pause;
     QAction *_menu_collect_resume;
@@ -70,6 +71,7 @@ private:
     Can *_can;
     Curve *_curve;
     QFile *_file_frames;
+    QFile *_collect_frames;
     Buffer *_buffer;
     Collect *_collect;
     Tribe *_tribe;
@@ -165,6 +167,8 @@ private slots:
     void setupSmooth();
 
     void importSoftcan(const QString &file_name);
+
+    void setCollectFrame();
 
 protected:
     void closeEvent(QCloseEvent *event) override;
