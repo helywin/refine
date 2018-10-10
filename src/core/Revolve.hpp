@@ -44,6 +44,8 @@ public slots:
     inline void resumeRevolve() { _collect->resumeCollection(); }
 
     void collectFramesGot();
+
+    void collectFinished();
 };
 
 

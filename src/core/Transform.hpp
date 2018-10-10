@@ -24,6 +24,7 @@ private:
     QFile *_file_frames;
     bool _frames_stored;
     File _file;
+    bool _finish_collect;
 
 public:
     Transform() = delete;
@@ -50,6 +51,8 @@ public:
     }
 
     inline void reset() {}
+
+    inline void finishCollect() { _finish_collect = true; }
 
 protected:
     void run() override;

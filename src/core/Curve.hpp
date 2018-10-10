@@ -8,6 +8,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QList>
 #include <QtCore/QFile>
+#include <QtCore/QMap>
 
 class Curve
 {
@@ -288,10 +289,13 @@ public:
         };
     };
 
+    typedef QMap<int ,QList<int>> SubIdMap;
+
 private:
     QStringList _table_header;
     QStringList _header;
     QList<Cell> _cells;
+    SubIdMap _sub_id_map_777;      //用于曲线转换查表而非遍历
 
 public:
     Curve() = default;
@@ -366,6 +370,12 @@ public:
     inline Iter begin() { return Iter(this, 0); }
 
     inline Iter end() { return Iter(this, _cells.size()); }
+
+    void genSubIdMap777();
+
+    const SubIdMap &subIdMap777() const { return _sub_id_map_777; }
+
+    QStringList subIdMap777Str() const;
 };
 
 QDataStream &operator<<(QDataStream &stream, const Curve &curve);

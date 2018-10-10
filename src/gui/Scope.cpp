@@ -377,7 +377,7 @@ void Scope::loadCurveConfig(const QString &file_name)
         _tribe->append(iter.name());
     }
     qDebug("曲线配置加载成功");
-    qDebug() << _curve->str();
+    qDebug() << _curve->subIdMap777Str();
     _curve_initialized = true;
     _menu_init_curve->setChecked(true);
     _menu_init_curve->setDisabled(true);
@@ -405,8 +405,7 @@ void Scope::importSoftcan(const QString &file_name)
         for (const auto &iter : *_curve) {
             _tribe->append(iter.name());
         }
-        qDebug() << _softcan->str();
-        qDebug() << _curve->str();
+        qDebug() << _curve->subIdMap777Str();
         _curve_initialized = true;
         _menu_init_softcan->setDisabled(true);
         _menu_init_curve->setDisabled(true);

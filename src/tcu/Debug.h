@@ -31,6 +31,7 @@ extern volatile unsigned char Motor_Start_debug;	//ÀäÈ´µç»ú²âÊÔÃüÁî
 
 void SendDebugInfo777(void);
 
+void SameWave(unsigned char num);
 void ToothedWave(unsigned char num, unsigned char *buf, unsigned short *cnt, unsigned char *cnt_flag, short seq, short range);
 void SqureWave(unsigned char num, unsigned char *buf, unsigned short *cnt, unsigned char *cnt_flag, short seq, short range);
 void ObliqueWave(unsigned char num, unsigned char *buf, unsigned short *cnt, short seq, short range);

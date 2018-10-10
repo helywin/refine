@@ -12,15 +12,17 @@ Revolve::Revolve(Collect *collect, Transform *transform, Trigger *trigger,
 {
     connect(_collect, &Collect::framesGot, this, &Revolve::collectFramesGot,
             Qt::DirectConnection);
+    connect(_collect, &Collect::collectionFinish, this, &Revolve::collectFinished,
+            Qt::DirectConnection);
 }
 
 void Revolve::collectFramesGot()
 {
-    if (!_transform->isRunning()) {
-        _transform->start(QThread::HighestPriority);
-    } else {
-        qDebug("busy");
-    }
+//    if (!_transform->isRunning()) {
+//        _transform->start(QThread::HighestPriority);
+//    } else {
+//        qDebug("busy");
+//    }
 }
 
 void Revolve::run()
@@ -35,6 +37,7 @@ void Revolve::run()
     reset();
     qDebug("开始采集");
     _collect->startCollection();
+    _transform->start(QThread::HighestPriority);
     while (_collect->isRunning() || _transform->isRunning()) {}
     if (_transform->isFramesStored()) {
         _transform->finishFramesStored();
@@ -49,4 +52,9 @@ void Revolve::reset()
     _transform->reset();
     _trigger->reset();
     _tribe->reset();
+}
+
+void Revolve::collectFinished()
+{
+    _transform->finishCollect();
 }

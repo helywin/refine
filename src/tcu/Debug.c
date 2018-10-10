@@ -48,10 +48,12 @@ extern unsigned char Dlh;
 unsigned char PUMPTEST;
 volatile unsigned char Motor_Start_debug = 0;
 
+unsigned short cnt = 0;
 unsigned short cnt0 = 0;
 unsigned short cnt1 = 233;
 unsigned short cnt2 = 545;
 unsigned short cnt3 = 334;
+unsigned char cnt_flag = 1;
 unsigned char cnt0_flag = 1;
 unsigned char cnt1_flag = 1;
 unsigned char cnt2_flag = 1;
@@ -1255,23 +1257,58 @@ void DebugSend(unsigned char buf[])
 
 void SendDebugInfo777(void)
 {
-    unsigned char Buf[8];
-    ToothedWave(0, Buf, &cnt0, &cnt0_flag, 2, 5000);
-    DebugSend(Buf);
-    ToothedWave(1, Buf, &cnt1, &cnt1_flag, 4, 5000);
-    DebugSend(Buf);
-    ToothedWave(2, Buf, &cnt2, &cnt2_flag, 16, 5000);
-	DebugSend(Buf);
-	ToothedWave(3, Buf, &cnt3, &cnt3_flag, 20, 5000);
-	DebugSend(Buf);
-	SqureWave(4, Buf, &cnt4, &cnt4_flag, 1, 5000);
-	DebugSend(Buf);
-	ObliqueWave(5, Buf, &cnt5, 20, 5000);
-	DebugSend(Buf);
-	SinWave(6, Buf, &cnt6, 1, 5000);
-	DebugSend(Buf);
-    frame_index += 1;
+//    unsigned char Buf[8];
+//    ToothedWave(0, Buf, &cnt0, &cnt0_flag, 2, 5000);
+//    DebugSend(Buf);
+//    ToothedWave(1, Buf, &cnt1, &cnt1_flag, 4, 5000);
+//    DebugSend(Buf);
+//    ToothedWave(2, Buf, &cnt2, &cnt2_flag, 16, 5000);
+//	DebugSend(Buf);
+//	ToothedWave(3, Buf, &cnt3, &cnt3_flag, 20, 5000);
+//	DebugSend(Buf);
+//	SqureWave(4, Buf, &cnt4, &cnt4_flag, 1, 5000);
+//	DebugSend(Buf);
+//	ObliqueWave(5, Buf, &cnt5, 20, 5000);
+//	DebugSend(Buf);
+//	SinWave(6, Buf, &cnt6, 1, 5000);
+//	DebugSend(Buf);
+//    frame_index += 1;
+	SameWave(30);
 }
+
+void SameWave(unsigned char num)
+{
+	int i;
+	unsigned char buf[8];
+	if (cnt_flag)
+	{
+		cnt += 10;
+	}
+	else
+	{
+		cnt -= 10;
+	}
+	if(cnt >= 5000 - 50)
+	{
+		cnt_flag = 0;
+	} else if (cnt <= 50)
+	{
+		cnt_flag = 1;
+	}
+	for (i = 0; i < num; ++i)
+	{
+		buf[0] = i;
+		buf[1] = (unsigned char) ((cnt) & 0x00ff);
+		buf[2] = (unsigned char) ((cnt) & 0x00ff);
+		buf[3] = (unsigned char) ((cnt) >> 8);
+		buf[4] = (unsigned char) ((cnt) & 0x00ff);
+		buf[5] = (unsigned char) ((cnt) >> 8);
+		buf[6] = (unsigned char) ((cnt) & 0x00ff);
+		buf[7] = (unsigned char) ((cnt) >> 8);
+		DebugSend(buf);
+	}
+}
+
 
 void ToothedWave(unsigned char num, unsigned char *buf, unsigned short *cnt, unsigned char *cnt_flag, short seq, short range)
 {

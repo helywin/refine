@@ -115,6 +115,7 @@ bool Curve::loadFromCsv(QFile &f)
             return false;
         }
     }
+    genSubIdMap777();
     return true;
 }
 
@@ -363,6 +364,33 @@ QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell)
            >> cell._bundle
            >> cell._reserved;
     return stream;
+}
+
+void Curve::genSubIdMap777()
+{
+    _sub_id_map_777.clear();
+    for (int i = 0; i < _cells.size(); ++i) {
+        if (_cells[i].canId() == 0x777) {
+            if (!_sub_id_map_777.contains(_cells[i].zeroByte())) {
+                _sub_id_map_777.insert(_cells[i].zeroByte(), QList<int>());
+            }
+            _sub_id_map_777[_cells[i].zeroByte()].append(i);
+        }
+    }
+}
+
+QStringList Curve::subIdMap777Str() const
+{
+    QStringList list;
+    for (const auto &iter : _sub_id_map_777.keys()) {
+        QString str;
+        str += QString("子ID %1: ").arg(iter);
+        for (const auto &v : _sub_id_map_777[iter]) {
+            str += QString("%1 ").arg(v);
+        }
+        list.append(qMove(str));
+    }
+    return list;
 }
 
 

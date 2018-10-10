@@ -32,10 +32,11 @@ public:
         explicit Cell(QString &&name) : Cell(name, DataType::RawData) {}
 
         Cell(const QString &name, DataType type) :
-        _name(name), _data_type(type), _data() {}
+        _name(name), _data_type(type), _data() {
+            _data.resize(100000);
+        }
 
-        Cell(QString &&name, DataType type) :
-                _name(name), _data_type(type) {}
+        Cell(QString &&name, DataType type) : Cell(name, type) {}
 
         inline QVector<float> &data() { return _data; }
 

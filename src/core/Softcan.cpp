@@ -265,6 +265,7 @@ void Softcan::toCurve(Curve &curve)
         cell.bundle() = Curve::Cell::Bundle::None;
         curve.append(qMove(cell));
     }
+    curve.genSubIdMap777();
 }
 
 QStringList Softcan::str() const
