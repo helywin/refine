@@ -62,6 +62,9 @@ private:
     QSplitter *_central_splitter;
     Display *_display;
     QStatusBar *_statusbar;
+    QLabel *_status_info;
+    QLabel *_status_can;
+    QLabel *_status_curve;
     QTimer *_timer;
     QFileDialog *_file_curve;
     QFileDialog *_file_softcan;

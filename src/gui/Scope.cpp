@@ -369,6 +369,10 @@ void Scope::openCurveConfig()
 
 void Scope::loadCurveConfig(const QString &file_name)
 {
+    if (file_name.isEmpty()) {
+        _menu_init_curve->setChecked(false);
+        return;
+    }
     if (!_curve->loadFromCsv(file_name)) {
         QMessageBox::warning(this, "警告", "加载曲线配置失败");
         _menu_init_curve->setChecked(false);
@@ -400,6 +404,10 @@ void Scope::setupSmooth()
 
 void Scope::importSoftcan(const QString &file_name)
 {
+    if (file_name.isEmpty()) {
+        _menu_init_softcan->setChecked(false);
+        return;
+    }
     if (_softcan->load(file_name)) {
         _softcan->toCurve(*_curve);
         for (const auto &iter : *_curve) {

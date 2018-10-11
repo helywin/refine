@@ -2,46 +2,61 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#ifndef REFINE_LOG_HPP
-#define REFINE_LOG_HPP
+#ifndef CORE_LOG_HPP
+#define CORE_LOG_HPP
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QDateTime>
+#include <QtCore/QDataStream>
 
 class Log
 {
 private:
-    class Cell;
+    class Cell
+    {
+    public:
+        Cell();
+        Cell(QtMsgType type, QString &&msg);
+        Cell(QtMsgType type, const QString &msg);
+        Cell(const Cell &cell) = default;
+        Cell &operator=(const Cell &cell) = default;
+        QString str() const;
 
-private:
-    QVector<Cell> _log;
-    QString _path;
-    QFile _file;
+    private:
+        QtMsgType _type;
+        QString _msg;
+        QDateTime _time;
+    };
+
 public:
-    explicit Log(const QString &path);
-
-    ~Log();
+    //! \brief 输出的函数指针，对象无关，方便后面变更
+    typedef void (Output)(QtMsgType type, const QString &info);
+private:
+    QList<Cell> _log;
+    QFile *_file;
+    Output *_output;
+    bool _save_enable;
+    bool _output_enable;
+    QTextStream _stream;
+public:
+    Log();
 
     void handler(QtMsgType type, const QMessageLogContext &context,
                  const QString &msg);
-};
 
-class Log::Cell
-{
-public:
-    Cell();
-    Cell(QtMsgType type, const QString &&msg);
-    Cell(QtMsgType type, const QString &msg);
-    Cell(const Cell &cell) = default;
-    Cell &operator=(const Cell &cell) = default;
-    QString str() const;
+    inline void setupHandler() const { qInstallMessageHandler(Log::handler); }
 
-private:
-    QtMsgType _type;
-    QString _msg;
-    QDateTime _time;
+    bool saveEnable(QFile *file);
+
+    inline void saveDisable() { _save_enable = false; }
+
+    void outputEnable(Output *output);
+
+    inline void outputDisable() { _output_enable = false; }
+
+    QStringList str() const;
 };
 
 
-#endif //REFINE_LOG_HPP
+#endif //CORE_LOG_HPP
