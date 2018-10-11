@@ -13,6 +13,7 @@
 #include <QtWidgets/QOpenGLWidget>
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QLabel>
 #include <QtCore/QDebug>
 #include <QtCore/QProcess>
 #include <QtCore/QTimer>
@@ -26,6 +27,9 @@
 #include "Display.hpp"
 #include "FrameViewer.hpp"
 #include "Softcan.hpp"
+#include "StatusBar.hpp"
+#include "Log.hpp"
+#include "Version.hpp"
 
 class Scope : public QMainWindow
 {
@@ -40,7 +44,8 @@ private:
     QAction *_menu_init_curve;
     QAction *_menu_init_softcan;
     QMenu *_menu_collect;
-    QAction *_menu_collect_frame;
+    QAction *_menu_collect_fromframe;
+    QAction *_menu_collect_saveframe;
     QAction *_menu_collect_start;
     QAction *_menu_collect_pause;
     QAction *_menu_collect_resume;
@@ -61,10 +66,7 @@ private:
     QAction *_menu_help_about;
     QSplitter *_central_splitter;
     Display *_display;
-    QStatusBar *_statusbar;
-    QLabel *_status_info;
-    QLabel *_status_can;
-    QLabel *_status_curve;
+    StatusBar *_statusbar;
     QTimer *_timer;
     QFileDialog *_file_curve;
     QFileDialog *_file_softcan;
@@ -75,6 +77,7 @@ private:
     Curve *_curve;
     QFile *_file_frames;
     QFile *_collect_frames;
+    QFile *_file_log;
     Buffer *_buffer;
     Collect *_collect;
     Tribe *_tribe;
@@ -101,19 +104,13 @@ private:
 
 private slots:
 
-    void start()
-    {
-        if (_can->isConnected() && _curve_initialized) {
-            _revolve->startRevolve();
-            _timer->setInterval(_refresh_msec);
-            _timer->start();
-        }
-    }
+    void start();
 
     void pause()
     {
         _revolve->pauseRevolve();
         _timer->stop();
+        qInfo() << "暂停数据采集";
     }
 
     void resume()
@@ -121,12 +118,14 @@ private slots:
         _revolve->resumeRevolve();
         _timer->setInterval(_refresh_msec);
         _timer->start();
+        qInfo() << "继续数据采集";
     }
 
     void stop()
     {
         _revolve->stopRevolve();
         _timer->stop();
+        qInfo() << "停止数据采集";
     }
 
     void connectCan();
@@ -172,6 +171,8 @@ private slots:
     void importSoftcan(const QString &file_name);
 
     void setCollectFrame();
+
+    void setSaveFrame();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

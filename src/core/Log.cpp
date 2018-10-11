@@ -5,11 +5,11 @@
 #include <QtCore/QFile>
 #include "Log.hpp"
 
-Log::Cell::Cell() : _type(QtMsgType::QtDebugMsg) {}
+Log::Cell::Cell(QtMsgType type, QString &&msg) :
+        _type(type), _msg(msg), _time(QDateTime::currentDateTime()) {}
 
-Log::Cell::Cell(QtMsgType type, QString &&msg) : _type(type), _msg(msg) {}
-
-Log::Cell::Cell(QtMsgType type, const QString &msg) : _type(type), _msg(msg) {}
+Log::Cell::Cell(QtMsgType type, const QString &msg) :
+        _type(type), _msg(msg), _time(QDateTime::currentDateTime()) {}
 
 QString Log::Cell::str() const
 {
@@ -43,9 +43,12 @@ QString Log::Cell::str() const
     return s;
 }
 
-Log::Log() :
-        _log(), _file(nullptr), _output(nullptr), _save_enable(false),
-        _output_enable(false) {}
+QList<Log::Cell> Log::_log;
+QFile *Log::_file = nullptr;
+Logger *Log::_output = nullptr;
+bool Log::_save_enable = false;
+bool Log::_output_enable = false;
+QTextStream Log::_stream;
 
 void Log::handler(QtMsgType type, const QMessageLogContext &context,
                   const QString &msg)
@@ -57,31 +60,32 @@ void Log::handler(QtMsgType type, const QMessageLogContext &context,
         _file->flush();
     }
     if (_output_enable) {
-        _output(type, msg);
+        _output->displayMessage(type, msg);
     }
 }
 
-bool Log::saveEnable(QFile *file)
+bool Log::enableSave(QFile *file)
 {
-    Q_ASSERT(_file != nullptr);
+    Q_ASSERT(file != nullptr);
     _file = file;
     _save_enable = true;
-    _file->open(QIODevice::WriteOnly | QIODevice::Text);
+    _file->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
     if (!_file->isOpen()) {
         return false;
     }
     _stream.setDevice(_file);
     _stream.setCodec("UTF-8");
+    return true;
 }
 
-void Log::outputEnable(Log::Output *output)
+void Log::enableOutput(Logger *output)
 {
     Q_ASSERT(output != nullptr);
     _output = output;
     _output_enable = true;
 }
 
-QStringList Log::str() const
+QStringList Log::str()
 {
     QStringList list;
     for (const auto &iter : _log) {

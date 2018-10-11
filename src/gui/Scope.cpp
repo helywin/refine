@@ -11,6 +11,8 @@ Scope::Scope(QWidget *parent) : QMainWindow(parent)
 {
     setupUi();
     setupCore();
+    qInfo() << Version::str();
+    qInfo() << "初始化完毕";
 }
 
 void Scope::setupUi()
@@ -31,23 +33,24 @@ void Scope::setupUi()
     _menu_init_channel->addAction(_menu_init_channel_ch1);
     _menu_init_connection = new QAction(QString("连接(&C)"), _menu_init);
     _menu_init_connection->setCheckable(true);
-    _menu_init_curve = new QAction(QString("曲线配置(&V)"), _menu_init);
-    _menu_init_curve->setCheckable(true);
-    _menu_init_softcan = new QAction(QString("SoftCAN配置(&S)"), _menu_init);
-    _menu_init_softcan->setCheckable(true);
+    _menu_init_curve = new QAction(QString("加载曲线配置(&V)"), _menu_init);
+    _menu_init_softcan = new QAction(QString("加载SoftCAN配置(&S)"), _menu_init);
     _menu_init->addMenu(_menu_init_channel);
     _menu_init->addAction(_menu_init_channel->menuAction());
     _menu_init->addAction(_menu_init_connection);
     _menu_init->addAction(_menu_init_curve);
     _menu_init->addAction(_menu_init_softcan);
     _menu_collect = new QMenu(QString("采集(&C)"), _menubar);
-    _menu_collect_frame = new QAction(QString("帧文件(&F)"), _menu_collect);
-    _menu_collect_frame->setCheckable(true);
+    _menu_collect_fromframe = new QAction(QString("从帧文件采集(&F)"), _menu_collect);
+    _menu_collect_fromframe->setCheckable(true);
+    _menu_collect_saveframe = new QAction(QString("保存帧文件(&S)"), _menu_collect);
+    _menu_collect_saveframe->setCheckable(true);
     _menu_collect_start = new QAction(QString("开始(&B)"), _menu_collect);
     _menu_collect_pause = new QAction(QString("暂停(&P)"), _menu_collect);
     _menu_collect_resume = new QAction(QString("继续(&R)"), _menu_collect);
     _menu_collect_stop = new QAction(QString("结束(&E)"), _menu_collect);
-    _menu_collect->addAction(_menu_collect_frame);
+    _menu_collect->addAction(_menu_collect_fromframe);
+    _menu_collect->addAction(_menu_collect_saveframe);
     _menu_collect->addAction(_menu_collect_start);
     _menu_collect->addAction(_menu_collect_pause);
     _menu_collect->addAction(_menu_collect_resume);
@@ -107,8 +110,10 @@ void Scope::setupUi()
     _display = new Display(_central_splitter);
     _central_splitter->addWidget(_display);
 
-    _statusbar = new QStatusBar(this);
+    _statusbar = new StatusBar(this);
     this->setStatusBar(_statusbar);
+
+
     _timer = new QTimer(this);
     _file_curve = new QFileDialog(this, "打开配置文件", ".", "csv配置文件(*.csv)");
     static QList<QUrl> urls;
@@ -130,8 +135,10 @@ void Scope::setupUi()
             &Scope::changeToChannel0, Qt::DirectConnection);
     connect(_menu_init_channel_ch1, &QAction::triggered, this,
             &Scope::changeToChannel1, Qt::DirectConnection);
-    connect(_menu_collect_frame, &QAction::triggered, this,
+    connect(_menu_collect_fromframe, &QAction::triggered, this,
             &Scope::setCollectFrame, Qt::DirectConnection);
+    connect(_menu_collect_saveframe, &QAction::triggered, this,
+            &Scope::setSaveFrame, Qt::DirectConnection);
     connect(_menu_view_fixed, &QAction::triggered, this,
             &Scope::setViewFixed, Qt::DirectConnection);
     connect(_menu_init_curve, &QAction::triggered, this,
@@ -154,6 +161,7 @@ bool Scope::setupCore()
     _curve = new Curve;
     _file_frames = new QFile("data.fmd");
     _collect_frames = new QFile("frame.fmd");
+    _file_log = new QFile("log.txt");
     _buffer = new Buffer(100, 100);
     _collect = new Collect(_can, _buffer);
     _tribe = new Tribe;
@@ -164,6 +172,10 @@ bool Scope::setupCore()
     _display->setTribe(_tribe);
     _display->setCurve(_curve);
     _frame_viewer = new FrameViewer(this);
+    Log::enableOutput(_statusbar);
+    Log::enableSave(_file_log);
+    Log::setupHandler();
+
     connect(_timer, &QTimer::timeout, _display, &Display::updateGL);
     connect(_menu_collect_start, &QAction::triggered, this,
             &Scope::start);
@@ -202,6 +214,8 @@ void Scope::releseCore()
     delete _collect;
     delete _buffer;
     delete _file_frames;
+    delete _collect_frames;
+    delete _file_log;
     delete _curve;
     delete _can;
     delete _config;
@@ -221,35 +235,42 @@ void Scope::connectCan()
         if (_can->close()) {
             _menu_init_connection->setChecked(false);
             _menu_init_channel->setDisabled(false);
+            qInfo() << "CAN断开成功";
         } else {
-            QMessageBox::warning(this, QString("警告"), QString("CAN断开失败"));
+//            QMessageBox::warning(this, QString("警告"), QString("CAN断开失败"));
             _menu_init_connection->setChecked(previous_connection_status);
+            qWarning() << "CAN断开失败";
         }
     } else {
         if (_can->connect()) {
             _menu_init_connection->setChecked(true);
             _menu_init_channel->setDisabled(true);
+            qInfo() << "CAN连接成功";
         } else {
             if (previous_connection_status) {
-                QMessageBox::warning(this, QString("警告"),
-                                     QString("CAN断开失败"));
+//                QMessageBox::warning(this, QString("警告"),
+//                                     QString("CAN断开失败"));
+                qWarning() << "CAN断开失败";
             } else {
-                QMessageBox::warning(this, QString("警告"),
-                                     QString("CAN没连接或被占用"));
+//                QMessageBox::warning(this, QString("警告"),
+//                                     QString("CAN没连接或被占用"));
+                qWarning() << "CAN没连接或被占用";
             }
             _menu_init_connection->setChecked(previous_connection_status);
         }
     }
-    qDebug() << "连接状态:" << _can->isConnected();
+//    qDebug() << "连接状态:" << _can->isConnected();
 }
 
 void Scope::setViewFixed()
 {
     if (_menu_view_fixed->isChecked()) {
         _timer->stop();
+        qInfo() << "固定视图";
     } else {
         _timer->setInterval(_refresh_msec);
         _timer->start();
+        qInfo() << "取消固定视图";
     }
 }
 
@@ -369,65 +390,94 @@ void Scope::openCurveConfig()
 
 void Scope::loadCurveConfig(const QString &file_name)
 {
-    if (file_name.isEmpty()) {
-        _menu_init_curve->setChecked(false);
-        return;
-    }
     if (!_curve->loadFromCsv(file_name)) {
-        QMessageBox::warning(this, "警告", "加载曲线配置失败");
-        _menu_init_curve->setChecked(false);
+//        QMessageBox::warning(this, "警告", "加载曲线配置失败");
+        qWarning("加载曲线配置失败");
+        return;
     }
     for (const auto &iter : *_curve) {
         _tribe->append(iter.name());
     }
-    qDebug("曲线配置加载成功");
-    qDebug() << _curve->subIdMap777Str();
+    qInfo() << "曲线配置加载成功";
+//    qDebug() << _curve->subIdMap777Str();
     _curve_initialized = true;
-    _menu_init_curve->setChecked(true);
-    _menu_init_curve->setDisabled(true);
-    _menu_init_softcan->setDisabled(true);
 }
 
 void Scope::showAbout()
 {
-    QMessageBox::information(this, "关于", "Refine软件底层采集转换功能测试");
+    QMessageBox::information(this, "关于",
+                             "Refine软件底层采集转换功能测试\n" + Version::str());
 }
 
 void Scope::setupSmooth()
 {
     if (_menu_view_smooth->isChecked()) {
         _display->enableSmooth();
+        qInfo() << "开启抗锯齿";
     } else {
         _display->disableSmooth();
+        qInfo() << "关闭抗锯齿";
     }
 }
 
 void Scope::importSoftcan(const QString &file_name)
 {
-    if (file_name.isEmpty()) {
-        _menu_init_softcan->setChecked(false);
-        return;
-    }
     if (_softcan->load(file_name)) {
+        _curve->clear();
         _softcan->toCurve(*_curve);
         for (const auto &iter : *_curve) {
             _tribe->append(iter.name());
         }
-        qDebug() << _curve->subIdMap777Str();
+//        qDebug() << _curve->subIdMap777Str();
         _curve_initialized = true;
-        _menu_init_softcan->setDisabled(true);
-        _menu_init_curve->setDisabled(true);
     }
 }
 
 void Scope::setCollectFrame()
 {
-    if (_collect_frames->exists()) {
-        _collect->setMode(Collect::CollectManner::FromFile, 10,
-                          _collect_frames);
-        _menu_collect_frame->setDisabled(true);
+    if (_menu_collect_fromframe->isChecked()) {
+        if (_collect_frames->exists()) {
+            _collect->setMode(Collect::CollectManner::FromFile, 10,
+                              _collect_frames);
+            qInfo() << "从帧文件采集";
+        } else {
+            _menu_collect_fromframe->setChecked(false);
+        }
     } else {
-        _menu_collect_frame->setChecked(false);
+        _collect->setMode(Collect::CollectManner::FromCan, 10);
+        qInfo() << "从CAN采集";
     }
+}
+
+void Scope::setSaveFrame()
+{
+    if (_menu_collect_saveframe->isChecked()) {
+        _transform->enableFramesStored(_file_frames);
+        qInfo() << "保存采集的帧";
+    } else {
+        _transform->disableFramesStored();
+        qInfo() << "不保存采集的帧";
+    }
+}
+
+void Scope::start()
+{
+    if (!_menu_collect_fromframe->isChecked() && !_can->isConnected()) {
+        qWarning() << "CAN没连接不能采数据";
+        return;
+    }
+    if (!_curve_initialized) {
+        qWarning() << "没有曲线配置不能采数据";
+        return;
+    }
+    _revolve->startRevolve();
+    _timer->setInterval(_refresh_msec);
+    _timer->start();
+    if (_transform->isFramesStored()) {
+        _file_frames->setFileName(
+                QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss") +
+                QString(".fmd"));
+    }
+    qInfo() << "开始数据采集";
 }
 

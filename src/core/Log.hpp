@@ -2,13 +2,15 @@
 // Created by jiang.wenqiang on 2018/9/11.
 //
 
-#ifndef CORE_LOG_HPP
-#define CORE_LOG_HPP
+#ifndef REFINE_LOG_HPP
+#define REFINE_LOG_HPP
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QDateTime>
 #include <QtCore/QDataStream>
+
+class Logger;
 
 class Log
 {
@@ -16,7 +18,7 @@ private:
     class Cell
     {
     public:
-        Cell();
+        Cell() = delete;
         Cell(QtMsgType type, QString &&msg);
         Cell(QtMsgType type, const QString &msg);
         Cell(const Cell &cell) = default;
@@ -28,35 +30,43 @@ private:
         QString _msg;
         QDateTime _time;
     };
-
 public:
-    //! \brief 输出的函数指针，对象无关，方便后面变更
-    typedef void (Output)(QtMsgType type, const QString &info);
+
 private:
-    QList<Cell> _log;
-    QFile *_file;
-    Output *_output;
-    bool _save_enable;
-    bool _output_enable;
-    QTextStream _stream;
+    static QList<Cell> _log;
+    static QFile *_file;
+    static Logger *_output;
+    static bool _save_enable;
+    static bool _output_enable;
+    static QTextStream _stream;
 public:
-    Log();
 
-    void handler(QtMsgType type, const QMessageLogContext &context,
-                 const QString &msg);
+    static void handler(QtMsgType type, const QMessageLogContext &context,
+                        const QString &msg);
 
-    inline void setupHandler() const { qInstallMessageHandler(Log::handler); }
+    static inline void setupHandler()
+    {
+        qInstallMessageHandler((QtMessageHandler) &handler);
+    }
 
-    bool saveEnable(QFile *file);
+    static bool enableSave(QFile *file);
 
-    inline void saveDisable() { _save_enable = false; }
+    static inline void disableSave() { _save_enable = false; }
 
-    void outputEnable(Output *output);
+    static void enableOutput(Logger *output);
 
-    inline void outputDisable() { _output_enable = false; }
+    static inline void disableOutput() { _output_enable = false; }
 
-    QStringList str() const;
+    static QStringList str();
 };
 
+/*!
+ * @brief 处理日志的接口类
+ */
+class Logger
+{
+public:
+    virtual void displayMessage(QtMsgType type, const QString &info) = 0;
+};
 
-#endif //CORE_LOG_HPP
+#endif //REFINE_LOG_HPP

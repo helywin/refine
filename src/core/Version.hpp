@@ -24,11 +24,11 @@ public:
 private:
     const static char _major = 0;
     const static char _micro = 0;
-    const static char _minor = 1;
+    const static char _minor = 3;
     const static char _build = 1;
     const static char _year = 18;
-    const static char _month = 9;
-    const static char _day = 12;
+    const static char _month = 10;
+    const static char _day = 11;
     const static Identifier _identifier = Identifier::Demo;
 
 public:

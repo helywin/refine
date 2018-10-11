@@ -27,6 +27,7 @@ SOURCES += \
         ./src/gui/Display.cpp \
         ./src/gui/FrameViewer.cpp \
         ./src/gui/Scope.cpp \
+        ./src/gui/StatusBar.cpp \
         ./src/core/Buffer.cpp \
         ./src/core/Can.cpp \
         ./src/core/Collect.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
         ./src/gui/Display.hpp \
         ./src/gui/FrameViewer.hpp \
         ./src/gui/Scope.hpp \
+        ./src/gui/StatusBar.hpp \
         ./src/core/Buffer.hpp \
         ./src/core/Can.hpp \
         ./src/core/Collect.hpp \
