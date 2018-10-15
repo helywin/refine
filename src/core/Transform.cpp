@@ -25,10 +25,10 @@ void Transform::run()
             msleep(10);
             continue;
         }
+        _buffer->setMark();
         if (_frames_stored) {
             _file.dumpFrameRecord(*_buffer);
         }
-        _buffer->setMark();
 //    for (auto &iter : *_tribe) {
 //        iter.data().append(0);
 //    }
@@ -73,7 +73,8 @@ void Transform::run()
                         result = full * k + b;
                         (*_tribe)[cur.name()].data().append(result);
                     }
-                } else {
+                }
+                /*else {
                     for (const auto &cur : *_curve) {
 //                qDebug() << cur.str();
                         bool flag = (cur.canId() == buf[i]->ID) &&
@@ -110,7 +111,7 @@ void Transform::run()
                             (*_tribe)[cur.name()].data().append(result);
                         }
                     }
-                }
+                }*/
             }
         }
 //        Timer::toc();
