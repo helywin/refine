@@ -27,12 +27,18 @@ void FrameViewer::setupUi()
     _menu_file_exit = new QAction(QString("退出(&E)"), _menu_file);
     _menu_file->addAction(_menu_file_open);
     _menu_file->addAction(_menu_file_exit);
+    _menu_option = new QMenu(QString("选项(&O)"), _menubar);
+    _menu_option_frame777 = new QAction(QString("仅显示777(&F)"), _menu_option);
+    _menu_option_frame777->setCheckable(true);
+    _menu_option->addAction(_menu_option_frame777);
     _menu_help = new QMenu(QString("帮助(&H)"), _menubar);
     _menu_help_about = new QAction(QString("关于(&A)"), _menu_help);
     _menu_help->addAction(_menu_help_about);
     _menubar->addMenu(_menu_file);
+    _menubar->addMenu(_menu_option);
     _menubar->addMenu(_menu_help);
     _menubar->addAction(_menu_file->menuAction());
+    _menubar->addAction(_menu_option->menuAction());
     _menubar->addAction(_menu_help->menuAction());
 
     _widget_central = new QWidget(this);
@@ -47,8 +53,11 @@ void FrameViewer::setupUi()
     _file_dialog->setWindowTitle(QString("打开报文文件"));
     connect(_menu_file_open, &QAction::triggered, _file_dialog,
             &QFileDialog::show);
+    connect(_menu_option_frame777, &QAction::triggered, this,
+            &FrameViewer::showOnlyFrame777);
     connect(_file_dialog, &QFileDialog::fileSelected, this,
             &FrameViewer::readFrameData);
+
 //    QString fname("D:/jiang.wenqiang/code/refine/data/data.fmd");
 //    QFile f(fname);
 //    if (f.exists()) {
@@ -68,6 +77,7 @@ void FrameViewer::readFrameData(const QString &fname)
         qDebug("file error!");
         return;
     }
+    _last_name = fname;
     QFont consolas("Consolas");
     consolas.setPointSize(12);
     _table_central->clear();
@@ -105,6 +115,11 @@ void FrameViewer::readFrameData(const QString &fname)
         file.loadFrameRecord(buffer);
         const Buffer::Cell &cell = buffer.tail();
         for (int j = 0; j < cell.dataSize(); ++j) {
+            if (_menu_option_frame777->isChecked()) {
+                if (cell[j]->ID != 0x777) {
+                    continue;
+                }
+            }
             auto item = new QTableWidgetItem(QString::number(index));
             item->setFont(consolas);
             _table_central->setItem(index, 0, item);
@@ -175,5 +190,12 @@ void FrameViewer::readFrameData(const QString &fname)
             index += 1;
         }
         buffer.tailForward();
+    }
+}
+
+void FrameViewer::showOnlyFrame777()
+{
+    if (!_last_name.isEmpty()) {
+        readFrameData(_last_name);
     }
 }

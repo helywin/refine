@@ -92,3 +92,6 @@ target_link_libraries(scope ${LIBCAN}
 add_executable(buffer test_buffer.cpp ${CORE} ${GUI})
 target_link_libraries(buffer ${LIBCAN}
         Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
+
+add_executable(thread test_thread.cpp TestThread.h)
+target_link_libraries(thread Qt5Core)

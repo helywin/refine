@@ -19,12 +19,15 @@ private:
     QMenu *_menu_file;
     QAction *_menu_file_open;
     QAction *_menu_file_exit;
+    QMenu *_menu_option;
+    QAction *_menu_option_frame777;
     QMenu *_menu_help;
     QAction *_menu_help_about;
     QWidget *_widget_central;
     QHBoxLayout *_layout_central;
     QTableWidget *_table_central;
     QFileDialog *_file_dialog;
+    QString _last_name;
 
 public:
     explicit FrameViewer(QWidget *parent = nullptr);
@@ -33,6 +36,8 @@ private:
 
 public:
     void readFrameData(const QString &fname);
+
+    void showOnlyFrame777();
 };
 
 
