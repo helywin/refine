@@ -5,6 +5,7 @@
 #ifndef REFINE_CONTROLCAN_H
 #define REFINE_CONTROLCAN_H
 
+/*
 //接口卡类型定义
 #define VCI_PCI5121        1
 #define VCI_PCI9810        2
@@ -66,6 +67,8 @@
 #define CMD_CLIENTS            6          //连接上的客户端
 #define CMD_DISCONN_CLINET     7          //断开一个连接
 
+ */
+
 //! \brief 添加基础类型 by jiang.wenqiang
 //! \date 2018/6/15
 typedef unsigned long DWORD_T;
@@ -112,10 +115,6 @@ typedef struct
     UINT_T TimeStamp;                     //! \brief 收到信息帧时的时间标识
     BYTE_T TimeFlag;                      //! \brief 是否使用时间标识
     BYTE_T SendType;                      //! \brief 送帧类型
-    //!  =0 正常发送，
-    //!  =1 单次发送，
-    //!  =2 自发自收，
-    //!  =3 单次自发自收，只在为发送帧时有意义。
     BYTE_T RemoteFlag;                    //! \brief 是否是远程帧
     BYTE_T ExternFlag;                    //! \brief 是否是扩展帧
     BYTE_T DataLen;                       //! \brief 数据长度(<=8)，即Data的长度

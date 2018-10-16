@@ -294,12 +294,14 @@ public:
     };
 
     typedef QMap<int ,QList<int>> SubIdMap;
+    typedef QMap<int ,QList<int>> OtherIdMap;
 
 private:
     QStringList _table_header;
     QStringList _header;
     QList<Cell> _cells;
     SubIdMap _sub_id_map_777;      //用于曲线转换查表而非遍历
+    OtherIdMap _other_id_map;
 
 public:
     Curve() = default;
@@ -377,9 +379,15 @@ public:
 
     void genSubIdMap777();
 
+    void genOtherIdMap();
+
     const SubIdMap &subIdMap777() const { return _sub_id_map_777; }
 
+    const OtherIdMap &otherIdMap() const { return _other_id_map; }
+
     QStringList subIdMap777Str() const;
+
+    QStringList otherIdMapStr() const;
 };
 
 QDataStream &operator<<(QDataStream &stream, const Curve &curve);
