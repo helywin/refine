@@ -4,7 +4,7 @@
 
 #include "Csv.hpp"
 
-Csv::Csv() : _file(nullptr), _stream(nullptr), _separator(QChar(',')) {}
+Csv::Csv(QFile *f) : _file(f), _stream(nullptr), _separator(QChar(',')) {}
 
 Csv::~Csv()
 {

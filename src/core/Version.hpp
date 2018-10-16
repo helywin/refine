@@ -8,6 +8,11 @@
 #include <QtCore/QString>
 #include <QtCore/QDate>
 
+/*!
+ * @brief 记录软件详细信息的类
+ * 后续加上其他版本信息，比如特性
+ */
+
 class Version
 {
 public:

@@ -13,6 +13,10 @@
 #include <QtCore/QDebug>
 #include "Curve.hpp"
 
+/*!
+ * @brief 把Softcan的曲线配置转化为可用配置的类
+ */
+
 class Softcan
 {
 public:

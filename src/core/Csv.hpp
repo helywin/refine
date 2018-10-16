@@ -10,6 +10,10 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QTextCodec>
 
+/*!
+ * @brief csv文件读写的抽象
+ */
+
 class Csv
 {
 private:
@@ -17,7 +21,7 @@ private:
     QTextStream *_stream;
     QChar _separator;
 public:
-    Csv();
+    explicit Csv(QFile *f = nullptr);
     ~Csv();
     void setSeparator(QChar sep);
     void setFile(QFile *f);

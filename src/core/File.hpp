@@ -5,17 +5,20 @@
 #ifndef REFINE_FILE_HPP
 #define REFINE_FILE_HPP
 
+#include <QtCore/QDataStream>
+#include <QtCore/QDebug>
+#include <QtCore/QFile>
+#include <windows.h>
 #include <QtCore/QDateTime>
 
-class QDataStream;
-class QStringList;
-class QString;
-class QFile;
-class QByteArray;
 class Curve;
 class Tribe;
 class Modes;
 class Buffer;
+
+/*!
+ * @brief 把曲线配置、报文、数据、工况等等的文件读写类
+ */
 
 class File
 {

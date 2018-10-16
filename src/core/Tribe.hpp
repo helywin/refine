@@ -10,6 +10,10 @@
 #include <QtCore/QVector>
 #include <QtCore/QFile>
 
+/*!
+ * @brief 存储数据的缓冲区
+ */
+
 class Tribe
 {
 public:

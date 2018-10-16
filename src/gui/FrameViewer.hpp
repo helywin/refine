@@ -11,6 +11,10 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QFileDialog>
 
+/*!
+ * @brief 报文文件查看器
+ */
+
 class FrameViewer : public QMainWindow
 {
 Q_OBJECT

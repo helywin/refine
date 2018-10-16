@@ -10,6 +10,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QMap>
 
+/*!
+ * @brief 曲线配置类
+ */
+
 class Curve
 {
 public:

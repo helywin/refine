@@ -12,6 +12,10 @@ class Collect;
 class Transform;
 class Trigger;
 
+/*!
+ * @brief 判断工况是否触发的线程
+ */
+
 class Despatch : public  QObject
 {
 Q_OBJECT

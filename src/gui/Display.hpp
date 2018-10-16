@@ -10,6 +10,10 @@
 #include "Tribe.hpp"
 #include "Curve.hpp"
 
+/*!
+ * @brief 显示曲线的控件类
+ */
+
 class Display : public QGLWidget, public QGLFunctions
 {
 Q_OBJECT

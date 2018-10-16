@@ -9,6 +9,10 @@
 #include <QtCore/QDataStream>
 #include "ControlCan.h"
 
+/*!
+ * @brief CAN的接收和发送缓冲区
+ */
+
 class Buffer
 {
 public:

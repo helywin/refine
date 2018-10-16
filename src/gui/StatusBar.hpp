@@ -10,6 +10,10 @@
 #include <QtWidgets/QVBoxLayout>
 #include "Log.hpp"
 
+/*!
+ * @brief 状态栏
+ */
+
 class Logger;
 
 class StatusLabel : public QLabel

@@ -5,6 +5,9 @@
 #ifndef REFINE_RECORD_HPP
 #define REFINE_RECORD_HPP
 
+/*!
+ * @brief 用来存储报文的类
+ */
 
 class Record
 {

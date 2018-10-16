@@ -10,6 +10,10 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QDataStream>
 
+/*!
+ * @brief 用于日志记录的类，配合qt的log函数
+ */
+
 class Logger;
 
 class Log

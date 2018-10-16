@@ -45,7 +45,7 @@ private:
     Buffer *_buffer;
     CollectManner _manner;
     unsigned long _delay;
-    QFile *_file;
+    QFile *_file_frame;
     CollectControl _control;
     Tribe *_tribe;
     Curve *_curve;
@@ -60,12 +60,12 @@ public:
     {
         _manner = manner;
         _delay = delay;
-        _file = file;
+        _file_frame = file;
     }
 
     inline void setDelay(unsigned long delay) { _delay = delay; }
 
-    inline void setFile(QFile *file) { _file = file; }
+    inline void setFile(QFile *file) { _file_frame = file; }
 
     inline void reset() { _buffer->reset(); }
 

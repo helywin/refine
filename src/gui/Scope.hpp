@@ -26,6 +26,7 @@
 #include "Display.hpp"
 #include "FrameViewer.hpp"
 #include "Softcan.hpp"
+#include "Transform.hpp"
 
 class Scope : public QMainWindow
 {

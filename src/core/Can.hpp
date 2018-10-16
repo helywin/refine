@@ -11,6 +11,10 @@
 
 class Buffer;
 
+/*!
+ * @brief 控制CAN的类
+ */
+
 class Can
 {
 public:

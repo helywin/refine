@@ -2,10 +2,6 @@
 // Created by jiang.wenqiang on 2018/9/12.
 //
 
-#include <QtCore/QDataStream>
-#include <QtCore/QDebug>
-#include <QtCore/QFile>
-#include <windows.h>
 #include "File.hpp"
 #include "Version.hpp"
 #include "Curve.hpp"
@@ -279,7 +275,7 @@ bool File::loadFrameRecordBegin(QFile &file, Buffer &buffer, int *pack, int *fra
 
     loadFileHeader();
     if(!loadCheckSum()) {
-        qDebug("bad checksum!");
+        qCritical("File::loadFrameRecordBegin CRC32检校失败");
         return false;
     }
     _stream->device()->seek(DATA_POS);
@@ -307,7 +303,7 @@ bool File::loadFrameRecord(Buffer &buffer)
     _stream->readRawData(sign, 4);
     if (sign[0] == 'E' && sign[1] == 'N' &&
             sign[2] == 'D' && sign[3] == 'F') {
-        return false;
+        return false;   //读取完毕
     } else {
         _stream->device()->seek(_stream->device()->pos() - 4);
         return true;

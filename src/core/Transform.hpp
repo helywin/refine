@@ -5,6 +5,9 @@
 #ifndef REFINE_TRANSFORM_HPP
 #define REFINE_TRANSFORM_HPP
 
+/*!
+ * @brief 报文转换类
+ */
 
 class Transform
 {

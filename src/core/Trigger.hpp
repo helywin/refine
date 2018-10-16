@@ -5,6 +5,9 @@
 #ifndef REFINE_TRIGGER_HPP
 #define REFINE_TRIGGER_HPP
 
+/*!
+ * @brief 判断工况是否触发类
+ */
 
 class Trigger
 {
