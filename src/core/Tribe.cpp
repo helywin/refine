@@ -91,6 +91,27 @@ QDataStream &operator>>(QDataStream &stream, Tribe::Cell &cell)
     return stream;
 }
 
+float Tribe::Cell::fakePercent() const
+{
+    int cnt = 0;
+    for (const auto iter : _fill) {
+        if (iter != Data) {
+            cnt += 1;
+        }
+    }
+    return (float)cnt / (float)_fill.size();
+}
+
+void Tribe::Cell::push(const Tribe::Fill fill, const float &v)
+{
+    _fill.append(fill);
+    _data.push_back(v);
+    _fill_this = true;
+    if (fill != FakeByZero) {
+        _empty = false;
+    }
+}
+
 int Tribe::minLen() const
 {
     int len = -1;
@@ -145,7 +166,7 @@ bool Tribe::loadFromCsv(QFile &f)
         QStringList list;
         csv.readLine(list);
         for (int i = 0; i < list.size(); ++i) {
-            (*this)[_header[i]].data().append(list[i].toFloat());
+            (*this)[_header[i]].push(Data, list[i].toFloat());
         }
     }
     return true;
@@ -187,5 +208,12 @@ void Tribe::addGap()
         for (int i = 0; i < 100; ++i) {
             cell.data().append(0);
         }
+    }
+}
+
+void Tribe::setUnFilled()
+{
+    for (auto &iter : _cells) {
+        iter.setFill(UnFilled);
     }
 }

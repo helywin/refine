@@ -6,6 +6,7 @@
 #define REFINE_TRIBE_HPP
 
 #include <QtCore/QList>
+#include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVector>
 #include <QtCore/QFile>
@@ -17,32 +18,38 @@
 class Tribe
 {
 public:
+    enum DataType
+    {
+        RawData,
+        ProData
+    };
+
+    enum Fill : char
+    {
+        Data = 0,
+        FakeByPrevious = 1,
+        FakeByZero = 2,
+    };
+
     class Cell
     {
-    public:
-        enum DataType
-        {
-            RawData,
-            ProData
-        };
     private:
         QString _name;
         int _data_type;
         QVector<float> _data;
+        bool _fill_this;
+        QVector<Fill> _fill;
+        bool _empty;            //方便图像绘制
 
     public:
-        explicit Cell(const QString &name) : Cell(name, DataType::RawData) {}
+        explicit Cell(const QString &name, DataType type = RawData) :
+                _name(name), _data_type(type), _data(), _fill_this(false),
+                _empty(true) {}
 
-        explicit Cell(QString &&name) : Cell(name, DataType::RawData) {}
+        explicit Cell(QString &&name, DataType type = RawData) :
+                Cell(name, type) {}
 
-        Cell(const QString &name, DataType type) :
-        _name(name), _data_type(type), _data() {
-            _data.resize(100000);
-        }
-
-        Cell(QString &&name, DataType type) : Cell(name, type) {}
-
-        inline QVector<float> &data() { return _data; }
+//        inline QVector<float> &data() { return _data; }
 
         inline const QVector<float> &data() const { return _data; }
 
@@ -52,9 +59,9 @@ public:
 
         inline void setDataType(DataType type) { _data_type = type; }
 
-        inline void push(const float &v) { _data.push_back(v); }
+        void push(Fill fill, const float &v);
 
-        inline void push(float &&v) { _data.push_back(v); }
+        inline void push(Fill fill, float &&v) { push(fill, v); }
 
         inline float &operator[](int index) { return _data[index]; }
 
@@ -71,6 +78,19 @@ public:
         inline void resize(int size) { _data.resize(size); }
 
         inline void reset() { _data.clear(); }
+
+        inline bool fill() const { return _fill_this; }
+
+        inline void setFill(Fill fill) { _fill_this = fill; }
+
+        float fakePercent() const;
+
+        inline QString fakePercentStr() const
+        {
+            return QString("%1%").arg(fakePercent() * 100);
+        }
+
+        inline bool empty() const { return _empty; }
     };
 
     class Iter
@@ -229,6 +249,8 @@ public:
     void reset();
 
     void addGap();
+
+    void setUnFilled();
 };
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);

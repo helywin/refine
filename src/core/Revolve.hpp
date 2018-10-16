@@ -9,9 +9,6 @@
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include "Can.hpp"
-
-
-#include "Can.hpp"
 #include "Curve.hpp"
 #include "File.hpp"
 #include "Softcan.hpp"
@@ -47,9 +44,26 @@ private:
     QFile *_collect_frames;
     QFile *_store_curves;
     int _msec;
+    bool _is_transform;
+    bool _is_record;
 
 public:
     Revolve();
+
+
+
+
+public slots:
+    void marvel(bool is_transform = true, bool is_record = true);
+
+private slots:
+    void tictoc();
+
+    void CollectError(int code);
+
+    void TransformError(int code);
+
+    void RecordError(int code);
 
 };
 

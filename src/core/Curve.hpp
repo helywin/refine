@@ -67,7 +67,8 @@ public:
         //str getter
         inline QString indexStr() const { return QString::number(_index); }
 
-        inline QString displayStr() const {
+        inline QString displayStr() const
+        {
             if (_display) {
                 return QString("是");
             } else {
@@ -293,8 +294,8 @@ public:
         };
     };
 
-    typedef QMap<int ,QList<int>> SubIdMap;
-    typedef QMap<int ,QList<int>> OtherIdMap;
+    typedef QMap<int, QList<int>> SubIdMap;
+    typedef QMap<int, QList<int>> OtherIdMap;
 
 private:
     QStringList _table_header;
@@ -381,9 +382,19 @@ public:
 
     void genOtherIdMap();
 
-    const SubIdMap &subIdMap777() const { return _sub_id_map_777; }
+    inline const SubIdMap &subIdMap777() const { return _sub_id_map_777; }
 
-    const OtherIdMap &otherIdMap() const { return _other_id_map; }
+    inline QList<int> findMap777(unsigned char zero_byte) const
+    {
+        return _sub_id_map_777[zero_byte];
+    }
+
+    inline const OtherIdMap &otherIdMap() const { return _other_id_map; }
+
+    inline QList<int> findOtherMap(unsigned int can_id) const
+    {
+        return _other_id_map[can_id];
+    }
 
     QStringList subIdMap777Str() const;
 

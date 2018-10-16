@@ -6,6 +6,8 @@
 #define REFINE_TRANSFORM_HPP
 
 #include <QtCore/QThread>
+#include <QtCore/QFile>
+#include "File.hpp"
 
 class Curve;
 class Buffer;
@@ -22,28 +24,14 @@ private:
     Curve *_curve;
     Buffer *_buffer;
     Tribe *_tribe;
+    File _file;
 
 public:
-    Transform() = delete;
-    Transform(Curve *curve, Buffer *buffer, Tribe *tribe);
+    Transform();
 
-    inline void setCurve(Curve *curve)
-    {
-        Q_ASSERT(curve != nullptr);
-        _curve = curve;
-    }
+    void beginTransform(Curve *curve, Buffer *buffer, Tribe *tribe);
 
-    inline void setBuffer(Buffer *buffer)
-    {
-        Q_ASSERT(buffer != nullptr);
-        _buffer = buffer;
-    }
-
-    inline void setTribe(Tribe *tribe)
-    {
-        Q_ASSERT(tribe != nullptr);
-        _tribe = tribe;
-    }
+    void finishTransform(QFile *file);
 
 protected:
     void run() override;

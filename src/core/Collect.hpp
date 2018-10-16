@@ -26,44 +26,24 @@ public:
         BufferFull,
         ConnectionLost,
         CanFailed,
-        CrcError
+        FileError
     };
 private:
     Can *_can;
     Buffer *_buffer;
     Manner _manner;
-    QFile *_file_frame;
+    QFile *_frame_file;
     File _file;
 
 public:
-    Collect(Can *can, Buffer *buffer);
+    Collect();
 
-    inline void setCan(Can *can)
-    {
-        Q_ASSERT(can != nullptr);
-        _can = can;
-    }
+    bool beginCollect(Can *can, Buffer *buffer,
+                      Manner manner, QFile *frame_file);
 
-    inline void setBuffer(Buffer *buffer)
-    {
-        Q_ASSERT(buffer != nullptr);
-        _buffer = buffer;
-    }
+    inline void finishCollect() { _file.loadFrameRecordFinish(*_frame_file); }
 
-    inline void setFromCan() { _manner = FromCan; }
-
-    inline bool setFromFile(QFile *frame_file)
-    {
-        Q_ASSERT(frame_file != nullptr);
-        _manner = FromFile;
-        _file_frame = frame_file;
-        if (_file.loadFrameRecordBegin(*_file_frame, *_buffer)) {
-            return true;
-        } else {
-            _manner = FromCan;
-            return false;
-        }
-    }
+    inline Manner manner() const { return _manner; }
 
 protected:
     void run() override;
