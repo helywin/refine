@@ -8,7 +8,10 @@
 
 #include "Version.hpp"
 
-
+/*!
+ * @brief 返回版本字符串
+ * @return 版本字符串
+ */
 QString Version::str()
 {
     QString s = QString("Version: %1.%2.%3.%4_%5%6%7")

@@ -10,6 +10,10 @@
 #include "Tribe.hpp"
 #include "Csv.hpp"
 
+/*!
+ * @brief 曲线剪切
+ * @deprecated 曲线设计另外的记录方式，该函数弃用
+ */
 void Tribe::trim()
 {
     int size = -1;
@@ -131,6 +135,18 @@ int Tribe::minLen() const
     return len;
 }
 
+
+/*!
+ * @brief 清空数据
+ */
+void Tribe::Cell::reset()
+{
+    _data.clear();
+    _fill.clear();
+    _fill_this = false;
+    _empty = true;
+}
+
 int Tribe::maxLen() const
 {
     int len = -1;
@@ -199,25 +215,33 @@ bool Tribe::dumpToCsv(QFile &f) const
     return csv.finishWrite();
 }
 
+/*!
+ * @brief 清空数据不清空曲线
+ */
 void Tribe::reset()
 {
     for (auto &iter : _cells) {
         iter.reset();
     }
+    _segment.clear();
 }
 
+/*!
+ * @brief 数据段间增加空白
+ * @deprecated 在数据中加入段序号，此函数弃用
+ */
 void Tribe::addGap()
 {
     for (auto &cell : _cells) {
         for (int i = 0; i < 100; ++i) {
-            cell.data().append(0);
+            cell._data.append(0);
         }
     }
 }
 
 void Tribe::setUnFilled()
 {
-    for (auto &iter : _cells) {
-        iter.setFill(UnFilled);
+    for (auto &cell : _cells) {
+        cell._fill_this = false;
     }
 }

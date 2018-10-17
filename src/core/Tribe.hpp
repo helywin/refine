@@ -38,6 +38,7 @@ public:
     class Cell
     {
     private:
+        friend class Tribe;
         QString _name;
         int _data_type;
         QVector<float> _data;
@@ -81,7 +82,8 @@ public:
 
         inline void resize(int size) { _data.resize(size); }
 
-        inline void reset() { _data.clear(); }
+        //! \brief 清空数据
+        void reset();
 
         inline bool fill() const { return _fill_this; }
 
@@ -97,6 +99,9 @@ public:
         inline bool empty() const { return _empty; }
     };
 
+    /*!
+     * @brief 迭代器
+     */
     class Iter
     {
     private:
@@ -117,8 +122,9 @@ public:
     };
 
 private:
-    QList<Cell> _cells;
-    QStringList _header;
+    QList<Cell> _cells;         //! \brief 曲线数据
+    QStringList _header;        //! \brief 曲线名字表
+    QVector<int> _segment;      //! \brief 曲线分段
 
 public:
     Tribe() = default;
@@ -237,7 +243,7 @@ public:
         _header.removeAt(index);
     }
 
-    void trim();
+    void trim() = delete;
 
     int minLen() const;
     int maxLen() const;
@@ -255,6 +261,8 @@ public:
     void addGap();
 
     void setUnFilled();
+
+    inline void newSegment() { _segment.append(_cells[0].size()); }
 };
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);
