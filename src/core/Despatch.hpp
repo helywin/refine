@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/9/11.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/11
+ * @brief
+ * @details
+ ******************************************************************************/
 
 #ifndef REFINE_DESPATCH_HPP
 #define REFINE_DESPATCH_HPP

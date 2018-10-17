@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/9/4.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/4
+ * @brief Softcan配置读取
+ * @details 实现读取Softcan配置并转换为Curve配置
+ ******************************************************************************/
 
 #ifndef CORE_SOFTCAN_H
 #define CORE_SOFTCAN_H

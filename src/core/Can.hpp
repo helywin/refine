@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/9/10.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/10
+ * @brief CAN控制类
+ * @details CAN的控制和状态量
+ ******************************************************************************/
 
 #ifndef REFINE_CAN_HPP
 #define REFINE_CAN_HPP

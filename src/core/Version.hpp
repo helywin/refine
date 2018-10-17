@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/7/31.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/11
+ * @brief 软件信息
+ * @details 软件信息存储
+ ******************************************************************************/
 
 #ifndef REFINE_VERSION_HPP
 #define REFINE_VERSION_HPP

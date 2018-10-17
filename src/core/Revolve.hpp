@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/10/15.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/10/15
+ * @brief 底层调度
+ * @details 底层功能模块全部由Revolve实现调度，GUI不参与任何变量初始化和传递
+ ******************************************************************************/
 
 #ifndef REFINE_REVOLVE_HPP
 #define REFINE_REVOLVE_HPP
@@ -21,9 +25,11 @@
 #include "Record.hpp"
 #include "Despatch.hpp"
 #include "Initializer.hpp"
+#include "Transmit.hpp"
 
 /*!
  * @brief 底层调度类
+ * 外部GUI只传文件名进来
  */
 
 class Revolve : public QThread
@@ -34,14 +40,14 @@ private:
     Curve _curve;
     Buffer _buffer;
     Collect _collect;
+    Transmit _transmit;
     Tribe _tribe;
     Transform _transform;
     Record _record;
-    Revolve _revolve;
     Softcan _softcan;
     QTimer _timer;
     QFile *_store_frames;
-    QFile *_collect_frames;
+    QFile *_collect_frames;     //从GUI读取的量
     QFile *_store_curves;
     int _msec;
     bool _is_transform;
@@ -50,11 +56,17 @@ private:
 public:
     Revolve();
 
+    inline void setCollectManner(Collect::Manner manner,
+                                 const QString &collect_frames_name)
+    {
 
-
+    }
 
 public slots:
-    void marvel(bool is_transform = true, bool is_record = true);
+    void marvel(int msec = 10, bool is_transform = true,
+                bool is_record = true);
+
+    void stop();
 
 private slots:
     void tictoc();

@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/10/15.
-//
+/*******************************************************************************
+ * @file Revolve.cpp
+ * @author jiang.wenqiang
+ * @date 2018/10/15
+ * @brief 底层调度
+ * @details 底层功能模块全部由Revolve实现调度，GUI不参与任何变量初始化和传递
+ ******************************************************************************/
 
 #include "Collect.hpp"
 
@@ -11,13 +15,8 @@ Collect::Collect() :
         _frame_file(nullptr),
         _file() {}
 
-bool Collect::beginCollect(Can *can, Buffer *buffer, Collect::Manner manner,
-                           QFile *frame_file)
+bool Collect::begin()
 {
-    _can = can;
-    _buffer = buffer;
-    _manner = manner;
-    _frame_file = frame_file;
     if (_manner == FromFile) {
         if (_file.loadFrameRecordBegin(*_frame_file, *_buffer)) {
             return true;
@@ -28,6 +27,15 @@ bool Collect::beginCollect(Can *can, Buffer *buffer, Collect::Manner manner,
         }
     }
     return true;
+}
+
+void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
+                        QFile *frame_file)
+{
+    _can = can;
+    _buffer = buffer;
+    _manner = manner;
+    _frame_file = frame_file;
 }
 
 void Collect::run()

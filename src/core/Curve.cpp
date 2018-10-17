@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/9/11.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/11
+ * @brief 曲线配置
+ * @details 曲线配置的读写和其他功能
+ ******************************************************************************/
 
 #include <QtCore/QDebug>
 #include <QtCore/QDataStream>

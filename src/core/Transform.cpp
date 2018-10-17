@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/10/15.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/10/15
+ * @brief 报文转曲线
+ * @details 报文根据曲线配置转换成曲线数据，同时补充丢失曲线数据
+ ******************************************************************************/
 
 #include "Transform.hpp"
 #include "Buffer.hpp"
@@ -11,9 +15,9 @@ Transform::Transform() :
         _curve(nullptr),
         _buffer(nullptr),
         _tribe(nullptr),
-        _file(){}
+        _file() {}
 
-void Transform::beginTransform(Curve *curve, Buffer *buffer, Tribe *tribe)
+void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe)
 {
     _curve = curve;
     _buffer = buffer;
@@ -79,7 +83,9 @@ void Transform::run()
     }
 }
 
-void Transform::finishTransform(QFile *file)
+void Transform::finish(QFile *file)
 {
-
+    if (file != nullptr) {
+        _file.dumpCurveRecord(*file, *_tribe);
+    }
 }

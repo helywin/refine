@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/10/15.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/10/15
+ * @brief 报文转曲线
+ * @details 报文根据曲线配置转换成曲线数据，同时补充丢失曲线数据
+ ******************************************************************************/
 
 #ifndef REFINE_TRANSFORM_HPP
 #define REFINE_TRANSFORM_HPP
@@ -29,9 +33,17 @@ private:
 public:
     Transform();
 
-    void beginTransform(Curve *curve, Buffer *buffer, Tribe *tribe);
+    void setParams(Curve *curve, Buffer *buffer, Tribe *tribe);
 
-    void finishTransform(QFile *file);
+    inline void begin(Curve *curve, Buffer *buffer, Tribe *tribe)
+    {
+        setParams(curve, buffer, tribe);
+        begin();
+    }
+
+    void begin() {}
+
+    void finish(QFile *file = nullptr);
 
 protected:
     void run() override;

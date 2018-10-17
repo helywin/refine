@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/9/10.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/10
+ * @brief CAN DLL函数
+ * @details ControlCan.dll的函数导入
+ ******************************************************************************/
 
 #ifndef REFINE_CONTROLCAN_H
 #define REFINE_CONTROLCAN_H

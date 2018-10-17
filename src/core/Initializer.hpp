@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/10/16.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/10/16
+ * @brief 软件初始化
+ * @details
+ ******************************************************************************/
 
 #ifndef REFINE_INITIALIZER_HPP
 #define REFINE_INITIALIZER_HPP

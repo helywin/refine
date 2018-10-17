@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/9/11.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/11
+ * @brief 工况触发
+ * @details
+ ******************************************************************************/
 
 #ifndef REFINE_TRIGGER_HPP
 #define REFINE_TRIGGER_HPP

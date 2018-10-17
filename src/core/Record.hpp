@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/10/15.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/15
+ * @brief 报文存储
+ * @details 采集数据时调用报文存储线程来存储报文
+ ******************************************************************************/
 
 #ifndef REFINE_RECORD_HPP
 #define REFINE_RECORD_HPP
@@ -30,9 +34,21 @@ private:
 public:
     Record() : _file(), _buffer(nullptr), _record(nullptr) {}
 
-    bool beginRecord(QFile *record, Buffer *buffer);
+    inline void setParams(QFile *record, Buffer *buffer)
+    {
+        _record = record;
+        _buffer = buffer;
+    }
 
-    inline void finishRecord() { _file.dumpFrameRecordFinish(*_record); }
+    inline bool begin() { return _file.dumpFrameRecordBegin(*_record); }
+
+    inline bool begin(QFile *record, Buffer *buffer)
+    {
+        setParams(record, buffer);
+        return begin();
+    }
+
+    inline void finish() { _file.dumpFrameRecordFinish(*_record); }
 
 protected:
     void run() override;

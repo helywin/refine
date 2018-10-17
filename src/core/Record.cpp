@@ -1,17 +1,13 @@
-//
-// Created by jiang.wenqiang on 2018/10/15.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/15
+ * @brief 报文存储
+ * @details 采集数据时调用报文存储线程来存储报文
+ ******************************************************************************/
 
 #include "Record.hpp"
 
-bool Record::beginRecord(QFile *record, Buffer *buffer)
-{
-    Q_ASSERT(record != nullptr);
-    Q_ASSERT(buffer != nullptr);
-    _record = record;
-    _buffer = buffer;
-    return _file.dumpFrameRecordBegin(*_record);
-}
 
 void Record::run()
 {

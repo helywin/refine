@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/9/10.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/9/10
+ * @brief 帧缓冲区
+ * @details 采集时缓存报文的帧缓冲区
+ ******************************************************************************/
 
 #ifndef REFINE_BUFFER_HPP
 #define REFINE_BUFFER_HPP

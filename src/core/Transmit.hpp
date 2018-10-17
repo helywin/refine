@@ -1,6 +1,10 @@
-//
-// Created by jiang.wenqiang on 2018/10/16.
-//
+/*******************************************************************************
+ * @file
+ * @author jiang.wenqiang
+ * @date 2018/10/16
+ * @brief 发送报文
+ * @details 模拟采集时接收的报文，发送到CAN总线上
+ ******************************************************************************/
 
 #ifndef REFINE_TRANSMIT_HPP
 #define REFINE_TRANSMIT_HPP
