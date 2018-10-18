@@ -38,11 +38,31 @@ Q_OBJECT
 public:
     enum Status
     {
-        Idle = 0x00,
-        Collecting = 0x01,
-        Timing = 0x02,
-        //todo
+        Stop,
+        Running,
+        Pause
     };
+
+    union ConfigType
+    {
+        int all;
+        struct
+        {
+            int transform : 1;
+            int record : 1;
+            int trigger : 1;
+            int timing : 1;
+        }bits;
+    };
+
+    enum Config
+    {
+        WithTransform = 0x01,
+        WithRecord = 0x02,
+        WithTrigger = 0x4,
+        WithTiming = 0x8
+    };
+
 private:
     Can _can;
     Curve _curve;
@@ -52,16 +72,16 @@ private:
     Tribe _tribe;
     Transform _transform;
     Record _record;
-    Softcan _softcan;
-    QTimer _timer_collect;
-    QTimer _timer_stop;
-    QFile *_store_frames;
-    QFile *_collect_frames;     //从GUI读取的量
-    QFile *_store_curves;
-    int _msec;
-    int _time;
-    bool _is_transform;
-    bool _is_record;
+    Softcan _softcan;           //! \brief softcan配置转换工具
+    QTimer _timer_collect;      //! \brief 采样时钟
+    QTimer _timer_stop;         //! \brief 自动停止的计时器
+    QFile *_store_frames;       //! \brief 自动存储的报文数据
+    QFile *_collect_frames;     //! \brief 从GUI读取的量
+    QFile *_store_curves;       //! \brief 自动存储的曲线数据
+    int _msec;      //! \brief 采样周期
+    int _time;      //! \brief 自动停止时间
+    ConfigType _config;
+    Status _status;
 
 public:
     Revolve();
@@ -71,16 +91,13 @@ public:
 
 public slots:
     //采集
-    void begin(int msec = 10, bool is_transform = true,
-               bool is_record = true, int time = 0);
+    void begin(int msec, int config, int time);
     void pause();
     void resume();
     void stop();
 public:
     //采集配置
-    bool setCollectManner(Collect::Manner manner, QString &collect_frame);
-
-    inline void setCollectMsec(int msec) {}
+    void setCollectManner(Collect::Manner manner, QString &collect_frame);
 
     //文件导入导出
     bool inputCurveConfig(const QString &name);
@@ -100,6 +117,12 @@ public:
 
 //    bool importCsvCurveData(const QString &name) = delete;
     bool exportCsvCurveData(const QString &name);
+
+
+    //生成临时存储文件
+    void genFramesDataFile();
+
+    void genCurveDataFile();
 
 
 private slots:

@@ -75,7 +75,7 @@ public:
     };
 
     //! \brief CAN错误码
-    enum Error : unsigned int
+    enum Error
     {
         CanOverflow = 0x0001,       //!< CAN控制器内部FIFO溢出
         CanErrorAlarm = 0x0002,     //!< CAN控制器错误报警
@@ -122,7 +122,7 @@ public:
     };
 
     //! \brief 报文发送类型
-    enum SendType : unsigned char
+    enum SendType
     {
         NormalSend = 0,           //!< 正常发送，
         SendOnce = 1,             //!< 单次发送，
@@ -131,7 +131,7 @@ public:
     };
 
     //! \brief 滤波类型
-    enum Filter : unsigned char
+    enum Filter
     {
         Single = 0,                         //!< 单滤波
         Double = 1,                         //!< 双滤波
@@ -141,7 +141,7 @@ public:
     };
 
     //! \brief 模式
-    enum Mode : unsigned char
+    enum Mode
     {
         Normal = 0,                         //!< 正常模式
         ListenOnly = 1,                     //!< 只听模式

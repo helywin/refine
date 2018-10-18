@@ -95,3 +95,6 @@ target_link_libraries(buffer ${LIBCAN}
 
 add_executable(thread test_thread.cpp TestThread.h)
 target_link_libraries(thread Qt5Core)
+
+add_executable(setting test_setting.cpp ../core/Initializer.cpp ../core/Initializer.hpp)
+target_link_libraries(setting Qt5Core)
