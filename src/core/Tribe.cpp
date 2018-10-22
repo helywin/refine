@@ -13,7 +13,7 @@
 /*!
  * @brief 曲线剪切
  * @deprecated 曲线设计另外的记录方式，该函数弃用
- */
+ *//*
 void Tribe::trim()
 {
     int size = -1;
@@ -29,7 +29,7 @@ void Tribe::trim()
     for (auto &iter : _cells) {
         iter.resize(size);
     }
-}
+}*/
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe)
 {
@@ -162,7 +162,7 @@ QStringList Tribe::zeroLenData() const
 {
     QStringList list;
     for (const auto &iter : _cells) {
-        if (iter.size() == 0) {
+        if (iter.empty()) {
             list.append(iter.name());
         }
     }

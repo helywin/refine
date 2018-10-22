@@ -8,7 +8,8 @@
 
 #include "Revolve.hpp"
 
-Revolve::Revolve() :
+Revolve::Revolve(Initializer *init) :
+        _init(init),
         _can(),
         _curve(),
         _buffer(100),
@@ -119,10 +120,31 @@ void Revolve::setCollectManner(Collect::Manner manner, QString &collect_frame)
 
 void Revolve::genFramesDataFile()
 {
-    _store_frames->setFileName()
+    _store_frames->setFileName(
+            QDateTime::currentDateTime()
+                    .toString(_init->get(Initializer::Core,
+                                         Initializer::NameFormat).toString()));
 }
 
 void Revolve::genCurveDataFile()
 {
-
+    _store_curves->setFileName(
+            QDateTime::currentDateTime()
+                    .toString(_init->get(Initializer::Core,
+                                         Initializer::NameFormat).toString()));
 }
+
+bool Revolve::inputCurveConfig(const QString &name)
+{
+    File file;
+    QFile f(name);
+    return file.loadCurveConfig(f, _curve);
+}
+
+bool Revolve::outputCurveConfig(const QString &name)
+{
+    File file;
+    QFile f(name);
+    return file.dumpCurveConfig(f, _curve);
+}
+

@@ -10,7 +10,6 @@
 #include "Revolve.hpp"
 #include "Tribe.hpp"
 #include "Collect.hpp"
-#include "Scope.hpp"
 
 int main(int argc, char *argv[])
 {

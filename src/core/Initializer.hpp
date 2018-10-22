@@ -27,7 +27,7 @@ public:
 
     static const char *VALUE[KEY_LENGTH][2];
     static const char *PATH_MAIN;
-    static const char *GROUP_NAME[2];
+    static const char *GROUP_KEY[2];
     static const int GROUP_SEGMENT[2];
 
     enum GroupIndex
@@ -52,15 +52,6 @@ public:
         IndexEnd = NameFormat
     };
 
-
-public:
-    const QString path_main = QString();
-    const QString group_CORE = QString("CORE");
-    const QString key_CORE_TEMP_DIR = QString("TEMP_DIR");
-    const QString def_CORE_TEMP_DIR = QString("./temp/");
-    const QString key_CORE_NAME_FORMAT = QString("NAME_FORMAT");
-    const QString def_CORE_NAME_FORMAT = QString("yyyy-MM-dd hh:mm:ss");
-
 private:
     QSettings _main;
     SettingsMap _main_setting;
@@ -68,9 +59,24 @@ private:
 public:
     Initializer();
 
+    inline SettingsMap &map() { return _main_setting; }
+
+    inline const SettingsMap &map() const { return _main_setting; }
+
     void loadSettings();
 
     void dumpSettings();
+
+    inline QVariant get(GroupIndex group, KeyIndex key)
+    {
+        return _main_setting[GROUP_KEY[group]][VALUE[key][KeyName]];
+    }
+
+    inline void set(GroupIndex group, KeyIndex key, const QVariant &var)
+    {
+        _main_setting[GROUP_KEY[group]][VALUE[key][KeyName]] = var;
+    }
+
 
     QStringList str() const;
 };

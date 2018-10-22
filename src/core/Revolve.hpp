@@ -26,6 +26,7 @@
 #include "Despatch.hpp"
 #include "Initializer.hpp"
 #include "Transmit.hpp"
+#include "Initializer.hpp"
 
 /*!
  * @brief 底层调度类
@@ -52,7 +53,7 @@ public:
             int record : 1;
             int trigger : 1;
             int timing : 1;
-        }bits;
+        } bits;
     };
 
     enum Config
@@ -64,6 +65,7 @@ public:
     };
 
 private:
+    Initializer *_init;
     Can _can;
     Curve _curve;
     Buffer _buffer;
@@ -84,7 +86,7 @@ private:
     Status _status;
 
 public:
-    Revolve();
+    explicit Revolve(Initializer *init);
 
     //Can配置
     inline Can::Config &canConfig() { return _can.config(); }
@@ -103,8 +105,15 @@ public:
     bool inputCurveConfig(const QString &name);
     bool outputCurveConfig(const QString &name);
 
-    bool importCsvCurveConfig(const QString &name);
-    bool exportCsvCurveConfig(const QString &name);
+    inline bool importCsvCurveConfig(const QString &name)
+    {
+        return _curve.loadFromCsv(name);
+    }
+
+    inline bool exportCsvCurveConfig(const QString &name)
+    {
+        return _curve.dumpToCsv(name);
+    }
 
     bool outputFrameData(const QString &name);
     bool exportCsvFrameData(const QString &name);
@@ -114,11 +123,9 @@ public:
 
     bool inputCurveData(const QString &name);
     bool outputCurveData(const QString &name);
-
-//    bool importCsvCurveData(const QString &name) = delete;
     bool exportCsvCurveData(const QString &name);
 
-
+private:
     //生成临时存储文件
     void genFramesDataFile();
 
@@ -128,11 +135,11 @@ public:
 private slots:
     void tictoc();
 
-    void CollectError(int code);
+    void CollectError(int code) {}
 
-    void TransformError(int code);
+    void TransformError(int code) {}
 
-    void RecordError(int code);
+    void RecordError(int code) {}
 
 };
 

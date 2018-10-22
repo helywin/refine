@@ -8,15 +8,18 @@
 
 #include "Initializer.hpp"
 
-const char *Initializer::PATH_MAIN = "./settings/main.ini";
+const char *Initializer::PATH_MAIN =
+        "./settings/main.ini";
 
 const char *Initializer::VALUE[KEY_LENGTH][2] = {
+        //CORE
         {"TEMP_DIR",    "./temp/"},
         {"NAME_FORMAT", "yyyy-MM-dd hh:mm:ss"},
+        //GUI
         {"FPS_MSEC",    "10"}
 };
 
-const char *Initializer::GROUP_NAME[2] = {
+const char *Initializer::GROUP_KEY[2] = {
         "CORE",
         "GUI"
 };
@@ -39,7 +42,7 @@ void Initializer::loadSettings()
     QStringList groups = _main.childGroups();
     qDebug() << groups;
     for (int i = GroupIndex::GroupStart; i <= GroupIndex::GroupEnd; ++i) {
-        QString group = QString(GROUP_NAME[i]);
+        QString group = QString(GROUP_KEY[i]);
         qDebug() << "i: " << i;
         _main.beginGroup(group);
         qDebug() << "begin: " << group;

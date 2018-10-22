@@ -11,7 +11,7 @@ QT       += core gui widgets opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = scope
+TARGET = refine
 QMAKE_LFLAGS = -static
 QMAKE_LFLAGS_QT_DLL = -static
 TEMPLATE = app
@@ -25,8 +25,9 @@ INCLUDEPATH += ./src/gui \
 
 SOURCES += \
         ./src/gui/Display.cpp \
+        ./src/gui/FileDialog.cpp \
         ./src/gui/FrameViewer.cpp \
-        ./src/gui/Scope.cpp \
+        ./src/gui/Refine.cpp \
         ./src/gui/StatusBar.cpp \
         ./src/core/Buffer.cpp \
         ./src/core/Can.cpp \
@@ -35,19 +36,23 @@ SOURCES += \
         ./src/core/Curve.cpp \
         ./src/core/Despatch.cpp \
         ./src/core/File.cpp \
+        ./src/core/Initializer.cpp \
         ./src/core/Log.cpp \
+        ./src/core/Record.cpp \
         ./src/core/Revolve.cpp \
+        ./src/core/Softcan.cpp \
         ./src/core/Transform.cpp \
+        ./src/core/Transmit.cpp \
         ./src/core/Tribe.cpp \
         ./src/core/Trigger.cpp \
         ./src/core/Version.cpp \
-        ./src/core/Softcan.cpp \
-        ./src/test/test_scope.cpp
+        ./src/test/main.cpp
 
 HEADERS += \
         ./src/gui/Display.hpp \
+        ./src/gui/FileDialog.hpp \
         ./src/gui/FrameViewer.hpp \
-        ./src/gui/Scope.hpp \
+        ./src/gui/Refine.hpp \
         ./src/gui/StatusBar.hpp \
         ./src/core/Buffer.hpp \
         ./src/core/Can.hpp \
@@ -56,13 +61,16 @@ HEADERS += \
         ./src/core/Curve.hpp \
         ./src/core/Despatch.hpp \
         ./src/core/File.hpp \
+        ./src/core/Initializer.hpp \
         ./src/core/Log.hpp \
+        ./src/core/Record.hpp \
         ./src/core/Revolve.hpp \
+        ./src/core/Softcan.hpp \
         ./src/core/Transform.hpp \
+        ./src/core/Transmit.hpp \
         ./src/core/Tribe.hpp \
         ./src/core/Trigger.hpp \
         ./src/core/Version.hpp \
-        ./src/core/Softcan.hpp \
 
 RESOURCES += \
     res/ui.qrc
@@ -72,5 +80,3 @@ RC_FILE += res/refine.rc
 
 
 win32: LIBS += -L$$PWD/lib/ -lControlCAN
-
-

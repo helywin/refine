@@ -69,10 +69,6 @@ set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.a)
 set(LIBZIP D:/msys32/mingw32/lib/libzip.a)
 set(LIBZ D:/msys32/mingw32/lib/libz.a)
 
-add_executable(main main.cpp ${CORE})
-target_link_libraries(main ${LIBCAN}
-        Qt5Core)
-
 add_executable(file test_file.cpp ${CORE})
 target_link_libraries(file ${LIBCAN}
         Qt5Core)
@@ -98,3 +94,12 @@ target_link_libraries(thread Qt5Core)
 
 add_executable(setting test_setting.cpp ../core/Initializer.cpp ../core/Initializer.hpp)
 target_link_libraries(setting Qt5Core)
+
+add_executable(refine main.cpp ${CORE} ${GUI} ${RES})
+target_link_libraries(refine
+        ${LIBCAN}
+        ${LIBOPENGL}
+        Qt5Core
+        Qt5Widgets
+        Qt5Gui
+        Qt5OpenGL)
