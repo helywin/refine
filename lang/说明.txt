@@ -1,0 +1,3 @@
+qt翻译，可以生成多种语言，
+具体调用linguist
+ lupdate refine.pro -ts ./lang/en.ts
