@@ -2,15 +2,22 @@
 // Created by jiang.wenqiang on 2018/10/22.
 //
 
-#include "FileDialog.hpp"
+#include <QtCore/qlocale.h>
+#include "FilePicker.hpp"
 
-FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
+FilePicker::FilePicker(QWidget *parent) : QFileDialog(parent)
 {
     setup();
 }
 
-void FileDialog::setup()
+void FilePicker::setup()
 {
+    setWindowTitle(tr("文件对话框"));
+    setWindowIcon(QIcon(":res/ui/logo.ico"));
+//    setModal(true);
+    auto flag = windowFlags();
+    flag = flag | Qt::WindowStaysOnTopHint;
+    setWindowFlags(flag);
     setLabelText(QFileDialog::DialogLabel::LookIn, tr("查找范围"));
     setLabelText(QFileDialog::DialogLabel::FileType, tr("文件类型"));
     setLabelText(QFileDialog::DialogLabel::Accept, tr("确定"));
@@ -18,7 +25,7 @@ void FileDialog::setup()
     setLabelText(QFileDialog::DialogLabel::Reject, tr("取消"));
 }
 
-QStringList FileDialog::extendName(unsigned int type)
+QStringList FilePicker::extendName(unsigned int type)
 {
     QStringList exts;
     if (type & (unsigned int) Archive) { exts.append(".ref"); }
@@ -34,7 +41,7 @@ QStringList FileDialog::extendName(unsigned int type)
     if (type & (unsigned int) ResultDataCsv) { exts.append(".csv"); }
 }
 
-QStringList FileDialog::extendNameWithStr(unsigned int type)
+QStringList FilePicker::extendNameWithStr(unsigned int type)
 {
     QStringList exts;
     if (type & (unsigned int) Archive) {
@@ -73,7 +80,7 @@ QStringList FileDialog::extendNameWithStr(unsigned int type)
     return exts;
 }
 
-QString FileDialog::getCurveConfig()
+QString FilePicker::getCurveConfig()
 {
     this->setFilter(QDir::Filter::Files);
     this->setWindowTitle(tr("打开曲线配置"));

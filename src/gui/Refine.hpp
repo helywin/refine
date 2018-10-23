@@ -13,10 +13,18 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QAction>
+#include <QtWidgets/QToolBar>
 #include <QtGui/QKeyEvent>
 #include "Initializer.hpp"
 #include "Revolve.hpp"
-#include "FileDialog.hpp"
+#include "FilePicker.hpp"
+#include "Toolbox.hpp"
+#include "CurveEditor.hpp"
+#include "Messager.hpp"
+#include "Splitter.hpp"
+#include "Output.hpp"
+#include "StatusBar.hpp"
+#include "CurveBox.hpp"
 
 class Refine : public QMainWindow
 {
@@ -34,10 +42,10 @@ private:
     QAction *_menu_file_exit;
     QMenu *_menu_view;
     QMenu *_menu_view_display;
-    QAction *_menu_view_display_west;
-    QAction *_menu_view_display_east;
-    QAction *_menu_view_display_south;
     QAction *_menu_view_display_tools;
+    QAction *_menu_view_display_docker;
+    QAction *_menu_view_display_output;
+    QAction *_menu_view_display_curve;
     QAction *_menu_view_full;
     QAction *_menu_view_presentation;
     QMenu *_menu_init;
@@ -56,12 +64,19 @@ private:
     QAction *_menu_help_license;
     QAction *_menu_help_feedback;
     QAction *_menu_help_about;
-    QStatusBar *_statusbar;
+    QToolBar *_toolbar_menu;
+
+    Toolbox *_docker;
+    Output *_output;
+    CurveBox *_curvebox;
+    Splitter *_splitter;
+
+    StatusBar *_statusbar;
 
     Qt::WindowState _win_state;
     bool _presentation;
     //widgets
-    FileDialog _file_dialog;
+    FilePicker _file_dialog;
 
 public:
     Refine();

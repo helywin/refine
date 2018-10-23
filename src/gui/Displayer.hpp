@@ -14,7 +14,7 @@
  * @brief 显示曲线的控件类
  */
 
-class Display : public QGLWidget, public QGLFunctions
+class Displayer : public QGLWidget, public QGLFunctions
 {
 Q_OBJECT
 private:
@@ -22,7 +22,7 @@ private:
     Curve *_curve;
 
 public:
-    explicit Display(QWidget *parent = nullptr, Tribe *tribe = nullptr,
+    explicit Displayer(QWidget *parent = nullptr, Tribe *tribe = nullptr,
                      Curve *curve = nullptr);
 
     inline void setTribe(Tribe *tribe) { _tribe = tribe; }

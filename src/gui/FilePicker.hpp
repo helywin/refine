@@ -6,8 +6,9 @@
 #define REFINE_FILEDIALOG_HPP
 
 #include <QtWidgets/QFileDialog>
+#include <QtGui/QIcon>
 
-class FileDialog : public QFileDialog
+class FilePicker : public QFileDialog
 {
 Q_OBJECT
 public:
@@ -30,7 +31,7 @@ public:
     };
 private:
 public:
-    FileDialog(QWidget *parent = nullptr);
+    explicit FilePicker(QWidget *parent = nullptr);
     static QStringList extendName(unsigned int type);
 
     static QStringList extendNameWithStr(unsigned int type);
