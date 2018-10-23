@@ -6,13 +6,14 @@
 #define REFINE_REFINE_HPP
 
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QAction>
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
+#include <QtGui/QKeyEvent>
 #include "Initializer.hpp"
 #include "Revolve.hpp"
 #include "FileDialog.hpp"
@@ -29,6 +30,7 @@ private:
     QMenu *_menu_file;
     QAction *_menu_file_open;
     QAction *_menu_file_save;
+    QAction *_menu_file_config;
     QAction *_menu_file_exit;
     QMenu *_menu_view;
     QMenu *_menu_view_display;
@@ -37,6 +39,7 @@ private:
     QAction *_menu_view_display_south;
     QAction *_menu_view_display_tools;
     QAction *_menu_view_full;
+    QAction *_menu_view_presentation;
     QMenu *_menu_init;
     QAction *_menu_init_setting;
     QAction *_menu_init_can;
@@ -53,7 +56,10 @@ private:
     QAction *_menu_help_license;
     QAction *_menu_help_feedback;
     QAction *_menu_help_about;
+    QStatusBar *_statusbar;
 
+    Qt::WindowState _win_state;
+    bool _presentation;
     //widgets
     FileDialog _file_dialog;
 
@@ -61,8 +67,10 @@ public:
     Refine();
 
 private:
+    void setup();
+
     inline void initMenu(QMenu *&menu, QString &&title,
-                          QMenuBar *m)
+                         QMenuBar *m)
     {
         menu = new QMenu(title, m);
         m->addMenu(menu);
@@ -75,15 +83,37 @@ private:
         m->addMenu(menu);
     }
 
-    inline void initMenu(QAction *&action, QString &&title,
-                         QMenu *m)
+    void initMenu(QAction *&action, QString &&title,
+                  QMenu *m, const QString &tips,
+                  bool checkable = false,
+                  bool checked = false)
     {
         action = new QAction(title, m);
         m->addAction(action);
-
+        action->setStatusTip(tips);
+        action->setCheckable(checkable);
+        action->setChecked(checked);
     }
 
-    void setup();
+    inline void initMenu(QAction *&action, QString &&title,
+                         QMenu *m, const QString &tips,
+                         const QKeySequence &seq,
+                         bool checkable = false,
+                         bool checked = false)
+    {
+        initMenu(action, qMove(title), m, tips, checkable, checked);
+        action->setShortcut(seq);
+    }
+private slots:
+
+    void fullScreen()
+    {
+        if (_menu_view_full->isChecked()) {
+            this->setWindowState(Qt::WindowFullScreen);
+        } else {
+            this->setWindowState(Qt::WindowMaximized);
+        }
+    }
 };
 
 

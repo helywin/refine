@@ -2,61 +2,52 @@
 // Created by jiang.wenqiang on 2018/9/20.
 //
 
-#include <QtCore/QDebug>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QHeaderView>
 #include "FrameViewer.hpp"
 #include "Buffer.hpp"
 #include "File.hpp"
 
 FrameViewer::FrameViewer(QWidget *parent) : QMainWindow(parent)
 {
-    setupUi();
+    setup();
 }
 
-void FrameViewer::setupUi()
+void FrameViewer::setup()
 {
-    this->setWindowTitle("报文查看器");
+    this->setWindowTitle(tr("报文查看器"));
     this->resize(860, 600);
-    this->move(200, 50);
     _menubar = new QMenuBar(this);
     this->setMenuBar(_menubar);
-    _menu_file = new QMenu(QString("文件(&F)"), _menubar);
-    _menu_file_open = new QAction(QString("打开(&O)"), _menu_file);
-    _menu_file_exit = new QAction(QString("退出(&E)"), _menu_file);
-    _menu_file->addAction(_menu_file_open);
-    _menu_file->addAction(_menu_file_exit);
-    _menu_option = new QMenu(QString("选项(&O)"), _menubar);
-    _menu_option_frame777 = new QAction(QString("仅显示777(&F)"), _menu_option);
-    _menu_option_frame777->setCheckable(true);
-    _menu_option->addAction(_menu_option_frame777);
-    _menu_help = new QMenu(QString("帮助(&H)"), _menubar);
-    _menu_help_about = new QAction(QString("关于(&A)"), _menu_help);
-    _menu_help->addAction(_menu_help_about);
-    _menubar->addMenu(_menu_file);
-    _menubar->addMenu(_menu_option);
-    _menubar->addMenu(_menu_help);
-    _menubar->addAction(_menu_file->menuAction());
-    _menubar->addAction(_menu_option->menuAction());
-    _menubar->addAction(_menu_help->menuAction());
+    initMenu(_menu_file, tr("文件(&F)"), _menubar);
+    initMenu(_menu_file_open, tr("打开(&O)..."), _menu_file,
+            tr("打开报文文件"), QKeySequence("Ctrl+O"));
+    _menu_file->addSeparator();
+    initMenu(_menu_file_exit, tr("退出(&E)"), _menu_file,
+             tr("退出报文查看器"), QKeySequence("Alt+F4"));
+    initMenu(_menu_option, tr("选项(&O)"), _menubar);
+    initMenu(_menu_option_frame, tr("报文筛选(&F)..."), _menu_option,
+             tr("需要查看哪些报文"), QKeySequence("Ctrl+F"), true);
 
     _widget_central = new QWidget(this);
     this->setCentralWidget(_widget_central);
     _layout_central = new QHBoxLayout(_widget_central);
     _widget_central->setLayout(_layout_central);
-
+    _layout_central->setMargin(0);
     _table_central = new QTableWidget(_widget_central);
     _layout_central->addWidget(_table_central);
 
+    _statusbar = new QStatusBar(this);
+    this->setStatusBar(_statusbar);
+
     _file_dialog = new QFileDialog(this);
     _file_dialog->setWindowTitle(QString("打开报文文件"));
-    connect(_menu_file_open, &QAction::triggered, _file_dialog,
-            &QFileDialog::show);
-    connect(_menu_option_frame777, &QAction::triggered, this,
-            &FrameViewer::showOnlyFrame777);
-    connect(_file_dialog, &QFileDialog::fileSelected, this,
-            &FrameViewer::readFrameData);
+    connect(_menu_file_open, &QAction::triggered,
+            _file_dialog, &QFileDialog::show, Qt::DirectConnection);
+    connect(_menu_file_open, &QAction::triggered,
+            this, &FrameViewer::close, Qt::DirectConnection);
+    connect(_menu_option_frame, &QAction::triggered,
+            this, &FrameViewer::showOnlyFrame777);
+    connect(_file_dialog, &QFileDialog::fileSelected,
+            this, &FrameViewer::readFrameData);
 
 //    QString fname("D:/jiang.wenqiang/code/refine/data/data.fmd");
 //    QFile f(fname);
@@ -115,7 +106,7 @@ void FrameViewer::readFrameData(const QString &fname)
         file.loadFrameRecord(buffer);
         const Buffer::Cell &cell = buffer.tail();
         for (int j = 0; j < cell.dataSize(); ++j) {
-            if (_menu_option_frame777->isChecked()) {
+            if (_menu_option_frame->isChecked()) {
                 if (cell[j]->ID != 0x777) {
                     continue;
                 }
