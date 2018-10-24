@@ -9,7 +9,7 @@
 #include "Initializer.hpp"
 
 const char *Initializer::PATH_MAIN =
-        "./settings/main.ini";
+        "./refine.ini";
 
 const char *Initializer::VALUE[KEY_LENGTH][2] = {
         //CORE

@@ -110,7 +110,7 @@ int Can::ErrorInfo::report() const
             str = QString("数据发得太快，Socket缓冲区满了");
             break;
         default:
-            str = QString("不在错误码范围内，没有错误");
+            str = QString("读取不到错误码，确认连接好CAN盒");
             break;
     }
     qWarning() << str;

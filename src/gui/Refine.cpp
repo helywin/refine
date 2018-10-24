@@ -4,16 +4,19 @@
 
 #include <QtWidgets/QApplication>
 #include "Refine.hpp"
+#include "Messager.hpp"
+#include "Output.hpp"
 
 Refine::Refine() :
-        _init(), _revolve(&_init)
+        _init(), _revolve(&_init), _translator()
 {
     setup();
 }
 
 void Refine::setup()
 {
-    setWindowTitle(tr("Refine-数据采集工况匹配软件"));
+    setLanguage();
+    setWindowTitle(tr("Refine - 数据采集 & 工况匹配"));
     resize(800, 600);
     _win_state = Qt::WindowMaximized;
     _presentation = false;
@@ -44,6 +47,8 @@ void Refine::setup()
              tr("输出窗口显示/隐藏"), true, true);
     initMenu(_menu_view_display_curve, tr("曲线窗口(&C)"), _menu_view_display,
              tr("曲线窗口显示/隐藏"), true, true);
+    initMenu(_menu_view_display_mark, tr("标注窗口(&M)"), _menu_view_display,
+             tr("标注窗口显示/隐藏"), true, true);
     initMenu(_menu_view_full, tr("全屏(&F)"), _menu_view,
              tr("全屏/取消全屏"), QKeySequence("F11"), true);
     initMenu(_menu_view_presentation, tr("演示(&P)"), _menu_view,
@@ -61,14 +66,14 @@ void Refine::setup()
     initMenu(_menu_control_start, tr("开始(&S)"), _menu_control,
             tr("开始采集曲线"));
     initMenu(_menu_control_pause, tr("暂停(&P)"), _menu_control,
-            tr("暂停采集曲线(生成曲线段)"));
+            tr("暂停采集曲线(曲线段结束)"));
     initMenu(_menu_control_resume, tr("继续(&R)"), _menu_control,
-            tr("继续采集曲线(开始曲线段)"));
+            tr("继续采集曲线(曲线段开始)"));
     initMenu(_menu_control_finish, tr("结束(&F)"), _menu_control,
             tr("结束采集曲线"));
     initMenu(_menu_help, tr("帮助(&H)"), _menubar);
     initMenu(_menu_help_tutorial, tr("手册(&T)..."), _menu_help,
-            tr("软件手册"));
+            tr("软件手册和工况"));
     initMenu(_menu_help_version, tr("版本(&V)..."), _menu_help,
             tr("软件版本信息"));
     initMenu(_menu_help_license, tr("声明(&D)..."), _menu_help,
@@ -82,30 +87,71 @@ void Refine::setup()
     this->addToolBar(_toolbar_menu);
     _toolbar_menu->addAction(_menu_file_open);
 
-    _docker = new Toolbox(this);
-    _docker->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::LeftDockWidgetArea, _docker);
+    _toolbox = new Toolbox(this);
+    _toolbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::LeftDockWidgetArea, _toolbox);
 
     _output = new Output(this);
     _output->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, _output);
+    _output->connectToMessager(this);
+    _output->connectToMessager(&_revolve);
+//    tabifyDockWidget(_toolbox, _output);
+//    _toolbox->raise();
 
     _curvebox = new CurveBox(this);
     _curvebox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _curvebox);
 
-    _splitter = new Splitter(this);
-    setCentralWidget(_splitter);
+    _markbox = new MarkBox(this);
+    _markbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, _markbox);
+
+    tabifyDockWidget(_curvebox, _markbox);
+    _curvebox->raise();
+
+    _display = new Display(this, &_revolve);
+    setCentralWidget(_display);
 
     _statusbar = new StatusBar(this);
     this->setStatusBar(_statusbar);
-
+    _file_picker = new FilePicker(this);
     connect(_menu_file_open, &QAction::triggered,
-            &_file_dialog, &FilePicker::show, Qt::DirectConnection);
+            _file_picker, &FilePicker::show, Qt::DirectConnection);
     connect(_menu_view_full, &QAction::triggered,
             this, &Refine::fullScreen, Qt::DirectConnection);
     connect(_menu_file_exit, &QAction::triggered,
             this, &Refine::close, Qt::DirectConnection);
+    connect(_menu_init_can, &QAction::triggered,
+            this, &Refine::connectCan, Qt::DirectConnection);
+    connect(_menu_control_start, &QAction::triggered,
+            this, &Refine::startRevolve, Qt::DirectConnection);
+    connect(_menu_control_pause, &QAction::triggered,
+            &_revolve, &Revolve::pause, Qt::DirectConnection);
+    connect(_menu_control_resume, &QAction::triggered,
+            &_revolve, &Revolve::resume, Qt::DirectConnection);
+    connect(_menu_control_finish, &QAction::triggered,
+            &_revolve, &Revolve::stop, Qt::DirectConnection);
+}
 
+void Refine::setLanguage()
+{
+    _translator.load("./lang/zh.qm");
+    QApplication::installTranslator(&_translator);
+}
+
+void Refine::startRevolve()
+{
+    _revolve.begin(10, 7, 0);
+}
+
+void Refine::connectCan()
+{
+    if (_menu_init_can->isChecked()) {
+        _revolve.can().connect();
+    } else {
+        _revolve.can().close();
+    }
+    _menu_init_can->setChecked(_revolve.can().isConnected());
 }
 

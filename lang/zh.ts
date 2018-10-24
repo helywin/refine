@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US" sourcelanguage="zh_CN">
+<TS version="2.1" language="zh_CN" sourcelanguage="zh_CN">
 <context>
     <name>CurveBox</name>
     <message>
@@ -112,7 +112,7 @@
     <message>
         <location filename="../src/gui/FrameViewer.cpp" line="20"/>
         <source>文件(&amp;F)</source>
-        <translation>File(&amp;F)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/FrameViewer.cpp" line="21"/>
@@ -127,7 +127,7 @@
     <message>
         <location filename="../src/gui/FrameViewer.cpp" line="24"/>
         <source>退出(&amp;E)</source>
-        <translation>Exit(&amp;E)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/FrameViewer.cpp" line="25"/>
@@ -164,82 +164,42 @@
         <location filename="../src/gui/Refine.cpp" line="25"/>
         <location filename="../src/gui/Refine.cpp" line="81"/>
         <source>文件(&amp;F)</source>
-        <translation>&amp;File</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="36"/>
         <source>视图(&amp;I)</source>
-        <translation>&amp;View</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="37"/>
         <source>显示(&amp;D)</source>
-        <translation>&amp;Display</translation>
-    </message>
-    <message>
-        <source>左侧(&amp;W)</source>
-        <translation type="vanished">West(&amp;W)</translation>
-    </message>
-    <message>
-        <source>右侧(&amp;E)</source>
-        <translation type="vanished">East(&amp;E)</translation>
-    </message>
-    <message>
-        <source>下侧(&amp;S)</source>
-        <translation type="vanished">South(&amp;S)</translation>
-    </message>
-    <message>
-        <source>工具栏(&amp;T)</source>
-        <translation type="vanished">Toolbox(&amp;T)</translation>
-    </message>
-    <message>
-        <source>打开(&amp;O)</source>
-        <translation type="vanished">Open(&amp;O)</translation>
-    </message>
-    <message>
-        <source>保存(&amp;S)</source>
-        <translation type="vanished">Save(&amp;S)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="34"/>
         <source>退出(&amp;E)</source>
-        <translation>&amp;Exit</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="47"/>
         <source>全屏(&amp;F)</source>
-        <translation>&amp;Full Screen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="51"/>
         <source>初始化(&amp;I)</source>
-        <translation>&amp;Initialize</translation>
-    </message>
-    <message>
-        <source>设置(&amp;S)</source>
-        <translation type="vanished">Settings(&amp;S)</translation>
-    </message>
-    <message>
-        <source>CAN(&amp;C)</source>
-        <translation type="vanished">CAN(&amp;C)</translation>
-    </message>
-    <message>
-        <source>曲线配置(&amp;C)</source>
-        <translation type="vanished">Curve Config(&amp;C)</translation>
-    </message>
-    <message>
-        <source>工况配置(&amp;M)</source>
-        <translation type="vanished">Operate Mode Config(&amp;M)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="16"/>
         <source>Refine-数据采集工况匹配软件</source>
-        <translation>Refine-Data Collector &amp; Operate Mode Analyzer</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="26"/>
         <source>打开(&amp;O)...</source>
-        <translation>&amp;Open...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="27"/>
@@ -249,7 +209,7 @@
     <message>
         <location filename="../src/gui/Refine.cpp" line="28"/>
         <source>保存(&amp;S)...</source>
-        <translation>&amp;Save...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="29"/>
@@ -259,7 +219,7 @@
     <message>
         <location filename="../src/gui/Refine.cpp" line="31"/>
         <source>选项(&amp;C)...</source>
-        <translation>&amp;Setting...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="32"/>
@@ -274,7 +234,7 @@
     <message>
         <location filename="../src/gui/Refine.cpp" line="38"/>
         <source>文件工具栏(&amp;F)</source>
-        <translation>&amp;File Toolbar</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="39"/>
@@ -369,12 +329,12 @@
     <message>
         <location filename="../src/gui/Refine.cpp" line="60"/>
         <source>控制(&amp;C)</source>
-        <translation>Control(&amp;C)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="61"/>
         <source>开始(&amp;S)</source>
-        <translation>Start(&amp;S)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="62"/>
@@ -384,7 +344,7 @@
     <message>
         <location filename="../src/gui/Refine.cpp" line="63"/>
         <source>暂停(&amp;P)</source>
-        <translation>Pause(&amp;P)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="64"/>
@@ -394,7 +354,7 @@
     <message>
         <location filename="../src/gui/Refine.cpp" line="65"/>
         <source>继续(&amp;R)</source>
-        <translation>Resume(&amp;R)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="66"/>
@@ -404,7 +364,7 @@
     <message>
         <location filename="../src/gui/Refine.cpp" line="67"/>
         <source>结束(&amp;F)</source>
-        <translation>Finish(&amp;F)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="68"/>
@@ -414,7 +374,7 @@
     <message>
         <location filename="../src/gui/Refine.cpp" line="69"/>
         <source>帮助(&amp;H)</source>
-        <translation>Help(&amp;H)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gui/Refine.cpp" line="70"/>
@@ -465,26 +425,6 @@
         <location filename="../src/gui/Refine.cpp" line="79"/>
         <source>关于本软件</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>手册(&amp;T)</source>
-        <translation type="vanished">Tutorial(&amp;T)</translation>
-    </message>
-    <message>
-        <source>版本(&amp;V)</source>
-        <translation type="vanished">Version(&amp;V)</translation>
-    </message>
-    <message>
-        <source>版权(&amp;L)</source>
-        <translation type="vanished">License(&amp;L)</translation>
-    </message>
-    <message>
-        <source>反馈(&amp;F)</source>
-        <translation type="vanished">Feedback(&amp;F)</translation>
-    </message>
-    <message>
-        <source>关于(&amp;A)</source>
-        <translation type="vanished">About(&amp;A)</translation>
     </message>
 </context>
 <context>

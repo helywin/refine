@@ -2,19 +2,20 @@
 // Created by jiang.wenqiang on 2018/9/28.
 //
 
-#ifndef REFINE_DISPLAY_HPP
-#define REFINE_DISPLAY_HPP
+#ifndef REFINE_SKETCH_HPP
+#define REFINE_SKETCH_HPP
 
 #include <QtOpenGL/QGLWidget>
 #include <QtOpenGL/QGLFunctions>
 #include "Tribe.hpp"
 #include "Curve.hpp"
 
+class Revolve;
 /*!
  * @brief 显示曲线的控件类
  */
 
-class Displayer : public QGLWidget, public QGLFunctions
+class Sketch : public QGLWidget, public QGLFunctions
 {
 Q_OBJECT
 private:
@@ -22,8 +23,7 @@ private:
     Curve *_curve;
 
 public:
-    explicit Displayer(QWidget *parent = nullptr, Tribe *tribe = nullptr,
-                     Curve *curve = nullptr);
+    explicit Sketch(QWidget *parent, Revolve *revolve);
 
     inline void setTribe(Tribe *tribe) { _tribe = tribe; }
     inline void setCurve(Curve *curve) { _curve = curve; }
@@ -39,4 +39,4 @@ public:
 };
 
 
-#endif //REFINE_DISPLAY_HPP
+#endif //REFINE_SKETCH_HPP

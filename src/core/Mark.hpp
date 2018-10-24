@@ -5,41 +5,42 @@
 #ifndef REFINE_MARK_HPP
 #define REFINE_MARK_HPP
 
+#include <QtGui/QColor>
 #include <QtCore/QRect>
 #include <QtCore/QLine>
 #include <QtCore/QVector>
-
-class MarkCell {
-public:
-    virtual QString str() const = 0;
-};
+#include <QtCore/QVariant>
 
 class Mark
 {
 public:
-    class RectCell : public MarkCell
+    enum MarkType
     {
-    private:
-        QRect _data;
-        QString _text;
+        Rect,
+        Circle,
+        Arrow,
+        Line,
+        Text,
     };
 
-    class ArrowCell : public MarkCell
+    class Cell
     {
     private:
-        QLine _data;
+        QString _name;
+        QVariant _data;
         QString _text;
+        QColor _color;
+        int size;       //字体大小或者线条宽度
+    public:
+        QString str() const;
     };
 private:
-//    QVector<RectCell> _rects;
-//    QVector<ArrowCell> _arrows;
+    QVector<Cell> _marks;
 
 public:
-    const QVector<RectCell> &rects() const;
-    const QVector<ArrowCell> &arrows() const;
+    const QVector<Cell> &marks() const;
 
-    void addRect(const QRect &rect, const QString &text);
-    void addArrow(const QLine &arrow, const QString &text);
+    void addMark(const QVariant &rect, MarkType type, const QString &text);
 
     QString str() const;
 };

@@ -24,7 +24,10 @@ Revolve::Revolve(Initializer *init) :
         _collect_frames(nullptr),
         _store_curves(nullptr),
         _msec(10),
-        _time(10)
+        _time(10),
+        _config(),
+        _status(Stop)
+
 {
     connect(&_timer_collect, &QTimer::timeout, this, &Revolve::tictoc,
             Qt::DirectConnection);
@@ -38,6 +41,9 @@ Revolve::Revolve(Initializer *init) :
 void Revolve::begin(int msec, int config, int time)
 {
     if (_status != Stop) {
+        return;
+    }
+    if (!_can.isConnected()) {
         return;
     }
     _msec = msec;

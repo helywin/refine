@@ -9,7 +9,6 @@
 #ifndef REFINE_REVOLVE_HPP
 #define REFINE_REVOLVE_HPP
 
-#include <QtCore/QThread>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include "Can.hpp"
@@ -27,6 +26,7 @@
 #include "Initializer.hpp"
 #include "Transmit.hpp"
 #include "Initializer.hpp"
+#include "Messager.hpp"
 
 /*!
  * @brief 底层调度类
@@ -125,6 +125,12 @@ public:
     bool outputCurveData(const QString &name);
     bool exportCsvCurveData(const QString &name);
 
+    inline Can &can() { return _can; }
+
+    inline Tribe &tribe() { return _tribe; }
+
+    inline Curve &curve() { return _curve; }
+
 private:
     //生成临时存储文件
     void genFramesDataFile();
@@ -132,7 +138,7 @@ private:
     void genCurveDataFile();
 
 
-private slots:
+public slots:
     void tictoc();
 
     void CollectError(int code) {}
@@ -141,6 +147,8 @@ private slots:
 
     void RecordError(int code) {}
 
+signals:
+    void message(Messager::MessageType type, const QString &msg);
 };
 
 

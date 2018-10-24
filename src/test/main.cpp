@@ -3,6 +3,7 @@
 //
 
 #include <QtWidgets/QApplication>
+#include <QtCore/QTranslator>
 #include "Refine.hpp"
 
 int main(int argc, char *argv[]) {

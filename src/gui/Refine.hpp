@@ -15,16 +15,20 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QToolBar>
 #include <QtGui/QKeyEvent>
+#include <QtCore/QTranslator>
 #include "Initializer.hpp"
 #include "Revolve.hpp"
 #include "FilePicker.hpp"
 #include "Toolbox.hpp"
 #include "CurveEditor.hpp"
 #include "Messager.hpp"
-#include "Splitter.hpp"
-#include "Output.hpp"
+#include "Display.hpp"
 #include "StatusBar.hpp"
 #include "CurveBox.hpp"
+#include "MarkBox.hpp"
+
+class Output;
+class Messager;
 
 class Refine : public QMainWindow
 {
@@ -32,7 +36,7 @@ Q_OBJECT
 private:
     Initializer _init;
     Revolve _revolve;
-
+    QTranslator _translator;
     //ui
     QMenuBar *_menubar;
     QMenu *_menu_file;
@@ -46,6 +50,7 @@ private:
     QAction *_menu_view_display_docker;
     QAction *_menu_view_display_output;
     QAction *_menu_view_display_curve;
+    QAction *_menu_view_display_mark;
     QAction *_menu_view_full;
     QAction *_menu_view_presentation;
     QMenu *_menu_init;
@@ -66,23 +71,26 @@ private:
     QAction *_menu_help_about;
     QToolBar *_toolbar_menu;
 
-    Toolbox *_docker;
+    Toolbox *_toolbox;
     Output *_output;
     CurveBox *_curvebox;
-    Splitter *_splitter;
+    MarkBox *_markbox;
+    Display *_display;
 
     StatusBar *_statusbar;
 
     Qt::WindowState _win_state;
     bool _presentation;
     //widgets
-    FilePicker _file_dialog;
+    FilePicker *_file_picker;
 
 public:
     Refine();
 
 private:
     void setup();
+
+    void setLanguage();
 
     inline void initMenu(QMenu *&menu, QString &&title,
                          QMenuBar *m)
@@ -119,16 +127,25 @@ private:
         initMenu(action, qMove(title), m, tips, checkable, checked);
         action->setShortcut(seq);
     }
+
 private slots:
 
     void fullScreen()
     {
         if (_menu_view_full->isChecked()) {
+            emit message(Messager::MessageType::Debug, tr("进入全屏模式"));
             this->setWindowState(Qt::WindowFullScreen);
         } else {
+            emit message(Messager::MessageType::Debug, tr("退出全屏模式"));
             this->setWindowState(Qt::WindowMaximized);
         }
     }
+
+    void startRevolve();
+
+    void connectCan();
+signals:
+    void message(Messager::MessageType type, const QString &msg);
 };
 
 

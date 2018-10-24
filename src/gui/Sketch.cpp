@@ -3,7 +3,8 @@
 //
 
 #include <QtCore/QDebug>
-#include "Displayer.hpp"
+#include "Sketch.hpp"
+#include "Revolve.hpp"
 
 #define X_AXIS_MIN 0
 #define X_AXIS_MAX 2000
@@ -11,20 +12,22 @@
 #define Y_AXIS_MAX 5000
 
 
-Displayer::Displayer(QWidget *parent, Tribe *tribe, Curve *curve) :
-        QGLWidget(parent), _tribe(tribe), _curve(curve)
+Sketch::Sketch(QWidget *parent,  Revolve *revolve) :
+        QGLWidget(parent),
+        _tribe(&revolve->tribe()),
+        _curve(&revolve->curve())
 {
 
 }
 
-void Displayer::initializeGL()
+void Sketch::initializeGL()
 {
     qglClearColor(Qt::black);
     setAutoBufferSwap(true);
     enableSmooth();
 }
 
-void Displayer::resizeGL(int w, int h)
+void Sketch::resizeGL(int w, int h)
 {
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
@@ -33,7 +36,7 @@ void Displayer::resizeGL(int w, int h)
     glOrtho(X_AXIS_MIN, X_AXIS_MAX, Y_AXIS_MIN, Y_AXIS_MAX, 0, 100);
 }
 
-void Displayer::paintGL()
+void Sketch::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 //    glPushMatrix();
@@ -72,7 +75,7 @@ void Displayer::paintGL()
     glFlush();
 }
 
-void Displayer::enableSmooth()
+void Sketch::enableSmooth()
 {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
@@ -81,7 +84,7 @@ void Displayer::enableSmooth()
     updateGL();
 }
 
-void Displayer::disableSmooth()
+void Sketch::disableSmooth()
 {
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);

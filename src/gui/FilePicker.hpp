@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/10/22.
 //
 
-#ifndef REFINE_FILEDIALOG_HPP
-#define REFINE_FILEDIALOG_HPP
+#ifndef REFINE_FILEPICKER_HPP
+#define REFINE_FILEPICKER_HPP
 
 #include <QtWidgets/QFileDialog>
 #include <QtGui/QIcon>
@@ -41,4 +41,4 @@ private:
 };
 
 
-#endif //REFINE_FILEDIALOG_HPP
+#endif //REFINE_FILEPICKER_HPP
