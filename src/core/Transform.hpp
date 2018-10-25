@@ -12,6 +12,7 @@
 #include <QtCore/QThread>
 #include <QtCore/QFile>
 #include "File.hpp"
+#include "Buffer.hpp"
 
 class Curve;
 class Buffer;
@@ -29,6 +30,8 @@ private:
     Buffer *_buffer;
     Tribe *_tribe;
     File _file;
+    Buffer::Iter _buffer_tail;
+    Buffer::Iter _buffer_head;
 
 public:
     Transform();

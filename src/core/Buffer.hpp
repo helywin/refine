@@ -92,7 +92,14 @@ public:
         int _pos;
 
     public:
-        Iter(Buffer *buffer, int pos) : _buffer(buffer), _pos(pos) {}
+        Iter(Buffer *buffer = nullptr, int pos = 0) :
+                _buffer(buffer), _pos(pos) {}
+
+        inline void setParams(Buffer *buffer, int pos)
+        {
+            _buffer = buffer;
+            _pos = pos;
+        }
 
         inline bool operator!=(const Iter &other) const
         {
@@ -141,7 +148,8 @@ public:
         return *(_cells + index);
     }
 
-    friend QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
+//    friend QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
+    void dump(QDataStream &stream, Iter tail, Iter head);
     friend QDataStream &operator>>(QDataStream &stream, Buffer &buffer);
 
     inline int space() const { return _cell_space; }
@@ -219,7 +227,7 @@ public:
 
     inline int headMarked() const
     {
-        if (_is_marked){
+        if (_is_marked) {
             return _mark_head;
         } else {
             return -1;
@@ -228,7 +236,7 @@ public:
 
     inline int tailMarked() const
     {
-        if (_is_marked){
+        if (_is_marked) {
             return _mark_tail;
         } else {
             return -1;
@@ -238,7 +246,7 @@ public:
     void reset();
 };
 
-QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
+//QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
 QDataStream &operator>>(QDataStream &stream, Buffer &buffer);
 
 QDataStream &operator<<(QDataStream &stream, const Buffer::Cell &cell);

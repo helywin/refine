@@ -113,7 +113,6 @@ int Can::ErrorInfo::report() const
             str = QString("读取不到错误码，确认连接好CAN盒");
             break;
     }
-    qWarning() << str;
     return _error.ErrCode;
 }
 

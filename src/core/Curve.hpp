@@ -307,9 +307,10 @@ private:
     QList<Cell> _cells;
     SubIdMap _sub_id_map_777;      //用于曲线转换查表而非遍历
     OtherIdMap _other_id_map;
+    bool _initialized;
 
 public:
-    Curve() = default;
+    Curve() : _initialized(false) {}
     bool loadFromCsv(QFile &f);
 
     inline bool loadFromCsv(QFile &&f) { return loadFromCsv(f); }
@@ -403,6 +404,10 @@ public:
     QStringList subIdMap777Str() const;
 
     QStringList otherIdMapStr() const;
+
+    inline void setInitialized(bool flag) { _initialized = flag; }
+
+    inline bool isInitialized() const { return _initialized; }
 };
 
 QDataStream &operator<<(QDataStream &stream, const Curve &curve);

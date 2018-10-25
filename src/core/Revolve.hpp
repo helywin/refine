@@ -32,6 +32,7 @@
  * @brief 底层调度类
  * 外部GUI只传文件名进来
  */
+class Sketch;
 
 class Revolve : public QObject
 {
@@ -75,6 +76,7 @@ private:
     Transform _transform;
     Record _record;
     Softcan _softcan;           //! \brief softcan配置转换工具
+    Sketch *_sketch;
     QTimer _timer_collect;      //! \brief 采样时钟
     QTimer _timer_stop;         //! \brief 自动停止的计时器
     QFile *_store_frames;       //! \brief 自动存储的报文数据
@@ -88,6 +90,7 @@ private:
 public:
     explicit Revolve(Initializer *init);
 
+    ~Revolve();
     //Can配置
     inline Can::Config &canConfig() { return _can.config(); }
 
@@ -107,7 +110,23 @@ public:
 
     inline bool importCsvCurveConfig(const QString &name)
     {
-        return _curve.loadFromCsv(name);
+        if (_curve.loadFromCsv(name)) {
+            genTribe();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    inline bool importSoftcanCurveConfig(const QString &name)
+    {
+        if (_softcan.load(name)) {
+            _softcan.toCurve(_curve);
+            genTribe();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     inline bool exportCsvCurveConfig(const QString &name)
@@ -131,12 +150,15 @@ public:
 
     inline Curve &curve() { return _curve; }
 
+    inline void setSketch(Sketch *sketch) { _sketch = sketch; }
+
 private:
     //生成临时存储文件
     void genFramesDataFile();
 
     void genCurveDataFile();
 
+    void genTribe();
 
 public slots:
     void tictoc();

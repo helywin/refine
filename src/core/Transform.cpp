@@ -7,7 +7,6 @@
  ******************************************************************************/
 
 #include "Transform.hpp"
-#include "Buffer.hpp"
 #include "Curve.hpp"
 #include "Tribe.hpp"
 
@@ -22,12 +21,16 @@ void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe)
     _curve = curve;
     _buffer = buffer;
     _tribe = tribe;
+    _buffer_tail.setParams(_buffer, 0);
+    _buffer_head.setParams(_buffer, 0);
 }
 
 void Transform::run()
 {
     _tribe->setUnFilled();
-    for (const auto &buf : *_buffer) {
+    for (_buffer_head = _buffer->end();
+         _buffer_tail != _buffer_head; ++_buffer_tail) {
+        auto buf = *_buffer_tail;
         for (int i = 0; i < buf.dataSize(); ++i) {
             QList<int> index_list;
             if (buf[i]->ID == 0x777) {

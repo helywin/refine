@@ -270,6 +270,8 @@ void Softcan::toCurve(Curve &curve)
         curve.append(qMove(cell));
     }
     curve.genSubIdMap777();
+    curve.genOtherIdMap();
+    curve.setInitialized(true);
 }
 
 QStringList Softcan::str() const

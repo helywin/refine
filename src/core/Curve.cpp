@@ -121,6 +121,7 @@ bool Curve::loadFromCsv(QFile &f)
     }
     genSubIdMap777();
     genOtherIdMap();
+    setInitialized(true);
     return true;
 }
 
@@ -147,6 +148,7 @@ void Curve::clear()
     _cells.clear();
     _table_header.clear();
     _header.clear();
+    setInitialized(false);
 }
 
 void Curve::append(const Curve::Cell &cell)

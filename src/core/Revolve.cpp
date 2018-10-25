@@ -7,6 +7,8 @@
  ******************************************************************************/
 
 #include "Revolve.hpp"
+#include "Sketch.hpp"
+#include "FilePicker.hpp"
 
 Revolve::Revolve(Initializer *init) :
         _init(init),
@@ -27,40 +29,50 @@ Revolve::Revolve(Initializer *init) :
         _time(10),
         _config(),
         _status(Stop)
-
 {
+    _config.all = 0x01;
     connect(&_timer_collect, &QTimer::timeout, this, &Revolve::tictoc,
             Qt::DirectConnection);
     connect(&_timer_stop, &QTimer::timeout, this, &Revolve::stop,
             Qt::DirectConnection);
-    _collect.setParams(&_can, &_buffer, Collect::FromCan);
-    _transform.setParams(&_curve, &_buffer, &_tribe);
-    _record.setParams(_store_frames, &_buffer);
 }
+
+Revolve::~Revolve() {}
 
 void Revolve::begin(int msec, int config, int time)
 {
-    if (_status != Stop) {
+    if (!_can.isConnected()) {
+        message(Messager::Warning, tr("开始失败，确保CAN连接好再采集"));
         return;
     }
-    if (!_can.isConnected()) {
+    if (!_curve.isInitialized()) {
+        message(Messager::Warning, tr("开始失败，没有加载曲线配置"));
+        return;
+    }
+    if (_status != Stop) {
+        message(Messager::Warning, tr("开始失败，已经在采集了"));
         return;
     }
     _msec = msec;
     _config.all = config;
     _time = time;
+    _tribe.reset();
+    _buffer.reset();
     _timer_collect.setInterval(_msec);
-    _collect.begin();
+    _collect.begin(&_can, &_buffer, Collect::FromCan);
     if (_config.bits.transform) {
-        _transform.begin();
+        genCurveDataFile();
+        _transform.begin(&_curve, &_buffer, &_tribe);
     }
     if (_config.bits.record) {
-        _record.begin();
+        genFramesDataFile();
+        _record.begin(_store_frames, &_buffer);
     }
-    if (_config.bits.trigger) {
+    if (_config.bits.timing) {
         _timer_stop.setInterval(_time * 1000);
         _timer_stop.start();
     }
+    if (_config.bits.trigger) {}
     _timer_collect.start();
     _status = Running;
 }
@@ -68,6 +80,7 @@ void Revolve::begin(int msec, int config, int time)
 void Revolve::stop()
 {
     if (_status == Stop) {
+        message(Messager::Warning, tr("结束失败，采集还没开始"));
         return;
     }
     while (_collect.isRunning() ||
@@ -85,7 +98,12 @@ void Revolve::stop()
 
 void Revolve::pause()
 {
-    if (_status != Running) {
+    if (_status == Pause) {
+        message(Messager::Warning, tr("暂停失败，采集已经暂停"));
+        return;
+    }
+    if (_status == Stop) {
+        message(Messager::Warning, tr("暂停失败，采集已经停止了"));
         return;
     }
     _timer_collect.stop();
@@ -97,7 +115,12 @@ void Revolve::pause()
 
 void Revolve::resume()
 {
-    if (_status != Pause) {
+    if (_status == Running) {
+        message(Messager::Warning, tr("继续失败，采集没有暂停"));
+        return;
+    }
+    if (_status == Stop) {
+        message(Messager::Warning, tr("继续失败，采集已经停止了"));
         return;
     }
     _timer_collect.start();
@@ -111,10 +134,18 @@ void Revolve::tictoc()
 {
     _collect.start();
     if (_config.bits.transform) {
-        _transform.start();
+        if (_transform.isRunning()) {
+            emit message(Messager::Warning, tr("曲线转换跟不上"));
+        } else {
+            _transform.start();
+        }
     }
     if (_config.bits.record) {
-        _record.start();
+        if (_record.isRunning()) {
+            emit message(Messager::Warning, tr("报文存储跟不上"));
+        } else {
+            _record.start();
+        }
     }
 }
 
@@ -126,25 +157,39 @@ void Revolve::setCollectManner(Collect::Manner manner, QString &collect_frame)
 
 void Revolve::genFramesDataFile()
 {
-    _store_frames->setFileName(
+    delete _store_frames;
+    _store_frames = new QFile(
             QDateTime::currentDateTime()
                     .toString(_init->get(Initializer::Core,
-                                         Initializer::NameFormat).toString()));
+                                         Initializer::NameFormat).toString() +
+                              "." +
+                              FilePicker::extendName(FilePicker::FrameData)),
+            this);
+
 }
 
 void Revolve::genCurveDataFile()
 {
-    _store_curves->setFileName(
+    delete _store_curves;
+    _store_curves = new QFile(
             QDateTime::currentDateTime()
                     .toString(_init->get(Initializer::Core,
-                                         Initializer::NameFormat).toString()));
+                                         Initializer::NameFormat).toString() +
+                              "." +
+                              FilePicker::extendName(FilePicker::CurveData)),
+            this);
 }
 
 bool Revolve::inputCurveConfig(const QString &name)
 {
     File file;
     QFile f(name);
-    return file.loadCurveConfig(f, _curve);
+    if (file.loadCurveConfig(f, _curve)) {
+        genTribe();
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool Revolve::outputCurveConfig(const QString &name)
@@ -153,4 +198,13 @@ bool Revolve::outputCurveConfig(const QString &name)
     QFile f(name);
     return file.dumpCurveConfig(f, _curve);
 }
+
+void Revolve::genTribe()
+{
+    _tribe.clear();
+    for (const auto & cell : _curve) {
+        _tribe.append(cell.name());
+    }
+}
+
 

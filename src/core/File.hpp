@@ -14,11 +14,12 @@
 #include <QtCore/QFile>
 #include <windows.h>
 #include <QtCore/QDateTime>
+#include "Buffer.hpp"
 
 class Curve;
 class Tribe;
 class Modes;
-class Buffer;
+
 
 /*!
  * @brief 把曲线配置、报文、数据、工况等等的文件读写类
@@ -210,7 +211,7 @@ public:
     void loadFrameRecordFinish(QFile &file);
 
     bool dumpFrameRecordBegin(QFile &file);
-    void dumpFrameRecord(Buffer &buffer);
+    void dumpFrameRecord(Buffer &buffer, Buffer::Iter tail, Buffer::Iter head);
     void dumpFrameRecordFinish(QFile &file);
 
 public:

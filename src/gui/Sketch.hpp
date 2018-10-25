@@ -5,6 +5,7 @@
 #ifndef REFINE_SKETCH_HPP
 #define REFINE_SKETCH_HPP
 
+#include <QtCore/QTimer>
 #include <QtOpenGL/QGLWidget>
 #include <QtOpenGL/QGLFunctions>
 #include "Tribe.hpp"
@@ -21,7 +22,8 @@ Q_OBJECT
 private:
     Tribe *_tribe;
     Curve *_curve;
-
+    QTimer _timer;
+    int _msec;
 public:
     explicit Sketch(QWidget *parent, Revolve *revolve);
 
@@ -36,6 +38,12 @@ public:
 //    void updateGL() override;
     void enableSmooth();
     void disableSmooth();
+
+    void start(int msec = 10);
+    void pause();
+    void resume();
+    void stop();
+
 };
 
 

@@ -130,20 +130,13 @@ private:
 
 private slots:
 
-    void fullScreen()
-    {
-        if (_menu_view_full->isChecked()) {
-            emit message(Messager::MessageType::Debug, tr("进入全屏模式"));
-            this->setWindowState(Qt::WindowFullScreen);
-        } else {
-            emit message(Messager::MessageType::Debug, tr("退出全屏模式"));
-            this->setWindowState(Qt::WindowMaximized);
-        }
-    }
+    void fullScreen();
 
     void startRevolve();
 
     void connectCan();
+
+    void getFile(int type, const QString &file);
 signals:
     void message(Messager::MessageType type, const QString &msg);
 };

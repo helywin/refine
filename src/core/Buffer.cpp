@@ -185,23 +185,31 @@ void Buffer::tailForward()
 }
 
 
-QDataStream &operator<<(QDataStream &stream, const Buffer &buffer)
+//QDataStream &operator<<(QDataStream &stream, const Buffer &buffer)
+//{
+//    int p;
+//    int end;
+//    if (buffer._is_marked) {
+//        p = buffer._mark_tail;
+//        end = buffer._mark_head;
+//    } else {
+//        p = buffer._tail;
+//        end = buffer._head;
+//    }
+//    while (p != end) {
+//        stream << *(p + buffer._cells);
+//        p += 1;
+//        p %= buffer._cell_space;
+//    }
+//    return stream;
+//}
+
+void Buffer::dump(QDataStream &stream, Buffer::Iter tail, Buffer::Iter head)
 {
-    int p;
-    int end;
-    if (buffer._is_marked) {
-        p = buffer._mark_tail;
-        end = buffer._mark_head;
-    } else {
-        p = buffer._tail;
-        end = buffer._head;
+    while (tail != head) {
+        stream << *tail;
+        ++tail;
     }
-    while (p != end) {
-        stream << *(p + buffer._cells);
-        p += 1;
-        p %= buffer._cell_space;
-    }
-    return stream;
 }
 
 QDataStream &operator>>(QDataStream &stream, Buffer &buffer)

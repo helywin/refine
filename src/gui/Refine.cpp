@@ -4,7 +4,6 @@
 
 #include <QtWidgets/QApplication>
 #include "Refine.hpp"
-#include "Messager.hpp"
 #include "Output.hpp"
 
 Refine::Refine() :
@@ -57,31 +56,31 @@ void Refine::setup()
     initMenu(_menu_init_setting, tr("设置(&S)..."), _menu_init,
              tr("设置CAN、曲线配置和工况"));
     initMenu(_menu_init_can, tr("连接CAN(&C)"), _menu_init,
-            tr("连接/断开CAN"), true);
+             tr("连接/断开CAN"), true);
     initMenu(_menu_init_curve, tr("曲线配置(&C)..."), _menu_init,
-            tr("读取曲线配置"));
+             tr("读取曲线配置"));
     initMenu(_menu_init_mode, tr("工况配置(&M)..."), _menu_init,
-            tr("读取工况配置"));
+             tr("读取工况配置"));
     initMenu(_menu_control, tr("控制(&C)"), _menubar);
     initMenu(_menu_control_start, tr("开始(&S)"), _menu_control,
-            tr("开始采集曲线"));
+             tr("开始采集曲线"));
     initMenu(_menu_control_pause, tr("暂停(&P)"), _menu_control,
-            tr("暂停采集曲线(曲线段结束)"));
+             tr("暂停采集曲线(曲线段结束)"));
     initMenu(_menu_control_resume, tr("继续(&R)"), _menu_control,
-            tr("继续采集曲线(曲线段开始)"));
+             tr("继续采集曲线(曲线段开始)"));
     initMenu(_menu_control_finish, tr("结束(&F)"), _menu_control,
-            tr("结束采集曲线"));
+             tr("结束采集曲线"));
     initMenu(_menu_help, tr("帮助(&H)"), _menubar);
     initMenu(_menu_help_tutorial, tr("手册(&T)..."), _menu_help,
-            tr("软件手册和工况"));
+             tr("软件手册和工况"));
     initMenu(_menu_help_version, tr("版本(&V)..."), _menu_help,
-            tr("软件版本信息"));
+             tr("软件版本信息"));
     initMenu(_menu_help_license, tr("声明(&D)..."), _menu_help,
-            tr("开源声明"));
+             tr("开源声明"));
     initMenu(_menu_help_feedback, tr("反馈(&F)..."), _menu_help,
-            tr("反馈bug或意见"));
+             tr("反馈bug或意见"));
     initMenu(_menu_help_about, tr("关于(&A)..."), _menu_help,
-            tr("关于本软件"));
+             tr("关于本软件"));
 
     _toolbar_menu = new QToolBar(tr("文件(&F)"), this);
     this->addToolBar(_toolbar_menu);
@@ -100,7 +99,8 @@ void Refine::setup()
 //    _toolbox->raise();
 
     _curvebox = new CurveBox(this);
-    _curvebox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    _curvebox->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _curvebox);
 
     _markbox = new MarkBox(this);
@@ -116,8 +116,13 @@ void Refine::setup()
     _statusbar = new StatusBar(this);
     this->setStatusBar(_statusbar);
     _file_picker = new FilePicker(this);
+    _output->connectToMessager(_file_picker);
     connect(_menu_file_open, &QAction::triggered,
-            _file_picker, &FilePicker::show, Qt::DirectConnection);
+            _file_picker, &FilePicker::loadArchive, Qt::DirectConnection);
+    connect(_menu_file_save, &QAction::triggered,
+            _file_picker, &FilePicker::saveArchive, Qt::DirectConnection);
+    connect(_menu_init_curve, &QAction::triggered,
+            _file_picker, &FilePicker::loadCurveConfig, Qt::DirectConnection);
     connect(_menu_view_full, &QAction::triggered,
             this, &Refine::fullScreen, Qt::DirectConnection);
     connect(_menu_file_exit, &QAction::triggered,
@@ -132,6 +137,8 @@ void Refine::setup()
             &_revolve, &Revolve::resume, Qt::DirectConnection);
     connect(_menu_control_finish, &QAction::triggered,
             &_revolve, &Revolve::stop, Qt::DirectConnection);
+    connect(_file_picker, &FilePicker::pickFile,
+            this, &Refine::getFile, Qt::DirectConnection);
 }
 
 void Refine::setLanguage()
@@ -148,10 +155,95 @@ void Refine::startRevolve()
 void Refine::connectCan()
 {
     if (_menu_init_can->isChecked()) {
-        _revolve.can().connect();
+        if (_revolve.can().connect()) {
+            emit message(Messager::MessageType::Info, tr("连接成功"));
+        } else {
+            emit message(Messager::MessageType::Warning,
+                         tr("连接失败，检查CAN占用或连接情况"));
+        }
     } else {
-        _revolve.can().close();
+        if (_revolve.can().close()) {
+            emit message(Messager::MessageType::Info, tr("关闭成功"));
+        } else {
+            emit message(Messager::MessageType::Warning, tr("关闭失败"));
+        }
     }
     _menu_init_can->setChecked(_revolve.can().isConnected());
+}
+
+void Refine::fullScreen()
+{
+    if (_menu_view_full->isChecked()) {
+        emit message(Messager::MessageType::Debug, tr("进入全屏模式"));
+        this->setWindowState(Qt::WindowFullScreen);
+    } else {
+        emit message(Messager::MessageType::Debug, tr("退出全屏模式"));
+        this->setWindowState(Qt::WindowMaximized);
+    }
+}
+
+void Refine::getFile(int type, const QString &file)
+{
+    qDebug() << file;
+    QString ext = FilePicker::extName(file);
+    qDebug() << ext;
+    if (ext.isEmpty()) {
+        emit message(Messager::Fatal, tr("读取的文件不带扩展名"));
+    }
+    switch (type) {
+        case FilePicker::ArchiveInFile:
+            break;
+        case FilePicker::ArchiveOutFile:
+            break;
+        case FilePicker::CurveConfigInFile:
+            if (ext == FilePicker::extendName(FilePicker::CurveConfigCsv)) {
+                if (_revolve.importCsvCurveConfig(file)) {
+                    emit message(Messager::Info, tr("读取csv曲线配置成功"));
+                } else {
+                    emit message(Messager::Warning,
+                                 tr("读取csv曲线配置失败，检查配置格式"));
+                }
+            } else if (ext == FilePicker::extendName(FilePicker::CurveConfig)) {
+                if (_revolve.inputCurveConfig(file)) {
+                    emit message(Messager::Info, tr("读取曲线配置成功"));
+                } else {
+                    emit message(Messager::Warning,
+                                 tr("读取曲线配置失败，检查配置格式"));
+                }
+            } else if (ext == FilePicker::extendName(
+                    FilePicker::CurveConfigSoftcan)) {
+                if (_revolve.importSoftcanCurveConfig(file)) {
+                    emit message(Messager::Info, tr("读取SoftCAN曲线配置成功"));
+                } else {
+                    emit message(Messager::Warning,
+                                 tr("读取SoftCAN曲线配置失败，检查配置格式"));
+                }
+            } else {
+                emit message(Messager::Fatal, tr("读取的曲线配置扩展名超出预料"));
+            }
+            break;
+        case FilePicker::CurveConfigOutFile:
+            break;
+        case FilePicker::ModeConfigInFile:
+            break;
+        case FilePicker::ModeConfigOutFile:
+            break;
+        case FilePicker::FrameDataInFile:
+            break;
+        case FilePicker::FrameDataOutFile:
+            break;
+        case FilePicker::CurveDataInFile:
+            break;
+        case FilePicker::CurveDataOutFile:
+            break;
+        case FilePicker::ResultDataInFile:
+            break;
+        case FilePicker::ResultDataOutFile:
+            break;
+        default:
+            break;
+    }
+
+
 }
 

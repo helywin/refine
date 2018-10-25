@@ -2,7 +2,9 @@
 // Created by jiang.wenqiang on 2018/10/23.
 //
 
+#include <QtWidgets/QScrollBar>
 #include "Messager.hpp"
+#include "Output.hpp"
 
 Messager::Messager(QWidget *parent) :
         QTextEdit(parent)
@@ -16,18 +18,18 @@ void Messager::setup()
     setFont(QFont("微软雅黑", 10));
     setLineWrapMode(QTextEdit::NoWrap);
     setReadOnly(true);
-    _info_format.setForeground(QBrush(Qt::green));
-    _warning_format.setForeground(QBrush(Qt::yellow));
-    _critical_format.setForeground(QBrush(Qt::red));
-    _fatal_format.setForeground(QBrush(Qt::black));
-    _debug_format.setForeground(QBrush(Qt::gray));
+    setMinimumWidth(200);
+    _info_format.setForeground(QBrush(Output::INFO));
+    _warning_format.setForeground(QBrush(Output::WARNING));
+    _critical_format.setForeground(QBrush(Output::CRITICAL));
+    _fatal_format.setForeground(QBrush(Output::FATAL));
+    _debug_format.setForeground(QBrush(Output::DEBUG));
 }
 
 
 QString Messager::Cell::str() const
 {
-    QString str = _time.toString("hh:mm:ss") + "  ";
-    str += typeStr(_type) + "  ";
+    QString str = _time.toString("hh:mm:ss") + " - ";
     str += _text;
     return str;
 }
@@ -82,6 +84,14 @@ void Messager::showMessage(Messager::MessageType type, const QString &msg)
                 cursor.insertText(_logs.last() + "\n", _debug_format);
                 break;
         }
+    }
+    QScrollBar *scroll_v = verticalScrollBar();
+    QScrollBar *scroll_h = horizontalScrollBar();
+    if (scroll_v) {
+        scroll_v->setSliderPosition(scroll_v->maximum());
+    }
+    if (scroll_h) {
+        scroll_h->setSliderPosition(scroll_h->minimum());
     }
 }
 

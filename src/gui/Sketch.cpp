@@ -12,12 +12,15 @@
 #define Y_AXIS_MAX 5000
 
 
-Sketch::Sketch(QWidget *parent,  Revolve *revolve) :
+Sketch::Sketch(QWidget *parent, Revolve *revolve) :
         QGLWidget(parent),
         _tribe(&revolve->tribe()),
-        _curve(&revolve->curve())
+        _curve(&revolve->curve()),
+        _msec(10)
 {
-
+    _timer.setInterval(_msec);
+    connect(&_timer, &QTimer::timeout,
+            this, &Sketch::updateGL, Qt::DirectConnection);
 }
 
 void Sketch::initializeGL()
@@ -89,6 +92,26 @@ void Sketch::disableSmooth()
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
     updateGL();
+}
+
+void Sketch::start(int msec)
+{
+    _timer.start();
+}
+
+void Sketch::pause()
+{
+    _timer.stop();
+}
+
+void Sketch::resume()
+{
+    _timer.start();
+}
+
+void Sketch::stop()
+{
+    _timer.stop();
 }
 
 

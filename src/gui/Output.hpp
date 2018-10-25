@@ -7,17 +7,33 @@
 
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
 
 class Refine;
 class Messager;
 class Revolve;
+class FilePicker;
 
 class Output : public QDockWidget
 {
 Q_OBJECT
+public:
+    static const QColor INFO;
+    static const QColor WARNING;
+    static const QColor CRITICAL;
+    static const QColor FATAL;
+    static const QColor DEBUG;
 private:
     QWidget *_content;
-    QHBoxLayout *_layout;
+    QVBoxLayout *_layout;
+    QWidget *_labels;
+    QHBoxLayout *_layout_labels;
+    QLabel *_label_info;
+    QLabel *_label_warning;
+    QLabel *_label_critical;
+    QLabel *_label_fatal;
+    QLabel *_label_debug;
     Messager *_messager;
 public:
     explicit Output(QWidget *parent);
@@ -29,6 +45,8 @@ public:
     void connectToMessager(Refine *emitter);
 
     void connectToMessager(Revolve *emitter);
+
+    void connectToMessager(FilePicker *emitter);
 };
 
 

@@ -9,7 +9,6 @@
 #include "File.hpp"
 #include "Version.hpp"
 #include "Curve.hpp"
-#include "Buffer.hpp"
 #include "Tribe.hpp"
 
 
@@ -224,6 +223,8 @@ bool File::loadCurveConfig(QFile &file, Curve &curve)
     file.seek(DATA_POS);
     (*_stream) >> curve;
     curve.genSubIdMap777();
+    curve.genOtherIdMap();
+    curve.setInitialized(true);
     _stream->unsetDevice();
     file.close();
     return true;
@@ -344,14 +345,14 @@ bool File::dumpFrameRecordBegin(QFile &file)
     return true;
 }
 
-void File::dumpFrameRecord(Buffer &buffer)
+void File::dumpFrameRecord(Buffer &buffer, Buffer::Iter tail, Buffer::Iter head)
 {
     int cell_n;
     int obj_n;
     buffer.size(cell_n, obj_n);
     _frame_cell_num += cell_n;
     _frame_obj_num += obj_n;
-    (*_stream) << buffer;
+    buffer.dump(*_stream, tail, head);
     auto pos = _stream->device()->pos();
     _stream->device()->seek(DATA_POS + 4);
     (*_stream) << _frame_obj_num

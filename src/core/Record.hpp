@@ -30,14 +30,20 @@ private:
     File _file;
     Buffer *_buffer;
     QFile *_record;
+    Buffer::Iter _buffer_tail;
+    Buffer::Iter _buffer_head;
 
 public:
-    Record() : _file(), _buffer(nullptr), _record(nullptr) {}
+    Record() :
+            _file(), _buffer(nullptr), _record(nullptr),
+            _buffer_tail(), _buffer_head() {}
 
     inline void setParams(QFile *record, Buffer *buffer)
     {
         _record = record;
         _buffer = buffer;
+        _buffer_tail.setParams(_buffer, 0);
+        _buffer_head.setParams(_buffer, 0);
     }
 
     inline bool begin() { return _file.dumpFrameRecordBegin(*_record); }
