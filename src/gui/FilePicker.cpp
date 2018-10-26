@@ -85,27 +85,27 @@ QString FilePicker::extendName(unsigned int type)
 {
     switch (type) {
         case Archive:
-            return "ref";
+            return QString("ref");
         case CurveConfig:
-            return "cvc";
+            return QString("cvc");
         case CurveConfigSoftcan:
-            return "cfg";
+            return QString("cfg");
         case ModeConfig:
-            return "mdc";
+            return QString("mdc");
         case FrameData:
-            return "fmd";
+            return QString("fmd");
         case CurveData:
-            return "cvd";
+            return QString("cvd");
         case ResultData:
-            return "rsd";
+            return QString("rsd");
         case CurveConfigCsv:
         case ModeConfigCsv:
         case FrameDataCsv:
         case CurveDataCsv:
         case ResultDataCsv:
-            return "csv";
+            return QString("csv");
         default:
-            return "";
+            return QString();
     }
 }
 

@@ -119,7 +119,7 @@ bool File::loadCheckSum()
     QByteArray byte_array;
     signed char byte;
     unsigned int checksum;
-     _stream->device()->seek(HEADER_CRC32_POS);
+    _stream->device()->seek(HEADER_CRC32_POS);
     (*_stream) >> checksum;
     while (!_stream->atEnd()) {
         (*_stream) >> byte;
@@ -270,7 +270,8 @@ bool File::dumpCurveConfig(QFile &file, const Curve &curve)
     return true;
 }
 
-bool File::loadFrameRecordBegin(QFile &file, Buffer &buffer, int *pack, int *frame)
+bool
+File::loadFrameRecordBegin(QFile &file, Buffer &buffer, int *pack, int *frame)
 {
     file.open(QIODevice::ReadOnly);
     if (!file.isOpen()) {
@@ -279,7 +280,7 @@ bool File::loadFrameRecordBegin(QFile &file, Buffer &buffer, int *pack, int *fra
     _stream->setDevice(&file);
 
     loadFileHeader();
-    if(!loadCheckSum()) {
+    if (!loadCheckSum()) {
         qCritical("File::loadFrameRecordBegin CRC32检校失败");
         return false;
     }
@@ -307,7 +308,7 @@ bool File::loadFrameRecord(Buffer &buffer)
     char sign[4];
     _stream->readRawData(sign, 4);
     if (sign[0] == 'E' && sign[1] == 'N' &&
-            sign[2] == 'D' && sign[3] == 'F') {
+        sign[2] == 'D' && sign[3] == 'F') {
         return false;   //读取完毕
     } else {
         _stream->device()->seek(_stream->device()->pos() - 4);
@@ -325,7 +326,8 @@ bool File::dumpFrameRecordBegin(QFile &file)
 {
     file.open(QIODevice::ReadWrite | QIODevice::Truncate);
     if (!file.isOpen()) {
-        qDebug("false");
+        qDebug() << "File::dumpFrameRecordBegin: 打开文件失败-"
+                 << file.fileName();
         return false;
     }
     _stream->setDevice(&file);
@@ -347,11 +349,7 @@ bool File::dumpFrameRecordBegin(QFile &file)
 
 void File::dumpFrameRecord(Buffer &buffer, Buffer::Iter tail, Buffer::Iter head)
 {
-    int cell_n = 0;
-    int obj_n = 0;
-    buffer.size(tail, head, cell_n, obj_n);
-    _frame_cell_num += cell_n;
-    _frame_obj_num += obj_n;
+    buffer.size(tail, head, _frame_cell_num, _frame_obj_num);
     buffer.dump(*_stream, tail, head);
     auto pos = _stream->device()->pos();
     _stream->device()->seek(DATA_POS + 4);
@@ -380,8 +378,8 @@ bool File::loadCurveRecord(QFile &file, Tribe &tribe)
     _stream->setDevice(&file);
 
     loadFileHeader();
-    if(!loadCheckSum()) {
-        qDebug("bad checksum!");
+    if (!loadCheckSum()) {
+        qDebug("File::loadCurveRecord: bad checksum!");
         return false;
     }
     _stream->device()->seek(DATA_POS);
@@ -396,7 +394,7 @@ bool File::dumpCurveRecord(QFile &file, const Tribe &tribe)
 {
     file.open(QIODevice::ReadWrite | QIODevice::Truncate);
     if (!file.isOpen()) {
-        qDebug("false");
+        qDebug("File::dumpCurveRecord: 打开文件失败");
         return false;
     }
     _stream->setDevice(&file);
@@ -500,9 +498,9 @@ void File::Header::setInfo()
                sizeof(char) * (HEADER_INFO_L - user_l));
     } else {
         memcpy(_info + user_l, computer,
-                sizeof(char) * computer_l);
+               sizeof(char) * computer_l);
         memset(_info + user_l + computer_l, 0,
-                HEADER_INFO_L - user_l - computer_l);
+               HEADER_INFO_L - user_l - computer_l);
     }
 }
 
@@ -601,17 +599,17 @@ int File::Header::versionCompare(char major, char micro, char minor)
 {
     if (_version[0] < major) {
         return -1;
-    } else if (_version[0] > major){
+    } else if (_version[0] > major) {
         return 1;
     }
     if (_version[1] < micro) {
         return -1;
-    } else if (_version[1] > micro){
+    } else if (_version[1] > micro) {
         return 1;
     }
     if (_version[2] < minor) {
         return -1;
-    } else if (_version[2] > minor){
+    } else if (_version[2] > minor) {
         return 1;
     }
     return 0;

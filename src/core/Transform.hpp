@@ -30,8 +30,6 @@ private:
     Buffer *_buffer;
     Tribe *_tribe;
     File _file;
-    Buffer::Iter _buffer_tail;
-    Buffer::Iter _buffer_head;
 
 public:
     Transform();

@@ -24,18 +24,20 @@ INCLUDEPATH += ./src/gui \
                ./src/core
 
 SOURCES += \
-        ./src/gui/ColorPicker.cpp \
-        ./src/gui/CurveBox.cpp \
-        ./src/gui/CurveEditor.cpp \
-        ./src/gui/Displayer.cpp \
-        ./src/gui/FilePicker.cpp \
-        ./src/gui/FrameViewer.cpp \
-        ./src/gui/Messager.cpp \
-        ./src/gui/Output.cpp \
-        ./src/gui/Refine.cpp \
-        ./src/gui/Splitter.cpp \
-        ./src/gui/StatusBar.cpp \
-        ./src/gui/Toolbox.cpp \
+        ./src/gui/colorpicker.cpp \
+        ./src/gui/curvebox.cpp \
+        ./src/gui/curveeditor.cpp \
+        ./src/gui/curveviewer.cpp \
+        ./src/gui/display.cpp \
+        ./src/gui/filepicker.cpp \
+        ./src/gui/frameviewer.cpp \
+        ./src/gui/markbox.cpp \
+        ./src/gui/messager.cpp \
+        ./src/gui/output.cpp \
+        ./src/gui/refine.cpp \
+        ./src/gui/sketch.cpp \
+        ./src/gui/statusbar.cpp \
+        ./src/gui/toolbox.cpp \
         ./src/core/Buffer.cpp \
         ./src/core/Can.cpp \
         ./src/core/Collect.cpp \
@@ -57,18 +59,20 @@ SOURCES += \
         ./src/test/main.cpp
 
 HEADERS += \
-        ./src/gui/ColorPicker.hpp \
-        ./src/gui/CurveBox.hpp \
-        ./src/gui/CurveEditor.hpp \
-        ./src/gui/Displayer.hpp \
-        ./src/gui/FilePicker.hpp \
-        ./src/gui/FrameViewer.hpp \
-        ./src/gui/Messager.hpp \
-        ./src/gui/Output.hpp \
-        ./src/gui/Refine.hpp \
-        ./src/gui/Splitter.hpp \
-        ./src/gui/StatusBar.hpp \
-        ./src/gui/Toolbox.hpp \
+        ./src/gui/colorpicker.hpp \
+        ./src/gui/curvebox.hpp \
+        ./src/gui/curveeditor.hpp \
+        ./src/gui/curveviewer.hpp \
+        ./src/gui/display.hpp \
+        ./src/gui/filepicker.hpp \
+        ./src/gui/frameviewer.hpp \
+        ./src/gui/markbox.hpp \
+        ./src/gui/messager.hpp \
+        ./src/gui/output.hpp \
+        ./src/gui/refine.hpp \
+        ./src/gui/sketch.hpp \
+        ./src/gui/statusbar.hpp \
+        ./src/gui/toolbox.hpp \
         ./src/core/Buffer.hpp \
         ./src/core/Can.hpp \
         ./src/core/Collect.hpp \
@@ -86,7 +90,7 @@ HEADERS += \
         ./src/core/Transmit.hpp \
         ./src/core/Tribe.hpp \
         ./src/core/Trigger.hpp \
-        ./src/core/Version.hpp \
+        ./src/core/Version.hpp
 
 RESOURCES += \
     res/ui.qrc

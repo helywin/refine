@@ -110,6 +110,7 @@ public:
         inline const Iter &operator--()
         {
             _pos -= 1;
+            _pos += _buffer->_cell_space;
             _pos %= _buffer->_cell_space;  //!很重要
             return *this;
         }
@@ -120,6 +121,7 @@ private:
     int _index;
     Cell *_cells;
     int _head;
+    bool _empty;
 
 public:
     inline Buffer() : Buffer(50, 100) {}
@@ -145,9 +147,11 @@ public:
 
     inline Iter last() { return --Iter(this, _head); }
 
-    void size(Iter tail, Iter head, int &packs, int &frames);
+    void size(Iter tail, Iter head, unsigned int &packs, unsigned int &frames);
 
     void reset();
+
+    inline bool isEmpty() const { return _empty; };
 };
 
 //QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);

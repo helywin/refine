@@ -14,6 +14,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QKeyEvent>
 #include <QtCore/QTranslator>
 #include "Initializer.hpp"
@@ -47,6 +48,9 @@ private:
     QMenu *_menu_view;
     QMenu *_menu_view_display;
     QAction *_menu_view_display_tools;
+protected:
+    void closeEvent(QCloseEvent *event) override;
+private:
     QAction *_menu_view_display_docker;
     QAction *_menu_view_display_output;
     QAction *_menu_view_display_curve;
@@ -63,6 +67,10 @@ private:
     QAction *_menu_control_pause;
     QAction *_menu_control_resume;
     QAction *_menu_control_finish;
+    QMenu *_menu_tools;
+    QMenu *_menu_tools_timer;
+    QAction *_menu_tools_timers[3];
+    QAction *_menu_tools_wakeup;
     QMenu *_menu_help;
     QAction *_menu_help_tutorial;
     QAction *_menu_help_version;
@@ -83,6 +91,8 @@ private:
     bool _presentation;
     //widgets
     FilePicker *_file_picker;
+    QTime _timer[3];
+    bool _timer_start[3];
 
 public:
     Refine();
@@ -137,6 +147,8 @@ private slots:
     void connectCan();
 
     void getFile(int type, const QString &file);
+
+    void startTimers();
 signals:
     void message(Messager::MessageType type, const QString &msg);
 };

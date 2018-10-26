@@ -43,6 +43,7 @@ void Collect::run()
 {
     if (_manner == FromCan) {
         int flag = _can->collect(*_buffer);
+//        qDebug() << (*_buffer->last()).str();
         if (flag == Can::Fail) {
             if (!_can->isConnected()) {
                 emit error(ConnectionLost);

@@ -19,20 +19,18 @@ Revolve::Revolve(Initializer *init) :
         _tribe(),
         _transform(),
         _record(),
+        _sketch(nullptr),
         _softcan(),
-        _timer_collect(),
         _timer_stop(),
-        _store_frames(nullptr),
-        _collect_frames(nullptr),
-        _store_curves(nullptr),
+        _store_frames(),
+        _collect_frames(),
+        _store_curves(),
         _msec(10),
         _time(10),
         _config(),
         _status(Stop)
 {
     _config = 0x00;
-    connect(&_timer_collect, &QTimer::timeout, this, &Revolve::tictoc,
-            Qt::DirectConnection);
     connect(&_timer_stop, &QTimer::timeout, this, &Revolve::stop,
             Qt::DirectConnection);
 }
@@ -53,9 +51,8 @@ void Revolve::begin(int msec, int config, int time)
     _config = config;
     _time = time;
     _buffer.reset();
-    _timer_collect.setInterval(_msec);
     _collect.begin(&_can, &_buffer, Collect::FromCan);
-    if ((unsigned)_config & (unsigned)Config::WithTransform) {
+    if ((unsigned) _config & (unsigned) Config::WithTransform) {
         if (!_curve.isInitialized()) {
             message(Messager::Warning, tr("开始失败，没有加载曲线配置"));
             return;
@@ -64,17 +61,19 @@ void Revolve::begin(int msec, int config, int time)
         genCurveDataFile();
         _transform.begin(&_curve, &_buffer, &_tribe);
     }
-    if ((unsigned)_config & (unsigned)WithRecord) {
+    if ((unsigned) _config & (unsigned) WithRecord) {
         genFramesDataFile();
-        _record.begin(_store_frames, &_buffer);
+        _record.begin(&_store_frames, &_buffer);
     }
-    if ((unsigned)_config & (unsigned)WithTiming) {
-        _timer_stop.setInterval(_time * 1000);
+    if ((unsigned) _config & (unsigned) WithTiming) {
         _timer_stop.start();
     }
-    if ((unsigned)_config & (unsigned)WithTrigger) {}
+    if (_sketch) {
+        _sketch->start();
+    }
+    if ((unsigned) _config & (unsigned) WithTrigger) {}
     _can.clear();
-    _timer_collect.start();
+    start(QThread::HighestPriority);
     _status = Running;
     message(Messager::Info, tr("开始采集成功"));
 }
@@ -85,21 +84,25 @@ void Revolve::stop()
         message(Messager::Warning, tr("结束失败，采集还没开始"));
         return;
     }
-    _timer_collect.stop();
+    _cmd = CommandStop;
     while (_collect.isRunning()) {}
-    if ((unsigned)_config & (unsigned)WithTransform) {
+    if ((unsigned) _config & (unsigned) WithTransform) {
         while (_transform.isRunning()) {}
-        _transform.finish(_store_curves);
+        _transform.finish(&_store_curves);
     }
     _collect.finish();
-    if ((unsigned)_config & (unsigned)WithRecord) {
+    if ((unsigned) _config & (unsigned) WithRecord) {
         while (_record.isRunning()) {}
         _record.finish();
     }
-    if ((unsigned)_config & (unsigned)WithTiming) {
+    if ((unsigned) _config & (unsigned) WithTiming) {
         _timer_stop.stop();
     }
-    if ((unsigned)_config & (unsigned)WithTrigger) {}
+    if ((unsigned) _config & (unsigned) WithTrigger) {}
+    if (_sketch) {
+        _sketch->stop();
+    }
+    while (isRunning()) {}
     _status = Stop;
     message(Messager::Info, tr("停止采集成功"));
 }
@@ -114,10 +117,13 @@ void Revolve::pause()
         message(Messager::Warning, tr("暂停失败，采集已经停止了"));
         return;
     }
-    _timer_collect.stop();
-    if ((unsigned)_config & (unsigned)WithTiming) {
+    _cmd = CommandPause;
+    if ((unsigned) _config & (unsigned) WithTiming) {
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
+    }
+    if (_sketch) {
+        _sketch->pause();
     }
     _status = Pause;
     message(Messager::Info, tr("暂停采集成功"));
@@ -133,64 +139,45 @@ void Revolve::resume()
         message(Messager::Warning, tr("继续失败，采集已经停止了"));
         return;
     }
-    _timer_collect.start();
-    if ((unsigned)_config & (unsigned)WithTiming) {
+    _cmd = CommandResume;
+    if ((unsigned) _config & (unsigned) WithTiming) {
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }
-    _status = Running;
+    if (_sketch) {
+        _sketch->resume();
+    }
     message(Messager::Info, tr("继续采集成功"));
-}
-
-void Revolve::tictoc()
-{
-    _collect.start();
-    if ((unsigned)_config & (unsigned)WithTransform) {
-        qDebug("111");
-        if (_transform.isRunning()) {
-            emit message(Messager::Warning, tr("曲线转换跟不上"));
-        } else {
-            _transform.start();
-        }
-    }
-    if ((unsigned)_config & (unsigned)WithRecord) {
-        if (_record.isRunning()) {
-            emit message(Messager::Warning, tr("报文存储跟不上"));
-        } else {
-            _record.start();
-        }
-    }
 }
 
 void Revolve::setCollectManner(Collect::Manner manner, QString &collect_frame)
 {
-    _collect_frames = new QFile(collect_frame);
-    _collect.setParams(&_can, &_buffer, manner, _collect_frames);
+    _collect_frames.setFileName(collect_frame);
+    _collect.setParams(&_can, &_buffer, manner, &_collect_frames);
 }
 
 void Revolve::genFramesDataFile()
 {
-    delete _store_frames;
-    _store_frames = new QFile(
+    _store_frames.setFileName(
             QDateTime::currentDateTime()
                     .toString(_init->get(Initializer::Core,
-                                         Initializer::NameFormat).toString() +
-                              "." +
-                              FilePicker::extendName(FilePicker::FrameData)),
-            this);
-
+                                         Initializer::NameFormat).toString()) +
+            QString(".") +
+            FilePicker::extendName(FilePicker::FrameData));
+    qDebug() << "生成报文数据文件名: "
+             << _store_frames.fileName();
 }
 
 void Revolve::genCurveDataFile()
 {
-    delete _store_curves;
-    _store_curves = new QFile(
+    _store_curves.setFileName(
             QDateTime::currentDateTime()
                     .toString(_init->get(Initializer::Core,
-                                         Initializer::NameFormat).toString() +
-                              "." +
-                              FilePicker::extendName(FilePicker::CurveData)),
-            this);
+                                         Initializer::NameFormat).toString()) +
+            QString(".") +
+            FilePicker::extendName(FilePicker::CurveData));
+    qDebug() << "生成曲线数据文件名: "
+             << _store_curves.fileName();
 }
 
 bool Revolve::inputCurveConfig(const QString &name)
@@ -217,6 +204,47 @@ void Revolve::genTribe()
     _tribe.clear();
     for (const auto &cell : _curve) {
         _tribe.append(cell.name());
+    }
+}
+
+void Revolve::run()
+{
+    while (true) {
+        msleep(10);
+        if (_cmd == CommandStop) {
+            break;
+        }
+        if (_cmd == CommandResume) {
+            _status = Pause;
+            continue;
+        }
+
+        static QTime t = QTime::currentTime();
+        static int i = 0;
+        if (i == 99) {
+            emit message(Messager::Debug,
+                         QString("时钟周期: %1").arg(
+                                 t.msecsTo(QTime::currentTime()) / 100));
+            t = QTime::currentTime();
+        }
+        ++i;
+        i %= 100;
+
+        _collect.start();
+        if ((unsigned) _config & (unsigned) WithTransform) {
+            if (_transform.isRunning()) {
+                emit message(Messager::Warning, tr("曲线转换跟不上"));
+            } else {
+                _transform.start();
+            }
+        }
+        if ((unsigned) _config & (unsigned) WithRecord) {
+            if (_record.isRunning()) {
+                emit message(Messager::Warning, tr("报文存储跟不上"));
+            } else {
+                _record.start();
+            }
+        }
     }
 }
 

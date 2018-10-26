@@ -22,6 +22,7 @@ private:
 public:
     explicit CurveViewer(QWidget *parent, Revolve *revolve);
 
+    inline Sketch &sketch() { return *_sketch; }
 private:
     void setup();
 };

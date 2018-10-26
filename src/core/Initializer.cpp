@@ -14,7 +14,7 @@ const char *Initializer::PATH_MAIN =
 const char *Initializer::VALUE[KEY_LENGTH][2] = {
         //CORE
         {"TEMP_DIR",    "./temp/"},
-        {"NAME_FORMAT", "yyyy-MM-dd hh:mm:ss"},
+        {"NAME_FORMAT", "yyyy-MM-dd@hh-mm-ss"},
         //GUI
         {"FPS_MSEC",    "10"}
 };

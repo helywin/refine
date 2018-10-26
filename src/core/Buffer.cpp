@@ -32,8 +32,8 @@ QStringList Buffer::Cell::str() const
     QStringList list;
     for (unsigned int i = 0; i < _data_size; ++i) {
         QString str;
-        str = QString("0x%1 ").arg(_objs[i].ID, 8, 16, QChar('0'));
-        str += QString("%1 ").arg(_objs[i].TimeStamp / 1000, 0, 10);
+        str = QString("0x%1 ").arg(_objs[i].ID, 3, 16, QChar('0'));
+        str += QString("%1 ").arg(_objs[i].TimeStamp, 0, 10);
         str += QString::number(_objs[i].DataLen) + " ";
         str += QString("0x%1 %2 %3 %4 %5 %6 %7 %8")
                 .arg(_objs[i].Data[0], 2, 16, QChar('0'))
@@ -127,7 +127,7 @@ QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj)
 
 Buffer::Buffer(int cell_space, unsigned int cell_size) :
         _cell_space(cell_space), _index(0), _cells(new Cell[cell_space]),
-        _head(0)
+        _head(0), _empty(true)
 {
     Q_ASSERT(cell_space > 0);
     Q_ASSERT(cell_size > 0);
@@ -144,6 +144,7 @@ Buffer::~Buffer()
 
 void Buffer::move()
 {
+    if (_empty) { _empty = false; }
     (_head + _cells)->setIndex(_index);
     _index += 1;
     _head += 1;
@@ -169,9 +170,11 @@ void Buffer::reset()
 {
     _index = 0;
     _head = 0;
+    _empty = true;
 }
 
-void Buffer::size(Buffer::Iter tail, Buffer::Iter head, int &packs, int &frames)
+void Buffer::size(Buffer::Iter tail, Buffer::Iter head, unsigned int &packs,
+                  unsigned int &frames)
 {
     while (tail != head) {
         packs += 1;

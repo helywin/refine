@@ -14,6 +14,7 @@ Refine::Refine() :
 
 void Refine::setup()
 {
+    _init.loadSettings();
     setLanguage();
     setWindowTitle(tr("Refine - 数据采集 & 工况匹配"));
     resize(800, 600);
@@ -70,6 +71,16 @@ void Refine::setup()
              tr("继续采集曲线(曲线段开始)"));
     initMenu(_menu_control_finish, tr("结束(&F)"), _menu_control,
              tr("结束采集曲线"));
+    initMenu(_menu_tools, tr("工具(&T)"), _menubar);
+    initMenu(_menu_tools_timer, tr("计时器(&T)"), _menu_tools);
+    initMenu(_menu_tools_timers[0], tr("计时器1"), _menu_tools_timer,
+             tr("计时器1开始计时"), QKeySequence("Ctrl+1"), true);
+    initMenu(_menu_tools_timers[1], tr("计时器2"), _menu_tools_timer,
+             tr("计时器2开始计时"), QKeySequence("Ctrl+2"), true);
+    initMenu(_menu_tools_timers[2], tr("计时器3"), _menu_tools_timer,
+             tr("计时器2开始计时"), QKeySequence("Ctrl+3"), true);
+    initMenu(_menu_tools_wakeup, tr("屏幕常亮(&S)"), _menu_tools,
+             tr("保持屏幕常亮不黑屏开/关"), true);
     initMenu(_menu_help, tr("帮助(&H)"), _menubar);
     initMenu(_menu_help_tutorial, tr("手册(&T)..."), _menu_help,
              tr("软件手册和工况"));
@@ -111,12 +122,18 @@ void Refine::setup()
     _curvebox->raise();
 
     _display = new Display(this, &_revolve);
+    _revolve.setSketch(&_display->sketch());
     setCentralWidget(_display);
 
     _statusbar = new StatusBar(this);
     this->setStatusBar(_statusbar);
     _file_picker = new FilePicker(this);
     _output->connectToMessager(_file_picker);
+
+    _timer_start[0] = false;
+    _timer_start[1] = false;
+    _timer_start[2] = false;
+
     connect(_menu_file_open, &QAction::triggered,
             _file_picker, &FilePicker::loadArchive, Qt::DirectConnection);
     connect(_menu_file_save, &QAction::triggered,
@@ -139,6 +156,12 @@ void Refine::setup()
             &_revolve, &Revolve::stop, Qt::DirectConnection);
     connect(_file_picker, &FilePicker::pickFile,
             this, &Refine::getFile, Qt::DirectConnection);
+    connect(_menu_tools_timers[0], &QAction::triggered,
+            this, &Refine::startTimers, Qt::DirectConnection);
+    connect(_menu_tools_timers[1], &QAction::triggered,
+            this, &Refine::startTimers, Qt::DirectConnection);
+    connect(_menu_tools_timers[2], &QAction::triggered,
+            this, &Refine::startTimers, Qt::DirectConnection);
 }
 
 void Refine::setLanguage()
@@ -149,7 +172,7 @@ void Refine::setLanguage()
 
 void Refine::startRevolve()
 {
-    _revolve.begin(10, 0, 0);
+    _revolve.begin(10, 1, 0);
 }
 
 void Refine::connectCan()
@@ -162,10 +185,28 @@ void Refine::connectCan()
                          tr("连接失败，检查CAN占用或连接情况"));
         }
     } else {
-        if (_revolve.can().close()) {
+        int flag = 0;
+        bool unfinished = !_revolve.finished();
+        if (unfinished) {
+            flag = QMessageBox::warning(this, tr("警告"),
+                                        tr("采集尚未结束，是否关闭CAN"),
+                                        tr("取消"),
+                                        tr("确认"));
+            qDebug() << "flag: " << flag;
+            if (flag) {
+                _revolve.stop();
+            }
+        }
+        bool closed = false;
+        if (unfinished && flag || !unfinished) {
+            closed = _revolve.can().close();
+        }
+        if (closed) {      //与运算后面的语句可能不执行，看条件而定
             emit message(Messager::MessageType::Info, tr("关闭成功"));
-        } else {
+        } else if (flag) {
             emit message(Messager::MessageType::Warning, tr("关闭失败"));
+        } else {
+            emit message(Messager::MessageType::Info, tr("关闭取消"));
         }
     }
     _menu_init_can->setChecked(_revolve.can().isConnected());
@@ -245,5 +286,64 @@ void Refine::getFile(int type, const QString &file)
     }
 
 
+}
+
+void Refine::closeEvent(QCloseEvent *event)
+{
+    if (!_revolve.finished()) {
+        int flag = QMessageBox::warning(this, tr("警告"),
+                                        tr("采集尚未结束，是否退出"),
+                                        tr("取消"),
+                                        tr("确认"));
+        if (flag) {
+            _revolve.stop();
+            _revolve.can().close();
+        } else {
+            event->setAccepted(false);
+            return;
+        }
+    }
+    if (_revolve.can().isConnected()) {
+        _revolve.can().close();
+    }
+}
+
+void Refine::startTimers()
+{
+    for (int i = 0; i < 3; ++i) {
+        if (_menu_tools_timers[i]->isChecked() && !_timer_start[i]) {
+            message(Messager::Info,
+                    tr("计时器") + QString::number(i + 1) + tr("开始"));
+            _timer[i] = QTime::currentTime();
+            _timer_start[i] = true;
+        }
+        if (!_menu_tools_timers[i]->isChecked() && _timer_start[i]) {
+            int ms = _timer[i].msecsTo(QTime::currentTime());
+            int h = ms / (60 * 60 * 1000);
+            ms %= (60 * 60 * 1000);
+            int m = ms / (60 * 1000);
+            ms %= (60 * 1000);
+            int s = ms / (1000);
+            ms %= (1000);
+            QTime time(h, m, s, ms);
+            QString str;
+            if (h) {
+                str += QString("%1h").arg(h);
+            }
+            if (m) {
+                str += QString("%1m").arg(m, (h != 0) * 2, 10, QChar('0'));
+            }
+            if (s) {
+                str += QString("%1s").arg(s, (h || m) * 3, 10, QChar('0'));
+            }
+            if (ms) {
+                str += QString("%1ms").arg(ms, (h || m || s) * 2,
+                                           10, QChar('0'));
+            }
+            message(Messager::Info,
+                    tr("计时器") + QString::number(i + 1) + tr("结束 ") + str);
+            _timer_start[i] = false;
+        }
+    }
 }
 

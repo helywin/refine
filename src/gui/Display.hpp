@@ -11,6 +11,7 @@
 
 class CurveViewer;
 class Revolve;
+class Sketch;
 
 class Display : public QWidget
 {
@@ -22,6 +23,7 @@ private:
 public:
     Display(QWidget *parent, Revolve *revolve);
 
+    Sketch &sketch();
 private:
     void setup();
 };

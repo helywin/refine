@@ -13,4 +13,5 @@ void Record::run()
 {
     _buffer_head = _buffer->head();
     _file.dumpFrameRecord(*_buffer, _buffer_tail, _buffer_head);
+    _buffer_tail = _buffer_head;
 }

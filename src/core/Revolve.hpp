@@ -11,6 +11,7 @@
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
+#include <QtCore/QThread>
 #include "Can.hpp"
 #include "Curve.hpp"
 #include "File.hpp"
@@ -34,7 +35,7 @@
  */
 class Sketch;
 
-class Revolve : public QObject
+class Revolve : public QThread
 {
 Q_OBJECT
 public:
@@ -43,6 +44,14 @@ public:
         Stop,
         Running,
         Pause
+    };
+
+    enum Command
+    {
+        None,
+        CommandStop,
+        CommandResume,
+        CommandPause
     };
 
     enum Config
@@ -65,15 +74,16 @@ private:
     Record _record;
     Softcan _softcan;           //! \brief softcan配置转换工具
     Sketch *_sketch;
-    QTimer _timer_collect;      //! \brief 采样时钟
-    QTimer _timer_stop;         //! \brief 自动停止的计时器
-    QFile *_store_frames;       //! \brief 自动存储的报文数据
-    QFile *_collect_frames;     //! \brief 从GUI读取的量
-    QFile *_store_curves;       //! \brief 自动存储的曲线数据
+    QTimer _timer_stop;      //! \brief 采样时钟
+    QFile _store_frames;       //! \brief 自动存储的报文数据
+    QFile _collect_frames;     //! \brief 从GUI读取的量
+    QFile _store_curves;       //! \brief 自动存储的曲线数据
     int _msec;      //! \brief 采样周期
     int _time;      //! \brief 自动停止时间
     int _config;
     Status _status;
+    Command _cmd;
+
 
 public:
     explicit Revolve(Initializer *init);
@@ -140,6 +150,8 @@ public:
 
     inline void setSketch(Sketch *sketch) { _sketch = sketch; }
 
+    inline bool finished() const { return _status == Stop; }
+
 private:
     //生成临时存储文件
     void genFramesDataFile();
@@ -147,10 +159,11 @@ private:
     void genCurveDataFile();
 
     void genTribe();
+protected:
+    void run() override;
 
 public slots:
-    void tictoc();
-
+    
     void CollectError(int code) {}
 
     void TransformError(int code) {}
