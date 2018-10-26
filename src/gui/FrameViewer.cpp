@@ -104,7 +104,7 @@ void FrameViewer::readFrameData(const QString &fname)
         }
         QString str;
         file.loadFrameRecord(buffer);
-        const Buffer::Cell &cell = buffer.tail();
+        const Buffer::Cell &cell = *buffer.last();
         for (int j = 0; j < cell.dataSize(); ++j) {
             if (_menu_option_frame->isChecked()) {
                 if (cell[j]->ID != 0x777) {
@@ -180,7 +180,7 @@ void FrameViewer::readFrameData(const QString &fname)
             _table_central->setItem(index, 10, item);
             index += 1;
         }
-        buffer.tailForward();
+        buffer.move();
     }
 }
 

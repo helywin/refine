@@ -28,7 +28,7 @@ void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe)
 void Transform::run()
 {
     _tribe->setUnFilled();
-    for (_buffer_head = _buffer->end();
+    for (_buffer_head = _buffer->head();
          _buffer_tail != _buffer_head; ++_buffer_tail) {
         auto buf = *_buffer_tail;
         for (int i = 0; i < buf.dataSize(); ++i) {

@@ -54,7 +54,12 @@ public:
         return begin();
     }
 
-    inline void finish() { _file.loadFrameRecordFinish(*_frame_file); }
+    inline void finish()
+    {
+        if (_manner == FromFile) {
+            _file.loadFrameRecordFinish(*_frame_file);
+        }
+    }
 
     inline Manner manner() const { return _manner; }
 

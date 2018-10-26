@@ -9,26 +9,21 @@
 #include <QtCore/QDebug>
 #include "Buffer.hpp"
 
-Buffer::Cell::Cell() : _status(Status::UnInitialized), _objs(nullptr),
+Buffer::Cell::Cell() :  _objs(nullptr),
                        _whole_size(0), _data_size(0), _index(0) {}
 
 Buffer::Cell::~Cell()
 {
-    if (_status != Status::UnInitialized) {
-        delete[] _objs;
-    }
+    delete[] _objs;
 }
 
 void Buffer::Cell::initialize(unsigned int size)
 {
     Q_ASSERT(size > 0);
-    if (_status == Status::UnInitialized) {
-        _objs = new VCI_CAN_OBJ[size];
-        _whole_size = size;
-        for (auto i = 0U; i < size; ++i) {
-            memset(_objs[i].Data, 0, sizeof(_objs[i].Data));
-        }
-        _status = Status::Initialized;
+    _objs = new VCI_CAN_OBJ[size];
+    _whole_size = size;
+    for (auto i = 0U; i < size; ++i) {
+        memset(_objs[i].Data, 0, sizeof(_objs[i].Data));
     }
 }
 
@@ -132,7 +127,7 @@ QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj)
 
 Buffer::Buffer(int cell_space, unsigned int cell_size) :
         _cell_space(cell_space), _index(0), _cells(new Cell[cell_space]),
-        _head(0), _tail(0), _mark_head(0), _mark_tail(0), _is_marked(false)
+        _head(0)
 {
     Q_ASSERT(cell_space > 0);
     Q_ASSERT(cell_size > 0);
@@ -146,63 +141,14 @@ Buffer::~Buffer()
     delete[] _cells;
 }
 
-int Buffer::size() const
-{
-    auto i = _head - _tail;
-    if (i < 0) {
-        i += _cell_space;
-    }
-    return i;
-}
 
-void Buffer::size(int &cell_n, int &obj_n) const
-{
-    cell_n = 0;
-    obj_n = 0;
-    int p = _tail;
-    while (p != _head) {
-        cell_n += 1;
-        obj_n += (p + _cells)->dataSize();
-        p += 1;
-        p %= _cell_space;
-    }
-}
-
-
-void Buffer::headForward()
+void Buffer::move()
 {
     (_head + _cells)->setIndex(_index);
     _index += 1;
     _head += 1;
     _head %= _cell_space;
 }
-
-void Buffer::tailForward()
-{
-    (_tail + _cells)->setDataSize(0);
-    _tail += 1;
-    _tail %= _cell_space;
-}
-
-
-//QDataStream &operator<<(QDataStream &stream, const Buffer &buffer)
-//{
-//    int p;
-//    int end;
-//    if (buffer._is_marked) {
-//        p = buffer._mark_tail;
-//        end = buffer._mark_head;
-//    } else {
-//        p = buffer._tail;
-//        end = buffer._head;
-//    }
-//    while (p != end) {
-//        stream << *(p + buffer._cells);
-//        p += 1;
-//        p %= buffer._cell_space;
-//    }
-//    return stream;
-//}
 
 void Buffer::dump(QDataStream &stream, Buffer::Iter tail, Buffer::Iter head)
 {
@@ -215,34 +161,23 @@ void Buffer::dump(QDataStream &stream, Buffer::Iter tail, Buffer::Iter head)
 QDataStream &operator>>(QDataStream &stream, Buffer &buffer)
 {
     stream >> *(buffer._cells + buffer._head);
-    buffer.headForward();
+    buffer.move();
     return stream;
-}
-
-Buffer::Iter Buffer::begin()
-{
-    if (_is_marked) {
-        return Iter(this, _mark_tail);
-    } else {
-        return Iter(this, _tail);
-    }
-}
-
-Buffer::Iter Buffer::end()
-{
-    if (_is_marked) {
-        return Iter(this, _mark_head);
-    } else {
-        return Iter(this, _head);
-    }
 }
 
 void Buffer::reset()
 {
     _index = 0;
     _head = 0;
-    _tail = 0;
-    _is_marked = false;
+}
+
+void Buffer::size(Buffer::Iter tail, Buffer::Iter head, int &packs, int &frames)
+{
+    while (tail != head) {
+        packs += 1;
+        frames += (*tail).dataSize();
+        ++tail;
+    }
 }
 
 

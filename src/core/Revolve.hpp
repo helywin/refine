@@ -45,18 +45,6 @@ public:
         Pause
     };
 
-    union ConfigType
-    {
-        int all;
-        struct
-        {
-            int transform : 1;
-            int record : 1;
-            int trigger : 1;
-            int timing : 1;
-        } bits;
-    };
-
     enum Config
     {
         WithTransform = 0x01,
@@ -84,7 +72,7 @@ private:
     QFile *_store_curves;       //! \brief 自动存储的曲线数据
     int _msec;      //! \brief 采样周期
     int _time;      //! \brief 自动停止时间
-    ConfigType _config;
+    int _config;
     Status _status;
 
 public:

@@ -6,6 +6,7 @@
  * @details 底层功能模块全部由Revolve实现调度，GUI不参与任何变量初始化和传递
  ******************************************************************************/
 
+#include <QtCore/QDebug>
 #include "Collect.hpp"
 
 Collect::Collect() :
@@ -41,10 +42,6 @@ void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
 void Collect::run()
 {
     if (_manner == FromCan) {
-        if (_buffer->isFull()) {
-            emit error(BufferFull);
-            qCritical("Collect::run 缓冲已满");
-        }
         int flag = _can->collect(*_buffer);
         if (flag == Can::Fail) {
             if (!_can->isConnected()) {

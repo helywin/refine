@@ -347,9 +347,9 @@ bool File::dumpFrameRecordBegin(QFile &file)
 
 void File::dumpFrameRecord(Buffer &buffer, Buffer::Iter tail, Buffer::Iter head)
 {
-    int cell_n;
-    int obj_n;
-    buffer.size(cell_n, obj_n);
+    int cell_n = 0;
+    int obj_n = 0;
+    buffer.size(tail, head, cell_n, obj_n);
     _frame_cell_num += cell_n;
     _frame_obj_num += obj_n;
     buffer.dump(*_stream, tail, head);

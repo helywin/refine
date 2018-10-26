@@ -8,7 +8,7 @@
 int main()
 {
     Buffer buffer;
-    buffer.headForward();
+    buffer.move();
     buffer.setMark();
     for (const auto &iter : buffer) {
         qDebug() << iter.str();

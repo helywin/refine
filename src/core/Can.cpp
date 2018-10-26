@@ -268,13 +268,13 @@ int Can::collect(Buffer &buffer, const int delay)
     length = VCI_Receive(_config.deviceType(),
                          _config.deviceIndex(),
                          _config.deviceChannel(),
-                         buffer.head().obj(),
-                         buffer.headWholeSize(),
+                         buffer.headCell().obj(),
+                         buffer.headCell().wholeSize(),
                          delay);
     int rtn;
     if (length > 0 && length != 0xFFFFFFFF) {
-        buffer.setHeadDataSize(length);
-        buffer.headForward();
+        buffer.headCell().setDataSize(length);
+        buffer.move();
         rtn = Succeed;
     } else if (length == 0xFFFFFFFF) {
         getError();
@@ -292,7 +292,7 @@ int Can::collect(Buffer &buffer, const int delay)
  * @param buffer 发送缓冲区
  * @return 是否发送成功
  */
-bool Can::deliver(Buffer &buffer)
+/*bool Can::deliver(Buffer &buffer)
 {
     unsigned long length;
     _status |= Status::Transmitting;
@@ -311,7 +311,7 @@ bool Can::deliver(Buffer &buffer)
     }
     _status ^= Status::Transmitting;
     return flag;
-}
+}*/
 
 /*!
  * @brief 发送字符串

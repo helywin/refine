@@ -30,7 +30,7 @@ Revolve::Revolve(Initializer *init) :
         _config(),
         _status(Stop)
 {
-    _config.all = 0x01;
+    _config = 0x00;
     connect(&_timer_collect, &QTimer::timeout, this, &Revolve::tictoc,
             Qt::DirectConnection);
     connect(&_timer_stop, &QTimer::timeout, this, &Revolve::stop,
@@ -45,36 +45,38 @@ void Revolve::begin(int msec, int config, int time)
         message(Messager::Warning, tr("开始失败，确保CAN连接好再采集"));
         return;
     }
-    if (!_curve.isInitialized()) {
-        message(Messager::Warning, tr("开始失败，没有加载曲线配置"));
-        return;
-    }
     if (_status != Stop) {
         message(Messager::Warning, tr("开始失败，已经在采集了"));
         return;
     }
     _msec = msec;
-    _config.all = config;
+    _config = config;
     _time = time;
-    _tribe.reset();
     _buffer.reset();
     _timer_collect.setInterval(_msec);
     _collect.begin(&_can, &_buffer, Collect::FromCan);
-    if (_config.bits.transform) {
+    if ((unsigned)_config & (unsigned)Config::WithTransform) {
+        if (!_curve.isInitialized()) {
+            message(Messager::Warning, tr("开始失败，没有加载曲线配置"));
+            return;
+        }
+        _tribe.reset();
         genCurveDataFile();
         _transform.begin(&_curve, &_buffer, &_tribe);
     }
-    if (_config.bits.record) {
+    if ((unsigned)_config & (unsigned)WithRecord) {
         genFramesDataFile();
         _record.begin(_store_frames, &_buffer);
     }
-    if (_config.bits.timing) {
+    if ((unsigned)_config & (unsigned)WithTiming) {
         _timer_stop.setInterval(_time * 1000);
         _timer_stop.start();
     }
-    if (_config.bits.trigger) {}
+    if ((unsigned)_config & (unsigned)WithTrigger) {}
+    _can.clear();
     _timer_collect.start();
     _status = Running;
+    message(Messager::Info, tr("开始采集成功"));
 }
 
 void Revolve::stop()
@@ -83,17 +85,23 @@ void Revolve::stop()
         message(Messager::Warning, tr("结束失败，采集还没开始"));
         return;
     }
-    while (_collect.isRunning() ||
-           _transform.isRunning() ||
-           _record.isRunning()) {}
     _timer_collect.stop();
-    if (_config.bits.timing) {
-        _timer_stop.stop();
+    while (_collect.isRunning()) {}
+    if ((unsigned)_config & (unsigned)WithTransform) {
+        while (_transform.isRunning()) {}
+        _transform.finish(_store_curves);
     }
     _collect.finish();
-    _transform.finish(_store_curves);
-    _record.finish();
+    if ((unsigned)_config & (unsigned)WithRecord) {
+        while (_record.isRunning()) {}
+        _record.finish();
+    }
+    if ((unsigned)_config & (unsigned)WithTiming) {
+        _timer_stop.stop();
+    }
+    if ((unsigned)_config & (unsigned)WithTrigger) {}
     _status = Stop;
+    message(Messager::Info, tr("停止采集成功"));
 }
 
 void Revolve::pause()
@@ -107,10 +115,12 @@ void Revolve::pause()
         return;
     }
     _timer_collect.stop();
-    if (_config.bits.timing) {
+    if ((unsigned)_config & (unsigned)WithTiming) {
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }
+    _status = Pause;
+    message(Messager::Info, tr("暂停采集成功"));
 }
 
 void Revolve::resume()
@@ -124,23 +134,26 @@ void Revolve::resume()
         return;
     }
     _timer_collect.start();
-    if (_config.bits.timing) {
+    if ((unsigned)_config & (unsigned)WithTiming) {
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }
+    _status = Running;
+    message(Messager::Info, tr("继续采集成功"));
 }
 
 void Revolve::tictoc()
 {
     _collect.start();
-    if (_config.bits.transform) {
+    if ((unsigned)_config & (unsigned)WithTransform) {
+        qDebug("111");
         if (_transform.isRunning()) {
             emit message(Messager::Warning, tr("曲线转换跟不上"));
         } else {
             _transform.start();
         }
     }
-    if (_config.bits.record) {
+    if ((unsigned)_config & (unsigned)WithRecord) {
         if (_record.isRunning()) {
             emit message(Messager::Warning, tr("报文存储跟不上"));
         } else {
@@ -202,7 +215,7 @@ bool Revolve::outputCurveConfig(const QString &name)
 void Revolve::genTribe()
 {
     _tribe.clear();
-    for (const auto & cell : _curve) {
+    for (const auto &cell : _curve) {
         _tribe.append(cell.name());
     }
 }
