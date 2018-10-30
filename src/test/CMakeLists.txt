@@ -60,7 +60,8 @@ include_directories(${PROJECT_SOURCE_DIR}/src/core)
 include_directories(${PROJECT_SOURCE_DIR}/src/gui)
 #include_directories("C:/Program Files/Microsoft SDKs/Speech/v11.0/Include")
 
-set(RES ${PROJECT_SOURCE_DIR}/res/ui.qrc)
+set(UI ${PROJECT_SOURCE_DIR}/res/ui.qrc)
+set(TEXT ${PROJECT_SOURCE_DIR}/res/text.qrc)
 set(LIBLOG ${PROJECT_SOURCE_DIR}/src/core/Log.cpp)
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
 set(LIBGSL D:/msys32/mingw32/lib/libgsl.a)
@@ -95,7 +96,7 @@ target_link_libraries(thread Qt5Core)
 add_executable(setting test_setting.cpp ../core/Initializer.cpp ../core/Initializer.hpp)
 target_link_libraries(setting Qt5Core)
 
-add_executable(refine main.cpp ${CORE} ${GUI} ${RES})
+add_executable(refine main.cpp ${CORE} ${GUI} ${UI} ${TEXT})
 target_link_libraries(refine
         ${LIBCAN}
         ${LIBOPENGL}

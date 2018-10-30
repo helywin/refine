@@ -96,7 +96,7 @@ void Sketch::disableSmooth()
 
 void Sketch::start(int msec)
 {
-    _timer.start();
+    _timer.start();     //采用低优先级的定时器，减少开支
 }
 
 void Sketch::pause()

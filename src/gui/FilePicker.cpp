@@ -32,7 +32,10 @@ void FilePicker::setup()
     urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(
             QStandardPaths::HomeLocation).first())
          << QUrl::fromLocalFile(QStandardPaths::standardLocations(
-                 QStandardPaths::DesktopLocation).first());
+                 QStandardPaths::DesktopLocation).first())
+         << QUrl::fromLocalFile("\\\\sjnas01\\div17\\div17\\部门文件夹\\"
+                                "电控研究部\\交换数据\\测试科\\公共文件夹"
+                                "\\共享数据");
     setSidebarUrls(urls);
     update();
     connect(this, &FilePicker::fileSelected,

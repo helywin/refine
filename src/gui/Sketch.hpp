@@ -8,6 +8,7 @@
 #include <QtCore/QTimer>
 #include <QtOpenGL/QGLWidget>
 #include <QtOpenGL/QGLFunctions>
+#include <QtWidgets/QScrollBar>
 #include "Tribe.hpp"
 #include "Curve.hpp"
 
@@ -24,11 +25,14 @@ private:
     Curve *_curve;
     QTimer _timer;
     int _msec;
+    QScrollBar *_scroller;
+
 public:
     explicit Sketch(QWidget *parent, Revolve *revolve);
 
     inline void setTribe(Tribe *tribe) { _tribe = tribe; }
     inline void setCurve(Curve *curve) { _curve = curve; }
+    inline void setScroller(QScrollBar *scroller) { _scroller = scroller; }
 
 protected:
     void initializeGL() override;

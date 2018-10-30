@@ -3,6 +3,8 @@
 //
 
 #include <QtWidgets/QScrollBar>
+#include <QtGui/QTextCursor>
+#include <QtGui/QContextMenuEvent>
 #include "Messager.hpp"
 #include "Output.hpp"
 
@@ -24,6 +26,20 @@ void Messager::setup()
     _critical_format.setForeground(QBrush(Output::CRITICAL));
     _fatal_format.setForeground(QBrush(Output::FATAL));
     _debug_format.setForeground(QBrush(Output::DEBUG));
+//    setContextMenuPolicy(Qt::CustomContextMenu);
+    _menu = new QMenu();
+    _menu_copy = new QAction(tr("复制(&C)"), this);
+    _menu_all = new QAction(tr("全选(&S)"), this);
+    _menu_clear = new QAction(tr("清除(&C)"), this);
+    _menu->addAction(_menu_copy);
+    _menu->addAction(_menu_all);
+    _menu->addAction(_menu_clear);
+    connect(_menu_copy, &QAction::triggered,
+            this, &Messager::copy, Qt::DirectConnection);
+    connect(_menu_all, &QAction::triggered,
+            this, &Messager::selectAll, Qt::DirectConnection);
+    connect(_menu_clear, &QAction::triggered,
+            this, &Messager::clear, Qt::DirectConnection);
 }
 
 
@@ -57,15 +73,16 @@ QString Messager::typeStr(MessageType type)
     return str;
 }
 
-void Messager::showMessage(Messager::MessageType type, const QString &msg)
+void Messager::showMessage(int type, const QString &msg)
 {
     QTextCursor cursor = this->textCursor();
+    cursor.clearSelection();
     if (!cursor.atEnd()) {
-        cursor.movePosition(QTextCursor::End);
+        cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
         setTextCursor(cursor);
     }
-    _messages.append(Cell(type, msg));
-    if ((unsigned int)type & (unsigned int)_show_types) {
+    _messages.append(Cell((MessageType) type, msg));
+    if ((unsigned int) type & (unsigned int) _show_types) {
         _logs.append(_messages.last().str());
         switch (type) {
             case Info:
@@ -83,6 +100,8 @@ void Messager::showMessage(Messager::MessageType type, const QString &msg)
             case Debug:
                 cursor.insertText(_logs.last() + "\n", _debug_format);
                 break;
+            default:
+                break;
         }
     }
     QScrollBar *scroll_v = verticalScrollBar();
@@ -94,4 +113,13 @@ void Messager::showMessage(Messager::MessageType type, const QString &msg)
         scroll_h->setSliderPosition(scroll_h->minimum());
     }
 }
+
+void Messager::contextMenuEvent(QContextMenuEvent *e)
+{
+    _menu->exec(QCursor::pos());
+    e->accept();
+}
+
+
+
 

@@ -66,6 +66,8 @@ public:
 
         inline void setDataSize(unsigned int size) { _data_size = size; }
 
+        inline bool isEmpty() const { return _data_size == 0; }
+
         void setSendType(SendType type);
 
         QStringList str() const;

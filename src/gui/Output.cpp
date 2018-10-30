@@ -85,17 +85,17 @@ void Output::setup()
 void Output::connectToMessager(Refine *emitter)
 {
     connect(emitter, &Refine::message, _messager,
-            &Messager::showMessage, Qt::DirectConnection);
+            &Messager::showMessage);        //多个连接一个不能直接连接
 }
 
 void Output::connectToMessager(Revolve *emitter)
 {
     connect(emitter, &Revolve::message, _messager,
-            &Messager::showMessage, Qt::DirectConnection);
+            &Messager::showMessage);
 }
 
 void Output::connectToMessager(FilePicker *emitter)
 {
     connect(emitter, &FilePicker::message, _messager,
-            &Messager::showMessage, Qt::DirectConnection);
+            &Messager::showMessage);
 }

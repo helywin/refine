@@ -89,6 +89,7 @@ public:
     explicit Revolve(Initializer *init);
 
     ~Revolve();
+
     //Can配置
     inline Can::Config &canConfig() { return _can.config(); }
 
@@ -163,15 +164,15 @@ protected:
     void run() override;
 
 public slots:
-    
-    void CollectError(int code) {}
 
-    void TransformError(int code) {}
+    void collectError(int code);
 
-    void RecordError(int code) {}
+    void transformError(int code);
+
+    void recordError(int code);
 
 signals:
-    void message(Messager::MessageType type, const QString &msg);
+    void message(int type, const QString &msg);
 };
 
 

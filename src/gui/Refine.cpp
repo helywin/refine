@@ -5,6 +5,7 @@
 #include <QtWidgets/QApplication>
 #include "Refine.hpp"
 #include "Output.hpp"
+#include "ChangeLog.hpp"
 
 Refine::Refine() :
         _init(), _revolve(&_init), _translator()
@@ -31,7 +32,7 @@ void Refine::setup()
     initMenu(_menu_file_save, tr("保存(&S)..."), _menu_file,
              tr("保存数据包文件"), QKeySequence("Ctrl+S"));
     _menu_file->addSeparator();
-    initMenu(_menu_file_config, tr("选项(&C)..."), _menu_file,
+    initMenu(_menu_file_settings, tr("设置(&S)..."), _menu_file,
              tr("配置软件设置"), QKeySequence("Ctrl+`"));
     _menu_file->addSeparator();
     initMenu(_menu_file_exit, tr("退出(&E)"), _menu_file,
@@ -53,8 +54,10 @@ void Refine::setup()
              tr("全屏/取消全屏"), QKeySequence("F11"), true);
     initMenu(_menu_view_presentation, tr("演示(&P)"), _menu_view,
              tr("演示/取消演示"), QKeySequence("F12"), true);
+    initMenu(_menu_view_sketchmsec, tr("重绘间隔(&R)"), _menu_view,
+             tr("设置绘图的绘制间隔时间"), QKeySequence("Ctrl+R"));
     initMenu(_menu_init, tr("初始化(&I)"), _menubar);
-    initMenu(_menu_init_setting, tr("设置(&S)..."), _menu_init,
+    initMenu(_menu_init_option, tr("采集选项(&S)..."), _menu_init,
              tr("设置CAN、曲线配置和工况"));
     initMenu(_menu_init_can, tr("连接CAN(&C)"), _menu_init,
              tr("连接/断开CAN"), true);
@@ -84,8 +87,8 @@ void Refine::setup()
     initMenu(_menu_help, tr("帮助(&H)"), _menubar);
     initMenu(_menu_help_tutorial, tr("手册(&T)..."), _menu_help,
              tr("软件手册和工况"));
-    initMenu(_menu_help_version, tr("版本(&V)..."), _menu_help,
-             tr("软件版本信息"));
+    initMenu(_menu_help_changelog, tr("变更(&C)..."), _menu_help,
+             tr("软件版本变更信息"));
     initMenu(_menu_help_license, tr("声明(&D)..."), _menu_help,
              tr("开源声明"));
     initMenu(_menu_help_feedback, tr("反馈(&F)..."), _menu_help,
@@ -130,6 +133,9 @@ void Refine::setup()
     _file_picker = new FilePicker(this);
     _output->connectToMessager(_file_picker);
 
+    _changelog = new ChangeLog(this);
+
+
     _timer_start[0] = false;
     _timer_start[1] = false;
     _timer_start[2] = false;
@@ -162,6 +168,8 @@ void Refine::setup()
             this, &Refine::startTimers, Qt::DirectConnection);
     connect(_menu_tools_timers[2], &QAction::triggered,
             this, &Refine::startTimers, Qt::DirectConnection);
+    connect(_menu_help_changelog, &QAction::triggered,
+            _changelog, &ChangeLog::show, Qt::DirectConnection);
 }
 
 void Refine::setLanguage()

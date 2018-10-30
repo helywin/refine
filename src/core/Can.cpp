@@ -276,11 +276,9 @@ int Can::collect(Buffer &buffer, const int delay)
         buffer.headCell().setDataSize(length);
         buffer.move();
         rtn = Succeed;
-    } else if (length == 0xFFFFFFFF) {
-        getError();
-        _error_info.report();
-        rtn = Fail;
     } else {
+        buffer.headCell().setDataSize(0);   //改为空报文包还是接收
+        buffer.move();
         rtn = Empty;
     }
     _status ^= Status::Collecting;

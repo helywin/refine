@@ -30,6 +30,7 @@
 
 class Output;
 class Messager;
+class ChangeLog;
 
 class Refine : public QMainWindow
 {
@@ -43,7 +44,7 @@ private:
     QMenu *_menu_file;
     QAction *_menu_file_open;
     QAction *_menu_file_save;
-    QAction *_menu_file_config;
+    QAction *_menu_file_settings;
     QAction *_menu_file_exit;
     QMenu *_menu_view;
     QMenu *_menu_view_display;
@@ -57,8 +58,9 @@ private:
     QAction *_menu_view_display_mark;
     QAction *_menu_view_full;
     QAction *_menu_view_presentation;
+    QAction *_menu_view_sketchmsec;
     QMenu *_menu_init;
-    QAction *_menu_init_setting;
+    QAction *_menu_init_option;
     QAction *_menu_init_can;
     QAction *_menu_init_curve;
     QAction *_menu_init_mode;
@@ -73,7 +75,7 @@ private:
     QAction *_menu_tools_wakeup;
     QMenu *_menu_help;
     QAction *_menu_help_tutorial;
-    QAction *_menu_help_version;
+    QAction *_menu_help_changelog;
     QAction *_menu_help_license;
     QAction *_menu_help_feedback;
     QAction *_menu_help_about;
@@ -84,6 +86,7 @@ private:
     CurveBox *_curvebox;
     MarkBox *_markbox;
     Display *_display;
+    ChangeLog *_changelog;
 
     StatusBar *_statusbar;
 
@@ -150,7 +153,7 @@ private slots:
 
     void startTimers();
 signals:
-    void message(Messager::MessageType type, const QString &msg);
+    void message(int type, const QString &msg);
 };
 
 

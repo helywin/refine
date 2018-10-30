@@ -27,7 +27,7 @@ public:
 
     enum Error
     {
-        BufferFull,
+        NoFrame,
         ConnectionLost,
         CanFailed,
         FileError

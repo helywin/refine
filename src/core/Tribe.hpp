@@ -243,10 +243,12 @@ public:
         _header.removeAt(index);
     }
 
-    void trim() = delete;
-
     int minLen() const;
     int maxLen() const;
+
+    inline int len() const { return _cells[0].size(); }
+
+    inline int size() const { return _cells.size(); }
 
     QStringList zeroLenData() const;
 

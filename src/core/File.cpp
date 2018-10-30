@@ -408,6 +408,7 @@ bool File::dumpCurveRecord(QFile &file, const Tribe &tribe)
     dumpFileHeader();
     _stream->writeRawData("RPDF", 4);
     (*_stream) << tribe;
+    qDebug() << "tribe Max Len: " << tribe.maxLen();
     return true;
 }
 

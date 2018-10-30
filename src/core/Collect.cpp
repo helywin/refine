@@ -39,19 +39,26 @@ void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
     _frame_file = frame_file;
 }
 
+#define NO_FRAME_TIMES 100
+
 void Collect::run()
 {
+    static int cnt = 0;
     if (_manner == FromCan) {
         int flag = _can->collect(*_buffer);
 //        qDebug() << (*_buffer->last()).str();
-        if (flag == Can::Fail) {
+        if (flag == Can::Empty) {
             if (!_can->isConnected()) {
                 emit error(ConnectionLost);
-                qCritical("Collect::run CAN没连接");
             } else {
-                emit error(CanFailed);
-                qCritical("Collect::run CAN采集失败");
+                if (cnt == NO_FRAME_TIMES - 1) {
+                    emit error(NoFrame);
+                }
+                cnt += 1;
+                cnt %= NO_FRAME_TIMES;
             }
+        } else {
+            cnt = 0;
         }
     } else if (_manner == FromFile) {
         if (!_file.loadFrameRecord(*_buffer)) {

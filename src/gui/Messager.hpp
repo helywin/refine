@@ -11,6 +11,8 @@
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
 
 class Messager : public QTextEdit
 {
@@ -60,6 +62,14 @@ private:
     QTextCharFormat _critical_format;
     QTextCharFormat _fatal_format;
     QTextCharFormat _debug_format;
+
+    QMenu *_menu;
+    QAction *_menu_copy;
+protected:
+    void contextMenuEvent(QContextMenuEvent *e) override;
+private:
+    QAction *_menu_all;
+    QAction *_menu_clear;
 public:
     explicit Messager(QWidget *parent = nullptr);
 
@@ -68,7 +78,7 @@ public:
     inline void setShowTypes(int types) { _show_types = types; }
 
 public slots:
-    void showMessage(MessageType type, const QString &msg);
+    void showMessage(int type, const QString &msg);
 
 private:
     void setup();

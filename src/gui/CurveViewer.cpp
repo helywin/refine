@@ -20,4 +20,5 @@ void CurveViewer::setup()
     _layout->addWidget(_sketch);
     _layout->addWidget(_scroller);
     _layout->setMargin(0);
+    _sketch->setScroller(_scroller);
 }

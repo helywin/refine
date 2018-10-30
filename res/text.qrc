@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/res" lang="CN">
+        <file>text/changelog.html</file>
+    </qresource>
+</RCC>

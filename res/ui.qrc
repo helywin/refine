@@ -2,6 +2,5 @@
     <qresource prefix="/res" lang="CN">
         <file>ui/logo.png</file>
         <file>ui/logo.ico</file>
-        <file>test/cfg.txt</file>
     </qresource>
 </RCC>

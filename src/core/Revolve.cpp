@@ -33,6 +33,8 @@ Revolve::Revolve(Initializer *init) :
     _config = 0x00;
     connect(&_timer_stop, &QTimer::timeout, this, &Revolve::stop,
             Qt::DirectConnection);
+    connect(&_collect, &Collect::error, this, &Revolve::collectError,
+            Qt::DirectConnection);
 }
 
 Revolve::~Revolve() {}
@@ -51,6 +53,7 @@ void Revolve::begin(int msec, int config, int time)
     _config = config;
     _time = time;
     _buffer.reset();
+    _tribe.reset();
     _collect.begin(&_can, &_buffer, Collect::FromCan);
     if ((unsigned) _config & (unsigned) Config::WithTransform) {
         if (!_curve.isInitialized()) {
@@ -60,6 +63,7 @@ void Revolve::begin(int msec, int config, int time)
         _tribe.reset();
         genCurveDataFile();
         _transform.begin(&_curve, &_buffer, &_tribe);
+
     }
     if ((unsigned) _config & (unsigned) WithRecord) {
         genFramesDataFile();
@@ -73,6 +77,7 @@ void Revolve::begin(int msec, int config, int time)
     }
     if ((unsigned) _config & (unsigned) WithTrigger) {}
     _can.clear();
+    _cmd = None;
     start(QThread::HighestPriority);
     _status = Running;
     message(Messager::Info, tr("开始采集成功"));
@@ -85,6 +90,7 @@ void Revolve::stop()
         return;
     }
     _cmd = CommandStop;
+    msleep(10);
     while (_collect.isRunning()) {}
     if ((unsigned) _config & (unsigned) WithTransform) {
         while (_transform.isRunning()) {}
@@ -125,7 +131,7 @@ void Revolve::pause()
     if (_sketch) {
         _sketch->pause();
     }
-    _status = Pause;
+    _cmd = CommandPause;
     message(Messager::Info, tr("暂停采集成功"));
 }
 
@@ -147,6 +153,7 @@ void Revolve::resume()
     if (_sketch) {
         _sketch->resume();
     }
+    _cmd = CommandResume;
     message(Messager::Info, tr("继续采集成功"));
 }
 
@@ -157,7 +164,7 @@ void Revolve::setCollectManner(Collect::Manner manner, QString &collect_frame)
 }
 
 void Revolve::genFramesDataFile()
-{
+{_store_frames.close();
     _store_frames.setFileName(
             QDateTime::currentDateTime()
                     .toString(_init->get(Initializer::Core,
@@ -170,6 +177,7 @@ void Revolve::genFramesDataFile()
 
 void Revolve::genCurveDataFile()
 {
+    _store_curves.close();
     _store_curves.setFileName(
             QDateTime::currentDateTime()
                     .toString(_init->get(Initializer::Core,
@@ -214,11 +222,14 @@ void Revolve::run()
         if (_cmd == CommandStop) {
             break;
         }
-        if (_cmd == CommandResume) {
+        if (_cmd == CommandPause) {
             _status = Pause;
             continue;
         }
-
+        if (_cmd == CommandResume) {
+            _status = Running;
+        }
+#if 0   //测量时钟周期
         static QTime t = QTime::currentTime();
         static int i = 0;
         if (i == 99) {
@@ -229,13 +240,13 @@ void Revolve::run()
         }
         ++i;
         i %= 100;
-
+#endif
         _collect.start();
         if ((unsigned) _config & (unsigned) WithTransform) {
             if (_transform.isRunning()) {
                 emit message(Messager::Warning, tr("曲线转换跟不上"));
             } else {
-                _transform.start();
+                _transform.start(QThread::HighestPriority);
             }
         }
         if ((unsigned) _config & (unsigned) WithRecord) {
@@ -246,6 +257,26 @@ void Revolve::run()
             }
         }
     }
+}
+
+void Revolve::collectError(int code)
+{
+    if (code == Collect::ConnectionLost) {
+        message(Messager::Critical, tr("检测到连接已经断开，停止采集"));
+        stop();
+    } else if (code == Collect::NoFrame) {
+        message(Messager::Warning, tr("采集不到报文"));
+    }
+}
+
+void Revolve::transformError(int code)
+{
+
+}
+
+void Revolve::recordError(int code)
+{
+
 }
 
 
