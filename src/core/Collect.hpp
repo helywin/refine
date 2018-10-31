@@ -25,51 +25,63 @@ public:
         FromFile
     };
 
-    enum Error
+    enum Info
     {
-        NoFrame,
-        ConnectionLost,
-        CanFailed,
-        FileError
+        InfoFileEnd,
+        WarnNoFrame,
+        ErrorConnection,
+        ErrorFile
     };
+
+    enum Status
+    {
+        Stop,
+        Running,
+        Pause
+    };
+
+    enum Command
+    {
+        None,
+        CommandStop,
+        CommandResume,
+        CommandPause
+    };
+
 private:
     Can *_can;
     Buffer *_buffer;
     Manner _manner;
     QFile *_frame_file;
     File _file;
+    Status _status;
+    Command _cmd;
+    unsigned long _msec;
 
 public:
     Collect();
 
     void setParams(Can *can, Buffer *buffer,
-                   Manner manner, QFile *frame_file = nullptr);
+                   Manner manner, unsigned long msec = 10,
+                   QFile *frame_file = nullptr);
 
-    bool begin();
+    void begin();
 
-    inline bool begin(Can *can, Buffer *buffer,
-                      Manner manner, QFile *frame_file = nullptr)
-    {
-        setParams(can, buffer, manner, frame_file);
-        return begin();
-    }
+    inline void pause() { _cmd = CommandPause; }
 
-    inline void finish()
-    {
-        if (_manner == FromFile) {
-            _file.loadFrameRecordFinish(*_frame_file);
-        }
-    }
+    inline void resume() { _cmd = CommandResume; }
+
+    void stop();
 
     inline Manner manner() const { return _manner; }
+
+    inline int status() const { return _status; }
 
 protected:
     void run() override;
 
 signals:
-    void error(int error);
-
-    void fileEnd();
+    void info(int code);
 };
 
 

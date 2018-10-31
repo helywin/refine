@@ -19,7 +19,7 @@ void ChangeLog::setup()
     setWindowFlag(Qt::WindowType::WindowMaximizeButtonHint, true);
     setMinimumWidth(200);
     setMinimumHeight(200);
-    resize(350, 450);
+    resize(440, 500);
     _layout = new QVBoxLayout(this);
     setLayout(_layout);
     _text = new QTextEdit(this);

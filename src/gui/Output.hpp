@@ -35,8 +35,13 @@ private:
     QLabel *_label_fatal;
     QLabel *_label_debug;
     Messager *_messager;
+    QAction *_visible;
 public:
     explicit Output(QWidget *parent);
+protected:
+    void closeEvent(QCloseEvent *event) override;
+public:
+    inline void setAction(QAction *action) { _visible = action; }
 
 private:
     void setup();

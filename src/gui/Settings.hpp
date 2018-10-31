@@ -8,6 +8,7 @@
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QGroupBox>
@@ -17,17 +18,19 @@ class Settings : public QDialog
 Q_OBJECT
 private:
     QVBoxLayout *_layout;
-    QPushButton *_button_ok;
-    QPushButton *_button_cancel;
-    QPushButton *_button_apply;
-    QSplitter *_splitter;
+    QSplitter *_content;
     QWidget *_list;
     QScrollArea *_setting_page;
     QWidget *_page;
     QGroupBox *_group_look;
+    QWidget *_buttons;
+    QHBoxLayout *_layout_button;
+    QPushButton *_button_ok;
+    QPushButton *_button_cancel;
+    QPushButton *_button_apply;
 
 public:
-    Settings();
+    explicit Settings(QWidget *parent);
 private:
     void setup();
 };

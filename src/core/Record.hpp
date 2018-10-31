@@ -22,9 +22,24 @@ class Record : public QThread
 {
 Q_OBJECT
 public:
-    enum Error
+    enum Info
     {
+        WarnFile
+    };
 
+    enum Status
+    {
+        Stop,
+        Running,
+        Pause
+    };
+
+    enum Command
+    {
+        None,
+        CommandStop,
+        CommandResume,
+        CommandPause
     };
 private:
     File _file;
@@ -32,11 +47,12 @@ private:
     QFile *_record;
     Buffer::Iter _buffer_tail;
     Buffer::Iter _buffer_head;
+    Status _status;
+    Command _cmd;
+    unsigned long _msec;
 
 public:
-    Record() :
-            _file(), _buffer(nullptr), _record(nullptr),
-            _buffer_tail(), _buffer_head() {}
+    Record();
 
     inline void setParams(QFile *record, Buffer *buffer)
     {
@@ -46,21 +62,21 @@ public:
         _buffer_head.setParams(_buffer, 0);
     }
 
-    inline bool begin() { return _file.dumpFrameRecordBegin(*_record); }
+    void begin();
 
-    inline bool begin(QFile *record, Buffer *buffer)
-    {
-        setParams(record, buffer);
-        return begin();
-    }
+    void stop();
 
-    inline void finish() { _file.dumpFrameRecordFinish(*_record); }
+    inline void pause() { _cmd = CommandPause; }
+
+    inline void reusme() { _cmd = CommandResume; }
+
+    inline int status() const { return _status; }
 
 protected:
     void run() override;
 
 signals:
-    void error(int code);
+    void info(int code);
 };
 
 

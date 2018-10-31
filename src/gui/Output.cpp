@@ -24,7 +24,7 @@ void Output::setup()
     setWindowTitle(tr("信息"));
     _messager = new Messager(this);
     _content = new QWidget();
-    _content->resize(200, 200);
+    _content->resize(200, 100);
     _layout = new QVBoxLayout(_content);
     _content->setLayout(_layout);
     _layout->setContentsMargins(5, 0, 0, 0);
@@ -98,4 +98,9 @@ void Output::connectToMessager(FilePicker *emitter)
 {
     connect(emitter, &FilePicker::message, _messager,
             &Messager::showMessage);
+}
+
+void Output::closeEvent(QCloseEvent *event)
+{
+    _visible->setChecked(false);
 }

@@ -14,35 +14,27 @@ Collect::Collect() :
         _buffer(nullptr),
         _manner(FromCan),
         _frame_file(nullptr),
-        _file() {}
+        _file(),
+        _status(Stop),
+        _cmd(None),
+        _msec(10) {}
 
-bool Collect::begin()
-{
-    if (_manner == FromFile) {
-        if (_file.loadFrameRecordBegin(*_frame_file, *_buffer)) {
-            return true;
-        } else {
-            _manner = FromCan;
-            emit error(FileError);
-            return false;
-        }
-    }
-    return true;
-}
 
 void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
-                        QFile *frame_file)
+                        unsigned long msec, QFile *frame_file)
 {
     _can = can;
     _buffer = buffer;
     _manner = manner;
     _frame_file = frame_file;
+    _msec = msec;
 }
 
-#define NO_FRAME_TIMES 100
+#define NO_FRAME_TIMES 100  //隔多少次会报接收空白帧
 
 void Collect::run()
 {
+#if 0
     static int cnt = 0;
     if (_manner == FromCan) {
         int flag = _can->collect(*_buffer);
@@ -64,5 +56,68 @@ void Collect::run()
         if (!_file.loadFrameRecord(*_buffer)) {
             emit fileEnd();
         }
+    }
+#endif
+    _can->clear();
+    while (_cmd != CommandStop) {
+        msleep(_msec);
+        if (_cmd == CommandPause) {
+            if (_status == Running) {
+                _status = Pause;
+            }
+            continue;
+        }
+        if (_cmd == CommandResume &&
+            _status == Pause) {
+            _can->clear();
+            _status = Running;
+        }
+
+        if (_manner == FromCan) {
+            static int cnt = 0;
+            int flag = _can->collect(*_buffer);
+//        qDebug() << (*_buffer->last()).str();
+            if (flag == Can::Empty) {
+                if (!_can->isConnected()) {
+                    info(ErrorConnection);
+                } else {
+                    if (cnt == NO_FRAME_TIMES - 1) {
+                        info(WarnNoFrame);
+                    }
+                    cnt += 1;
+                    cnt %= NO_FRAME_TIMES;
+                }
+            } else {
+                cnt = 0;
+            }
+        } else if (_manner == FromFile) {
+            if (!_file.loadFrameRecord(*_buffer)) {
+                info(InfoFileEnd);
+            }
+        }
+    }
+}
+
+void Collect::begin()
+{
+    _cmd = None;
+    if (_manner == FromFile) {
+        if (!_file.loadFrameRecordBegin(*_frame_file, *_buffer)) {
+            _manner = FromCan;
+            info(ErrorFile);
+        }
+    }
+    _buffer->reset();
+    start();
+    _status = Running;
+}
+
+void Collect::stop()
+{
+    _cmd = CommandStop;
+    while (isRunning()) {}
+    _status = Stop;
+    if (_manner == FromFile) {
+        _file.loadFrameRecordFinish(*_frame_file);
     }
 }

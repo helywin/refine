@@ -25,26 +25,47 @@ class Tribe;
 class Transform : public QThread
 {
 Q_OBJECT
+public:
+
+    enum Status
+    {
+        Stop,
+        Running,
+        Pause
+    };
+
+    enum Command
+    {
+        None,
+        CommandStop,
+        CommandResume,
+        CommandPause
+    };
+
 private:
     Curve *_curve;
     Buffer *_buffer;
     Tribe *_tribe;
     File _file;
+    unsigned long _msec;
+    Status _status;
+    Command _cmd;
 
 public:
     Transform();
 
-    void setParams(Curve *curve, Buffer *buffer, Tribe *tribe);
+    void setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
+                   unsigned long msec = 10);
 
-    inline void begin(Curve *curve, Buffer *buffer, Tribe *tribe)
-    {
-        setParams(curve, buffer, tribe);
-        begin();
-    }
+    void begin();
 
-    void begin() {}
+    void stop(QFile *file = nullptr);
 
-    void finish(QFile *file = nullptr);
+    inline void pause() { _cmd = CommandPause; }
+
+    inline void resume() { _cmd = CommandResume; }
+
+    inline int status() const { return _status; }
 
 protected:
     void run() override;

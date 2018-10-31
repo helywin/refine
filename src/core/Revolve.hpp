@@ -28,6 +28,7 @@
 #include "Transmit.hpp"
 #include "Initializer.hpp"
 #include "Messager.hpp"
+#include "CurvePanel.hpp"
 
 /*!
  * @brief 底层调度类
@@ -35,7 +36,7 @@
  */
 class Sketch;
 
-class Revolve : public QThread
+class Revolve : public QObject
 {
 Q_OBJECT
 public:
@@ -44,14 +45,6 @@ public:
         Stop,
         Running,
         Pause
-    };
-
-    enum Command
-    {
-        None,
-        CommandStop,
-        CommandResume,
-        CommandPause
     };
 
     enum Config
@@ -78,11 +71,10 @@ private:
     QFile _store_frames;       //! \brief 自动存储的报文数据
     QFile _collect_frames;     //! \brief 从GUI读取的量
     QFile _store_curves;       //! \brief 自动存储的曲线数据
-    int _msec;      //! \brief 采样周期
+    unsigned long _msec;      //! \brief 采样周期
     int _time;      //! \brief 自动停止时间
     int _config;
     Status _status;
-    Command _cmd;
 
 
 public:
@@ -95,7 +87,7 @@ public:
 
 public slots:
     //采集
-    void begin(int msec, int config, int time);
+    void begin(unsigned long msec, int config, int time);
     void pause();
     void resume();
     void stop();
@@ -107,26 +99,9 @@ public:
     bool inputCurveConfig(const QString &name);
     bool outputCurveConfig(const QString &name);
 
-    inline bool importCsvCurveConfig(const QString &name)
-    {
-        if (_curve.loadFromCsv(name)) {
-            genTribe();
-            return true;
-        } else {
-            return false;
-        }
-    }
+    bool importCsvCurveConfig(const QString &name);
 
-    inline bool importSoftcanCurveConfig(const QString &name)
-    {
-        if (_softcan.load(name)) {
-            _softcan.toCurve(_curve);
-            genTribe();
-            return true;
-        } else {
-            return false;
-        }
-    }
+    bool importSoftcanCurveConfig(const QString &name);
 
     inline bool exportCsvCurveConfig(const QString &name)
     {
@@ -160,8 +135,6 @@ private:
     void genCurveDataFile();
 
     void genTribe();
-protected:
-    void run() override;
 
 public slots:
 
@@ -173,6 +146,8 @@ public slots:
 
 signals:
     void message(int type, const QString &msg);
+
+    void curveLoaded();
 };
 
 

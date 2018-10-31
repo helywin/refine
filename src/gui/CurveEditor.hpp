@@ -6,7 +6,9 @@
 #define REFINE_CURVEEDITOR_HPP
 
 
-class CurveEditor
+#include <QtWidgets/QDialog>
+
+class CurveEditor : public QDialog
 {
 
 };

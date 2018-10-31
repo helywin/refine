@@ -7,12 +7,30 @@
 
 #include <QtWidgets/QDockWidget>
 
+class CurvePanel;
+
 class CurveBox : public QDockWidget
 {
 Q_OBJECT
 private:
+    CurvePanel *_curve_panel;
+    QAction *_visible;
 public:
     explicit CurveBox(QWidget *parent);
+
+    inline CurvePanel *curvePanel()
+    {
+        return _curve_panel;
+    }
+
+    inline void setAction(QAction *action) { _visible = action; }
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
     void setup();
 };

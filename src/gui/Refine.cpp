@@ -6,6 +6,7 @@
 #include "Refine.hpp"
 #include "Output.hpp"
 #include "ChangeLog.hpp"
+#include "Sketch.hpp"
 
 Refine::Refine() :
         _init(), _revolve(&_init), _translator()
@@ -39,23 +40,43 @@ void Refine::setup()
              tr("退出该软件"), QKeySequence("Alt+F4"));
     initMenu(_menu_view, tr("视图(&I)"), _menubar);
     initMenu(_menu_view_display, tr("显示(&D)"), _menu_view);
-    initMenu(_menu_view_display_tools, tr("文件工具栏(&F)"), _menu_view_display,
+    _menu_view_display_group = new QActionGroup(_menu_view_display);
+    _menu_view_display_group->setExclusive(false);
+    initMenu(_menu_view_display_file, tr("文件工具栏(&F)"),
+             _menu_view_display_group, _menu_view_display,
              tr("工具栏显示/隐藏"), true, true);
     _menu_view_display->addSeparator();
-    initMenu(_menu_view_display_docker, tr("工具箱窗口(&T)"), _menu_view_display,
+    initMenu(_menu_view_display_tools, tr("工具箱窗口(&T)"),
+             _menu_view_display_group, _menu_view_display,
              tr("工具箱窗口显示/隐藏"), true, true);
-    initMenu(_menu_view_display_output, tr("输出窗口(&O)"), _menu_view_display,
+    initMenu(_menu_view_display_output, tr("输出窗口(&O)"),
+             _menu_view_display_group, _menu_view_display,
              tr("输出窗口显示/隐藏"), true, true);
-    initMenu(_menu_view_display_curve, tr("曲线窗口(&C)"), _menu_view_display,
+    initMenu(_menu_view_display_curve, tr("曲线窗口(&C)"),
+             _menu_view_display_group, _menu_view_display,
              tr("曲线窗口显示/隐藏"), true, true);
-    initMenu(_menu_view_display_mark, tr("标注窗口(&M)"), _menu_view_display,
+    initMenu(_menu_view_display_mark, tr("标注窗口(&M)"),
+             _menu_view_display_group, _menu_view_display,
              tr("标注窗口显示/隐藏"), true, true);
     initMenu(_menu_view_full, tr("全屏(&F)"), _menu_view,
              tr("全屏/取消全屏"), QKeySequence("F11"), true);
     initMenu(_menu_view_presentation, tr("演示(&P)"), _menu_view,
              tr("演示/取消演示"), QKeySequence("F12"), true);
-    initMenu(_menu_view_sketchmsec, tr("重绘间隔(&R)"), _menu_view,
-             tr("设置绘图的绘制间隔时间"), QKeySequence("Ctrl+R"));
+    initMenu(_menu_view_sketchmsec, tr("重绘间隔(&R)"), _menu_view);
+    _menu_view_sketchmsec_group = new QActionGroup(_menu_view_sketchmsec);
+    initMenu(_menu_view_sketchmsec_10, tr("10 ms"), _menu_view_sketchmsec_group,
+             _menu_view_sketchmsec, tr("10ms刷新间隔"), true, true);
+    initMenu(_menu_view_sketchmsec_20, tr("20 ms"), _menu_view_sketchmsec_group,
+             _menu_view_sketchmsec, tr("20ms刷新间隔"), true);
+    initMenu(_menu_view_sketchmsec_30, tr("30 ms"), _menu_view_sketchmsec_group,
+             _menu_view_sketchmsec, tr("30ms刷新间隔"), true);
+    initMenu(_menu_view_sketchmsec_50, tr("50 ms"), _menu_view_sketchmsec_group,
+             _menu_view_sketchmsec, tr("50ms刷新间隔"), true);
+    initMenu(_menu_view_sketchmsec_100, tr("100 ms"),
+             _menu_view_sketchmsec_group,
+             _menu_view_sketchmsec, tr("100ms刷新间隔"), true);
+    _menu_view_sketchmsec_group->setExclusive(true);
+
     initMenu(_menu_init, tr("初始化(&I)"), _menubar);
     initMenu(_menu_init_option, tr("采集选项(&S)..."), _menu_init,
              tr("设置CAN、曲线配置和工况"));
@@ -96,12 +117,13 @@ void Refine::setup()
     initMenu(_menu_help_about, tr("关于(&A)..."), _menu_help,
              tr("关于本软件"));
 
-    _toolbar_menu = new QToolBar(tr("文件(&F)"), this);
-    this->addToolBar(_toolbar_menu);
-    _toolbar_menu->addAction(_menu_file_open);
+    _toolbar_file = new QToolBar(tr("文件(&F)"), this);
+    this->addToolBar(_toolbar_file);
+    _toolbar_file->addAction(_menu_file_open);
 
     _toolbox = new Toolbox(this);
     _toolbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    _toolbox->setAction(_menu_view_display_tools);
     addDockWidget(Qt::LeftDockWidgetArea, _toolbox);
 
     _output = new Output(this);
@@ -109,6 +131,7 @@ void Refine::setup()
     addDockWidget(Qt::LeftDockWidgetArea, _output);
     _output->connectToMessager(this);
     _output->connectToMessager(&_revolve);
+    _output->setAction(_menu_view_display_output);
 //    tabifyDockWidget(_toolbox, _output);
 //    _toolbox->raise();
 
@@ -116,10 +139,17 @@ void Refine::setup()
     _curvebox->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _curvebox);
+    _curvebox->curvePanel()->setCurve(&_revolve.curve());
+    connect(&_revolve, &Revolve::curveLoaded,
+            _curvebox->curvePanel(), &CurvePanel::updateCurve,
+            Qt::DirectConnection);
+    _curvebox->curvePanel()->updateCurve();
+    _curvebox->setAction(_menu_view_display_curve);
 
     _markbox = new MarkBox(this);
     _markbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _markbox);
+    _markbox->setAction(_menu_view_display_mark);
 
     tabifyDockWidget(_curvebox, _markbox);
     _curvebox->raise();
@@ -135,6 +165,7 @@ void Refine::setup()
 
     _changelog = new ChangeLog(this);
 
+    _settings = new Settings(this);
 
     _timer_start[0] = false;
     _timer_start[1] = false;
@@ -170,6 +201,12 @@ void Refine::setup()
             this, &Refine::startTimers, Qt::DirectConnection);
     connect(_menu_help_changelog, &QAction::triggered,
             _changelog, &ChangeLog::show, Qt::DirectConnection);
+    connect(_menu_view_sketchmsec_group, &QActionGroup::triggered,
+            this, &Refine::changeUpdateMsec, Qt::DirectConnection);
+    connect(_menu_view_display_group, &QActionGroup::triggered,
+            this, &Refine::displayAndHide, Qt::DirectConnection);
+    connect(_menu_file_settings, &QAction::triggered,
+            _settings, &Settings::show, Qt::DirectConnection);
 }
 
 void Refine::setLanguage()
@@ -352,6 +389,36 @@ void Refine::startTimers()
                     tr("计时器") + QString::number(i + 1) + tr("结束 ") + str);
             _timer_start[i] = false;
         }
+    }
+}
+
+void Refine::changeUpdateMsec(QAction *action)
+{
+    if (action == _menu_view_sketchmsec_10) {
+        _display->sketch().setMsec(10);
+    } else if (action == _menu_view_sketchmsec_20) {
+        _display->sketch().setMsec(20);
+    } else if (action == _menu_view_sketchmsec_30) {
+        _display->sketch().setMsec(30);
+    } else if (action == _menu_view_sketchmsec_50) {
+        _display->sketch().setMsec(50);
+    } else if (action == _menu_view_sketchmsec_100) {
+        _display->sketch().setMsec(100);
+    }
+}
+
+void Refine::displayAndHide(QAction *action)
+{
+    if (action == _menu_view_display_file) {
+        _toolbar_file->setVisible(_menu_view_display_file->isChecked());
+    } else if (action == _menu_view_display_tools) {
+        _toolbox->setVisible(_menu_view_display_tools->isChecked());
+    } else if (action == _menu_view_display_output) {
+        _output->setVisible(_menu_view_display_output->isChecked());
+    } else if (action == _menu_view_display_curve) {
+        _curvebox->setVisible(_menu_view_display_curve->isChecked());
+    } else if (action == _menu_view_display_mark) {
+        _markbox->setVisible(_menu_view_display_mark->isChecked());
     }
 }
 

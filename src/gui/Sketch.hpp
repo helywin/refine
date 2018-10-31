@@ -31,7 +31,9 @@ public:
     explicit Sketch(QWidget *parent, Revolve *revolve);
 
     inline void setTribe(Tribe *tribe) { _tribe = tribe; }
+
     inline void setCurve(Curve *curve) { _curve = curve; }
+
     inline void setScroller(QScrollBar *scroller) { _scroller = scroller; }
 
 protected:
@@ -47,6 +49,12 @@ public:
     void pause();
     void resume();
     void stop();
+
+    inline void setMsec(int msec)
+    {
+        _msec = msec;
+        _timer.setInterval(_msec);
+    }
 };
 
 

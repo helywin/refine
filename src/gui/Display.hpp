@@ -6,6 +6,7 @@
 #define REFINE_DISPLAY_HPP
 
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 

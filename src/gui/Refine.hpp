@@ -27,10 +27,12 @@
 #include "StatusBar.hpp"
 #include "CurveBox.hpp"
 #include "MarkBox.hpp"
+#include "Settings.hpp"
 
 class Output;
 class Messager;
 class ChangeLog;
+class Settings;
 
 class Refine : public QMainWindow
 {
@@ -48,17 +50,21 @@ private:
     QAction *_menu_file_exit;
     QMenu *_menu_view;
     QMenu *_menu_view_display;
+    QActionGroup *_menu_view_display_group;
+    QAction *_menu_view_display_file;
     QAction *_menu_view_display_tools;
-protected:
-    void closeEvent(QCloseEvent *event) override;
-private:
-    QAction *_menu_view_display_docker;
     QAction *_menu_view_display_output;
     QAction *_menu_view_display_curve;
     QAction *_menu_view_display_mark;
     QAction *_menu_view_full;
     QAction *_menu_view_presentation;
-    QAction *_menu_view_sketchmsec;
+    QMenu *_menu_view_sketchmsec;
+    QActionGroup *_menu_view_sketchmsec_group;
+    QAction *_menu_view_sketchmsec_10;
+    QAction *_menu_view_sketchmsec_20;
+    QAction *_menu_view_sketchmsec_30;
+    QAction *_menu_view_sketchmsec_50;
+    QAction *_menu_view_sketchmsec_100;
     QMenu *_menu_init;
     QAction *_menu_init_option;
     QAction *_menu_init_can;
@@ -79,7 +85,7 @@ private:
     QAction *_menu_help_license;
     QAction *_menu_help_feedback;
     QAction *_menu_help_about;
-    QToolBar *_toolbar_menu;
+    QToolBar *_toolbar_file;
 
     Toolbox *_toolbox;
     Output *_output;
@@ -87,6 +93,7 @@ private:
     MarkBox *_markbox;
     Display *_display;
     ChangeLog *_changelog;
+    Settings *_settings;
 
     StatusBar *_statusbar;
 
@@ -131,6 +138,18 @@ private:
         action->setChecked(checked);
     }
 
+    void initMenu(QAction *&action, QString &&title,
+                  QActionGroup *g, QMenu *m, const QString &tips,
+                  bool checkable = false,
+                  bool checked = false)
+    {
+        action = new QAction(title, g);
+        m->addAction(action);
+        action->setStatusTip(tips);
+        action->setCheckable(checkable);
+        action->setChecked(checked);
+    }
+
     inline void initMenu(QAction *&action, QString &&title,
                          QMenu *m, const QString &tips,
                          const QKeySequence &seq,
@@ -138,6 +157,16 @@ private:
                          bool checked = false)
     {
         initMenu(action, qMove(title), m, tips, checkable, checked);
+        action->setShortcut(seq);
+    }
+
+    inline void initMenu(QAction *&action, QString &&title,
+                         QActionGroup *g, QMenu *m, const QString &tips,
+                         const QKeySequence &seq,
+                         bool checkable = false,
+                         bool checked = false)
+    {
+        initMenu(action, qMove(title), g, m, tips, checkable, checked);
         action->setShortcut(seq);
     }
 
@@ -152,8 +181,15 @@ private slots:
     void getFile(int type, const QString &file);
 
     void startTimers();
+
+    void changeUpdateMsec(QAction *action);
+
+    void displayAndHide(QAction *action);
 signals:
     void message(int type, const QString &msg);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 
 

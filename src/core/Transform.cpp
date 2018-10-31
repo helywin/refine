@@ -14,17 +14,114 @@ Transform::Transform() :
         _curve(nullptr),
         _buffer(nullptr),
         _tribe(nullptr),
-        _file() {}
+        _file(),
+        _status(Stop),
+        _cmd(None) {}
 
-void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe)
+void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
+                          unsigned long msec)
 {
     _curve = curve;
     _buffer = buffer;
     _tribe = tribe;
+    _msec = msec;
 }
 
 void Transform::run()
 {
+    while (_cmd != CommandStop) {
+        msleep(_msec);
+        if (_cmd == CommandPause) {
+            if (_status == Running) {
+                _status = Pause;
+            }
+            continue;
+        }
+        if (_cmd == CommandResume &&
+            _status == Pause) {
+            _status = Running;
+        }
+//#define TEST_SEC    //测试时间消耗，发现主要开销来自线程创建和销毁
+#ifdef TEST_SEC
+        QTime t = QTime::currentTime();
+#endif
+        _tribe->setUnFilled();
+        Buffer::Cell &buf = *_buffer->last();
+        if (_buffer->isEmpty()) {
+            return;
+        }
+        //可以并行计算
+//#pragma omp parallel for
+//    for (int k = 0; k < _tribe->size(); ++k) {
+//        Tribe::Cell &tr = (*_tribe)[k];
+        for (Tribe::Cell &tr : *_tribe) {
+            const Curve::Cell &cur = (*_curve)[tr.name()];
+            for (int i = 0; (i < buf.dataSize()) && !tr.fill(); ++i) {
+                if (cur.canId() == buf[i]->ID &&
+                    (cur.zeroByte() == -1 ||
+                     cur.zeroByte() == buf[i]->Data[0])) {
+                    unsigned int high_byte = 0;
+                    unsigned int low_byte = 0;
+                    if (cur.highByte() != -1) {
+                        high_byte = buf[i]->Data[cur.highByte()];
+                        high_byte <<= 7 - cur.highByteRange()[1];
+                        high_byte >>= 7 - cur.highByteRange()[1] +
+                                      cur.highByteRange()[0];
+                        high_byte <<= cur.lowByteRange()[1] -
+                                      cur.lowByteRange()[0] + 1;
+                    } else {
+                        high_byte = 0;
+                    }
+                    low_byte = buf[i]->Data[cur.lowByte()];
+                    low_byte <<= 7 - cur.lowByteRange()[1];
+                    low_byte >>= 7 - cur.lowByteRange()[1] +
+                                 cur.lowByteRange()[0];
+                    unsigned int full = high_byte + low_byte;
+                    float k;
+                    float b;
+                    k = (float) (cur.rangeOut()[1] -
+                                 cur.rangeOut()[0]) /
+                        (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
+                    b = (float) cur.rangeOut()[0] -
+                        k * cur.rangeIn()[0];
+                    float result = full * k + b;
+                    tr.push(Tribe::Data, result);
+                }
+            }
+            if (!tr.fill()) {
+                if (tr.empty()) {
+                    tr.push(Tribe::FakeByZero, 0);
+                } else {
+                    tr.push(Tribe::FakeByPrevious, tr.data().last());
+                }
+            }
+        }
+#ifdef TEST_SEC
+        qDebug() << t.msecsTo(QTime::currentTime());
+#endif
+    }
+}
+
+void Transform::begin()
+{
+    _cmd = None;
+    _tribe->reset();
+    start(QThread::HighestPriority);
+    _status = Running;
+}
+
+void Transform::stop(QFile *file)
+{
+    _cmd = CommandStop;
+    while (isRunning()) {}
+    _status = Stop;
+    if (file != nullptr) {
+        _file.dumpCurveRecord(*file, *_tribe);
+    }
+}
+
+/*
+#if 0
 #ifdef way0
     _tribe->setUnFilled();
     Buffer::Cell &buf = *_buffer->last();
@@ -85,58 +182,6 @@ void Transform::run()
         }
     }
 #else
-    _tribe->setUnFilled();
-    Buffer::Cell &buf = *_buffer->last();
-    if (_buffer->isEmpty()) {
-        return;
-    }
-    for (Tribe::Cell &tr : *_tribe) {
-        const Curve::Cell &cur = (*_curve)[tr.name()];
-        for (int i = 0; (i < buf.dataSize()) && !tr.fill(); ++i) {
-            if (cur.canId() == buf[i]->ID &&
-            (cur.zeroByte() == -1 || cur.zeroByte() == buf[i]->Data[0])) {
-                unsigned int high_byte = 0;
-                unsigned int low_byte = 0;
-                if (cur.highByte() != -1) {
-                    high_byte = buf[i]->Data[cur.highByte()];
-                    high_byte <<= 7 - cur.highByteRange()[1];
-                    high_byte >>= 7 - cur.highByteRange()[1] +
-                                  cur.highByteRange()[0];
-                    high_byte <<= cur.lowByteRange()[1] -
-                                  cur.lowByteRange()[0] + 1;
-                } else {
-                    high_byte = 0;
-                }
-                low_byte = buf[i]->Data[cur.lowByte()];
-                low_byte <<= 7 - cur.lowByteRange()[1];
-                low_byte >>= 7 - cur.lowByteRange()[1] +
-                             cur.lowByteRange()[0];
-                unsigned int full = high_byte + low_byte;
-                float k;
-                float b;
-                k = (float) (cur.rangeOut()[1] -
-                             cur.rangeOut()[0]) /
-                    (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
-                b = (float) cur.rangeOut()[0] -
-                    k * cur.rangeIn()[0];
-                float result = full * k + b;
-                tr.push(Tribe::Data, result);
-            }
-        }
-        if (!tr.fill()) {
-            if (tr.empty()) {
-                tr.push(Tribe::FakeByZero, 0);
-            } else {
-                tr.push(Tribe::FakeByPrevious, tr.data().last());
-            }
-        }
-    }
 #endif
-}
+*/
 
-void Transform::finish(QFile *file)
-{
-    if (file != nullptr) {
-        _file.dumpCurveRecord(*file, *_tribe);
-    }
-}

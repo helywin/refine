@@ -100,6 +100,7 @@ add_executable(refine main.cpp ${CORE} ${GUI} ${UI} ${TEXT})
 target_link_libraries(refine
         ${LIBCAN}
         ${LIBOPENGL}
+        ${LIBOMP}
         Qt5Core
         Qt5Widgets
         Qt5Gui
