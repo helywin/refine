@@ -102,5 +102,7 @@ void Output::connectToMessager(FilePicker *emitter)
 
 void Output::closeEvent(QCloseEvent *event)
 {
+    hide();
     _visible->setChecked(false);
+    event->setAccepted(false);
 }

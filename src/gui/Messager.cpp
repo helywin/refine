@@ -2,6 +2,9 @@
 // Created by jiang.wenqiang on 2018/10/23.
 //
 
+#include <QtCore/QProcess>
+#include <QtCore/QDebug>
+#include <QtCore/QFileInfo>
 #include <QtWidgets/QScrollBar>
 #include <QtGui/QTextCursor>
 #include <QtGui/QContextMenuEvent>
@@ -31,15 +34,19 @@ void Messager::setup()
     _menu_copy = new QAction(tr("复制(&C)"), this);
     _menu_all = new QAction(tr("全选(&S)"), this);
     _menu_clear = new QAction(tr("清除(&C)"), this);
+    _menu_open = new QAction(tr("文件(&S)"), this);
     _menu->addAction(_menu_copy);
     _menu->addAction(_menu_all);
     _menu->addAction(_menu_clear);
+    _menu->addAction(_menu_open);
     connect(_menu_copy, &QAction::triggered,
             this, &Messager::copy, Qt::DirectConnection);
     connect(_menu_all, &QAction::triggered,
             this, &Messager::selectAll, Qt::DirectConnection);
     connect(_menu_clear, &QAction::triggered,
             this, &Messager::clear, Qt::DirectConnection);
+    connect(_menu_open, &QAction::triggered,
+            this, &Messager::openFile, Qt::DirectConnection);
 }
 
 
@@ -50,7 +57,7 @@ QString Messager::Cell::str() const
     return str;
 }
 
-QString Messager::typeStr(MessageType type)
+QString Messager::typeStr(Messager::MessageType type)
 {
     QString str;
     switch (type) {
@@ -118,6 +125,20 @@ void Messager::contextMenuEvent(QContextMenuEvent *e)
 {
     _menu->exec(QCursor::pos());
     e->accept();
+}
+
+void Messager::openFile()
+{
+    QTextCursor cursor = textCursor();
+    QString file = cursor.selectedText();
+    file = file.trimmed();
+    file = file.replace(QChar('/'), QString("\\"));
+    if (QFile::exists(file)) {
+#ifdef Q_OS_WIN     //别的平台这代码就木有用
+        qDebug() << file;
+        QProcess::startDetached("explorer.exe /select, " + file);
+#endif
+    }
 }
 
 

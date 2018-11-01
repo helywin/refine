@@ -9,11 +9,12 @@
 #include "Initializer.hpp"
 
 const char *Initializer::PATH_MAIN =
-        "./refine.ini";
+        "refine.ini";
 
 const char *Initializer::VALUE[KEY_LENGTH][2] = {
         //CORE
-        {"TEMP_DIR",    "./temp/"},
+        {"DATA_DIR",    "data/"},
+        {"TEMP_DIR",    "temp/"},
         {"NAME_FORMAT", "yyyy-MM-dd@hh-mm-ss"},
         //GUI
         {"FPS_MSEC",    "10"}
@@ -26,7 +27,7 @@ const char *Initializer::GROUP_KEY[2] = {
 
 const int Initializer::GROUP_SEGMENT[2] = {
         0,
-        2
+        3
 };
 
 

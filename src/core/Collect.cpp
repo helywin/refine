@@ -58,7 +58,6 @@ void Collect::run()
         }
     }
 #endif
-    _can->clear();
     while (_cmd != CommandStop) {
         msleep(_msec);
         if (_cmd == CommandPause) {
@@ -108,6 +107,7 @@ void Collect::begin()
         }
     }
     _buffer->reset();
+    _can->clear();
     start();
     _status = Running;
 }

@@ -37,6 +37,8 @@ void FilePicker::setup()
                                 "电控研究部\\交换数据\\测试科\\公共文件夹"
                                 "\\共享数据");
     setSidebarUrls(urls);
+    setDirectoryUrl(QUrl::fromLocalFile(QStandardPaths::standardLocations(
+            QStandardPaths::DesktopLocation).first()));
     update();
     connect(this, &FilePicker::fileSelected,
             this, &FilePicker::fileSelectedSlot, Qt::DirectConnection);

@@ -217,7 +217,7 @@ void Refine::setLanguage()
 
 void Refine::startRevolve()
 {
-    _revolve.begin(10, 1, 0);
+    _revolve.begin(10, 3, 0);
 }
 
 void Refine::connectCan()

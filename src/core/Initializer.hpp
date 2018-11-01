@@ -23,7 +23,7 @@ public:
     typedef QMap<QString, QVariant> KeyMap;
     typedef QMap<QString, KeyMap> SettingsMap;
 
-#define KEY_LENGTH 3
+#define KEY_LENGTH 4
 
     static const char *VALUE[KEY_LENGTH][2];
     static const char *PATH_MAIN;

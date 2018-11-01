@@ -54,6 +54,7 @@ void Revolve::begin(unsigned long msec, int config, int time)
     _time = time;
     _collect.setParams(&_can, &_buffer, Collect::FromCan, msec);
     _collect.begin();
+    genName();
     if ((unsigned) _config & (unsigned) Config::WithTransform) {
         if (!_curve.isInitialized()) {
             message(Messager::Warning, tr("开始失败，没有加载曲线配置"));
@@ -88,9 +89,15 @@ void Revolve::stop()
     _collect.stop();
     if ((unsigned) _config & (unsigned) WithTransform) {
         _transform.stop(&_store_curves);
+        QString name = _store_curves.fileName();
+        name = QDir::currentPath() + "/" + name;
+        message(Messager::Info, tr("曲线: ") + name);
     }
     if ((unsigned) _config & (unsigned) WithRecord) {
         _record.stop();
+        QString name = _store_frames.fileName();
+        name = QDir::currentPath() + "/" + name;
+        message(Messager::Info, tr("报文: ") + name);
     }
     if ((unsigned) _config & (unsigned) WithTiming) {
         _timer_stop.stop();
@@ -164,30 +171,31 @@ void Revolve::setCollectManner(Collect::Manner manner, QString &collect_frame)
     _collect.setParams(&_can, &_buffer, manner, _msec, &_collect_frames);
 }
 
+void Revolve::genName()
+{
+    _name = QDateTime::currentDateTime()
+            .toString(_init->get(Initializer::Core,
+                                 Initializer::NameFormat).toString());
+}
+
 void Revolve::genFramesDataFile()
 {
     _store_frames.close();
     _store_frames.setFileName(
-            QDateTime::currentDateTime()
-                    .toString(_init->get(Initializer::Core,
-                                         Initializer::NameFormat).toString()) +
-            QString(".") +
+            _init->get(Initializer::Core, Initializer::TempDir).toString() +
+            _name + "." +
             FilePicker::extendName(FilePicker::FrameData));
-    qDebug() << "生成报文数据文件名: "
-             << _store_frames.fileName();
+    qDebug() << "生成报文数据文件名: " << _store_frames.fileName();
 }
 
 void Revolve::genCurveDataFile()
 {
     _store_curves.close();
     _store_curves.setFileName(
-            QDateTime::currentDateTime()
-                    .toString(_init->get(Initializer::Core,
-                                         Initializer::NameFormat).toString()) +
-            QString(".") +
+            _init->get(Initializer::Core, Initializer::TempDir).toString() +
+            _name + "." +
             FilePicker::extendName(FilePicker::CurveData));
-    qDebug() << "生成曲线数据文件名: "
-             << _store_curves.fileName();
+    qDebug() << "生成曲线数据文件名: " << _store_curves.fileName();
 }
 
 bool Revolve::inputCurveConfig(const QString &name)
@@ -260,3 +268,4 @@ void Revolve::recordError(int code)
 {
 
 }
+

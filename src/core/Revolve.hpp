@@ -23,7 +23,6 @@
 #include "Collect.hpp"
 #include "Csv.hpp"
 #include "Record.hpp"
-#include "Despatch.hpp"
 #include "Initializer.hpp"
 #include "Transmit.hpp"
 #include "Initializer.hpp"
@@ -74,6 +73,7 @@ private:
     unsigned long _msec;      //! \brief 采样周期
     int _time;      //! \brief 自动停止时间
     int _config;
+    QString _name;
     Status _status;
 
 
@@ -130,6 +130,8 @@ public:
 
 private:
     //生成临时存储文件
+    void genName();
+
     void genFramesDataFile();
 
     void genCurveDataFile();

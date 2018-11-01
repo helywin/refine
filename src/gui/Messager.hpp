@@ -62,14 +62,11 @@ private:
     QTextCharFormat _critical_format;
     QTextCharFormat _fatal_format;
     QTextCharFormat _debug_format;
-
     QMenu *_menu;
     QAction *_menu_copy;
-protected:
-    void contextMenuEvent(QContextMenuEvent *e) override;
-private:
     QAction *_menu_all;
     QAction *_menu_clear;
+    QAction *_menu_open;
 public:
     explicit Messager(QWidget *parent = nullptr);
 
@@ -79,9 +76,12 @@ public:
 
 public slots:
     void showMessage(int type, const QString &msg);
-
+protected:
+    void contextMenuEvent(QContextMenuEvent *e) override;
 private:
     void setup();
+private slots:
+    void openFile();
 };
 
 

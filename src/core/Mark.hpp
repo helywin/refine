@@ -20,6 +20,7 @@ public:
         Circle,
         Arrow,
         Line,
+        Distance,
         Text,
     };
 
@@ -28,6 +29,7 @@ public:
     private:
         QString _name;
         QVariant _data;
+        QString _curve;     //!> 所属的曲线，可为空
         QString _text;
         QColor _color;
         int size;       //字体大小或者线条宽度

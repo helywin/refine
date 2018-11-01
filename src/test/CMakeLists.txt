@@ -66,9 +66,12 @@ set(LIBLOG ${PROJECT_SOURCE_DIR}/src/core/Log.cpp)
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
 set(LIBGSL D:/msys32/mingw32/lib/libgsl.a)
 set(LIBOPENGL D:/msys32/mingw32/i686-w64-mingw32/lib/libopengl32.a)
-set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.a)
-set(LIBZIP D:/msys32/mingw32/lib/libzip.a)
-set(LIBZ D:/msys32/mingw32/lib/libz.a)
+set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.dll.a)
+set(LIBZIP D:/msys32/mingw32/lib/libzip.dll.a)
+set(LIBZ D:/msys32/mingw32/lib/libz.dll.a)
+set(LIBBZ2 D:/msys32/mingw32/lib/libbz2.dll.a)
+set(LIBNETTLE D:/msys32/mingw32/lib/libnettle.dll.a)
+set(LIBGNUTLS D:/msys32/mingw32/lib/libgnutls.dll.a)
 
 add_executable(file test_file.cpp ${CORE})
 target_link_libraries(file ${LIBCAN}
@@ -95,6 +98,14 @@ target_link_libraries(thread Qt5Core)
 
 add_executable(setting test_setting.cpp ../core/Initializer.cpp ../core/Initializer.hpp)
 target_link_libraries(setting Qt5Core)
+
+add_executable(test_zip test_zip.cpp ../core/Packer.cpp ../core/Packer.hpp)
+target_link_libraries(test_zip Qt5Core
+        ${LIBZIP}
+        ${LIBZ}
+        ${LIBBZ2}
+        ${LIBNETTLE}
+        ${LIBGNUTLS})
 
 add_executable(refine main.cpp ${CORE} ${GUI} ${UI} ${TEXT})
 target_link_libraries(refine
