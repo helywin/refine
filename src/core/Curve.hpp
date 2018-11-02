@@ -14,6 +14,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QMap>
 
+class Tribe;
 /*!
  * @brief 曲线配置类
  */
@@ -21,21 +22,23 @@
 class Curve
 {
 public:
+    enum Type
+    {
+        Physical = 0,
+        Logical = 1
+    };
+
+    enum Bundle
+    {
+        None,
+        Acceleration,
+        EngineSpeed
+    };
+
     class Cell
     {
     public:
-        enum Type
-        {
-            Physical = 0,
-            Logical = 1
-        };
-
-        enum Bundle
-        {
-            None,
-            Acceleration,
-            EngineSpeed
-        };
+        friend class Tribe;
 
     private:
         short _index;
@@ -179,6 +182,8 @@ public:
 
         inline int bundle() const { return _bundle; }
 
+        inline QByteArray reserved() const { return _reserved; }
+
         //getter
 
         inline short &index() { return _index; }
@@ -217,6 +222,7 @@ public:
 
         inline int &bundle() { return _bundle; }
 
+        inline QByteArray &reserved() { return _reserved; }
 
         //str setter
         inline void setIndexByStr(QString &s) { _index = s.toUShort(); }
@@ -298,6 +304,29 @@ public:
         };
     };
 
+    class IterConst
+    {
+    private:
+        const Curve *_curve;
+        int _pos;
+
+    public:
+        IterConst(const Curve *curve, int pos) : _curve(curve), _pos(pos) {}
+
+        inline bool operator!=(const IterConst &other)
+        {
+            return _pos != other._pos;
+        }
+
+        inline const Cell &operator*() { return (*_curve)[_pos]; }
+
+        const IterConst &operator++()
+        {
+            _pos += 1;
+            return *this;
+        };
+    };
+
     typedef QMap<int, QList<int>> SubIdMap;
     typedef QMap<int, QList<int>> OtherIdMap;
 
@@ -311,6 +340,7 @@ private:
 
 public:
     Curve() : _initialized(false) {}
+
     bool loadFromCsv(QFile &f);
 
     inline bool loadFromCsv(QFile &&f) { return loadFromCsv(f); }
@@ -335,10 +365,17 @@ public:
 
     inline bool dumpToCsv(QString &&f) const { return dumpToCsv(f); }
 
-    inline Cell &operator[](int index) { return _cells[index]; }
+    inline Cell &operator[](int index)
+    {
+        Q_ASSERT(index >= 0 && index < _cells.size());
+        return _cells[index];
+    }
 
-    inline Cell &
-    operator[](const QString &name) { return _cells[_header.indexOf(name)]; }
+    inline Cell &operator[](const QString &name)
+    {
+        Q_ASSERT(_header.contains(name));
+        return _cells[_header.indexOf(name)];
+    }
 
     inline const Cell &operator[](int index) const
     {
@@ -381,7 +418,11 @@ public:
 
     inline Iter begin() { return Iter(this, 0); }
 
+    inline IterConst begin() const { return IterConst(this, 0); }
+
     inline Iter end() { return Iter(this, _cells.size()); }
+
+    inline IterConst end() const { return IterConst(this, _cells.size()); }
 
     void genSubIdMap777();
 

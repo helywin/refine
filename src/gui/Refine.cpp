@@ -139,7 +139,7 @@ void Refine::setup()
     _curvebox->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _curvebox);
-    _curvebox->curvePanel()->setCurve(&_revolve.curve());
+    _curvebox->curvePanel()->setTribe(&_revolve.tribe());
     connect(&_revolve, &Revolve::curveLoaded,
             _curvebox->curvePanel(), &CurvePanel::updateCurve,
             Qt::DirectConnection);

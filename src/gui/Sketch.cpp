@@ -45,12 +45,15 @@ void Sketch::paintGL()
 //    glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(2);
-    int min_len = _tribe->minLen();
-    int len = min_len;
+    int tribe_len = _tribe->len();
+    if (!tribe_len) {
+        return;
+    }
+    int len = tribe_len;
     if (len > X_AXIS_MAX) {
         len = X_AXIS_MAX;
     }
-    int start_pos = min_len - len;
+    int start_pos = tribe_len - len;
     for (const auto &iter : *_tribe) {
         if (!_curve->at(iter.name()).display()) {
             continue;

@@ -33,11 +33,18 @@ void Tribe::trim()
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe)
 {
+    stream << tribe._styles.size();
     stream << tribe._cells.size();
+    stream << tribe._len;
+    stream << (int) 0;
+    stream << (int) 0;
     stream << (int) 0;
     stream << (int) 0;
     stream << (int) 0;
     for (const auto &iter : tribe._header) {
+        stream << iter;
+    }
+    for (const auto &iter : tribe._styles) {
         stream << iter;
     }
     for (const auto &iter : tribe._cells) {
@@ -50,6 +57,7 @@ QDataStream &operator>>(QDataStream &stream, Tribe &tribe)
 {
     int size = 0;
     int reserved = 0;
+    int len = 0;
     stream >> size;
     stream >> reserved;
     stream >> reserved;
@@ -107,7 +115,7 @@ float Tribe::Cell::fakePercent() const
             cnt += 1;
         }
     }
-    return (float)cnt / (float)_fill.size();
+    return (float) cnt / (float) _fill.size();
 }
 
 void Tribe::Cell::push(const Tribe::Fill fill, const float &v)
@@ -120,21 +128,8 @@ void Tribe::Cell::push(const Tribe::Fill fill, const float &v)
     }
 }
 
-int Tribe::minLen() const
-{
-    int len = -1;
-    for (const auto &iter : _cells) {
-        if (len == -1) {
-            len = iter.size();
-            continue;
-        }
-        if (len > iter.size()) {
-            len = iter.size();
-        }
-    }
-    return len;
-}
-
+Tribe::Tribe() :
+        _len(0) {}
 
 /*!
  * @brief 清空数据
@@ -145,51 +140,6 @@ void Tribe::Cell::reset()
     _fill.clear();
     _fill_this = false;
     _empty = true;
-}
-
-int Tribe::maxLen() const
-{
-    int len = -1;
-    for (const auto &iter : _cells) {
-        if (iter.size() > len) {
-            len = iter.size();
-        }
-    }
-    return len;
-}
-
-QStringList Tribe::zeroLenData() const
-{
-    QStringList list;
-    for (const auto &iter : _cells) {
-        if (iter.empty()) {
-            list.append(iter.name());
-        }
-    }
-    return list;
-}
-
-bool Tribe::loadFromCsv(QFile &f)
-{
-    if (f.isOpen()) {
-        f.close();
-    }
-    Csv csv;
-    csv.setFile(&f);
-    if (!csv.startRead("gbk")) {
-        qCritical("文件打开失败");
-        return false;
-    }
-    csv.readLine(_header);
-    append(_header);
-    while (!csv.finishRead()) {
-        QStringList list;
-        csv.readLine(list);
-        for (int i = 0; i < list.size(); ++i) {
-            (*this)[_header[i]].push(Data, list[i].toFloat());
-        }
-    }
-    return true;
 }
 
 bool Tribe::dumpToCsv(QFile &f) const
@@ -205,7 +155,7 @@ bool Tribe::dumpToCsv(QFile &f) const
     }
     csv.writeLine(_header);
     QStringList list;
-    for (int i = 0; i < minLen(); ++i) {
+    for (int i = 0; i < len(); ++i) {
         list.clear();
         for (const auto &iter : _cells) {
             list.append(QString::number(iter.data()[i]));
@@ -223,25 +173,79 @@ void Tribe::reset()
     for (auto &iter : _cells) {
         iter.reset();
     }
+    _len = 0;
     _segment.clear();
-}
-
-/*!
- * @brief 数据段间增加空白
- * @deprecated 在数据中加入段序号，此函数弃用
- */
-void Tribe::addGap()
-{
-    for (auto &cell : _cells) {
-        for (int i = 0; i < 100; ++i) {
-            cell._data.append(0);
-        }
-    }
 }
 
 void Tribe::setUnFilled()
 {
     for (auto &cell : _cells) {
         cell._fill_this = false;
+    }
+}
+
+Tribe::Style::Style(const Curve::Cell &cell)
+{
+    *this = cell;
+}
+
+Tribe::Style &Tribe::Style::operator=(const Curve::Cell &cell)
+{
+    _index = cell._index;
+    _display = cell._display;
+    _name = cell._name;
+    _type = cell._type;
+    _unit = cell._unit;
+    _width = cell._width;
+    _color = cell._color;
+    _range_out[0] = cell._range_out[0];
+    _range_out[1] = cell._range_out[1];
+    _remark = cell._remark;
+    _bundle = cell._bundle;
+    _reserved = cell._reserved;
+    return *this;
+}
+
+QDataStream &operator<<(QDataStream &stream, const Tribe::Style &style)
+{
+    stream << style._index
+           << style._display
+           << style._name
+           << style._type
+           << style._unit
+           << style._width
+           << style._color
+           << style._range_out[0]
+           << style._range_out[1]
+           << style._remark
+           << style._bundle
+           << style._reserved;
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, Tribe::Style &style)
+{
+    stream >> style._index
+           >> style._display
+           >> style._name
+           >> style._type
+           >> style._unit
+           >> style._width
+           >> style._color
+           >> style._range_out[0]
+           >> style._range_out[1]
+           >> style._remark
+           >> style._bundle
+           >> style._reserved;
+    return stream;
+}
+
+void Tribe::genFromCurve(const Curve &curve)
+{
+    clear();
+    for (const auto &cell : curve) {
+        _styles.append(Style(cell));
+        _cells.append(Cell(cell.name(), Tribe::RawData));
+        _header.append(cell.name());
     }
 }

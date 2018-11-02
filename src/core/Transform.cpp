@@ -48,7 +48,7 @@ void Transform::run()
         _tribe->setUnFilled();
         Buffer::Cell &buf = *_buffer->last();
         if (_buffer->isEmpty()) {
-            return;
+            continue;
         }
         //可以并行计算
 //#pragma omp parallel for
@@ -56,7 +56,7 @@ void Transform::run()
 //        Tribe::Cell &tr = (*_tribe)[k];
         for (Tribe::Cell &tr : *_tribe) {
             const Curve::Cell &cur = (*_curve)[tr.name()];
-            for (int i = 0; (i < buf.dataSize()) && !tr.fill(); ++i) {
+            for (unsigned int i = 0; (i < buf.dataSize()) && !tr.fill(); ++i) {
                 if (cur.canId() == buf[i]->ID &&
                     (cur.zeroByte() == -1 ||
                      cur.zeroByte() == buf[i]->Data[0])) {
@@ -99,6 +99,7 @@ void Transform::run()
 #ifdef TEST_SEC
         qDebug() << t.msecsTo(QTime::currentTime());
 #endif
+        ++(*_tribe);
     }
 }
 
@@ -114,10 +115,10 @@ void Transform::stop(QFile *file)
 {
     _cmd = CommandStop;
     while (isRunning()) {}
-    _status = Stop;
     if (file != nullptr) {
         _file.dumpCurveRecord(*file, *_tribe);
     }
+    _status = Stop;
 }
 
 /*

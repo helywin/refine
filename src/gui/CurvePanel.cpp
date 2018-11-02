@@ -4,7 +4,7 @@
 
 #include <QtWidgets/QHeaderView>
 #include "CurvePanel.hpp"
-#include "Curve.hpp"
+#include "Tribe.hpp"
 
 CurvePanel::CurvePanel(QWidget *parent) :
         QWidget(parent)
@@ -38,14 +38,14 @@ void CurvePanel::updateCurve()
     QStringList header({tr(""), tr("颜色"), tr("名称"), tr("备注")});
     _list->setHorizontalHeaderLabels(header);
     _list->setColumnCount(header.size());
-    if (!_curve->size()) {
+    if (!_tribe->size()) {
         return;
     }
     _list->clearContents();
-    _list->setRowCount(_curve->size());
-    for (int i = 0; i < _curve->size(); ++i) {
+    _list->setRowCount(_tribe->size());
+    for (int i = 0; i < _tribe->size(); ++i) {
         _list->setRowHeight(i, TABLE_ROW_HEIGHT);
-        const Curve::Cell &cell = (*_curve)[i];
+        const Tribe::Style &cell = (*_tribe).style(i);
         auto *display = new QTableWidgetItem();
         if (cell.display()) {
             display->setCheckState(Qt::Checked);

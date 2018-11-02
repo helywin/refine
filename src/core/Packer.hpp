@@ -8,6 +8,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QProcess>
 
+#include "Initializer.hpp"
+
 class Packer : public QObject
 {
 Q_OBJECT
@@ -15,8 +17,9 @@ public:
 private:
     const char *PASSWORD = "by_Refine";
     QProcess _process;
+    Initializer *_init;
 public:
-    Packer();
+    Packer(Initializer *init);
     bool compress(const QStringList &file_list, const QString &dist_name);
 
     bool uncompress(const QString &file, const QString &dist_path);

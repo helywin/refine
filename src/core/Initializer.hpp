@@ -47,7 +47,8 @@ public:
     enum KeyIndex
     {
         IndexStart = 0,
-        TempDir = IndexStart,
+        DataDir = IndexStart,
+        TempDir,
         NameFormat,
         IndexEnd = NameFormat
     };

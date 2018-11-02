@@ -11,6 +11,7 @@
 #include "Curve.hpp"
 #include "Csv.hpp"
 #include "File.hpp"
+#include "Tribe.hpp"
 
 QStringList Curve::str() const
 {

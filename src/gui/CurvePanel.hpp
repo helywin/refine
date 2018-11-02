@@ -9,7 +9,7 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QVBoxLayout>
 
-class Curve;
+class Tribe;
 
 class CurvePanel : public QWidget
 {
@@ -19,14 +19,14 @@ public:
 private:
     QVBoxLayout *_layout;
     QTableWidget *_list;
-    Curve *_curve;
+    Tribe *_tribe;
 
 public:
     explicit CurvePanel(QWidget *parent);
 
-    inline void setCurve(Curve *curve)
+    inline void setTribe(Tribe *tribe)
     {
-        _curve = curve;
+        _tribe = tribe;
         updateCurve();
     }
 

@@ -15,6 +15,9 @@
 #include <QtCore/QVector>
 #include <QtCore/QFile>
 
+#include "Curve.hpp"
+
+
 /*!
  * @brief 存储数据的缓冲区
  */
@@ -22,6 +25,8 @@
 class Tribe
 {
 public:
+    friend class Curve;
+
     enum DataType
     {
         RawData,
@@ -33,6 +38,158 @@ public:
         Data = 0,
         FakeByPrevious = 1,
         FakeByZero = 2,
+    };
+
+    class Style
+    {
+    public:
+        enum Type
+        {
+            Physical = 0,
+            Logical = 1
+        };
+
+        enum Bundle
+        {
+            None,
+            Acceleration,
+            EngineSpeed
+        };
+    private:
+        short _index;
+        bool _display;
+        QString _name;
+        int _type;
+        QString _unit;
+        short _width;
+        unsigned int _color;
+        int _range_out[2];
+        QString _remark;
+        int _bundle;
+        QByteArray _reserved;
+    public:
+        explicit Style(const Curve::Cell &cell);
+        Style(const Style &style) = default;
+        friend QDataStream &operator<<(QDataStream &stream, const Style &style);
+        friend QDataStream &operator>>(QDataStream &stream, Style &style);
+        Style &operator=(const Style &cell) = default;
+        Style &operator=(const Curve::Cell &cell);
+
+        inline QString indexStr() const { return QString::number(_index); }
+
+        inline QString displayStr() const
+        {
+            if (_display) {
+                return QString("是");
+            } else {
+                return QString("否");
+            }
+        }
+
+        inline QString nameStr() const { return QString(_name); }
+
+        inline QString typeStr() const
+        {
+            if (_type == Type::Logical) return QString("逻辑");
+            else return QString("物理");
+        }
+
+        inline QString unitStr() const { return QString(_unit); }
+
+        inline QString widthStr() const { return QString::number(_width); }
+
+        inline QString colorStr() const
+        {
+            return QString("0x%1").arg(_color, 6, 16, QChar('0'));
+        }
+
+        inline QString rangeOutStr() const
+        {
+            return QString("%1~%2").arg(_range_out[0]).arg(_range_out[1]);
+        }
+
+        inline QString remarkStr() const { return QString(_remark); }
+
+        inline QString bundleStr() const { return QString::number(_bundle); }
+
+        //val getter
+        inline short index() const { return _index; }
+
+        inline bool display() const { return _display; }
+
+        inline QString name() const { return _name; }
+
+        inline int type() const { return _type; }
+
+        inline QString unit() const { return _unit; }
+
+        inline short width() const { return _width; }
+
+        inline unsigned int color() const { return _color; }
+
+        inline const int *rangeOut() const { return _range_out; }
+
+        inline QString remark() const { return _remark; }
+
+        inline int bundle() const { return _bundle; }
+
+        inline QByteArray reserved() const { return _reserved; }
+
+        //getter
+
+        inline short &index() { return _index; }
+
+        inline bool &display() { return _display; }
+
+        inline QString &name() { return _name; }
+
+        inline int &type() { return _type; }
+
+        inline QString &unit() { return _unit; }
+
+        inline short &width() { return _width; }
+
+        inline unsigned int &color() { return _color; }
+
+        inline int *rangeOut() { return _range_out; }
+
+        inline QString &remark() { return _remark; }
+
+        inline int &bundle() { return _bundle; }
+
+        inline QByteArray &reserved() { return _reserved; }
+
+
+        //str setter
+        inline void setIndexByStr(QString &s) { _index = s.toUShort(); }
+
+        inline void setDisplayByStr(QString &s)
+        {
+            _display = (s == QString("是"));
+        }
+
+        inline void setNameByStr(QString &s) { _name = s; }
+
+        inline void setTypeByStr(QString &s)
+        {
+            if (s == QString("物理")) _type = Type::Physical;
+            else _type = Type::Logical;
+        }
+
+        inline void setUnitByStr(QString &s) { _unit = s; }
+
+        inline void setWidthByStr(QString &s) { _width = s.toShort(); }
+
+        inline void setRangeOutByStr(QString &s)
+        {
+            QStringList list = s.split(QChar('~'));
+            _range_out[0] = list[0].toInt();
+            _range_out[1] = list[1].toInt();
+        }
+
+        inline void setRemarkByStr(QString &s) { _remark = s; }
+
+        inline void setBundleByStr(QString &s) { _bundle = (Bundle) s.toInt(); }
     };
 
     class Cell
@@ -68,9 +225,17 @@ public:
 
         inline void push(Fill fill, float &&v) { push(fill, v); }
 
-        inline float &operator[](int index) { return _data[index]; }
+        inline float &operator[](int index)
+        {
+            Q_ASSERT(index < _data.size() && index >= 0);
+            return _data[index];
+        }
 
-        inline const float &operator[](int index) const { return _data[index]; }
+        inline const float &operator[](int index) const
+        {
+            Q_ASSERT(index < _data.size() && index >= 0);
+            return _data[index];
+        }
 
         friend
         QDataStream &operator<<(QDataStream &stream, const Tribe::Cell &cell);
@@ -122,28 +287,14 @@ public:
     };
 
 private:
+    QList<Style> _styles;       //! \brief 曲线显示配置
     QList<Cell> _cells;         //! \brief 曲线数据
     QStringList _header;        //! \brief 曲线名字表
     QVector<int> _segment;      //! \brief 曲线分段
+    int _len;
 
 public:
-    Tribe() = default;
-
-    bool loadFromCsv(QFile &f);
-
-    inline bool loadFromCsv(QFile &&f) { return loadFromCsv(f); }
-
-    inline bool loadFromCsv(const QString &f)
-    {
-        QFile file(f);
-        return loadFromCsv(file);
-    }
-
-    inline bool loadFromCsv(QString &&f)
-    {
-        QFile file(f);
-        return loadFromCsv(file);
-    }
+    Tribe();
 
     bool dumpToCsv(QFile &f) const;
 
@@ -193,83 +344,45 @@ public:
         return _cells[_header.indexOf(name)];
     }
 
-    inline void append(const QString &name, const Cell &cell)
-    {
-        _cells.append(cell);
-        _header.append(name);
-    }
-
-    inline void append(const QString &name, Cell &&cell)
-    {
-        _cells.append(cell);
-        _header.append(name);
-    }
-
-    inline void append(const QString &name)
-    {
-        _cells.append(Cell(name));
-        _header.append(name);
-    }
-
-    inline void append(const QStringList &names)
-    {
-        _header.append(names);
-        for (int i = 0; i < names.size(); ++i) {
-            _cells.append(Cell(names[i]));
-        }
-    }
-
-    inline void insert(int index, const QString &name, const Cell &cell)
-    {
-        _cells.insert(index, cell);
-        _header.insert(index, name);
-    }
-
-    inline void insert(int index, const QString &name, Cell &&cell)
-    {
-        _cells.insert(index, cell);
-        _header.insert(index, name);
-    }
-
-    inline void remove(const QString &name)
-    {
-        _cells.removeAt(_header.indexOf(name));
-        _header.removeOne(name);
-    }
-
-    inline void remove(int index)
-    {
-        _cells.removeAt(index);
-        _header.removeAt(index);
-    }
-
-    int minLen() const;
-    int maxLen() const;
-
-    inline int len() const { return _cells[0].size(); }
+    inline int len() const { return _len; }
 
     inline int size() const { return _cells.size(); }
 
-    QStringList zeroLenData() const;
-
     inline void clear()
     {
+        _styles.clear();
         _cells.clear();
         _header.clear();
+        _segment.clear();
     }
 
     void reset();
 
-    void addGap();
-
     void setUnFilled();
 
     inline void newSegment() { _segment.append(_cells[0].size()); }
+
+    void genFromCurve(const Curve &curve);
+
+    inline void operator++() { _len += 1; }
+
+    inline QList<Style> &style() { return _styles; }
+
+    inline const QList<Style> &style() const { return _styles; }
+
+    inline Style &style(int index) { return _styles[index]; }
+
+    inline const Style &style(int index) const { return _styles[index]; }
 };
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);
 QDataStream &operator>>(QDataStream &stream, Tribe &tribe);
 
+QDataStream &operator<<(QDataStream &stream, const Tribe::Style &style);
+QDataStream &operator>>(QDataStream &stream, Tribe::Style &style);
+
 QDataStream &operator<<(QDataStream &stream, const Tribe::Cell &cell);
 QDataStream &operator>>(QDataStream &stream, Tribe::Cell &cell);
+
+
 #endif //REFINE_TRIBE_HPP

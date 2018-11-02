@@ -52,6 +52,6 @@ void Record::stop()
 {
     _cmd = CommandStop;
     while (isRunning()) {}
-    _status = Stop;
     _file.dumpFrameRecordFinish(*_record);
+    _status = Stop;
 }

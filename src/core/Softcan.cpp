@@ -248,7 +248,7 @@ void Softcan::toCurve(Curve &curve)
         Curve::Cell cell(iter.index());
         cell.display() = iter.visible();
         cell.name() = iter.name();
-        cell.type() = Curve::Cell::Type::Physical;
+        cell.type() = Curve::Physical;
         cell.unit() = iter.unit();
         cell.width() = static_cast<short>(iter.width());
         cell.color() = iter.color();
@@ -266,7 +266,7 @@ void Softcan::toCurve(Curve &curve)
         cell.rangeOut()[0] = static_cast<int>(iter.yMin());
         cell.rangeOut()[1] = static_cast<int>(iter.yMax());
         cell.remark() = iter.intro();
-        cell.bundle() = Curve::Cell::Bundle::None;
+        cell.bundle() = Curve::None;
         curve.append(qMove(cell));
     }
     curve.genSubIdMap777();

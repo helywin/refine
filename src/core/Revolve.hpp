@@ -28,6 +28,7 @@
 #include "Initializer.hpp"
 #include "Messager.hpp"
 #include "CurvePanel.hpp"
+#include "Packer.hpp"
 
 /*!
  * @brief 底层调度类
@@ -66,15 +67,22 @@ private:
     Record _record;
     Softcan _softcan;           //! \brief softcan配置转换工具
     Sketch *_sketch;
-    QTimer _timer_stop;      //! \brief 采样时钟
-    QFile _store_frames;       //! \brief 自动存储的报文数据
-    QFile _collect_frames;     //! \brief 从GUI读取的量
-    QFile _store_curves;       //! \brief 自动存储的曲线数据
-    unsigned long _msec;      //! \brief 采样周期
-    int _time;      //! \brief 自动停止时间
+    File _file;
+    QTimer _timer_stop;                     //! \brief 采样时钟
+    QFile _store_frames;                    //! \brief 自动存储的报文数据
+    QString _store_frames_name;             //! \brief 自动存储的报文数据名字
+    QFile _collect_frames;                  //! \brief 从GUI读取的量
+    QFile _store_curvedata;                 //! \brief 自动存储的曲线数据
+    QString _store_curvedata_name;          //! \brief 自动存储的曲线数据名字
+    QFile _store_curveconfig;               //! \brief 曲线配置存储
+    QString _store_curveconfig_name;        //! \brief 曲线配置存储名字
+    QString _store_archive_name;            //! \brief 打包文件名字
+    unsigned long _msec;                    //! \brief 采样周期
+    int _time;                              //! \brief 自动停止时间
     int _config;
     QString _name;
     Status _status;
+    Packer _packer;
 
 
 public:
@@ -136,7 +144,9 @@ private:
 
     void genCurveDataFile();
 
-    void genTribe();
+    void genCurveConfigFile();
+
+    void genArchiveFileName();
 
 public slots:
 
