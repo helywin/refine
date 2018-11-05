@@ -28,6 +28,7 @@ SOURCES += \
         ./src/gui/ColorPicker.cpp \
         ./src/gui/CurveBox.cpp \
         ./src/gui/CurveEditor.cpp \
+        ./src/gui/CurvePanel.cpp \
         ./src/gui/CurveViewer.cpp \
         ./src/gui/Display.cpp \
         ./src/gui/FilePicker.cpp \
@@ -46,11 +47,11 @@ SOURCES += \
         ./src/core/Collect.cpp \
         ./src/core/Csv.cpp \
         ./src/core/Curve.cpp \
-        ./src/core/Despatch.cpp \
         ./src/core/File.cpp \
         ./src/core/Initializer.cpp \
         ./src/core/Log.cpp \
         ./src/core/Mark.cpp \
+        ./src/core/Packer.cpp \
         ./src/core/Record.cpp \
         ./src/core/Revolve.cpp \
         ./src/core/Softcan.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
         ./src/gui/ColorPicker.hpp \
         ./src/gui/CurveBox.hpp \
         ./src/gui/CurveEditor.hpp \
+        ./src/gui/CurvePanel.hpp \
         ./src/gui/CurveViewer.hpp \
         ./src/gui/Display.hpp \
         ./src/gui/FilePicker.hpp \
@@ -84,11 +86,11 @@ HEADERS += \
         ./src/core/Collect.hpp \
         ./src/core/Csv.hpp \
         ./src/core/Curve.hpp \
-        ./src/core/Despatch.hpp \
         ./src/core/File.hpp \
         ./src/core/Initializer.hpp \
         ./src/core/Log.hpp \
         ./src/core/Mark.hpp \
+        ./src/core/Packer.hpp \
         ./src/core/Record.hpp \
         ./src/core/Revolve.hpp \
         ./src/core/Softcan.hpp \

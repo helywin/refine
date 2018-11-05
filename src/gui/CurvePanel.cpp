@@ -3,6 +3,7 @@
 //
 
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include "CurvePanel.hpp"
 #include "Tribe.hpp"
 
@@ -34,6 +35,7 @@ void CurvePanel::updateCurve()
     _list->setColumnWidth(2, 180);
     _list->setColumnWidth(3, 300);
     _list->setHorizontalScrollMode(QTableWidget::ScrollPerPixel);
+    _list->setVerticalScrollMode(QTableWidget::ScrollPerPixel);
     _list->setAlternatingRowColors(true);
     QStringList header({tr(""), tr("颜色"), tr("名称"), tr("备注")});
     _list->setHorizontalHeaderLabels(header);
@@ -53,11 +55,15 @@ void CurvePanel::updateCurve()
             display->setCheckState(Qt::Unchecked);
         }
         _list->setItem(i, 0, display);
-        auto *color = new QTableWidgetItem();
-        color->setBackgroundColor(QColor(cell.color()));
-        color->setForeground(QBrush(QColor(cell.color())));
-        color->setFlags(Qt::ItemIsEnabled);
-        _list->setItem(i, 1, color);
+        auto *color = new QLabel();
+        color->setAutoFillBackground(true);
+        color->setBackgroundRole(QPalette::Window);
+        color->setPalette(QPalette(cell.color(), cell.color()));
+//        color->setPixmap(pix);
+//        color->setBackgroundColor(QColor(cell.color()));
+//        color->setForeground(QBrush(QColor(cell.color())));
+//        color->setFlags(Qt::ItemIsEnabled);
+        _list->setCellWidget(i, 1, color);
         auto *name = new QTableWidgetItem();
         name->setText(cell.name());
         _list->setItem(i, 2, name);

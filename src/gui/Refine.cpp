@@ -80,12 +80,17 @@ void Refine::setup()
     initMenu(_menu_init, tr("初始化(&I)"), _menubar);
     initMenu(_menu_init_option, tr("采集选项(&S)..."), _menu_init,
              tr("设置CAN、曲线配置和工况"));
+    _menu_init->addSeparator();
     initMenu(_menu_init_can, tr("连接CAN(&C)"), _menu_init,
              tr("连接/断开CAN"), true);
-    initMenu(_menu_init_curve, tr("曲线配置(&C)..."), _menu_init,
-             tr("读取曲线配置"));
-    initMenu(_menu_init_mode, tr("工况配置(&M)..."), _menu_init,
-             tr("读取工况配置"));
+    _menu_init->addSeparator();
+    initMenu(_menu_init_curve, tr("加载曲线配置(&L)..."), _menu_init,
+             tr("加载曲线配置"));
+    initMenu(_menu_init_editcurve, tr("编辑曲线配置(&E)..."), _menu_init,
+             tr("编辑曲线配置"));
+    _menu_init->addSeparator();
+    initMenu(_menu_init_mode, tr("加载工况配置(&L)..."), _menu_init,
+             tr("加载工况配置"));
     initMenu(_menu_control, tr("控制(&C)"), _menubar);
     initMenu(_menu_control_start, tr("开始(&S)"), _menu_control,
              tr("开始采集曲线"));
@@ -97,12 +102,17 @@ void Refine::setup()
              tr("结束采集曲线"));
     initMenu(_menu_tools, tr("工具(&T)"), _menubar);
     initMenu(_menu_tools_timer, tr("计时器(&T)"), _menu_tools);
-    initMenu(_menu_tools_timers[0], tr("计时器1"), _menu_tools_timer,
-             tr("计时器1开始计时"), QKeySequence("Ctrl+1"), true);
-    initMenu(_menu_tools_timers[1], tr("计时器2"), _menu_tools_timer,
-             tr("计时器2开始计时"), QKeySequence("Ctrl+2"), true);
-    initMenu(_menu_tools_timers[2], tr("计时器3"), _menu_tools_timer,
-             tr("计时器2开始计时"), QKeySequence("Ctrl+3"), true);
+    _menu_tools_timer_group = new QActionGroup(_menu_tools_timer);
+    _menu_tools_timer_group->setExclusive(false);
+    initMenu(_menu_tools_timers[0], tr("计时器1"),
+             _menu_tools_timer_group, _menu_tools_timer, tr("计时器1开始计时"),
+             QKeySequence("Ctrl+1"), true);
+    initMenu(_menu_tools_timers[1], tr("计时器2"),
+             _menu_tools_timer_group, _menu_tools_timer, tr("计时器2开始计时"),
+             QKeySequence("Ctrl+2"), true);
+    initMenu(_menu_tools_timers[2], tr("计时器3"),
+             _menu_tools_timer_group, _menu_tools_timer, tr("计时器3开始计时"),
+             QKeySequence("Ctrl+3"), true);
     initMenu(_menu_tools_wakeup, tr("屏幕常亮(&S)"), _menu_tools,
              tr("保持屏幕常亮不黑屏开/关"), true);
     initMenu(_menu_help, tr("帮助(&H)"), _menubar);
@@ -167,6 +177,8 @@ void Refine::setup()
 
     _settings = new Settings(this);
 
+    _editor = new CurveEditor(&_revolve.curve(), this);
+
     _timer_start[0] = false;
     _timer_start[1] = false;
     _timer_start[2] = false;
@@ -183,6 +195,8 @@ void Refine::setup()
             this, &Refine::close, Qt::DirectConnection);
     connect(_menu_init_can, &QAction::triggered,
             this, &Refine::connectCan, Qt::DirectConnection);
+    connect(_menu_init_editcurve, &QAction::triggered,
+            _editor, &CurveEditor::show, Qt::DirectConnection);
     connect(_menu_control_start, &QAction::triggered,
             this, &Refine::startRevolve, Qt::DirectConnection);
     connect(_menu_control_pause, &QAction::triggered,
@@ -193,11 +207,7 @@ void Refine::setup()
             &_revolve, &Revolve::stop, Qt::DirectConnection);
     connect(_file_picker, &FilePicker::pickFile,
             this, &Refine::getFile, Qt::DirectConnection);
-    connect(_menu_tools_timers[0], &QAction::triggered,
-            this, &Refine::startTimers, Qt::DirectConnection);
-    connect(_menu_tools_timers[1], &QAction::triggered,
-            this, &Refine::startTimers, Qt::DirectConnection);
-    connect(_menu_tools_timers[2], &QAction::triggered,
+    connect(_menu_tools_timer_group, &QActionGroup::triggered,
             this, &Refine::startTimers, Qt::DirectConnection);
     connect(_menu_help_changelog, &QAction::triggered,
             _changelog, &ChangeLog::show, Qt::DirectConnection);
@@ -285,6 +295,7 @@ void Refine::getFile(int type, const QString &file)
             if (ext == FilePicker::extendName(FilePicker::CurveConfigCsv)) {
                 if (_revolve.importCsvCurveConfig(file)) {
                     emit message(Messager::Info, tr("读取csv曲线配置成功"));
+                    _editor->updateData();
                 } else {
                     emit message(Messager::Warning,
                                  tr("读取csv曲线配置失败，检查配置格式"));
@@ -300,6 +311,7 @@ void Refine::getFile(int type, const QString &file)
                     FilePicker::CurveConfigSoftcan)) {
                 if (_revolve.importSoftcanCurveConfig(file)) {
                     emit message(Messager::Info, tr("读取SoftCAN曲线配置成功"));
+                    _editor->updateData();
                 } else {
                     emit message(Messager::Warning,
                                  tr("读取SoftCAN曲线配置失败，检查配置格式"));
@@ -353,42 +365,44 @@ void Refine::closeEvent(QCloseEvent *event)
     }
 }
 
-void Refine::startTimers()
+void Refine::startTimers(QAction *action)
 {
-    for (int i = 0; i < 3; ++i) {
-        if (_menu_tools_timers[i]->isChecked() && !_timer_start[i]) {
-            message(Messager::Info,
-                    tr("计时器") + QString::number(i + 1) + tr("开始"));
-            _timer[i] = QTime::currentTime();
-            _timer_start[i] = true;
+    int i = 0;
+    for (; i < 3; ++ i) {
+        if (action == _menu_tools_timers[i]) {
+            break;
         }
-        if (!_menu_tools_timers[i]->isChecked() && _timer_start[i]) {
-            int ms = _timer[i].msecsTo(QTime::currentTime());
-            int h = ms / (60 * 60 * 1000);
-            ms %= (60 * 60 * 1000);
-            int m = ms / (60 * 1000);
-            ms %= (60 * 1000);
-            int s = ms / (1000);
-            ms %= (1000);
-            QTime time(h, m, s, ms);
-            QString str;
-            if (h) {
-                str += QString("%1h").arg(h);
-            }
-            if (m) {
-                str += QString("%1m").arg(m, (h != 0) * 2, 10, QChar('0'));
-            }
-            if (s) {
-                str += QString("%1s").arg(s, (h || m) * 3, 10, QChar('0'));
-            }
-            if (ms) {
-                str += QString("%1ms").arg(ms, (h || m || s) * 2,
-                                           10, QChar('0'));
-            }
-            message(Messager::Info,
-                    tr("计时器") + QString::number(i + 1) + tr("结束 ") + str);
-            _timer_start[i] = false;
+    }
+    if (action->isChecked()) {
+        message(Messager::Info, action->text() + tr("开始"));
+        _timer[i] = QTime::currentTime();
+        action->setStatusTip(action->text() + tr("停止计时"));
+    }
+    if (!action->isChecked()) {
+        int ms = _timer[i].msecsTo(QTime::currentTime());
+        int h = ms / (60 * 60 * 1000);
+        ms %= (60 * 60 * 1000);
+        int m = ms / (60 * 1000);
+        ms %= (60 * 1000);
+        int s = ms / (1000);
+        ms %= (1000);
+        QTime time(h, m, s, ms);
+        QString str;
+        if (h) {
+            str += QString("%1h").arg(h);
         }
+        if (m) {
+            str += QString("%1m").arg(m, (h != 0) * 2, 10, QChar('0'));
+        }
+        if (s) {
+            str += QString("%1s").arg(s, (h || m) * 3, 10, QChar('0'));
+        }
+        if (ms) {
+            str += QString("%1ms").arg(ms, (h || m || s) * 2,
+                                       10, QChar('0'));
+        }
+        message(Messager::Info, action->text() + tr("结束 ") + str);
+        action->setStatusTip(action->text() + tr("开始计时"));
     }
 }
 

@@ -51,21 +51,21 @@ public:
 
         enum Bundle
         {
-            None,
+            None = 0,
             Acceleration,
             EngineSpeed
         };
     private:
         short _index;
-        bool _display;
-        QString _name;
+        bool _display;  //
+        QString _name;  //
         int _type;
-        QString _unit;
-        short _width;
-        unsigned int _color;
-        int _range_out[2];
-        QString _remark;
-        int _bundle;
+        QString _unit;  //
+        short _width;   //
+        unsigned int _color;    //
+        int _range_out[2];      //
+        QString _remark;        //
+        int _bundle;            //
         QByteArray _reserved;
     public:
         explicit Style(const Curve::Cell &cell);
@@ -366,9 +366,9 @@ public:
 
     inline void operator++() { _len += 1; }
 
-    inline QList<Style> &style() { return _styles; }
+    inline QList<Style> &styles() { return _styles; }
 
-    inline const QList<Style> &style() const { return _styles; }
+    inline const QList<Style> &styles() const { return _styles; }
 
     inline Style &style(int index) { return _styles[index]; }
 

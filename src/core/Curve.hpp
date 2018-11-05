@@ -15,6 +15,7 @@
 #include <QtCore/QMap>
 
 class Tribe;
+class CurveModel;
 /*!
  * @brief 曲线配置类
  */
@@ -22,6 +23,7 @@ class Tribe;
 class Curve
 {
 public:
+    friend class CurveModel;
     enum Type
     {
         Physical = 0,
@@ -39,6 +41,7 @@ public:
     {
     public:
         friend class Tribe;
+        friend class CurveModel;
 
     private:
         short _index;
@@ -107,7 +110,7 @@ public:
 
         inline QString zeroByteStr() const
         {
-            if (_zero_byte != -1) return QString("%1").arg(_zero_byte);
+            if (_zero_byte != -1) return QString::number(_zero_byte);
             else return QString("无");
         }
 
@@ -125,7 +128,7 @@ public:
                     .arg(_low_range[1]);
         }
 
-        inline QString sampleStr() const
+        inline QString frameMsecStr() const
         {
             return QString::number(_frame_msec);
         }

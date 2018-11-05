@@ -283,7 +283,7 @@ QStringList Curve::Cell::str() const
     list.append(zeroByteStr());
     list.append(highByteStr());
     list.append(lowByteStr());
-    list.append(sampleStr());
+    list.append(frameMsecStr());
     list.append(rangeInStr());
     list.append(rangeOutStr());
     list.append(remarkStr());

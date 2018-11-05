@@ -69,6 +69,7 @@ private:
     QAction *_menu_init_option;
     QAction *_menu_init_can;
     QAction *_menu_init_curve;
+    QAction *_menu_init_editcurve;
     QAction *_menu_init_mode;
     QMenu *_menu_control;
     QAction *_menu_control_start;
@@ -77,6 +78,7 @@ private:
     QAction *_menu_control_finish;
     QMenu *_menu_tools;
     QMenu *_menu_tools_timer;
+    QActionGroup *_menu_tools_timer_group;
     QAction *_menu_tools_timers[3];
     QAction *_menu_tools_wakeup;
     QMenu *_menu_help;
@@ -94,6 +96,7 @@ private:
     Display *_display;
     ChangeLog *_changelog;
     Settings *_settings;
+    CurveEditor *_editor;
 
     StatusBar *_statusbar;
 
@@ -180,7 +183,7 @@ private slots:
 
     void getFile(int type, const QString &file);
 
-    void startTimers();
+    void startTimers(QAction *action);
 
     void changeUpdateMsec(QAction *action);
 
