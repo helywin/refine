@@ -21,7 +21,8 @@ CONFIG += c++1z
 SUBDIRS = src lib
 
 INCLUDEPATH += ./src/gui \
-               ./src/core
+               ./src/core \
+               ./src/mod \
 
 SOURCES += \
         ./src/gui/ChangeLog.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
         ./src/gui/CurveBox.cpp \
         ./src/gui/CurveEditor.cpp \
         ./src/gui/CurvePanel.cpp \
+        ./src/gui/CurveView.cpp \
         ./src/gui/CurveViewer.cpp \
         ./src/gui/Display.cpp \
         ./src/gui/FilePicker.cpp \
@@ -60,7 +62,8 @@ SOURCES += \
         ./src/core/Tribe.cpp \
         ./src/core/Trigger.cpp \
         ./src/core/Version.cpp \
-        ./src/test/main.cpp
+        ./src/mod/CurveModel.cpp \
+        ./src/test/main.cpp \
 
 HEADERS += \
         ./src/gui/ChangeLog.hpp \
@@ -68,6 +71,7 @@ HEADERS += \
         ./src/gui/CurveBox.hpp \
         ./src/gui/CurveEditor.hpp \
         ./src/gui/CurvePanel.hpp \
+        ./src/gui/CurveView.hpp \
         ./src/gui/CurveViewer.hpp \
         ./src/gui/Display.hpp \
         ./src/gui/FilePicker.hpp \
@@ -98,7 +102,8 @@ HEADERS += \
         ./src/core/Transmit.hpp \
         ./src/core/Tribe.hpp \
         ./src/core/Trigger.hpp \
-        ./src/core/Version.hpp
+        ./src/core/Version.hpp \
+        ./src/mod/CurveModel.hpp \
 
 RESOURCES += \
     res/text.qrc \

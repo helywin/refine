@@ -291,7 +291,7 @@ QStringList Curve::Cell::str() const
     return list;
 }
 
-void Curve::Cell::setHighByteByStr(QString &s)
+void Curve::Cell::setHighByteByStr(const QString &s)
 {
     if (s == QString("无")) {
         _high_byte = -1;
@@ -304,7 +304,7 @@ void Curve::Cell::setHighByteByStr(QString &s)
     }
 }
 
-void Curve::Cell::setLowByteByStr(QString &s)
+void Curve::Cell::setLowByteByStr(const QString &s)
 {
     QStringList list = s.split(QChar(';'));
     _low_byte = list[0].toShort();
@@ -313,7 +313,7 @@ void Curve::Cell::setLowByteByStr(QString &s)
     _low_range[1] = static_cast<unsigned char> (list[1].toUShort());
 }
 
-void Curve::Cell::setFrameMsecByStr(QString &s)
+void Curve::Cell::setFrameMsecByStr(const QString &s)
 {
     _frame_msec = s.toInt();
 }

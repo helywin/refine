@@ -8,12 +8,31 @@
 #include <QtCore/QAbstractTableModel>
 #include <QtGui/QStandardItemModel>
 
+
 class Curve;
 
 class CurveModel : public QAbstractTableModel
 {
 Q_OBJECT
 public:
+    enum Columns
+    {
+        ColumFirst = 0,
+        NameColumn = ColumFirst,
+        TypeColumn,
+        UnitColumn,
+        WidthColumn,
+        ColorColumn,
+        CanIdColumn,
+        ZeroByteColumn,
+        HighByteColumn,
+        LowByteColumn,
+        FrameMsecColumn,
+        RangeInColumn,
+        RangeOutColumn,
+        RemarkColumn,
+        ColumLast = RemarkColumn
+    };
 private:
     Curve *_curve;
 public:

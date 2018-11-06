@@ -228,62 +228,65 @@ public:
         inline QByteArray &reserved() { return _reserved; }
 
         //str setter
-        inline void setIndexByStr(QString &s) { _index = s.toUShort(); }
+        inline void setIndexByStr(const QString &s) { _index = s.toUShort(); }
 
-        inline void setDisplayByStr(QString &s)
+        inline void setDisplayByStr(const QString &s)
         {
             _display = (s == QString("是"));
         }
 
-        inline void setNameByStr(QString &s) { _name = s; }
+        inline void setNameByStr(const QString &s) { _name = s; }
 
-        inline void setTypeByStr(QString &s)
+        inline void setTypeByStr(const QString &s)
         {
             if (s == QString("物理")) _type = Type::Physical;
             else _type = Type::Logical;
         }
 
-        inline void setUnitByStr(QString &s) { _unit = s; }
+        inline void setUnitByStr(const QString &s) { _unit = s; }
 
-        inline void setWidthByStr(QString &s) { _width = s.toShort(); }
+        inline void setWidthByStr(const QString &s) { _width = s.toShort(); }
 
-        inline void setColorByStr(QString &s)
+        inline void setColorByStr(const QString &s)
         {
             _color = s.toULong(nullptr, 16);
         }
 
-        inline void setCanIdByStr(QString &s)
+        inline void setCanIdByStr(const QString &s)
         {
             _can_id = s.toUShort(nullptr, 16);
         }
 
-        inline void setZeroByteByStr(QString &s)
+        inline void setZeroByteByStr(const QString &s)
         {
             if (s == QString("无")) _zero_byte = -1;
             else { _zero_byte = s.toShort(); }
         }
 
-        void setHighByteByStr(QString &s);
-        void setLowByteByStr(QString &s);
-        void setFrameMsecByStr(QString &s);
+        void setHighByteByStr(const QString &s);
+        void setLowByteByStr(const QString &s);
+        void setFrameMsecByStr(const QString &s);
 
-        inline void setRangeInByStr(QString &s)
+        inline void setRangeInByStr(const QString &s)
         {
             QStringList list = s.split(QChar('~'));
             _range_in[0] = list[0].toInt();
             _range_in[1] = list[1].toInt();
         }
 
-        inline void setRangeOutByStr(QString &s)
+        inline void setRangeOutByStr(const QString &s)
         {
             QStringList list = s.split(QChar('~'));
             _range_out[0] = list[0].toInt();
             _range_out[1] = list[1].toInt();
         }
 
-        inline void setRemarkByStr(QString &s) { _remark = s; }
+        inline void setRemarkByStr(const QString &s) { _remark = s; }
 
-        inline void setBundleByStr(QString &s) { _bundle = (Bundle) s.toInt(); }
+        inline void setBundleByStr(const QString &s)
+        {
+            _bundle = (Bundle) s.toInt();
+        }
 
     };
 
