@@ -46,6 +46,9 @@ private:
     QMenu *_menu_file;
     QAction *_menu_file_open;
     QAction *_menu_file_save;
+    QMenu *_menu_file_export;
+    QAction *_menu_file_export_config;
+    QAction *_menu_file_export_data;
     QAction *_menu_file_settings;
     QAction *_menu_file_exit;
     QMenu *_menu_view;
@@ -178,6 +181,8 @@ private slots:
     void fullScreen();
 
     void startRevolve();
+
+    void stopRevolve();
 
     void connectCan();
 

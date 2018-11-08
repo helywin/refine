@@ -29,6 +29,7 @@
 #include "Messager.hpp"
 #include "CurvePanel.hpp"
 #include "Packer.hpp"
+#include "TribeModel.hpp"
 
 /*!
  * @brief 底层调度类
@@ -83,6 +84,7 @@ private:
     QString _name;
     Status _status;
     Packer _packer;
+    TribeModel *_tribe_model;
 
 
 public:
@@ -95,10 +97,10 @@ public:
 
 public slots:
     //采集
-    void begin(unsigned long msec, int config, int time);
+    bool begin(unsigned long msec, int config, int time);
     void pause();
     void resume();
-    void stop();
+    bool stop();
 public:
     //采集配置
     void setCollectManner(Collect::Manner manner, QString &collect_frame);
@@ -135,6 +137,8 @@ public:
     inline void setSketch(Sketch *sketch) { _sketch = sketch; }
 
     inline bool finished() const { return _status == Stop; }
+
+    inline void setTribeModel(TribeModel *model) { _tribe_model = model; }
 
 private:
     //生成临时存储文件

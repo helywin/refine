@@ -23,6 +23,7 @@ SUBDIRS = src lib
 INCLUDEPATH += ./src/gui \
                ./src/core \
                ./src/mod \
+               ./src/del \
 
 SOURCES += \
         ./src/gui/ChangeLog.cpp \
@@ -44,6 +45,7 @@ SOURCES += \
         ./src/gui/Sketch.cpp \
         ./src/gui/StatusBar.cpp \
         ./src/gui/Toolbox.cpp \
+        ./src/gui/TribeView.cpp \
         ./src/core/Buffer.cpp \
         ./src/core/Can.cpp \
         ./src/core/Collect.cpp \
@@ -63,6 +65,13 @@ SOURCES += \
         ./src/core/Trigger.cpp \
         ./src/core/Version.cpp \
         ./src/mod/CurveModel.cpp \
+        ./src/mod/TribeModel.cpp \
+        ./src/del/ByteInput.cpp \
+        ./src/del/ByteRangeFrame.cpp \
+        ./src/del/ColorInput.cpp \
+        ./src/del/ComboInput.cpp \
+        ./src/del/RangeWidget.cpp \
+        ./src/del/SpecInput.cpp \
         ./src/test/main.cpp \
 
 HEADERS += \
@@ -85,6 +94,7 @@ HEADERS += \
         ./src/gui/Sketch.hpp \
         ./src/gui/StatusBar.hpp \
         ./src/gui/Toolbox.hpp \
+        ./src/gui/TribeView.hpp \
         ./src/core/Buffer.hpp \
         ./src/core/Can.hpp \
         ./src/core/Collect.hpp \
@@ -104,6 +114,13 @@ HEADERS += \
         ./src/core/Trigger.hpp \
         ./src/core/Version.hpp \
         ./src/mod/CurveModel.hpp \
+        ./src/mod/TribeModel.hpp \
+        ./src/del/ByteInput.hpp \
+        ./src/del/ByteRangeFrame.hpp \
+        ./src/del/ColorInput.hpp \
+        ./src/del/ComboInput.hpp \
+        ./src/del/RangeWidget.hpp \
+        ./src/del/SpecInput.hpp \
 
 RESOURCES += \
     res/text.qrc \

@@ -1,17 +1,15 @@
 //
-// Created by jiang.wenqiang on 2018/11/2.
+// Created by jiang.wenqiang on 2018/11/6.
 //
 
-#ifndef REFINE_CURVEMODEL_HPP
-#define REFINE_CURVEMODEL_HPP
+#ifndef REFINE_TRIBEMODEL_HPP
+#define REFINE_TRIBEMODEL_HPP
 
 #include <QtCore/QAbstractTableModel>
-#include <QtGui/QStandardItemModel>
 
+class Tribe;
 
-class Curve;
-
-class CurveModel : public QAbstractTableModel
+class TribeModel : public QAbstractTableModel
 {
 Q_OBJECT
 public:
@@ -23,20 +21,15 @@ public:
         UnitColumn,
         WidthColumn,
         ColorColumn,
-        CanIdColumn,
-        ZeroByteColumn,
-        HighByteColumn,
-        LowByteColumn,
-        FrameMsecColumn,
-        RangeInColumn,
         RangeOutColumn,
         RemarkColumn,
         ColumLast = RemarkColumn
     };
 private:
-    Curve *_curve;
+    Tribe *_tribe;
+
 public:
-    explicit CurveModel(QObject *parent = nullptr);
+    explicit TribeModel(QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent) const override;
     int columnCount(const QModelIndex &parent) const override;
@@ -46,9 +39,13 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role) const override;
+
 public slots:
-    void genData(Curve *curve);
+    void genData(Tribe *tribe = nullptr);
+
+signals:
+    void tribeChanged();
 };
 
 
-#endif //REFINE_CURVEMODEL_HPP
+#endif //REFINE_TRIBEMODEL_HPP

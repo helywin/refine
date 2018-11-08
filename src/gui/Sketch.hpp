@@ -22,7 +22,6 @@ class Sketch : public QGLWidget, public QGLFunctions
 Q_OBJECT
 private:
     Tribe *_tribe;
-    Curve *_curve;
     QTimer _timer;
     int _msec;
     QScrollBar *_scroller;
@@ -31,8 +30,6 @@ public:
     explicit Sketch(QWidget *parent, Revolve *revolve);
 
     inline void setTribe(Tribe *tribe) { _tribe = tribe; }
-
-    inline void setCurve(Curve *curve) { _curve = curve; }
 
     inline void setScroller(QScrollBar *scroller) { _scroller = scroller; }
 

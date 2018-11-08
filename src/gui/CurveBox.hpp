@@ -6,24 +6,39 @@
 #define REFINE_CURVEBOX_HPP
 
 #include <QtWidgets/QDockWidget>
+#include <QtWidgets/QHeaderView>
+#include <QtCore/QItemSelectionModel>
+#include "TribeModel.hpp"
 
 class CurvePanel;
+class TribeView;
+class Tribe;
+class Sketch;
 
 class CurveBox : public QDockWidget
 {
 Q_OBJECT
 private:
-    CurvePanel *_curve_panel;
+//    CurvePanel *_curve_panel;
     QAction *_visible;
-public:
-    explicit CurveBox(QWidget *parent);
+    TribeModel *_model;
+    TribeView *_view;
+    QItemSelectionModel *_selection;
+    Tribe *_tribe;
+    QHeaderView *_h_header;
+    QHeaderView *_v_header;
 
-    inline CurvePanel *curvePanel()
-    {
-        return _curve_panel;
-    }
+public:
+    explicit CurveBox(Tribe *tribe, QWidget *parent = nullptr);
 
     inline void setAction(QAction *action) { _visible = action; }
+
+    inline TribeModel& tribeModel() { return *_model; }
+
+    void connectModelToSketch(Sketch *sketch);
+
+public slots:
+    inline void updateData() { _model->genData(_tribe); };
 
 protected:
     void closeEvent(QCloseEvent *event) override;

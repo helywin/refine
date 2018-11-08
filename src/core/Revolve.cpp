@@ -40,31 +40,35 @@ Revolve::Revolve(Initializer *init) :
 
 Revolve::~Revolve() {}
 
-void Revolve::begin(unsigned long msec, int config, int time)
+bool Revolve::begin(unsigned long msec, int config, int time)
 {
     if (!_can.isConnected()) {
         message(Messager::Warning, tr("开始失败，确保CAN连接好再采集"));
-        return;
+        return false;
     }
     if (_status != Stop) {
         message(Messager::Warning, tr("开始失败，已经在采集了"));
-        return;
+        return false;
     }
     _can.clear();
     _msec = msec;
     _config = config;
     _time = time;
+    _tribe.genFromCurve(_curve);
+    _tribe_model->genData(&_tribe);
     _collect.setParams(&_can, &_buffer, Collect::FromCan, msec);
-    _collect.begin();
     genName();
     if ((unsigned) _config & (unsigned) Config::WithTransform) {
         if (!_curve.isInitialized()) {
             message(Messager::Warning, tr("开始失败，没有加载曲线配置"));
-            return;
+            return false;
         }
         genCurveDataFile();
         _transform.setParams(&_curve, &_buffer, &_tribe, msec);
+        _collect.begin();
         _transform.begin();
+    } else {
+        _collect.begin();
     }
     if ((unsigned) _config & (unsigned) WithRecord) {
         genFramesDataFile();
@@ -80,13 +84,14 @@ void Revolve::begin(unsigned long msec, int config, int time)
     if ((unsigned) _config & (unsigned) WithTrigger) {}
     _status = Running;
     message(Messager::Info, tr("开始采集成功"));
+    return true;
 }
 
-void Revolve::stop()
+bool Revolve::stop()
 {
     if (_status == Stop) {
         message(Messager::Warning, tr("结束失败，采集还没开始"));
-        return;
+        return false;
     }
     if (_sketch) {
         _sketch->stop();
@@ -127,6 +132,7 @@ void Revolve::stop()
     _collect.stop();
     _status = Stop;
     message(Messager::Info, tr("停止采集成功"));
+    return true;
 }
 
 void Revolve::pause()
@@ -242,36 +248,19 @@ bool Revolve::inputCurveConfig(const QString &name)
 {
     File file;
     QFile f(name);
-    if (file.loadCurveConfig(f, _curve)) {
-        _tribe.genFromCurve(_curve);
-        curveLoaded();
-        return true;
-    } else {
-        return false;
-    }
+    return file.loadCurveConfig(f, _curve);
 }
 
 bool Revolve::importCsvCurveConfig(const QString &name)
 {
-    if (_curve.loadFromCsv(name)) {
-        _tribe.genFromCurve(_curve);
-        curveLoaded();
-        return true;
-    } else {
-        return false;
-    }
+    return _curve.loadFromCsv(name);
 }
 
 bool Revolve::importSoftcanCurveConfig(const QString &name)
 {
-    if (_softcan.load(name)) {
-        _softcan.toCurve(_curve);
-        _tribe.genFromCurve(_curve);
-        curveLoaded();
-        return true;
-    } else {
-        return false;
-    }
+    bool flag =  _softcan.load(name);
+    _softcan.toCurve(_curve);
+    return flag;
 }
 
 bool Revolve::outputCurveConfig(const QString &name)

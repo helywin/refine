@@ -32,6 +32,11 @@ void Refine::setup()
              tr("打开数据包文件"), QKeySequence("Ctrl+O"));
     initMenu(_menu_file_save, tr("保存(&S)..."), _menu_file,
              tr("保存数据包文件"), QKeySequence("Ctrl+S"));
+    initMenu(_menu_file_export, tr("导出(&E)"), _menu_file);
+    initMenu(_menu_file_export_config, tr("曲线配置CSV(&C)..."),
+             _menu_file_export, tr("导出CSV曲线配置"));
+    initMenu(_menu_file_export_data, tr("曲线数据CSV(&D)..."),
+             _menu_file_export, tr("导出CSV曲线数据"));
     _menu_file->addSeparator();
     initMenu(_menu_file_settings, tr("设置(&S)..."), _menu_file,
              tr("配置软件设置"), QKeySequence("Ctrl+`"));
@@ -145,16 +150,12 @@ void Refine::setup()
 //    tabifyDockWidget(_toolbox, _output);
 //    _toolbox->raise();
 
-    _curvebox = new CurveBox(this);
+    _curvebox = new CurveBox(&_revolve.tribe(), this);
     _curvebox->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _curvebox);
-    _curvebox->curvePanel()->setTribe(&_revolve.tribe());
-    connect(&_revolve, &Revolve::curveLoaded,
-            _curvebox->curvePanel(), &CurvePanel::updateCurve,
-            Qt::DirectConnection);
-    _curvebox->curvePanel()->updateCurve();
     _curvebox->setAction(_menu_view_display_curve);
+    _revolve.setTribeModel(&_curvebox->tribeModel());
 
     _markbox = new MarkBox(this);
     _markbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -166,6 +167,7 @@ void Refine::setup()
 
     _display = new Display(this, &_revolve);
     _revolve.setSketch(&_display->sketch());
+    _curvebox->connectModelToSketch(&_display->sketch());
     setCentralWidget(_display);
 
     _statusbar = new StatusBar(this);
@@ -204,7 +206,7 @@ void Refine::setup()
     connect(_menu_control_resume, &QAction::triggered,
             &_revolve, &Revolve::resume, Qt::DirectConnection);
     connect(_menu_control_finish, &QAction::triggered,
-            &_revolve, &Revolve::stop, Qt::DirectConnection);
+            this, &Refine::stopRevolve, Qt::DirectConnection);
     connect(_file_picker, &FilePicker::pickFile,
             this, &Refine::getFile, Qt::DirectConnection);
     connect(_menu_tools_timer_group, &QActionGroup::triggered,
@@ -227,8 +229,20 @@ void Refine::setLanguage()
 
 void Refine::startRevolve()
 {
-    _revolve.begin(10, 3, 0);
+    if (_revolve.begin(10, 3, 0)) {
+        _menu_init_curve->setDisabled(true);
+        _menu_init_editcurve->setDisabled(true);
+    }
 }
+
+void Refine::stopRevolve()
+{
+    if (_revolve.stop()) {
+        _menu_init_curve->setDisabled(false);
+        _menu_init_editcurve->setDisabled(false);
+    }
+}
+
 
 void Refine::connectCan()
 {
@@ -368,7 +382,7 @@ void Refine::closeEvent(QCloseEvent *event)
 void Refine::startTimers(QAction *action)
 {
     int i = 0;
-    for (; i < 3; ++ i) {
+    for (; i < 3; ++i) {
         if (action == _menu_tools_timers[i]) {
             break;
         }
@@ -435,4 +449,3 @@ void Refine::displayAndHide(QAction *action)
         _markbox->setVisible(_menu_view_display_mark->isChecked());
     }
 }
-

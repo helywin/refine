@@ -49,6 +49,7 @@ public:
     };
 private:
     FileType _type;
+    QString _last_filter;
 public:
     explicit FilePicker(QWidget *parent = nullptr);
     static QStringList extendNames(unsigned int type);

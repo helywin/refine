@@ -222,8 +222,6 @@ bool File::loadCurveConfig(QFile &file, Curve &curve)
     }
     file.seek(DATA_POS);
     (*_stream) >> curve;
-    curve.genSubIdMap777();
-    curve.genOtherIdMap();
     curve.setInitialized(true);
     _stream->unsetDevice();
     file.close();

@@ -21,11 +21,7 @@ int CurveModel::rowCount(const QModelIndex &parent) const
 
 int CurveModel::columnCount(const QModelIndex &parent) const
 {
-    if (!_curve) {
-        return 0;
-    } else {
-        return ColumLast;
-    }
+    return ColumLast + 1;
 }
 
 QVariant CurveModel::data(const QModelIndex &index, int role) const
@@ -39,7 +35,7 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
     int row = index.row();
     int column = index.column();
     if (row >= _curve->size()) {
-        qCritical("数组越界");
+        qCritical("CurveModel::data 数组越界");
     }
     const Curve::Cell &cell = _curve->_cells[row];
     switch (role) {
@@ -47,8 +43,8 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
             switch (column) {
                 case NameColumn:
                     return QVariant(cell.nameStr());
-                case TypeColumn:
-                    return QVariant(cell.typeStr());
+                case BundleColumn:
+                    return QVariant(cell.bundleStr());
                 case UnitColumn:
                     return QVariant(cell.unitStr());
                 case WidthColumn:
@@ -74,6 +70,37 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
                 default:
                     return QVariant();
             }
+        case Qt::EditRole:
+            switch (column) {
+                case NameColumn:
+                    return QVariant(cell.nameStr());
+                case BundleColumn:
+                    return QVariant(cell.bundleStr());
+                case UnitColumn:
+                    return QVariant(cell.unitStr());
+                case WidthColumn:
+                    return QVariant(cell._width);
+                case ColorColumn:
+                    return QVariant(cell._color);
+                case CanIdColumn:
+                    return QVariant(cell._can_id);
+                case ZeroByteColumn:
+                    return QVariant(cell.zeroByteStr());
+                case HighByteColumn:
+                    return QVariant(cell.highByteStr());
+                case LowByteColumn:
+                    return QVariant(cell.lowByteStr());
+                case FrameMsecColumn:
+                    return QVariant(cell._frame_msec);
+                case RangeInColumn:
+                    return QVariant(cell.rangeInStr());
+                case RangeOutColumn:
+                    return QVariant(cell.rangeOutStr());
+                case RemarkColumn:
+                    return QVariant(cell.remarkStr());
+                default:
+                    return QVariant();
+            }
         case Qt::CheckStateRole:
         case Qt::UserRole:
             if (column == NameColumn) {
@@ -85,7 +112,7 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
             return QVariant();
         case Qt::DecorationRole:
             if (column == ColorColumn) {
-                return QColor(QRgb(cell.color()));
+                return QColor(cell.color());
             }
             return QVariant();
         default:
@@ -93,8 +120,8 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
     }
 }
 
-bool
-CurveModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool CurveModel::setData(const QModelIndex &index,
+                         const QVariant &value, int role)
 {
     if (!_curve) {
         return false;
@@ -105,25 +132,52 @@ CurveModel::setData(const QModelIndex &index, const QVariant &value, int role)
     int row = index.row();
     int column = index.column();
     if (row >= _curve->size()) {
-        qCritical("数组越界");
+        qCritical("CurveModel::setData 数组越界");
     }
     Curve::Cell &cell = _curve->_cells[row];
     switch (role) {
-        case Qt::DisplayRole:
+        case Qt::EditRole:
             switch (column) {
-                case NameColumn:cell.setNameByStr(value.toString()); return true;
-                case TypeColumn:cell.setTypeByStr(value.toString()); return true;
-                case UnitColumn:cell.setUnitByStr(value.toString()); return true;
-                case WidthColumn:cell.setWidthByStr(value.toString()); return true;
-                case ColorColumn:cell.setColorByStr(value.toString()); return true;
-                case CanIdColumn:cell.setCanIdByStr(value.toString()); return true;
-                case ZeroByteColumn:cell.setZeroByteByStr(value.toString()); return true;
-                case HighByteColumn:cell.setHighByteByStr(value.toString()); return true;
-                case LowByteColumn:cell.setLowByteByStr(value.toString()); return true;
-                case FrameMsecColumn:cell.setFrameMsecByStr(value.toString()); return true;
-                case RangeInColumn:cell.setRangeInByStr(value.toString()); return true;
-                case RangeOutColumn:cell.setRangeOutByStr(value.toString()); return true;
-                case RemarkColumn:cell.setRemarkByStr(value.toString()); return true;
+                case NameColumn:
+                    cell.setNameByStr(value.toString());
+                    _curve->updateHeader();     //更新表头
+                    return true;
+                case BundleColumn:
+                    cell.setBundleByStr(value.toString());
+                    return true;
+                case UnitColumn:
+                    cell.setUnitByStr(value.toString());
+                    return true;
+                case WidthColumn:
+                    cell._width = value.toInt();
+                    return true;
+                case ColorColumn:
+                    cell._color = value.toUInt();
+                    return true;
+                case CanIdColumn:
+                    cell._can_id = value.toInt();
+                    return true;
+                case ZeroByteColumn:
+                    cell.setZeroByteByStr(value.toString());
+                    return true;
+                case HighByteColumn:
+                    cell.setHighByteByStr(value.toString());
+                    return true;
+                case LowByteColumn:
+                    cell.setLowByteByStr(value.toString());
+                    return true;
+                case FrameMsecColumn:
+                    cell.setFrameMsecByStr(value.toString());
+                    return true;
+                case RangeInColumn:
+                    cell.setRangeInByStr(value.toString());
+                    return true;
+                case RangeOutColumn:
+                    cell.setRangeOutByStr(value.toString());
+                    return true;
+                case RemarkColumn:
+                    cell.setRemarkByStr(value.toString());
+                    return true;
                 default:
                     return false;
             }
@@ -143,11 +197,11 @@ Qt::ItemFlags CurveModel::flags(const QModelIndex &index) const
         return QAbstractTableModel::flags(index);
     }
     Qt::ItemFlags flags = Qt::ItemIsSelectable |
-            Qt::ItemIsEnabled |
-            Qt::ItemIsEditable;
+                          Qt::ItemIsEnabled |
+                          Qt::ItemIsEditable;
     switch (index.column()) {
         case NameColumn: return flags | Qt::ItemIsUserCheckable;
-        case TypeColumn:
+        case BundleColumn:
         case UnitColumn:
         case WidthColumn:
         case ColorColumn:
@@ -158,7 +212,8 @@ Qt::ItemFlags CurveModel::flags(const QModelIndex &index) const
         case FrameMsecColumn:
         case RangeInColumn:
         case RangeOutColumn:
-        case RemarkColumn: return flags;
+        case RemarkColumn:
+            return flags;
         default:
             return QAbstractTableModel::flags(index);
     }
@@ -169,4 +224,39 @@ void CurveModel::genData(Curve *curve)
     beginResetModel();
     _curve = curve;
     endResetModel();
+}
+
+QVariant CurveModel::headerData(int section,
+                                Qt::Orientation orientation, int role) const
+{
+    if (orientation == Qt::Orientation::Horizontal) {
+        switch (role) {
+            case Qt::DisplayRole:
+                switch (section) {
+                    case NameColumn:return tr("名称");
+                    case BundleColumn:return tr("意义");
+                    case UnitColumn:return tr("单位");
+                    case WidthColumn:return tr("线宽");
+                    case ColorColumn:return tr("颜色");
+                    case CanIdColumn:return tr("报文ID");
+                    case ZeroByteColumn:return tr("零字节");
+                    case HighByteColumn:return tr("高字节");
+                    case LowByteColumn:return tr("低字节");
+                    case FrameMsecColumn:return tr("间隔(ms)");
+                    case RangeInColumn:return tr("输入范围");
+                    case RangeOutColumn:return tr("输出范围");
+                    case RemarkColumn:return tr("备注");
+                    default:return QVariant();
+                }
+            default:
+                return QVariant();
+        }
+    } else {
+        switch (role) {
+            case Qt::DisplayRole:
+                return section;
+            default:
+                return QVariant();
+        }
+    }
 }

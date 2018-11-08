@@ -8,14 +8,15 @@
 
 #define X_AXIS_MIN 0
 #define X_AXIS_MAX 2000
-#define Y_AXIS_MIN 0
-#define Y_AXIS_MAX 5000
+#define Y_AXIS_MIN 500
+#define Y_AXIS_BOTTON 0
+#define Y_AXIS_MAX 5500
+#define Y_AXIS_TOP 6000
 
 
 Sketch::Sketch(QWidget *parent, Revolve *revolve) :
         QGLWidget(parent),
         _tribe(&revolve->tribe()),
-        _curve(&revolve->curve()),
         _msec(10)
 {
     _timer.setInterval(_msec);
@@ -36,7 +37,7 @@ void Sketch::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glOrtho(X_AXIS_MIN, X_AXIS_MAX, Y_AXIS_MIN, Y_AXIS_MAX, 0, 100);
+    glOrtho(X_AXIS_MIN, X_AXIS_MAX, Y_AXIS_BOTTON, Y_AXIS_TOP, 0, 100);
 }
 
 void Sketch::paintGL()
@@ -54,24 +55,25 @@ void Sketch::paintGL()
         len = X_AXIS_MAX;
     }
     int start_pos = tribe_len - len;
-    for (const auto &iter : *_tribe) {
-        if (!_curve->at(iter.name()).display()) {
+    for (int i = 0; i < _tribe->size(); ++i) {
+        const Tribe::Cell &iter = (*_tribe)[i];
+        if (!(_tribe->styles())[i].display()) {
             continue;
         }
-        Curve::Cell &cfg = _curve->at(iter.name());
+        const Tribe::Style &cfg = _tribe->styles().at(i);
         qglColor(QColor(cfg.color()));
         glBegin(GL_LINES);
         float y_cal = 0;
-        for (int i = 0; i < len - 1; ++i) {
-            if (i) {
-                glVertex2f(i, y_cal);
+        for (int j = 0; j < len - 1; ++j) {
+            if (j) {
+                glVertex2f(j, y_cal);
             } else {
-                glVertex2f(i, iter[i + start_pos]);
+                glVertex2f(j, iter[j + start_pos]);
             }
-            y_cal = (iter[i + start_pos + 1] -
+            y_cal = (iter[j + start_pos + 1] -
                      cfg.rangeOut()[0]) * (Y_AXIS_MAX - Y_AXIS_MIN) /
                     (cfg.rangeOut()[1] - cfg.rangeOut()[0]) + Y_AXIS_MIN;
-            glVertex2f(i + 1, y_cal);
+            glVertex2f(j + 1, y_cal);
         }
         glEnd();
     }

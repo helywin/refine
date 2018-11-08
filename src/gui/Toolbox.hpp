@@ -6,12 +6,15 @@
 #define REFINE_DOCKER_HPP
 
 #include <QtWidgets/QDockWidget>
+#include "ByteRangeFrame.hpp"
 
 class Toolbox : public QDockWidget
 {
 Q_OBJECT
 private:
     QAction *_visible;
+    ByteRangeFrame *_widget;
+
 public:
 protected:
     void closeEvent(QCloseEvent *event) override;

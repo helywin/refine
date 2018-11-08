@@ -14,6 +14,8 @@ Toolbox::Toolbox(QWidget *parent) :
 void Toolbox::setup()
 {
     this->setWindowTitle(tr("工具箱"));
+    _widget = new ByteRangeFrame(true, this);
+    setWidget(_widget);
 }
 
 void Toolbox::closeEvent(QCloseEvent *event)

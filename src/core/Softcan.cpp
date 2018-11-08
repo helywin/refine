@@ -269,8 +269,6 @@ void Softcan::toCurve(Curve &curve)
         cell.bundle() = Curve::None;
         curve.append(qMove(cell));
     }
-    curve.genSubIdMap777();
-    curve.genOtherIdMap();
     curve.setInitialized(true);
 }
 

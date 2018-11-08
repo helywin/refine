@@ -57,9 +57,11 @@ endif (CMAKE_BUILD_TYPE MATCHES Debug)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/core CORE)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/gui GUI)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/mod MOD)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/del DEL)
 include_directories(${PROJECT_SOURCE_DIR}/src/core)
 include_directories(${PROJECT_SOURCE_DIR}/src/gui)
 include_directories(${PROJECT_SOURCE_DIR}/src/mod)
+include_directories(${PROJECT_SOURCE_DIR}/src/del)
 #include_directories("C:/Program Files/Microsoft SDKs/Speech/v11.0/Include")
 
 set(UI ${PROJECT_SOURCE_DIR}/res/ui.qrc)
@@ -109,7 +111,7 @@ target_link_libraries(test_zip Qt5Core
         ${LIBNETTLE}
         ${LIBGNUTLS})
 
-add_executable(refine main.cpp ${CORE} ${GUI} ${UI} ${TEXT} ${MOD})
+add_executable(refine main.cpp ${CORE} ${GUI} ${UI} ${TEXT} ${MOD} ${DEL})
 target_link_libraries(refine
         ${LIBCAN}
         ${LIBOPENGL}

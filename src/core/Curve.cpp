@@ -33,14 +33,15 @@ bool Curve::loadFromCsv(QFile &f)
         qCritical("文件打开失败");
         return false;
     }
-    csv.readLine(_table_header);
+    QStringList header;
+    csv.readLine(header);
     while (!csv.finishRead()) {
         QStringList list;
         csv.readLine(list);
         unsigned short i = 0;
         Cell cell(i);
         bool first = true;
-        for (const auto &iter : _table_header) {
+        for (const auto &iter : header) {
             if (!first) {
                 i += 1;
             } else {
@@ -120,8 +121,6 @@ bool Curve::loadFromCsv(QFile &f)
             return false;
         }
     }
-    genSubIdMap777();
-    genOtherIdMap();
     setInitialized(true);
     return true;
 }
@@ -147,7 +146,6 @@ bool Curve::dumpToCsv(QFile &f) const
 void Curve::clear()
 {
     _cells.clear();
-    _table_header.clear();
     _header.clear();
     setInitialized(false);
 }
@@ -193,7 +191,6 @@ QDataStream &operator<<(QDataStream &stream, const Curve &curve)
     stream.device()->seek(HEADER_L);
     stream.writeRawData("CVCF", 4);
     stream << curve.size();
-    stream << curve.tableHeader();
     for (auto &iter : curve._cells) {
         stream << iter;
     }
@@ -213,7 +210,6 @@ QDataStream &operator>>(QDataStream &stream, Curve &curve)
     }
     int size;
     stream >> size;
-    stream >> curve._table_header;
     for (int i = 0; i < size; ++i) {
         Curve::Cell cell;
         stream >> cell;
@@ -374,58 +370,12 @@ QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell)
     return stream;
 }
 
-void Curve::genSubIdMap777()
+void Curve::updateHeader()
 {
-    _sub_id_map_777.clear();
-    for (int i = 0; i < _cells.size(); ++i) {
-        if (_cells[i].canId() == 0x777) {
-            if (!_sub_id_map_777.contains(_cells[i].zeroByte())) {
-                _sub_id_map_777.insert(_cells[i].zeroByte(), QList<int>());
-            }
-            _sub_id_map_777[_cells[i].zeroByte()].append(i);
-        }
+    _header.clear();
+    for (const auto &cell : _cells) {
+        _header.append(cell.name());
     }
-}
-
-void Curve::genOtherIdMap()
-{
-    _other_id_map.clear();
-    for (int i = 0; i < _cells.size(); ++i) {
-        if (_cells[i].canId() != 0x777) {
-            if (!_other_id_map.contains(_cells[i].canId())) {
-                _other_id_map.insert(_cells[i].canId(), QList<int>());
-            }
-            _other_id_map[_cells[i].canId()].append(i);
-        }
-    }
-}
-
-QStringList Curve::subIdMap777Str() const
-{
-    QStringList list;
-    for (const auto &iter : _sub_id_map_777.keys()) {
-        QString str;
-        str += QString("子ID %1: ").arg(iter);
-        for (const auto &v : _sub_id_map_777[iter]) {
-            str += QString("%1 ").arg(v);
-        }
-        list.append(qMove(str));
-    }
-    return list;
-}
-
-QStringList Curve::otherIdMapStr() const
-{
-    QStringList list;
-    for (const auto &iter : _other_id_map.keys()) {
-        QString str;
-        str += QString("其他ID %1: ").arg(iter);
-        for (const auto &v : _other_id_map[iter]) {
-            str += QString("%1 ").arg(v);
-        }
-        list.append(qMove(str));
-    }
-    return list;
 }
 
 

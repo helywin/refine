@@ -57,7 +57,6 @@ QDataStream &operator>>(QDataStream &stream, Tribe &tribe)
 {
     int size = 0;
     int reserved = 0;
-    int len = 0;
     stream >> size;
     stream >> reserved;
     stream >> reserved;
@@ -249,3 +248,4 @@ void Tribe::genFromCurve(const Curve &curve)
         _header.append(cell.name());
     }
 }
+

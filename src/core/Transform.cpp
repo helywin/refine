@@ -33,6 +33,7 @@ void Transform::run()
         msleep(_msec);
         if (_cmd == CommandPause) {
             if (_status == Running) {
+                _tribe->newSegment();
                 _status = Pause;
             }
             continue;

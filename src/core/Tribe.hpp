@@ -17,7 +17,7 @@
 
 #include "Curve.hpp"
 
-
+class TribeModel;
 /*!
  * @brief 存储数据的缓冲区
  */
@@ -26,6 +26,7 @@ class Tribe
 {
 public:
     friend class Curve;
+    friend class TribeModel;
 
     enum DataType
     {
@@ -43,6 +44,7 @@ public:
     class Style
     {
     public:
+        friend class TribeModel;
         enum Type
         {
             Physical = 0,
@@ -292,6 +294,8 @@ private:
     QStringList _header;        //! \brief 曲线名字表
     QVector<int> _segment;      //! \brief 曲线分段
     int _len;
+    TribeModel *_model;
+
 
 public:
     Tribe();

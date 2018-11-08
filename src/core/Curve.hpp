@@ -337,7 +337,6 @@ public:
     typedef QMap<int, QList<int>> OtherIdMap;
 
 private:
-    QStringList _table_header;
     QStringList _header;
     QList<Cell> _cells;
     SubIdMap _sub_id_map_777;      //用于曲线转换查表而非遍历
@@ -409,8 +408,6 @@ public:
 
     inline const QStringList &header() const { return _header; }
 
-    inline const QStringList &tableHeader() const { return _table_header; }
-
     inline int size() const { return _cells.size(); }
 
     QStringList str() const;
@@ -430,31 +427,11 @@ public:
 
     inline IterConst end() const { return IterConst(this, _cells.size()); }
 
-    void genSubIdMap777();
-
-    void genOtherIdMap();
-
-    inline const SubIdMap &subIdMap777() const { return _sub_id_map_777; }
-
-    inline QList<int> findMap777(unsigned char zero_byte) const
-    {
-        return _sub_id_map_777[zero_byte];
-    }
-
-    inline const OtherIdMap &otherIdMap() const { return _other_id_map; }
-
-    inline QList<int> findOtherMap(unsigned int can_id) const
-    {
-        return _other_id_map[can_id];
-    }
-
-    QStringList subIdMap777Str() const;
-
-    QStringList otherIdMapStr() const;
-
     inline void setInitialized(bool flag) { _initialized = flag; }
 
     inline bool isInitialized() const { return _initialized; }
+
+    void updateHeader();
 };
 
 QDataStream &operator<<(QDataStream &stream, const Curve &curve);
