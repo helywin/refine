@@ -73,6 +73,11 @@ void Sketch::paintGL()
             y_cal = (iter[j + start_pos + 1] -
                      cfg.rangeOut()[0]) * (Y_AXIS_MAX - Y_AXIS_MIN) /
                     (cfg.rangeOut()[1] - cfg.rangeOut()[0]) + Y_AXIS_MIN;
+            if (y_cal > Y_AXIS_MAX) {
+                y_cal = Y_AXIS_MAX;
+            } else if (y_cal < Y_AXIS_MIN) {
+                y_cal = Y_AXIS_MIN;
+            }
             glVertex2f(j + 1, y_cal);
         }
         glEnd();

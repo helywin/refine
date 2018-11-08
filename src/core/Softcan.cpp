@@ -8,7 +8,6 @@
 
 #include "Softcan.hpp"
 
-
 Softcan::Softcan() : _cells(), _head(-1) {}
 
 bool Softcan::load(QFile &file)
@@ -21,7 +20,11 @@ bool Softcan::load(QFile &file)
     QDataStream stream;
     stream.setByteOrder(QDataStream::ByteOrder::LittleEndian);
     stream.setDevice(&file);
-    file.seek(22);
+    char magic[SOFTCAN_MAGIC_LEN];
+    stream.readRawData(magic, SOFTCAN_MAGIC_LEN);
+    if (!checkMagic(magic)) {
+        return false;
+    }
 
     stream >> *this;
 
@@ -246,27 +249,20 @@ void Softcan::toCurve(Curve &curve)
     curve.clear();
     for (const auto &iter : _cells) {
         Curve::Cell cell(iter.index());
-        cell.display() = iter.visible();
-        cell.name() = iter.name();
-        cell.type() = Curve::Physical;
-        cell.unit() = iter.unit();
-        cell.width() = static_cast<short>(iter.width());
-        cell.color() = iter.color();
-        cell.canId() = static_cast<unsigned short>(iter.canId());
-        cell.zeroByte() = static_cast<short>(iter.zeroByte());
-        cell.highByte() = static_cast<short>(iter.highByte() - 2); //很重要
-        cell.highByteRange()[0] = 0;
-        cell.highByteRange()[1] = static_cast<unsigned char>(iter.firstBit());
-        cell.lowByte() = static_cast<short>(iter.lowByte());
-        cell.lowByteRange()[0] = static_cast<unsigned char>(iter.thirdBit());
-        cell.lowByteRange()[1] = static_cast<unsigned char>(iter.secondBit());
-        cell.frameMsec() = iter.sampleNum();
-        cell.rangeIn()[0] = iter.inputMin();
-        cell.rangeIn()[1] = iter.inputMax();
-        cell.rangeOut()[0] = static_cast<int>(iter.yMin());
-        cell.rangeOut()[1] = static_cast<int>(iter.yMax());
-        cell.remark() = iter.intro();
-        cell.bundle() = Curve::None;
+        cell.setDisplay(iter.visible());
+        cell.setName(iter.name());
+        cell.setUnit(iter.unit());
+        cell.setWidth(iter.width());
+        cell.setColor(iter.color());
+        cell.setCanId(iter.canId());
+        cell.setZeroByte(iter.zeroByte());
+        cell.setHighByte(iter.highByte() - 2); //很重要，为什么要-2，这是试出来的
+        cell.setHighRange(0, iter.firstBit());
+        cell.setLowByte(iter.lowByte());
+        cell.setLowRange(iter.thirdBit(), iter.secondBit());
+        cell.setRangeIn(iter.inputMin(), iter.inputMax());
+        cell.setRangeOut((int) iter.yMin(), (int) iter.yMax());
+        cell.setRemark(iter.intro());
         curve.append(qMove(cell));
     }
     curve.setInitialized(true);
@@ -279,4 +275,26 @@ QStringList Softcan::str() const
         list.append(iter.str());
     }
     return list;
+}
+
+bool Softcan::checkMagic(const char *array)
+{
+    //! \brief Softcan老版本魔术头
+    const char *header("w\x00\x00\x00\xFF\xFF\x01\x00\x0C\0CCurveRecord");
+#if 0   //测试用
+    QString header_s;
+    QString array_s;
+    for (int i = 0; i < SOFTCAN_MAGIC_LEN; ++i) {
+        header_s += QString("%1 ").arg(header[i],2,16,QChar('0'));
+        array_s += QString("%1 ").arg(array[i],2,16,QChar('0'));
+    }
+    qDebug() << "headr: " << header_s;
+    qDebug() << "array: " << array_s;
+#endif
+    for (int i = 0; i < SOFTCAN_MAGIC_LEN; ++i) {
+        if (array[i] != header[i]) {
+            return false;
+        }
+    }
+    return true;
 }

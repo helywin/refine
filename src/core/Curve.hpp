@@ -24,18 +24,6 @@ class Curve
 {
 public:
     friend class CurveModel;
-    enum Type
-    {
-        Physical = 0,
-        Logical = 1
-    };
-
-    enum Bundle
-    {
-        None,
-        Acceleration,
-        EngineSpeed
-    };
 
     class Cell
     {
@@ -44,29 +32,26 @@ public:
         friend class CurveModel;
 
     private:
-        short _index;
+        int _index;
         bool _display;
         QString _name;
-        int _type;
         QString _unit;
-        short _width;
-        unsigned int _color;
-        unsigned short _can_id;
-        short _zero_byte;
-        short _high_byte;
-        unsigned char _high_range[2];
-        short _low_byte;
-        unsigned char _low_range[2];
-        int _frame_msec;
+        int _width;
+        int _color;
+        int _can_id;
+        int _zero_byte;
+        int _high_byte;
+        int _high_range[2];
+        int _low_byte;
+        int _low_range[2];
         int _range_in[2];
         int _range_out[2];
         QString _remark;
-        int _bundle;
-        QByteArray _reserved;
+#define RESERVED_LEN 8
+        int _reserved[RESERVED_LEN];
     public:
         Cell();
         explicit Cell(int index);
-        Cell(int index, Bundle bundle);
         Cell(const Cell &cell) = default;
         friend QDataStream &operator<<(QDataStream &stream, const Cell &cell);
         friend QDataStream &operator>>(QDataStream &stream, Cell &cell);
@@ -87,12 +72,6 @@ public:
         }
 
         inline QString nameStr() const { return QString(_name); }
-
-        inline QString typeStr() const
-        {
-            if (_type == Type::Logical) return QString("逻辑");
-            else return QString("物理");
-        }
 
         inline QString unitStr() const { return QString(_unit); }
 
@@ -124,13 +103,8 @@ public:
 
         inline QString lowByteStr() const
         {
-            return QString("%1;%2~%3").arg(_low_byte).arg(_low_range[0])
-                    .arg(_low_range[1]);
-        }
-
-        inline QString frameMsecStr() const
-        {
-            return QString::number(_frame_msec);
+            return QString("%1;%2~%3").arg(_low_byte)
+                    .arg(_low_range[0]).arg(_low_range[1]);
         }
 
         inline QString rangeInStr() const
@@ -145,37 +119,30 @@ public:
 
         inline QString remarkStr() const { return QString(_remark); }
 
-        inline QString bundleStr() const { return QString::number(_bundle); }
-
         //val getter
-        inline short index() const { return _index; }
+        inline int index() const { return _index; }
 
         inline bool display() const { return _display; }
 
         inline QString name() const { return _name; }
 
-        inline int type() const { return _type; }
-
         inline QString unit() const { return _unit; }
 
-        inline short width() const { return _width; }
+        inline int width() const { return _width; }
 
-        inline unsigned int color() const { return _color; }
+        inline int color() const { return _color; }
 
-        inline unsigned short canId() const { return _can_id; }
+        inline int canId() const { return _can_id; }
 
-        inline short zeroByte() const { return _zero_byte; }
+        inline int zeroByte() const { return _zero_byte; }
 
-        inline short highByte() const { return _high_byte; }
+        inline int highByte() const { return _high_byte; }
 
-        inline const unsigned char *
-        highByteRange() const { return _high_range; }
+        inline const int *highByteRange() const { return _high_range; }
 
-        inline short lowByte() const { return _low_byte; }
+        inline int lowByte() const { return _low_byte; }
 
-        inline const unsigned char *lowByteRange() const { return _low_range; }
-
-        inline int frameMsec() const { return _frame_msec; }
+        inline const int *lowByteRange() const { return _low_range; }
 
         inline const int *rangeIn() const { return _range_in; }
 
@@ -183,52 +150,10 @@ public:
 
         inline QString remark() const { return _remark; }
 
-        inline int bundle() const { return _bundle; }
-
-        inline QByteArray reserved() const { return _reserved; }
-
-        //getter
-
-        inline short &index() { return _index; }
-
-        inline bool &display() { return _display; }
-
-        inline QString &name() { return _name; }
-
-        inline int &type() { return _type; }
-
-        inline QString &unit() { return _unit; }
-
-        inline short &width() { return _width; }
-
-        inline unsigned int &color() { return _color; }
-
-        inline unsigned short &canId() { return _can_id; }
-
-        inline short &zeroByte() { return _zero_byte; }
-
-        inline short &highByte() { return _high_byte; }
-
-        inline unsigned char *highByteRange() { return _high_range; }
-
-        inline short &lowByte() { return _low_byte; }
-
-        inline unsigned char *lowByteRange() { return _low_range; }
-
-        inline int &frameMsec() { return _frame_msec; }
-
-        inline int *rangeIn() { return _range_in; }
-
-        inline int *rangeOut() { return _range_out; }
-
-        inline QString &remark() { return _remark; }
-
-        inline int &bundle() { return _bundle; }
-
-        inline QByteArray &reserved() { return _reserved; }
+        inline const int *reserved() const { return _reserved; }
 
         //str setter
-        inline void setIndexByStr(const QString &s) { _index = s.toUShort(); }
+        inline void setIndexByStr(const QString &s) { _index = s.toInt(); }
 
         inline void setDisplayByStr(const QString &s)
         {
@@ -237,35 +162,29 @@ public:
 
         inline void setNameByStr(const QString &s) { _name = s; }
 
-        inline void setTypeByStr(const QString &s)
-        {
-            if (s == QString("物理")) _type = Type::Physical;
-            else _type = Type::Logical;
-        }
-
         inline void setUnitByStr(const QString &s) { _unit = s; }
 
-        inline void setWidthByStr(const QString &s) { _width = s.toShort(); }
+        inline void setWidthByStr(const QString &s) { _width = s.toInt(); }
 
         inline void setColorByStr(const QString &s)
         {
-            _color = s.toULong(nullptr, 16);
+            _color = s.toInt(nullptr, 16);
         }
 
         inline void setCanIdByStr(const QString &s)
         {
-            _can_id = s.toUShort(nullptr, 16);
+            _can_id = s.toInt(nullptr, 16);
         }
 
         inline void setZeroByteByStr(const QString &s)
         {
             if (s == QString("无")) _zero_byte = -1;
-            else { _zero_byte = s.toShort(); }
+            else { _zero_byte = s.toInt(); }
         }
 
         void setHighByteByStr(const QString &s);
+
         void setLowByteByStr(const QString &s);
-        void setFrameMsecByStr(const QString &s);
 
         inline void setRangeInByStr(const QString &s)
         {
@@ -283,10 +202,52 @@ public:
 
         inline void setRemarkByStr(const QString &s) { _remark = s; }
 
-        inline void setBundleByStr(const QString &s)
+        //setter
+        inline void setIndex(int index) { _index = index; }
+
+        inline void setDisplay(bool display) { _display = display; }
+
+        inline void setName(const QString &s) { _name = s; }
+
+        inline void setUnit(const QString &unit) { _unit = unit; }
+
+        inline void setWidth(int width) { _width = width; }
+
+        inline void setColor(int color) { _color = color; }
+
+        inline void setCanId(int can_id) { _can_id = can_id; }
+
+        inline void setZeroByte(int zero_byte) { _zero_byte = zero_byte; }
+
+        inline void setHighByte(int high_byte) { _high_byte = high_byte; }
+
+        inline void setHighRange(int high_range0, int high_range1)
         {
-            _bundle = (Bundle) s.toInt();
+            _high_range[0] = high_range0;
+            _high_range[1] = high_range1;
         }
+
+        inline void setLowByte(int low_byte) { _low_byte = low_byte; }
+
+        inline void setLowRange(int low_range0, int low_range1)
+        {
+            _low_range[0] = low_range0;
+            _low_range[1] = low_range1;
+        }
+
+        inline void setRangeIn(int range0, int range1)
+        {
+            _range_in[0] = range0;
+            _range_in[1] = range1;
+        }
+
+        inline void setRangeOut(int range0, int range1)
+        {
+            _range_out[0] = range0;
+            _range_out[1] = range1;
+        }
+
+        inline void setRemark(const QString &s) { _remark = s; }
 
     };
 

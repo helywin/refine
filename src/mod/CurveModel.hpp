@@ -19,7 +19,6 @@ public:
     {
         ColumFirst = 0,
         NameColumn = ColumFirst,
-        BundleColumn,
         UnitColumn,
         WidthColumn,
         ColorColumn,
@@ -27,7 +26,6 @@ public:
         ZeroByteColumn,
         HighByteColumn,
         LowByteColumn,
-        FrameMsecColumn,
         RangeInColumn,
         RangeOutColumn,
         RemarkColumn,

@@ -17,7 +17,6 @@ public:
     {
         ColumFirst = 0,
         NameColumn = ColumFirst,
-        BundleColumn,
         UnitColumn,
         WidthColumn,
         ColorColumn,

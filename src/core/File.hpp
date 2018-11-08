@@ -19,6 +19,7 @@
 class Curve;
 class Tribe;
 class Modes;
+class FramePool;
 
 
 /*!
@@ -205,10 +206,7 @@ public:
     bool dumpCurveConfig(QFile &file, const Curve &curve);
 
 public:
-    bool loadFrameRecordBegin(QFile &file, Buffer &buffer,
-                              int *pack = nullptr, int *frame = nullptr);
-    bool loadFrameRecord(Buffer &buffer);
-    void loadFrameRecordFinish(QFile &file);
+    bool loadFrameRecord(QFile &file, FramePool &pool);
 
     bool dumpFrameRecordBegin(QFile &file);
     void dumpFrameRecord(Buffer &buffer, Buffer::Iter tail, Buffer::Iter head);

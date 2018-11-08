@@ -159,13 +159,6 @@ void Buffer::dump(QDataStream &stream, Buffer::Iter tail, Buffer::Iter head)
     }
 }
 
-QDataStream &operator>>(QDataStream &stream, Buffer &buffer)
-{
-    stream >> *(buffer._cells + buffer._head);
-    buffer.move();
-    return stream;
-}
-
 void Buffer::reset()
 {
     _index = 0;

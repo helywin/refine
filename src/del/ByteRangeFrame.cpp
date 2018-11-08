@@ -33,10 +33,12 @@ void ByteRangeFrame::setup()
     _byte->setRange(0, 7);
     _low = new QSpinBox(this);
     _low->setRange(0, 7);
+    _low->setValue(0);
     _label = new QLabel("-", this);
     _label->setMaximumWidth(10);
     _high = new QSpinBox(this);
     _high->setRange(0, 7);
+    _high->setValue(7);
     _layout->addWidget(_byte, 1);
     _layout->addWidget(_low, 1);
     _layout->addWidget(_label);
@@ -56,12 +58,13 @@ void ByteRangeFrame::setup()
 
 void ByteRangeFrame::setData(const QString &s)
 {
-    if (s == "无") {
+    if (_checkable && s == "无") {
         _check->setChecked(false);
         _byte->setDisabled(true);
         _low->setDisabled(true);
         _high->setDisabled(true);
-    } else {
+    }
+    if (s != "无") {
         if (_checkable) {
             _check->setChecked(true);
         }
@@ -107,17 +110,23 @@ void ByteRangeFrame::checkChanged(int state)
 void ByteRangeFrame::lowChanged(int value)
 {
     if (value > _high->value()) {
-        _low->setValue(_last_low);
-    } else {
-        _last_low = value;
+        if((_checkable && _check->isChecked()) ||
+                !_checkable) {
+            _low->setValue(_last_low);
+            return;
+        }
     }
+    _last_low = value;
 }
 
 void ByteRangeFrame::highChanged(int value)
 {
     if (value < _low->value()) {
-        _high->setValue(_last_high);
-    } else {
-        _last_high = value;
+        if((_checkable && _check->isChecked()) ||
+           !_checkable) {
+            _high->setValue(_last_high);
+            return;
+        }
     }
+    _last_high = value;
 }

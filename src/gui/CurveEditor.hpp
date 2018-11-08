@@ -31,7 +31,6 @@ private:
     SpecInput *_line_width;
     SpecInput *_can_id;
     ColorInput *_color;
-    SpecInput *_frame_msec;
     ByteInput *_low_byte_input;
     ByteInput *_high_byte_input;
     ComboInput *_unit;

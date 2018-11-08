@@ -17,7 +17,6 @@ CurveView::CurveView(QAbstractItemModel *model, QItemSelectionModel *selection,
     setVerticalHeader(v);
 
     setColumnWidth(CurveModel::NameColumn, 200);
-    setColumnWidth(CurveModel::BundleColumn, 100);
     setColumnWidth(CurveModel::UnitColumn, 80);
     setColumnWidth(CurveModel::WidthColumn, 40);
     setColumnWidth(CurveModel::ColorColumn, 100);
@@ -25,7 +24,6 @@ CurveView::CurveView(QAbstractItemModel *model, QItemSelectionModel *selection,
     setColumnWidth(CurveModel::ZeroByteColumn, 80);
     setColumnWidth(CurveModel::HighByteColumn, 80);
     setColumnWidth(CurveModel::LowByteColumn, 80);
-    setColumnWidth(CurveModel::FrameMsecColumn, 80);
     setColumnWidth(CurveModel::RangeInColumn, 100);
     setColumnWidth(CurveModel::RangeOutColumn, 100);
     setColumnWidth(CurveModel::RemarkColumn, 200);

@@ -106,16 +106,12 @@ bool Revolve::stop()
         QString name = _store_curvedata.fileName();
         files << _store_curvedata_name;
         paths << name;
-        name = QDir::currentPath() + "/" + name;
-        message(Messager::Info, tr("曲线: ") + name);
     }
     if ((unsigned) _config & (unsigned) WithRecord) {
         _record.stop();
         QString name = _store_frames.fileName();
         files << _store_frames_name;
         paths << name;
-        name = QDir::currentPath() + "/" + name;
-        message(Messager::Info, tr("报文: ") + name);
     }
     genCurveConfigFile();
     paths << _store_curveconfig.fileName();
@@ -126,6 +122,7 @@ bool Revolve::stop()
         for (const auto &path : paths) {
             QFile::remove(path);
         }
+        message(Messager::Info, tr("生成数据 ") + _store_archive_name);
     } else {
         message(Messager::Critical, tr("包文件生成失败"));
     }

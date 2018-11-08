@@ -44,8 +44,6 @@ QVariant TribeModel::data(const QModelIndex &index, int role) const
             switch (column) {
                 case NameColumn:
                     return QVariant(cell.nameStr());
-                case BundleColumn:
-                    return QVariant(cell.bundleStr());
                 case UnitColumn:
                     return QVariant(cell.unitStr());
                 case WidthColumn:
@@ -114,13 +112,12 @@ Qt::ItemFlags TribeModel::flags(const QModelIndex &index) const
         return QAbstractTableModel::flags(index);
     }
     Qt::ItemFlags flags = Qt::ItemIsSelectable |
-                          Qt::ItemIsEnabled ;
+                          Qt::ItemIsEnabled;
 //                          |
 //                          Qt::ItemIsEditable;
     switch (index.column()) {
         case NameColumn:
             return flags | Qt::ItemIsUserCheckable;
-        case BundleColumn:
         case UnitColumn:
         case WidthColumn:
         case ColorColumn:
@@ -152,14 +149,20 @@ QVariant TribeModel::headerData(int section,
         switch (role) {
             case Qt::DisplayRole:
                 switch (section) {
-                    case NameColumn:return tr("名称");
-                    case BundleColumn:return tr("意义");
-                    case UnitColumn:return tr("单位");
-                    case WidthColumn:return tr("线宽");
-                    case ColorColumn:return tr("颜色");
-                    case RangeOutColumn:return tr("输出范围");
-                    case RemarkColumn:return tr("备注");
-                    default:return QVariant();
+                    case NameColumn:
+                        return tr("名称");
+                    case UnitColumn:
+                        return tr("单位");
+                    case WidthColumn:
+                        return tr("线宽");
+                    case ColorColumn:
+                        return tr("颜色");
+                    case RangeOutColumn:
+                        return tr("输出范围");
+                    case RemarkColumn:
+                        return tr("备注");
+                    default:
+                        return QVariant();
                 }
             default:
                 return QVariant();

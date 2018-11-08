@@ -255,6 +255,9 @@ public:
 
     QStringList str() const;
 
+#define SOFTCAN_MAGIC_LEN 22
+    static bool checkMagic(const char *array);
+
 private:
 
     inline void clear()

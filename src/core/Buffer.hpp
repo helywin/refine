@@ -137,7 +137,6 @@ public:
 
 //    friend QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
     void dump(QDataStream &stream, Iter tail, Iter head);
-    friend QDataStream &operator>>(QDataStream &stream, Buffer &buffer);
 
     Cell &headCell() { return _cells[_head]; }
 

@@ -317,6 +317,7 @@ void Refine::getFile(int type, const QString &file)
             } else if (ext == FilePicker::extendName(FilePicker::CurveConfig)) {
                 if (_revolve.inputCurveConfig(file)) {
                     emit message(Messager::Info, tr("读取曲线配置成功"));
+                    _editor->updateData();
                 } else {
                     emit message(Messager::Warning,
                                  tr("读取曲线配置失败，检查配置格式"));

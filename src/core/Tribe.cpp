@@ -193,15 +193,12 @@ Tribe::Style &Tribe::Style::operator=(const Curve::Cell &cell)
     _index = cell._index;
     _display = cell._display;
     _name = cell._name;
-    _type = cell._type;
     _unit = cell._unit;
     _width = cell._width;
     _color = cell._color;
     _range_out[0] = cell._range_out[0];
     _range_out[1] = cell._range_out[1];
     _remark = cell._remark;
-    _bundle = cell._bundle;
-    _reserved = cell._reserved;
     return *this;
 }
 
@@ -210,15 +207,12 @@ QDataStream &operator<<(QDataStream &stream, const Tribe::Style &style)
     stream << style._index
            << style._display
            << style._name
-           << style._type
            << style._unit
            << style._width
            << style._color
            << style._range_out[0]
            << style._range_out[1]
-           << style._remark
-           << style._bundle
-           << style._reserved;
+           << style._remark;
     return stream;
 }
 
@@ -227,15 +221,12 @@ QDataStream &operator>>(QDataStream &stream, Tribe::Style &style)
     stream >> style._index
            >> style._display
            >> style._name
-           >> style._type
            >> style._unit
            >> style._width
            >> style._color
            >> style._range_out[0]
            >> style._range_out[1]
-           >> style._remark
-           >> style._bundle
-           >> style._reserved;
+           >> style._remark;
     return stream;
 }
 

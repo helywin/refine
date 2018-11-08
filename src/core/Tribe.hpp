@@ -58,17 +58,15 @@ public:
             EngineSpeed
         };
     private:
-        short _index;
+        int _index;
         bool _display;  //
         QString _name;  //
-        int _type;
         QString _unit;  //
-        short _width;   //
-        unsigned int _color;    //
+        int _width;   //
+        int _color;    //
         int _range_out[2];      //
         QString _remark;        //
-        int _bundle;            //
-        QByteArray _reserved;
+
     public:
         explicit Style(const Curve::Cell &cell);
         Style(const Style &style) = default;
@@ -90,12 +88,6 @@ public:
 
         inline QString nameStr() const { return QString(_name); }
 
-        inline QString typeStr() const
-        {
-            if (_type == Type::Logical) return QString("逻辑");
-            else return QString("物理");
-        }
-
         inline QString unitStr() const { return QString(_unit); }
 
         inline QString widthStr() const { return QString::number(_width); }
@@ -112,55 +104,22 @@ public:
 
         inline QString remarkStr() const { return QString(_remark); }
 
-        inline QString bundleStr() const { return QString::number(_bundle); }
-
         //val getter
-        inline short index() const { return _index; }
+        inline int index() const { return _index; }
 
         inline bool display() const { return _display; }
 
         inline QString name() const { return _name; }
 
-        inline int type() const { return _type; }
-
         inline QString unit() const { return _unit; }
 
-        inline short width() const { return _width; }
+        inline int width() const { return _width; }
 
-        inline unsigned int color() const { return _color; }
+        inline int color() const { return _color; }
 
         inline const int *rangeOut() const { return _range_out; }
 
         inline QString remark() const { return _remark; }
-
-        inline int bundle() const { return _bundle; }
-
-        inline QByteArray reserved() const { return _reserved; }
-
-        //getter
-
-        inline short &index() { return _index; }
-
-        inline bool &display() { return _display; }
-
-        inline QString &name() { return _name; }
-
-        inline int &type() { return _type; }
-
-        inline QString &unit() { return _unit; }
-
-        inline short &width() { return _width; }
-
-        inline unsigned int &color() { return _color; }
-
-        inline int *rangeOut() { return _range_out; }
-
-        inline QString &remark() { return _remark; }
-
-        inline int &bundle() { return _bundle; }
-
-        inline QByteArray &reserved() { return _reserved; }
-
 
         //str setter
         inline void setIndexByStr(QString &s) { _index = s.toUShort(); }
@@ -172,15 +131,9 @@ public:
 
         inline void setNameByStr(QString &s) { _name = s; }
 
-        inline void setTypeByStr(QString &s)
-        {
-            if (s == QString("物理")) _type = Type::Physical;
-            else _type = Type::Logical;
-        }
-
         inline void setUnitByStr(QString &s) { _unit = s; }
 
-        inline void setWidthByStr(QString &s) { _width = s.toShort(); }
+        inline void setWidthByStr(QString &s) { _width = s.toInt(); }
 
         inline void setRangeOutByStr(QString &s)
         {
@@ -191,7 +144,26 @@ public:
 
         inline void setRemarkByStr(QString &s) { _remark = s; }
 
-        inline void setBundleByStr(QString &s) { _bundle = (Bundle) s.toInt(); }
+        //setter
+        inline void setIndex(int index) { _index = index; }
+
+        inline void setDisplay(bool display) { _display = display; }
+
+        inline void setName(const QString &s) { _name = s; }
+
+        inline void setUnit(const QString &unit) { _unit = unit; }
+
+        inline void setWidth(int width) { _width = width; }
+
+        inline void setColor(int color) { _color = color; }
+
+        inline void setRangeOut(int range0, int range1)
+        {
+            _range_out[0] = range0;
+            _range_out[1] = range1;
+        }
+
+        inline void setRemark(const QString &s) { _remark = s; }
     };
 
     class Cell

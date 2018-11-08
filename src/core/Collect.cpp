@@ -90,9 +90,6 @@ void Collect::run()
                 cnt = 0;
             }
         } else if (_manner == FromFile) {
-            if (!_file.loadFrameRecord(*_buffer)) {
-                info(InfoFileEnd);
-            }
         }
     }
 }
@@ -100,12 +97,12 @@ void Collect::run()
 void Collect::begin()
 {
     _cmd = None;
-    if (_manner == FromFile) {
-        if (!_file.loadFrameRecordBegin(*_frame_file, *_buffer)) {
-            _manner = FromCan;
-            info(ErrorFile);
-        }
-    }
+//    if (_manner == FromFile) {
+//        if (!_file.loadFrameRecordBegin(*_frame_file, *_buffer)) {
+//            _manner = FromCan;
+//            info(ErrorFile);
+//        }
+//    }
     _buffer->reset();
     _can->clear();
     start();
@@ -117,7 +114,7 @@ void Collect::stop()
     _cmd = CommandStop;
     while (isRunning()) {}
     _status = Stop;
-    if (_manner == FromFile) {
-        _file.loadFrameRecordFinish(*_frame_file);
-    }
+//    if (_manner == FromFile) {
+//        _file.loadFrameRecordFinish(*_frame_file);
+//    }
 }

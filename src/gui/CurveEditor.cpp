@@ -30,7 +30,6 @@ void CurveEditor::setup()
     _high_byte_input = new ByteInput(true, this);
     _can_id = new SpecInput(3, this, 16);
     _color = new ColorInput(this);
-    _frame_msec = new SpecInput(2, this);
     _unit = new ComboInput(
             true,
             QStringList({"NULL", "mA", "A", "mV", "V", "rpm", "mm", "cm", "m",
@@ -44,7 +43,6 @@ void CurveEditor::setup()
     _view->setItemDelegateForColumn(CurveModel::HighByteColumn,
                                     _high_byte_input);
     _view->setItemDelegateForColumn(CurveModel::CanIdColumn, _can_id);
-    _view->setItemDelegateForColumn(CurveModel::FrameMsecColumn, _frame_msec);
     _h_header->setParent(_view);
     _v_header->setParent(_view);
     setLayout(_layout);

@@ -24,7 +24,6 @@ TribeView::TribeView(QAbstractItemModel *model,
     setSelectionBehavior(QTableView::SelectRows);
 
     setColumnWidth(TribeModel::NameColumn, 220);
-    setColumnWidth(TribeModel::BundleColumn, 100);
     setColumnWidth(TribeModel::UnitColumn, 80);
     setColumnWidth(TribeModel::WidthColumn, 40);
     setColumnWidth(TribeModel::ColorColumn, 100);

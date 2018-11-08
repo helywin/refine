@@ -31,7 +31,6 @@ void ByteInput::setEditorData(QWidget *editor, const QModelIndex &index) const
 void ByteInput::setModelData(QWidget *editor, QAbstractItemModel *model,
                              const QModelIndex &index) const
 {
-    qDebug() << dynamic_cast<ByteRangeFrame *>(editor)->data();
     model->setData(index,
                    dynamic_cast<ByteRangeFrame *>(editor)->data(),
                    Qt::EditRole
@@ -43,7 +42,7 @@ void ByteInput::updateEditorGeometry(QWidget *editor,
                                      const QModelIndex &index) const
 {
     int w;
-    if (dynamic_cast<ByteRangeFrame *>(editor)->checkable()) {
+    if (_checkable) {
         w = 170;
     } else {
         w = 140;
@@ -63,5 +62,9 @@ void ByteInput::paint(QPainter *painter, const QStyleOptionViewItem &option,
 QSize ByteInput::sizeHint(const QStyleOptionViewItem &option,
                           const QModelIndex &index) const
 {
-    return QSize();
+    if (_checkable) {
+        return QSize(170, 29);
+    } else {
+        return QSize(140, 29);
+    }
 }

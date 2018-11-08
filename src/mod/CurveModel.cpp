@@ -43,8 +43,6 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
             switch (column) {
                 case NameColumn:
                     return QVariant(cell.nameStr());
-                case BundleColumn:
-                    return QVariant(cell.bundleStr());
                 case UnitColumn:
                     return QVariant(cell.unitStr());
                 case WidthColumn:
@@ -59,8 +57,6 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
                     return QVariant(cell.highByteStr());
                 case LowByteColumn:
                     return QVariant(cell.lowByteStr());
-                case FrameMsecColumn:
-                    return QVariant(cell.frameMsecStr());
                 case RangeInColumn:
                     return QVariant(cell.rangeInStr());
                 case RangeOutColumn:
@@ -74,8 +70,6 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
             switch (column) {
                 case NameColumn:
                     return QVariant(cell.nameStr());
-                case BundleColumn:
-                    return QVariant(cell.bundleStr());
                 case UnitColumn:
                     return QVariant(cell.unitStr());
                 case WidthColumn:
@@ -90,8 +84,6 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
                     return QVariant(cell.highByteStr());
                 case LowByteColumn:
                     return QVariant(cell.lowByteStr());
-                case FrameMsecColumn:
-                    return QVariant(cell._frame_msec);
                 case RangeInColumn:
                     return QVariant(cell.rangeInStr());
                 case RangeOutColumn:
@@ -142,9 +134,6 @@ bool CurveModel::setData(const QModelIndex &index,
                     cell.setNameByStr(value.toString());
                     _curve->updateHeader();     //更新表头
                     return true;
-                case BundleColumn:
-                    cell.setBundleByStr(value.toString());
-                    return true;
                 case UnitColumn:
                     cell.setUnitByStr(value.toString());
                     return true;
@@ -165,9 +154,6 @@ bool CurveModel::setData(const QModelIndex &index,
                     return true;
                 case LowByteColumn:
                     cell.setLowByteByStr(value.toString());
-                    return true;
-                case FrameMsecColumn:
-                    cell.setFrameMsecByStr(value.toString());
                     return true;
                 case RangeInColumn:
                     cell.setRangeInByStr(value.toString());
@@ -201,7 +187,6 @@ Qt::ItemFlags CurveModel::flags(const QModelIndex &index) const
                           Qt::ItemIsEditable;
     switch (index.column()) {
         case NameColumn: return flags | Qt::ItemIsUserCheckable;
-        case BundleColumn:
         case UnitColumn:
         case WidthColumn:
         case ColorColumn:
@@ -209,7 +194,6 @@ Qt::ItemFlags CurveModel::flags(const QModelIndex &index) const
         case ZeroByteColumn:
         case HighByteColumn:
         case LowByteColumn:
-        case FrameMsecColumn:
         case RangeInColumn:
         case RangeOutColumn:
         case RemarkColumn:
@@ -234,7 +218,6 @@ QVariant CurveModel::headerData(int section,
             case Qt::DisplayRole:
                 switch (section) {
                     case NameColumn:return tr("名称");
-                    case BundleColumn:return tr("意义");
                     case UnitColumn:return tr("单位");
                     case WidthColumn:return tr("线宽");
                     case ColorColumn:return tr("颜色");
@@ -242,7 +225,6 @@ QVariant CurveModel::headerData(int section,
                     case ZeroByteColumn:return tr("零字节");
                     case HighByteColumn:return tr("高字节");
                     case LowByteColumn:return tr("低字节");
-                    case FrameMsecColumn:return tr("间隔(ms)");
                     case RangeInColumn:return tr("输入范围");
                     case RangeOutColumn:return tr("输出范围");
                     case RemarkColumn:return tr("备注");

@@ -10,6 +10,7 @@
 #include "Version.hpp"
 #include "Curve.hpp"
 #include "Tribe.hpp"
+#include "FramePool.hpp"
 
 
 File::File()
@@ -220,7 +221,14 @@ bool File::loadCurveConfig(QFile &file, Curve &curve)
     if (!loadCheckSum()) {
         return false;
     }
-    file.seek(DATA_POS);
+    curve.clear();
+    _stream->device()->seek(HEADER_L);
+    char sign[4];
+    _stream->readRawData(sign, 4);
+    if (sign[0] != 'C' || sign[1] != 'V' ||
+        sign[2] != 'C' || sign[3] != 'F') {
+        qCritical("bad file!");
+    }
     (*_stream) >> curve;
     curve.setInitialized(true);
     _stream->unsetDevice();
@@ -268,8 +276,7 @@ bool File::dumpCurveConfig(QFile &file, const Curve &curve)
     return true;
 }
 
-bool
-File::loadFrameRecordBegin(QFile &file, Buffer &buffer, int *pack, int *frame)
+bool File::loadFrameRecord(QFile &file, FramePool &pool)
 {
     file.open(QIODevice::ReadOnly);
     if (!file.isOpen()) {
@@ -285,18 +292,16 @@ File::loadFrameRecordBegin(QFile &file, Buffer &buffer, int *pack, int *frame)
     _stream->device()->seek(DATA_POS);
     char str[4];
     _stream->readRawData(str, 4);
-    (*_stream) >> _frame_obj_num;
-    (*_stream) >> _frame_cell_num;
-    if (pack) {
-        *pack = _frame_cell_num;
+    if (!(str[0] == 'F' && str[1] == 'M' &&
+          str[2] == 'D' && str[3] == 'F')) {
+        return false;
     }
-    if (frame) {
-        *frame = _frame_obj_num;
-    }
-    buffer.reset();
+    pool.clear();
+    (*_stream) >> pool;
     return true;
 }
 
+/*
 bool File::loadFrameRecord(Buffer &buffer)
 {
     (*_stream) >> buffer;
@@ -312,13 +317,7 @@ bool File::loadFrameRecord(Buffer &buffer)
         _stream->device()->seek(_stream->device()->pos() - 4);
         return true;
     }
-}
-
-void File::loadFrameRecordFinish(QFile &file)
-{
-    _stream->unsetDevice();
-    file.close();
-}
+}*/
 
 bool File::dumpFrameRecordBegin(QFile &file)
 {
@@ -341,7 +340,9 @@ bool File::dumpFrameRecordBegin(QFile &file)
     _frame_cell_num = 0;
     _stream->writeRawData("FMDF", 4);
     (*_stream) << _frame_obj_num
-               << _frame_cell_num;
+               << _frame_cell_num
+               << int(0)
+               << int(0);
     return true;
 }
 
@@ -383,7 +384,11 @@ bool File::loadCurveRecord(QFile &file, Tribe &tribe)
     _stream->device()->seek(DATA_POS);
     char str[4];
     _stream->readRawData(str, 4);
-    tribe.reset();
+    if (!(str[0] == 'C' && str[1] == 'V' &&
+          str[2] == 'D' && str[3] == 'F')) {
+        return false;
+    }
+    tribe.clear();
     (*_stream) >> tribe;
     return true;
 }
@@ -404,10 +409,9 @@ bool File::dumpCurveRecord(QFile &file, const Tribe &tribe)
     _header->setInfo();
 
     dumpFileHeader();
-    _stream->writeRawData("RPDF", 4);
+    _stream->writeRawData("CVDF", 4);
     (*_stream) << tribe;
     file.close();
-    qDebug() << "tribe Len: " << tribe.len();
     return true;
 }
 

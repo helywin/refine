@@ -60,10 +60,6 @@ bool Curve::loadFromCsv(QFile &f)
                 _header.append(list[i]);
                 continue;
             }
-            if (iter == "类型") {
-                cell.setTypeByStr(list[i]);
-                continue;
-            }
             if (iter == "单位") {
                 cell.setUnitByStr(list[i]);
                 continue;
@@ -92,10 +88,6 @@ bool Curve::loadFromCsv(QFile &f)
                 cell.setLowByteByStr(list[i]);
                 continue;
             }
-            if (iter == "采样") {
-                cell.setFrameMsecByStr(list[i]);
-                continue;
-            }
             if (iter == "输入量程") {
                 cell.setRangeInByStr(list[i]);
                 continue;
@@ -106,10 +98,6 @@ bool Curve::loadFromCsv(QFile &f)
             }
             if (iter == "备注") {
                 cell.setRemarkByStr(list[i]);
-                continue;
-            }
-            if (iter == "约束") {
-                cell.setBundleByStr(list[i]);
                 continue;
             }
         }
@@ -201,13 +189,6 @@ QDataStream &operator<<(QDataStream &stream, const Curve &curve)
 
 QDataStream &operator>>(QDataStream &stream, Curve &curve)
 {
-    stream.device()->seek(HEADER_L);
-    char sign[4];
-    stream.readRawData(sign, 4);
-    if (sign[0] != 'C' || sign[1] != 'V' ||
-        sign[2] != 'C' || sign[3] != 'F') {
-        qCritical("bad file!");
-    }
     int size;
     stream >> size;
     for (int i = 0; i < size; ++i) {
@@ -221,13 +202,11 @@ QDataStream &operator>>(QDataStream &stream, Curve &curve)
 
 Curve::Cell::Cell() : Cell(0) {}
 
-Curve::Cell::Cell(int index) : Cell(index, Bundle::None) {}
 
-Curve::Cell::Cell(int index, Bundle bundle) :
+Curve::Cell::Cell(int index) :
         _index((short) index),
         _display(false),
         _name(QString("未命名")),
-        _type(Type::Physical),
         _unit(QString("无单位")),
         _width(1),
         _color(0xFFFFFF),
@@ -237,28 +216,10 @@ Curve::Cell::Cell(int index, Bundle bundle) :
         _high_range({0, 7}),
         _low_byte(0),
         _low_range({0, 7}),
-        _frame_msec(10),
         _range_in({0, 100}),
         _range_out({0, 100}),
-        _remark(QString("无")),
-        _bundle(bundle)
-{
-    switch (bundle) {
-        case Bundle::Acceleration:
-            _name = QString("加速度");
-            _unit = QString("m/s^2");
-            _remark = QString("汽车的加速度");
-            break;
-        case Bundle::EngineSpeed :
-            _name = QString("发动机转速");
-            _unit = QString("m/s^2");
-            _remark = QString("发动机转速");
-            break;
-        case Bundle::None :
-        default:
-            break;
-    }
-}
+        _remark(QString("无"))
+{}
 
 bool Curve::Cell::check() const
 {
@@ -271,7 +232,6 @@ QStringList Curve::Cell::str() const
     list.append(indexStr());
     list.append(displayStr());
     list.append(nameStr());
-    list.append(typeStr());
     list.append(unitStr());
     list.append(widthStr());
     list.append(colorStr());
@@ -279,11 +239,9 @@ QStringList Curve::Cell::str() const
     list.append(zeroByteStr());
     list.append(highByteStr());
     list.append(lowByteStr());
-    list.append(frameMsecStr());
     list.append(rangeInStr());
     list.append(rangeOutStr());
     list.append(remarkStr());
-    list.append(bundleStr());
     return list;
 }
 
@@ -309,17 +267,11 @@ void Curve::Cell::setLowByteByStr(const QString &s)
     _low_range[1] = static_cast<unsigned char> (list[1].toUShort());
 }
 
-void Curve::Cell::setFrameMsecByStr(const QString &s)
-{
-    _frame_msec = s.toInt();
-}
-
 QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)
 {
     stream << cell._index
            << cell._display
            << cell._name
-           << cell._type
            << cell._unit
            << cell._width
            << cell._color
@@ -331,14 +283,14 @@ QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)
            << cell._low_byte
            << cell._low_range[0]
            << cell._low_range[1]
-           << cell._frame_msec
            << cell._range_in[0]
            << cell._range_in[1]
            << cell._range_out[0]
            << cell._range_out[1]
-           << cell._remark
-           << cell._bundle
-           << cell._reserved;
+           << cell._remark;
+    for (int i = 0; i < RESERVED_LEN; ++i) {
+        stream << cell._reserved[i];
+    }
     return stream;
 }
 
@@ -347,7 +299,6 @@ QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell)
     stream >> cell._index
            >> cell._display
            >> cell._name
-           >> cell._type
            >> cell._unit
            >> cell._width
            >> cell._color
@@ -359,14 +310,14 @@ QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell)
            >> cell._low_byte
            >> cell._low_range[0]
            >> cell._low_range[1]
-           >> cell._frame_msec
            >> cell._range_in[0]
            >> cell._range_in[1]
            >> cell._range_out[0]
            >> cell._range_out[1]
-           >> cell._remark
-           >> cell._bundle
-           >> cell._reserved;
+           >> cell._remark;
+    for (int i = 0; i < RESERVED_LEN; ++i) {
+        stream >> cell._reserved[i];
+    }
     return stream;
 }
 

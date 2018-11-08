@@ -64,10 +64,10 @@ void FrameViewer::readFrameData(const QString &fname)
     int size;
     int frame_num;
     int index = 0;
-    if (!file.loadFrameRecordBegin(f, buffer, &size, &frame_num)) {
-        qDebug("file error!");
-        return;
-    }
+//    if (!file.loadFrameRecordBegin(f, buffer, &size, &frame_num)) {
+//        qDebug("file error!");
+//        return;
+//    }
     _last_name = fname;
     QFont consolas("Consolas");
     consolas.setPointSize(12);
@@ -103,7 +103,7 @@ void FrameViewer::readFrameData(const QString &fname)
             break;
         }
         QString str;
-        file.loadFrameRecord(buffer);
+//        file.loadFrameRecord(buffer);
         const Buffer::Cell &cell = *buffer.last();
         for (int j = 0; j < cell.dataSize(); ++j) {
             if (_menu_option_frame->isChecked()) {
