@@ -101,6 +101,7 @@ public slots:
     void pause();
     void resume();
     bool stop();
+    bool exit();
 public:
     //采集配置
     void setCollectManner(Collect::Manner manner, QString &collect_frame);
@@ -113,16 +114,13 @@ public:
 
     bool importSoftcanCurveConfig(const QString &name);
 
-    inline bool exportCsvCurveConfig(const QString &name)
-    {
-        return _curve.dumpToCsv(name);
-    }
+    bool exportCsvCurveConfig(const QString &name);
 
     bool outputFrameData(const QString &name);
     bool exportCsvFrameData(const QString &name);
 
-//    bool inputFrameData(const QString &name) = delete;
-//    bool importCsvFrameData(const QString &name) = delete;
+    bool inputFrameData(const QString &name);
+    bool importCsvFrameData(const QString &name);
 
     bool inputCurveData(const QString &name);
     bool outputCurveData(const QString &name);
@@ -164,6 +162,8 @@ signals:
     void message(int type, const QString &msg);
 
     void curveLoaded();
+
+    void canLostConnection();
 };
 
 

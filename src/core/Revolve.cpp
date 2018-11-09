@@ -54,8 +54,6 @@ bool Revolve::begin(unsigned long msec, int config, int time)
     _msec = msec;
     _config = config;
     _time = time;
-    _tribe.genFromCurve(_curve);
-    _tribe_model->genData(&_tribe);
     _collect.setParams(&_can, &_buffer, Collect::FromCan, msec);
     genName();
     if ((unsigned) _config & (unsigned) Config::WithTransform) {
@@ -63,6 +61,8 @@ bool Revolve::begin(unsigned long msec, int config, int time)
             message(Messager::Warning, tr("开始失败，没有加载曲线配置"));
             return false;
         }
+        _tribe.genFromCurve(_curve);
+        _tribe_model->genData(&_tribe);
         genCurveDataFile();
         _transform.setParams(&_curve, &_buffer, &_tribe, msec);
         _collect.begin();
@@ -93,6 +93,7 @@ bool Revolve::stop()
         message(Messager::Warning, tr("结束失败，采集还没开始"));
         return false;
     }
+    _collect.stop();
     if (_sketch) {
         _sketch->stop();
     }
@@ -126,9 +127,28 @@ bool Revolve::stop()
     } else {
         message(Messager::Critical, tr("包文件生成失败"));
     }
-    _collect.stop();
     _status = Stop;
     message(Messager::Info, tr("停止采集成功"));
+    return true;
+}
+
+bool Revolve::exit()
+{
+    _collect.stop();
+    if (_sketch) {
+        _sketch->stop();
+    }
+    if ((unsigned) _config & (unsigned) WithTiming) {
+        _timer_stop.stop();
+    }
+    if ((unsigned) _config & (unsigned) WithTransform) {
+        _transform.stop();
+    }
+    if ((unsigned) _config & (unsigned) WithRecord) {
+        _record.stop(true);
+    }
+    _status = Stop;
+    message(Messager::Info, tr("采集异常，安全停止"));
     return true;
 }
 
@@ -255,7 +275,7 @@ bool Revolve::importCsvCurveConfig(const QString &name)
 
 bool Revolve::importSoftcanCurveConfig(const QString &name)
 {
-    bool flag =  _softcan.load(name);
+    bool flag = _softcan.load(name);
     _softcan.toCurve(_curve);
     return flag;
 }
@@ -267,10 +287,58 @@ bool Revolve::outputCurveConfig(const QString &name)
     return file.dumpCurveConfig(f, _curve);
 }
 
+bool Revolve::exportCsvCurveConfig(const QString &name)
+{
+    return _curve.dumpToCsv(name);
+}
+
+bool Revolve::outputFrameData(const QString &name)
+{
+    return false;
+}
+
+bool Revolve::exportCsvFrameData(const QString &name)
+{
+    return false;
+}
+
+bool Revolve::inputFrameData(const QString &name)
+{
+    return false;
+}
+
+bool Revolve::importCsvFrameData(const QString &name)
+{
+    return false;
+}
+
+bool Revolve::inputCurveData(const QString &name)
+{
+    File file;
+    QFile f(name);
+    if (!file.loadCurveRecord(f, _tribe)) {
+        return false;
+    }
+    _sketch->initData();
+    _tribe_model->genData(&_tribe);
+    return true;
+}
+
+bool Revolve::outputCurveData(const QString &name)
+{
+    return false;
+}
+
+bool Revolve::exportCsvCurveData(const QString &name)
+{
+    return false;
+}
+
 void Revolve::collectError(int code)
 {
     if (code == Collect::ErrorConnection) {
         message(Messager::Critical, tr("检测到连接已经断开，停止采集"));
+        canLostConnection();
         stop();
     } else if (code == Collect::WarnNoFrame) {
         message(Messager::Warning, tr("采集不到报文"));

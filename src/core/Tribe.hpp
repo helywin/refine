@@ -34,7 +34,8 @@ public:
         ProData
     };
 
-    enum Fill : char
+    typedef unsigned char FillType;
+    enum Fill
     {
         Data = 0,
         FakeByPrevious = 1,
@@ -66,8 +67,11 @@ public:
         int _color;    //
         int _range_out[2];      //
         QString _remark;        //
+#define RESERVED_LEN 8
+        int _reserved[RESERVED_LEN];
 
     public:
+        Style();
         explicit Style(const Curve::Cell &cell);
         Style(const Style &style) = default;
         friend QDataStream &operator<<(QDataStream &stream, const Style &style);
@@ -173,8 +177,8 @@ public:
         QString _name;
         int _data_type;
         QVector<float> _data;
+        QVector<FillType> _fill;
         bool _fill_this;
-        QVector<Fill> _fill;
         bool _empty;            //方便图像绘制
 
     public:
@@ -195,9 +199,9 @@ public:
 
         inline void setDataType(DataType type) { _data_type = type; }
 
-        void push(Fill fill, const float &v);
+        void push(FillType fill, const float &v);
 
-        inline void push(Fill fill, float &&v) { push(fill, v); }
+        inline void push(FillType fill, float &&v) { push(fill, v); }
 
         inline float &operator[](int index)
         {
@@ -226,7 +230,7 @@ public:
 
         inline bool fill() const { return _fill_this; }
 
-        inline void setFill(Fill fill) { _fill_this = fill; }
+        inline void setFill(FillType fill) { _fill_this = fill; }
 
         float fakePercent() const;
 

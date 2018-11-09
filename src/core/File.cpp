@@ -265,7 +265,7 @@ bool File::dumpCurveConfig(QFile &file, const Curve &curve)
     dumpFileHeader();
 
     file.seek(DATA_POS);
-
+    _stream->writeRawData("CVCF", 4);
     (*_stream) << curve;
 
     dumpHeaderCrc32();
@@ -411,6 +411,8 @@ bool File::dumpCurveRecord(QFile &file, const Tribe &tribe)
     dumpFileHeader();
     _stream->writeRawData("CVDF", 4);
     (*_stream) << tribe;
+    dumpHeaderCrc32();
+    _stream->unsetDevice();
     file.close();
     return true;
 }

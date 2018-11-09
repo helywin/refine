@@ -46,6 +46,9 @@ private:
     QMenu *_menu_file;
     QAction *_menu_file_open;
     QAction *_menu_file_save;
+    QMenu *_menu_file_import;
+    QAction *_menu_file_import_config;
+    QAction *_menu_file_import_data;
     QMenu *_menu_file_export;
     QAction *_menu_file_export_config;
     QAction *_menu_file_export_data;
@@ -68,6 +71,7 @@ private:
     QAction *_menu_view_sketchmsec_30;
     QAction *_menu_view_sketchmsec_50;
     QAction *_menu_view_sketchmsec_100;
+    QAction *_menu_view_smooth;
     QMenu *_menu_init;
     QAction *_menu_init_option;
     QAction *_menu_init_can;
@@ -193,6 +197,8 @@ private slots:
     void changeUpdateMsec(QAction *action);
 
     void displayAndHide(QAction *action);
+
+    void setSmooth();
 signals:
     void message(int type, const QString &msg);
 

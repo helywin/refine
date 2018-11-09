@@ -32,6 +32,12 @@ void Refine::setup()
              tr("打开数据包文件"), QKeySequence("Ctrl+O"));
     initMenu(_menu_file_save, tr("保存(&S)..."), _menu_file,
              tr("保存数据包文件"), QKeySequence("Ctrl+S"));
+    _menu_file->addSeparator();
+    initMenu(_menu_file_import, tr("导入(&I)"), _menu_file);
+    initMenu(_menu_file_import_config, tr("曲线配置(&C)..."),
+             _menu_file_import, tr("导入曲线配置"));
+    initMenu(_menu_file_import_data, tr("曲线数据(&D)..."),
+             _menu_file_import, tr("导入曲线数据"));
     initMenu(_menu_file_export, tr("导出(&E)"), _menu_file);
     initMenu(_menu_file_export_config, tr("曲线配置CSV(&C)..."),
              _menu_file_export, tr("导出CSV曲线配置"));
@@ -81,6 +87,8 @@ void Refine::setup()
              _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("100ms刷新间隔"), true);
     _menu_view_sketchmsec_group->setExclusive(true);
+    initMenu(_menu_view_smooth, tr("反走样(&A)"), _menu_view,
+             tr("开启/关闭反走样"), true, true);
 
     initMenu(_menu_init, tr("初始化(&I)"), _menubar);
     initMenu(_menu_init_option, tr("采集选项(&S)..."), _menu_init,
@@ -189,6 +197,10 @@ void Refine::setup()
             _file_picker, &FilePicker::loadArchive, Qt::DirectConnection);
     connect(_menu_file_save, &QAction::triggered,
             _file_picker, &FilePicker::saveArchive, Qt::DirectConnection);
+    connect(_menu_file_import_config, &QAction::triggered,
+            _file_picker, &FilePicker::loadCurveConfig, Qt::DirectConnection);
+    connect(_menu_file_import_data, &QAction::triggered,
+            _file_picker, &FilePicker::loadCurveData, Qt::DirectConnection);
     connect(_menu_init_curve, &QAction::triggered,
             _file_picker, &FilePicker::loadCurveConfig, Qt::DirectConnection);
     connect(_menu_view_full, &QAction::triggered,
@@ -219,6 +231,8 @@ void Refine::setup()
             this, &Refine::displayAndHide, Qt::DirectConnection);
     connect(_menu_file_settings, &QAction::triggered,
             _settings, &Settings::show, Qt::DirectConnection);
+    connect(_menu_view_smooth, &QAction::triggered,
+            this, &Refine::setSmooth, Qt::DirectConnection);
 }
 
 void Refine::setLanguage()
@@ -346,6 +360,17 @@ void Refine::getFile(int type, const QString &file)
         case FilePicker::FrameDataOutFile:
             break;
         case FilePicker::CurveDataInFile:
+            if (ext == FilePicker::extendName(
+                    FilePicker::CurveData)) {
+                if (_revolve.inputCurveData(file)) {
+                    emit message(Messager::Info, tr("读取曲线数据成功"));
+                } else {
+                    emit message(Messager::Warning,
+                                 tr("读取曲线数据失败，检查配置格式"));
+                }
+            } else {
+                emit message(Messager::Fatal, tr("读取曲线数据扩展名超出预料"));
+            }
             break;
         case FilePicker::CurveDataOutFile:
             break;
@@ -449,4 +474,9 @@ void Refine::displayAndHide(QAction *action)
     } else if (action == _menu_view_display_mark) {
         _markbox->setVisible(_menu_view_display_mark->isChecked());
     }
+}
+
+void Refine::setSmooth()
+{
+    _display->sketch().setSmooth(_menu_view_smooth->isChecked());
 }

@@ -48,10 +48,12 @@ void Record::begin()
     }
 }
 
-void Record::stop()
+void Record::stop(bool error)
 {
     _cmd = CommandStop;
     while (isRunning()) {}
-    _file.dumpFrameRecordFinish(*_record);
+    if (!error) {
+        _file.dumpFrameRecordFinish(*_record);
+    }
     _status = Stop;
 }

@@ -18,13 +18,16 @@ Q_OBJECT
 private:
     Sketch *_sketch;
     QVBoxLayout *_layout;
-    QScrollBar *_scroller;
+    QScrollBar *_h_scroll;
+    QScrollBar *_v_scroll;
 public:
     explicit CurveViewer(QWidget *parent, Revolve *revolve);
 
     inline Sketch &sketch() { return *_sketch; }
 private:
     void setup();
+private slots:
+    void valueChanged(int value);
 };
 
 

@@ -291,7 +291,8 @@ bool Softcan::checkMagic(const char *array)
     qDebug() << "headr: " << header_s;
     qDebug() << "array: " << array_s;
 #endif
-    for (int i = 0; i < SOFTCAN_MAGIC_LEN; ++i) {
+    // 第一个为校验码之类的，不是确定值，所以从1开始
+    for (int i = 1; i < SOFTCAN_MAGIC_LEN; ++i) {
         if (array[i] != header[i]) {
             return false;
         }

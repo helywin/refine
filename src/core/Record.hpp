@@ -64,7 +64,7 @@ public:
 
     void begin();
 
-    void stop();
+    void stop(bool error = false);
 
     inline void pause() { _cmd = CommandPause; }
 

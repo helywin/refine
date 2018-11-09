@@ -174,10 +174,9 @@ void Curve::remove(const QString &name)
     _header.removeOne(name);
 }
 
+
 QDataStream &operator<<(QDataStream &stream, const Curve &curve)
 {
-    stream.device()->seek(HEADER_L);
-    stream.writeRawData("CVCF", 4);
     stream << curve.size();
     for (auto &iter : curve._cells) {
         stream << iter;
@@ -221,7 +220,7 @@ Curve::Cell::Cell(int index) :
         _remark(QString("无"))
 {}
 
-bool Curve::Cell::check() const
+bool Curve::Cell::check() const     //不准备用csv文件，方法也不写了
 {
     return true;
 }
@@ -288,8 +287,8 @@ QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)
            << cell._range_out[0]
            << cell._range_out[1]
            << cell._remark;
-    for (int i = 0; i < RESERVED_LEN; ++i) {
-        stream << cell._reserved[i];
+    for (const auto &res : cell._reserved) {
+        stream << res;
     }
     return stream;
 }
@@ -315,8 +314,8 @@ QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell)
            >> cell._range_out[0]
            >> cell._range_out[1]
            >> cell._remark;
-    for (int i = 0; i < RESERVED_LEN; ++i) {
-        stream >> cell._reserved[i];
+    for (auto &res : cell._reserved) {
+        stream >> res;
     }
     return stream;
 }

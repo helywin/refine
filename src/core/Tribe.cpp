@@ -33,18 +33,17 @@ void Tribe::trim()
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe)
 {
-    stream << tribe._styles.size();
-    stream << tribe._cells.size();
-    stream << tribe._len;
+    stream << tribe.size();
+    stream << tribe.len();
     stream << (int) 0;
     stream << (int) 0;
     stream << (int) 0;
     stream << (int) 0;
-    stream << (int) 0;
-    for (const auto &iter : tribe._header) {
+    for (const auto &iter : tribe._styles) {
         stream << iter;
     }
-    for (const auto &iter : tribe._styles) {
+    stream << tribe._segment.size();
+    for (const auto &iter : tribe._segment) {
         stream << iter;
     }
     for (const auto &iter : tribe._cells) {
@@ -58,13 +57,23 @@ QDataStream &operator>>(QDataStream &stream, Tribe &tribe)
     int size = 0;
     int reserved = 0;
     stream >> size;
+    stream >> tribe._len;
+    stream >> reserved;
     stream >> reserved;
     stream >> reserved;
     stream >> reserved;
     for (int i = 0; i < size; ++i) {
-        QString name;
-        stream >> name;
-        tribe._header.append(name);
+        Tribe::Style style;
+        stream >> style;
+        tribe._header.append(style.name());
+        tribe._styles.append(qMove(style));
+    }
+    int segment_size;
+    stream >> segment_size;
+    for (int i = 0; i < segment_size; ++i) {
+        int seg;
+        stream >> seg;
+        tribe._segment.append(seg);
     }
     for (int i = 0; i < size; ++i) {
         Tribe::Cell cell(tribe._header[i]);
@@ -85,6 +94,9 @@ QDataStream &operator<<(QDataStream &stream, const Tribe::Cell &cell)
     for (const auto &iter : cell._data) {
         stream << iter;
     }
+    for (const auto &iter : cell._fill) {
+        stream << iter;
+    }
     return stream;
 }
 
@@ -103,6 +115,11 @@ QDataStream &operator>>(QDataStream &stream, Tribe::Cell &cell)
         stream >> buf;
         cell._data.append(buf);
     }
+    for (int i = 0; i < size; ++i) {
+        unsigned char buf = 0;
+        stream >> buf;
+        cell._fill.append(buf);
+    }
     return stream;
 }
 
@@ -117,7 +134,7 @@ float Tribe::Cell::fakePercent() const
     return (float) cnt / (float) _fill.size();
 }
 
-void Tribe::Cell::push(const Tribe::Fill fill, const float &v)
+void Tribe::Cell::push(const Tribe::FillType fill, const float &v)
 {
     _fill.append(fill);
     _data.push_back(v);
@@ -183,6 +200,9 @@ void Tribe::setUnFilled()
     }
 }
 
+Tribe::Style::Style()
+{}
+
 Tribe::Style::Style(const Curve::Cell &cell)
 {
     *this = cell;
@@ -213,6 +233,9 @@ QDataStream &operator<<(QDataStream &stream, const Tribe::Style &style)
            << style._range_out[0]
            << style._range_out[1]
            << style._remark;
+    for (const auto &res : style._reserved) {
+        stream << res;
+    }
     return stream;
 }
 
@@ -227,6 +250,9 @@ QDataStream &operator>>(QDataStream &stream, Tribe::Style &style)
            >> style._range_out[0]
            >> style._range_out[1]
            >> style._remark;
+    for (auto &res : style._reserved) {
+        stream >> res;
+    }
     return stream;
 }
 

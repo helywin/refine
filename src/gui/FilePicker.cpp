@@ -168,51 +168,6 @@ QStringList FilePicker::extendNameWithStr(unsigned int type)
     return exts;
 }
 
-void FilePicker::loadCurveConfig()
-{
-    setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    setFileMode(ExistingFile);
-    setWindowTitle(tr("读取曲线配置"));
-    _type = CurveConfigInFile;
-    setNameFilters(extendNameWithStr(_type));
-    show();
-}
-
-void FilePicker::loadFrameData()
-{
-
-}
-
-void FilePicker::loadCurveData()
-{
-
-}
-
-void FilePicker::loadModeConfig()
-{
-
-}
-
-void FilePicker::saveCurveConfig()
-{
-
-}
-
-void FilePicker::saveFrameData()
-{
-
-}
-
-void FilePicker::saveCurveData()
-{
-
-}
-
-void FilePicker::saveModeConfig()
-{
-
-}
-
 void FilePicker::loadArchive()
 {
     setFilter(QDir::Files | QDir::NoDotAndDotDot);
@@ -231,6 +186,56 @@ void FilePicker::saveArchive()
     _type = ArchiveOutFile;
     setNameFilters(extendNameWithStr(_type));
     show();
+}
+
+void FilePicker::loadCurveConfig()
+{
+    setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    setFileMode(ExistingFile);
+    setWindowTitle(tr("读取曲线配置"));
+    _type = CurveConfigInFile;
+    setNameFilters(extendNameWithStr(_type));
+    show();
+}
+
+void FilePicker::saveCurveConfig()
+{
+
+}
+
+void FilePicker::loadFrameData()
+{
+
+}
+
+void FilePicker::saveFrameData()
+{
+
+}
+
+void FilePicker::loadModeConfig()
+{
+
+}
+
+void FilePicker::saveModeConfig()
+{
+
+}
+
+void FilePicker::loadCurveData()
+{
+    setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    setFileMode(ExistingFile);
+    setWindowTitle(tr("读取曲线配置"));
+    _type = CurveDataInFile;
+    setNameFilters(extendNameWithStr(_type));
+    show();
+}
+
+void FilePicker::saveCurveData()
+{
+
 }
 
 QString FilePicker::extName(const QString &name)
