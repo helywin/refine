@@ -334,6 +334,7 @@ public:
         _cells.clear();
         _header.clear();
         _segment.clear();
+        _len = 0;
     }
 
     void reset();

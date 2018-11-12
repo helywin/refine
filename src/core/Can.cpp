@@ -277,6 +277,7 @@ int Can::collect(Buffer &buffer, const int delay)
         buffer.move();
         rtn = Succeed;
     } else {
+        qDebug() << "Can::collect " << length;
         buffer.headCell().setDataSize(0);   //改为空报文包还是接收
         buffer.move();
         rtn = Empty;

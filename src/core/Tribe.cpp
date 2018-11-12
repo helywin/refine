@@ -139,7 +139,7 @@ void Tribe::Cell::push(const Tribe::FillType fill, const float &v)
     _fill.append(fill);
     _data.push_back(v);
     _fill_this = true;
-    if (fill != FakeByZero) {
+    if (fill == Data) {
         _empty = false;
     }
 }

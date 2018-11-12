@@ -34,30 +34,6 @@ void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
 
 void Collect::run()
 {
-#if 0
-    static int cnt = 0;
-    if (_manner == FromCan) {
-        int flag = _can->collect(*_buffer);
-//        qDebug() << (*_buffer->last()).str();
-        if (flag == Can::Empty) {
-            if (!_can->isConnected()) {
-                emit error(ConnectionLost);
-            } else {
-                if (cnt == NO_FRAME_TIMES - 1) {
-                    emit error(NoFrame);
-                }
-                cnt += 1;
-                cnt %= NO_FRAME_TIMES;
-            }
-        } else {
-            cnt = 0;
-        }
-    } else if (_manner == FromFile) {
-        if (!_file.loadFrameRecord(*_buffer)) {
-            emit fileEnd();
-        }
-    }
-#endif
     while (_cmd != CommandStop) {
         msleep(_msec);
         if (_cmd == CommandPause) {
@@ -75,10 +51,10 @@ void Collect::run()
         if (_manner == FromCan) {
             static int cnt = 0;
             int flag = _can->collect(*_buffer);
-//        qDebug() << (*_buffer->last()).str();
             if (flag == Can::Empty) {
                 if (!_can->isConnected()) {
                     info(ErrorConnection);
+                    return;
                 } else {
                     if (cnt == NO_FRAME_TIMES - 1) {
                         info(WarnNoFrame);
@@ -89,7 +65,6 @@ void Collect::run()
             } else {
                 cnt = 0;
             }
-        } else if (_manner == FromFile) {
         }
     }
 }
@@ -112,7 +87,9 @@ void Collect::begin()
 void Collect::stop()
 {
     _cmd = CommandStop;
-    while (isRunning()) {}
+    while (isRunning()) {
+        qDebug() << "Collect::stop waiting";
+    }
     _status = Stop;
 //    if (_manner == FromFile) {
 //        _file.loadFrameRecordFinish(*_frame_file);

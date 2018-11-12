@@ -188,6 +188,8 @@ void Refine::setup()
     _settings = new Settings(this);
 
     _editor = new CurveEditor(&_revolve.curve(), this);
+    _revolve.setCurveEditor(_editor);
+    _revolve.setActionCan(_menu_init_can);
 
     _timer_start[0] = false;
     _timer_start[1] = false;
@@ -220,7 +222,7 @@ void Refine::setup()
     connect(_menu_control_finish, &QAction::triggered,
             this, &Refine::stopRevolve, Qt::DirectConnection);
     connect(_file_picker, &FilePicker::pickFile,
-            this, &Refine::getFile, Qt::DirectConnection);
+            &_revolve, &Revolve::getFile, Qt::DirectConnection);
     connect(_menu_tools_timer_group, &QActionGroup::triggered,
             this, &Refine::startTimers, Qt::DirectConnection);
     connect(_menu_help_changelog, &QAction::triggered,
@@ -304,85 +306,6 @@ void Refine::fullScreen()
         emit message(Messager::MessageType::Debug, tr("退出全屏模式"));
         this->setWindowState(Qt::WindowMaximized);
     }
-}
-
-void Refine::getFile(int type, const QString &file)
-{
-    qDebug() << file;
-    QString ext = FilePicker::extName(file);
-    qDebug() << ext;
-    if (ext.isEmpty()) {
-        emit message(Messager::Fatal, tr("读取的文件不带扩展名"));
-    }
-    switch (type) {
-        case FilePicker::ArchiveInFile:
-            break;
-        case FilePicker::ArchiveOutFile:
-            break;
-        case FilePicker::CurveConfigInFile:
-            if (ext == FilePicker::extendName(FilePicker::CurveConfigCsv)) {
-                if (_revolve.importCsvCurveConfig(file)) {
-                    emit message(Messager::Info, tr("读取csv曲线配置成功"));
-                    _editor->updateData();
-                } else {
-                    emit message(Messager::Warning,
-                                 tr("读取csv曲线配置失败，检查配置格式"));
-                }
-            } else if (ext == FilePicker::extendName(FilePicker::CurveConfig)) {
-                if (_revolve.inputCurveConfig(file)) {
-                    emit message(Messager::Info, tr("读取曲线配置成功"));
-                    _editor->updateData();
-                } else {
-                    emit message(Messager::Warning,
-                                 tr("读取曲线配置失败，检查配置格式"));
-                }
-            } else if (ext == FilePicker::extendName(
-                    FilePicker::CurveConfigSoftcan)) {
-                if (_revolve.importSoftcanCurveConfig(file)) {
-                    emit message(Messager::Info, tr("读取SoftCAN曲线配置成功"));
-                    _editor->updateData();
-                } else {
-                    emit message(Messager::Warning,
-                                 tr("读取SoftCAN曲线配置失败，检查配置格式"));
-                }
-            } else {
-                emit message(Messager::Fatal, tr("读取的曲线配置扩展名超出预料"));
-            }
-            break;
-        case FilePicker::CurveConfigOutFile:
-            break;
-        case FilePicker::ModeConfigInFile:
-            break;
-        case FilePicker::ModeConfigOutFile:
-            break;
-        case FilePicker::FrameDataInFile:
-            break;
-        case FilePicker::FrameDataOutFile:
-            break;
-        case FilePicker::CurveDataInFile:
-            if (ext == FilePicker::extendName(
-                    FilePicker::CurveData)) {
-                if (_revolve.inputCurveData(file)) {
-                    emit message(Messager::Info, tr("读取曲线数据成功"));
-                } else {
-                    emit message(Messager::Warning,
-                                 tr("读取曲线数据失败，检查配置格式"));
-                }
-            } else {
-                emit message(Messager::Fatal, tr("读取曲线数据扩展名超出预料"));
-            }
-            break;
-        case FilePicker::CurveDataOutFile:
-            break;
-        case FilePicker::ResultDataInFile:
-            break;
-        case FilePicker::ResultDataOutFile:
-            break;
-        default:
-            break;
-    }
-
-
 }
 
 void Refine::closeEvent(QCloseEvent *event)

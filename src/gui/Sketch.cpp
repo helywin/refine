@@ -108,8 +108,8 @@ void Sketch::setSmooth(bool enable)
 
 void Sketch::start(int msec)
 {
-    _timer.start();     //采用低优先级的定时器，减少开支
     _mode = Rolling;
+    _timer.start();     //采用低优先级的定时器，减少开支
     _h_scroll->setDisabled(true);
 }
 

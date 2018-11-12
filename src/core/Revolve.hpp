@@ -12,6 +12,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <QtCore/QThread>
+#include <QtWidgets/QAction>
 #include "Can.hpp"
 #include "Curve.hpp"
 #include "File.hpp"
@@ -36,6 +37,7 @@
  * 外部GUI只传文件名进来
  */
 class Sketch;
+class CurveEditor;
 
 class Revolve : public QObject
 {
@@ -67,7 +69,6 @@ private:
     Transform _transform;
     Record _record;
     Softcan _softcan;           //! \brief softcan配置转换工具
-    Sketch *_sketch;
     File _file;
     QTimer _timer_stop;                     //! \brief 采样时钟
     QFile _store_frames;                    //! \brief 自动存储的报文数据
@@ -84,7 +85,11 @@ private:
     QString _name;
     Status _status;
     Packer _packer;
+
+    Sketch *_sketch;
     TribeModel *_tribe_model;
+    CurveEditor *_curve_editor;
+    QAction *_menu_init_can;
 
 
 public:
@@ -100,7 +105,8 @@ public slots:
     bool begin(unsigned long msec, int config, int time);
     void pause();
     void resume();
-    bool stop();
+    inline bool stop() { return stop(false); }
+    bool stop(bool error);
     bool exit();
 public:
     //采集配置
@@ -138,6 +144,10 @@ public:
 
     inline void setTribeModel(TribeModel *model) { _tribe_model = model; }
 
+    inline void setCurveEditor(CurveEditor *editor) { _curve_editor = editor; }
+
+    inline void setActionCan(QAction *action) { _menu_init_can = action; }
+
 private:
     //生成临时存储文件
     void genName();
@@ -151,6 +161,8 @@ private:
     void genArchiveFileName();
 
 public slots:
+
+    void getFile(int type, const QString &file);
 
     void collectError(int code);
 

@@ -190,8 +190,6 @@ private slots:
 
     void connectCan();
 
-    void getFile(int type, const QString &file);
-
     void startTimers(QAction *action);
 
     void changeUpdateMsec(QAction *action);

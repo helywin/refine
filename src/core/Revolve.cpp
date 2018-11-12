@@ -9,6 +9,7 @@
 #include "Revolve.hpp"
 #include "Sketch.hpp"
 #include "FilePicker.hpp"
+#include "CurveEditor.hpp"
 
 Revolve::Revolve(Initializer *init) :
         _init(init),
@@ -32,10 +33,11 @@ Revolve::Revolve(Initializer *init) :
         _packer(init)
 {
     _config = 0x00;
-    connect(&_timer_stop, &QTimer::timeout, this, &Revolve::stop,
+    connect(&_timer_stop, &QTimer::timeout, this,
+            static_cast<bool (Revolve::*)(void)>(&Revolve::stop),
             Qt::DirectConnection);
     connect(&_collect, &Collect::info, this, &Revolve::collectError,
-            Qt::DirectConnection);
+            Qt::AutoConnection);
 }
 
 Revolve::~Revolve() {}
@@ -70,6 +72,9 @@ bool Revolve::begin(unsigned long msec, int config, int time)
     } else {
         _collect.begin();
     }
+    if (_sketch) {
+        _sketch->start();
+    }
     if ((unsigned) _config & (unsigned) WithRecord) {
         genFramesDataFile();
         _record.setParams(&_store_frames, &_buffer);
@@ -78,24 +83,22 @@ bool Revolve::begin(unsigned long msec, int config, int time)
     if ((unsigned) _config & (unsigned) WithTiming) {
         _timer_stop.start();
     }
-    if (_sketch) {
-        _sketch->start();
-    }
     if ((unsigned) _config & (unsigned) WithTrigger) {}
     _status = Running;
     message(Messager::Info, tr("开始采集成功"));
     return true;
 }
 
-bool Revolve::stop()
+bool Revolve::stop(bool error)
 {
     if (_status == Stop) {
         message(Messager::Warning, tr("结束失败，采集还没开始"));
         return false;
     }
-    _collect.stop();
-    if (_sketch) {
-        _sketch->stop();
+    if (!error) {
+        _collect.stop();
+    } else {
+        _menu_init_can->setChecked(false);
     }
     if ((unsigned) _config & (unsigned) WithTiming) {
         _timer_stop.stop();
@@ -113,6 +116,9 @@ bool Revolve::stop()
         QString name = _store_frames.fileName();
         files << _store_frames_name;
         paths << name;
+    }
+    if (_sketch) {
+        _sketch->stop();
     }
     genCurveConfigFile();
     paths << _store_curveconfig.fileName();
@@ -134,7 +140,6 @@ bool Revolve::stop()
 
 bool Revolve::exit()
 {
-    _collect.stop();
     if (_sketch) {
         _sketch->stop();
     }
@@ -261,6 +266,83 @@ void Revolve::genArchiveFileName()
     qDebug() << "生成曲线配置文件名: " << _store_archive_name;
 }
 
+void Revolve::getFile(int type, const QString &file)
+{
+    qDebug() << file;
+    QString ext = FilePicker::extName(file);
+    qDebug() << ext;
+    if (ext.isEmpty()) {
+        emit message(Messager::Fatal, tr("读取的文件不带扩展名"));
+    }
+    switch (type) {
+        case FilePicker::ArchiveInFile:
+            break;
+        case FilePicker::ArchiveOutFile:
+            break;
+        case FilePicker::CurveConfigInFile:
+            if (ext == FilePicker::extendName(FilePicker::CurveConfigCsv)) {
+                if (importCsvCurveConfig(file)) {
+                    emit message(Messager::Info, tr("读取csv曲线配置成功"));
+                    _curve_editor->updateData();
+                } else {
+                    emit message(Messager::Warning,
+                                 tr("读取csv曲线配置失败，检查配置格式"));
+                }
+            } else if (ext == FilePicker::extendName(FilePicker::CurveConfig)) {
+                if (inputCurveConfig(file)) {
+                    emit message(Messager::Info, tr("读取曲线配置成功"));
+                    _curve_editor->updateData();
+                } else {
+                    emit message(Messager::Warning,
+                                 tr("读取曲线配置失败，检查配置格式"));
+                }
+            } else if (ext == FilePicker::extendName(
+                    FilePicker::CurveConfigSoftcan)) {
+                if (importSoftcanCurveConfig(file)) {
+                    emit message(Messager::Info, tr("读取SoftCAN曲线配置成功"));
+                    _curve_editor->updateData();
+                } else {
+                    emit message(Messager::Warning,
+                                 tr("读取SoftCAN曲线配置失败，检查配置格式"));
+                }
+            } else {
+                emit message(Messager::Fatal, tr("读取的曲线配置扩展名超出预料"));
+            }
+            break;
+        case FilePicker::CurveConfigOutFile:
+            break;
+        case FilePicker::ModeConfigInFile:
+            break;
+        case FilePicker::ModeConfigOutFile:
+            break;
+        case FilePicker::FrameDataInFile:
+            break;
+        case FilePicker::FrameDataOutFile:
+            break;
+        case FilePicker::CurveDataInFile:
+            if (ext == FilePicker::extendName(
+                    FilePicker::CurveData)) {
+                if (inputCurveData(file)) {
+                    emit message(Messager::Info, tr("读取曲线数据成功"));
+                } else {
+                    emit message(Messager::Warning,
+                                 tr("读取曲线数据失败，检查配置格式"));
+                }
+            } else {
+                emit message(Messager::Fatal, tr("读取曲线数据扩展名超出预料"));
+            }
+            break;
+        case FilePicker::CurveDataOutFile:
+            break;
+        case FilePicker::ResultDataInFile:
+            break;
+        case FilePicker::ResultDataOutFile:
+            break;
+        default:
+            break;
+    }
+}
+
 bool Revolve::inputCurveConfig(const QString &name)
 {
     File file;
@@ -338,8 +420,8 @@ void Revolve::collectError(int code)
 {
     if (code == Collect::ErrorConnection) {
         message(Messager::Critical, tr("检测到连接已经断开，停止采集"));
-        canLostConnection();
-        stop();
+//        canLostConnection();
+        stop(true);
     } else if (code == Collect::WarnNoFrame) {
         message(Messager::Warning, tr("采集不到报文"));
     }

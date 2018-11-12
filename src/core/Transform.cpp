@@ -91,9 +91,11 @@ void Transform::run()
             }
             if (!tr.fill()) {
                 if (tr.empty()) {
+//                    qDebug() << "Transform::run fake 0";
                     tr.push(Tribe::FakeByZero, 0);
                 } else {
-                    tr.push(Tribe::FakeByPrevious, tr.data().last());
+//                    qDebug() << tr.data().constLast();
+                    tr.push(Tribe::FakeByPrevious, tr.data().constLast());
                 }
             }
         }
