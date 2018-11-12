@@ -14,8 +14,3 @@ void MarkBox::setup()
 {
     setWindowTitle(tr("标注"));
 }
-
-void MarkBox::closeEvent(QCloseEvent *event)
-{
-    _visible->setChecked(false);
-}

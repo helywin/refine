@@ -66,7 +66,9 @@ include_directories(${PROJECT_SOURCE_DIR}/src/del)
 
 set(UI ${PROJECT_SOURCE_DIR}/res/ui.qrc)
 set(TEXT ${PROJECT_SOURCE_DIR}/res/text.qrc)
-set(LIBLOG ${PROJECT_SOURCE_DIR}/src/core/Log.cpp)
+set(TRANS ${PROJECT_SOURCE_DIR}/res/trans.qrc)
+
+
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
 set(LIBGSL D:/msys32/mingw32/lib/libgsl.a)
 set(LIBOPENGL D:/msys32/mingw32/i686-w64-mingw32/lib/libopengl32.a)
@@ -111,7 +113,7 @@ target_link_libraries(test_zip Qt5Core
         ${LIBNETTLE}
         ${LIBGNUTLS})
 
-add_executable(refine main.cpp ${CORE} ${GUI} ${UI} ${TEXT} ${MOD} ${DEL})
+add_executable(refine main.cpp ${CORE} ${GUI} ${MOD} ${DEL} ${UI} ${TEXT} ${TRANS})
 target_link_libraries(refine
         ${LIBCAN}
         ${LIBOPENGL}

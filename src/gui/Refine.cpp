@@ -38,11 +38,19 @@ void Refine::setup()
              _menu_file_import, tr("导入曲线配置"));
     initMenu(_menu_file_import_data, tr("曲线数据(&D)..."),
              _menu_file_import, tr("导入曲线数据"));
+    initMenu(_menu_file_import_frame, tr("报文数据(&F)..."),
+             _menu_file_import, tr("导入报文数据"));
+    initMenu(_menu_file_import_mode, tr("工况配置(&M)..."),
+             _menu_file_import, tr("导入工况配置"));
     initMenu(_menu_file_export, tr("导出(&E)"), _menu_file);
-    initMenu(_menu_file_export_config, tr("曲线配置CSV(&C)..."),
-             _menu_file_export, tr("导出CSV曲线配置"));
-    initMenu(_menu_file_export_data, tr("曲线数据CSV(&D)..."),
-             _menu_file_export, tr("导出CSV曲线数据"));
+    initMenu(_menu_file_export_config, tr("曲线配置(&C)..."),
+             _menu_file_export, tr("导出曲线配置"));
+    initMenu(_menu_file_export_data, tr("曲线数据(&D)..."),
+             _menu_file_export, tr("导出曲线数据"));
+    initMenu(_menu_file_export_frame, tr("报文数据(&F)..."),
+             _menu_file_export, tr("导出报文数据"));
+    initMenu(_menu_file_export_mode, tr("工况配置(&M)..."),
+             _menu_file_export, tr("导出工况配置"));
     _menu_file->addSeparator();
     initMenu(_menu_file_settings, tr("设置(&S)..."), _menu_file,
              tr("配置软件设置"), QKeySequence("Ctrl+`"));
@@ -146,7 +154,6 @@ void Refine::setup()
 
     _toolbox = new Toolbox(this);
     _toolbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    _toolbox->setAction(_menu_view_display_tools);
     addDockWidget(Qt::LeftDockWidgetArea, _toolbox);
 
     _output = new Output(this);
@@ -154,7 +161,6 @@ void Refine::setup()
     addDockWidget(Qt::LeftDockWidgetArea, _output);
     _output->connectToMessager(this);
     _output->connectToMessager(&_revolve);
-    _output->setAction(_menu_view_display_output);
 //    tabifyDockWidget(_toolbox, _output);
 //    _toolbox->raise();
 
@@ -162,13 +168,11 @@ void Refine::setup()
     _curvebox->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _curvebox);
-    _curvebox->setAction(_menu_view_display_curve);
     _revolve.setTribeModel(&_curvebox->tribeModel());
 
     _markbox = new MarkBox(this);
     _markbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _markbox);
-    _markbox->setAction(_menu_view_display_mark);
 
     tabifyDockWidget(_curvebox, _markbox);
     _curvebox->raise();
@@ -184,6 +188,7 @@ void Refine::setup()
     _output->connectToMessager(_file_picker);
 
     _changelog = new ChangeLog(this);
+    _about = new About(this);
 
     _settings = new Settings(this);
 
@@ -203,6 +208,18 @@ void Refine::setup()
             _file_picker, &FilePicker::loadCurveConfig, Qt::DirectConnection);
     connect(_menu_file_import_data, &QAction::triggered,
             _file_picker, &FilePicker::loadCurveData, Qt::DirectConnection);
+    connect(_menu_file_import_frame, &QAction::triggered,
+            _file_picker, &FilePicker::loadFrameData, Qt::DirectConnection);
+    connect(_menu_file_import_mode, &QAction::triggered,
+            _file_picker, &FilePicker::loadModeConfig, Qt::DirectConnection);
+    connect(_menu_file_export_config, &QAction::triggered,
+            _file_picker, &FilePicker::saveCurveConfig, Qt::DirectConnection);
+    connect(_menu_file_export_data, &QAction::triggered,
+            _file_picker, &FilePicker::saveCurveData, Qt::DirectConnection);
+    connect(_menu_file_export_frame, &QAction::triggered,
+            _file_picker, &FilePicker::saveFrameData, Qt::DirectConnection);
+    connect(_menu_file_export_mode, &QAction::triggered,
+            _file_picker, &FilePicker::saveModeConfig, Qt::DirectConnection);
     connect(_menu_init_curve, &QAction::triggered,
             _file_picker, &FilePicker::loadCurveConfig, Qt::DirectConnection);
     connect(_menu_view_full, &QAction::triggered,
@@ -227,6 +244,8 @@ void Refine::setup()
             this, &Refine::startTimers, Qt::DirectConnection);
     connect(_menu_help_changelog, &QAction::triggered,
             _changelog, &ChangeLog::show, Qt::DirectConnection);
+    connect(_menu_help_about, &QAction::triggered,
+            _about, &About::show, Qt::DirectConnection);
     connect(_menu_view_sketchmsec_group, &QActionGroup::triggered,
             this, &Refine::changeUpdateMsec, Qt::DirectConnection);
     connect(_menu_view_display_group, &QActionGroup::triggered,
@@ -235,6 +254,18 @@ void Refine::setup()
             _settings, &Settings::show, Qt::DirectConnection);
     connect(_menu_view_smooth, &QAction::triggered,
             this, &Refine::setSmooth, Qt::DirectConnection);
+    connect(_toolbar_file, &QToolBar::visibilityChanged,
+            this, &Refine::widgetsVisibilityChanged);
+    connect(_toolbox, &QDockWidget::visibilityChanged,
+            this, &Refine::widgetsVisibilityChanged);
+    connect(_output, &QDockWidget::visibilityChanged,
+            this, &Refine::widgetsVisibilityChanged);
+    connect(_curvebox, &QDockWidget::visibilityChanged,
+            this, &Refine::widgetsVisibilityChanged);
+    connect(_markbox, &QDockWidget::visibilityChanged,
+            this, &Refine::widgetsVisibilityChanged);
+    connect(&_revolve, &Revolve::collectMenuEnable,
+            this, &Refine::setCollectMenuEnable);
 }
 
 void Refine::setLanguage()
@@ -246,16 +277,14 @@ void Refine::setLanguage()
 void Refine::startRevolve()
 {
     if (_revolve.begin(10, 3, 0)) {
-        _menu_init_curve->setDisabled(true);
-        _menu_init_editcurve->setDisabled(true);
+        setCollectMenuEnable(true);
     }
 }
 
 void Refine::stopRevolve()
 {
     if (_revolve.stop()) {
-        _menu_init_curve->setDisabled(false);
-        _menu_init_editcurve->setDisabled(false);
+        setCollectMenuEnable(false);
     }
 }
 
@@ -264,9 +293,9 @@ void Refine::connectCan()
 {
     if (_menu_init_can->isChecked()) {
         if (_revolve.can().connect()) {
-            emit message(Messager::MessageType::Info, tr("连接成功"));
+            emit message(MessagerPanel::MessageType::Info, tr("连接成功"));
         } else {
-            emit message(Messager::MessageType::Warning,
+            emit message(MessagerPanel::MessageType::Warning,
                          tr("连接失败，检查CAN占用或连接情况"));
         }
     } else {
@@ -287,11 +316,11 @@ void Refine::connectCan()
             closed = _revolve.can().close();
         }
         if (closed) {      //与运算后面的语句可能不执行，看条件而定
-            emit message(Messager::MessageType::Info, tr("关闭成功"));
+            emit message(MessagerPanel::MessageType::Info, tr("关闭成功"));
         } else if (flag) {
-            emit message(Messager::MessageType::Warning, tr("关闭失败"));
+            emit message(MessagerPanel::MessageType::Warning, tr("关闭失败"));
         } else {
-            emit message(Messager::MessageType::Info, tr("关闭取消"));
+            emit message(MessagerPanel::MessageType::Info, tr("关闭取消"));
         }
     }
     _menu_init_can->setChecked(_revolve.can().isConnected());
@@ -300,10 +329,10 @@ void Refine::connectCan()
 void Refine::fullScreen()
 {
     if (_menu_view_full->isChecked()) {
-        emit message(Messager::MessageType::Debug, tr("进入全屏模式"));
+        emit message(MessagerPanel::MessageType::Debug, tr("进入全屏模式"));
         this->setWindowState(Qt::WindowFullScreen);
     } else {
-        emit message(Messager::MessageType::Debug, tr("退出全屏模式"));
+        emit message(MessagerPanel::MessageType::Debug, tr("退出全屏模式"));
         this->setWindowState(Qt::WindowMaximized);
     }
 }
@@ -337,7 +366,7 @@ void Refine::startTimers(QAction *action)
         }
     }
     if (action->isChecked()) {
-        message(Messager::Info, action->text() + tr("开始"));
+        message(MessagerPanel::Info, action->text() + tr("开始"));
         _timer[i] = QTime::currentTime();
         action->setStatusTip(action->text() + tr("停止计时"));
     }
@@ -364,7 +393,7 @@ void Refine::startTimers(QAction *action)
             str += QString("%1ms").arg(ms, (h || m || s) * 2,
                                        10, QChar('0'));
         }
-        message(Messager::Info, action->text() + tr("结束 ") + str);
+        message(MessagerPanel::Info, action->text() + tr("结束 ") + str);
         action->setStatusTip(action->text() + tr("开始计时"));
     }
 }
@@ -402,4 +431,22 @@ void Refine::displayAndHide(QAction *action)
 void Refine::setSmooth()
 {
     _display->sketch().setSmooth(_menu_view_smooth->isChecked());
+}
+
+void Refine::widgetsVisibilityChanged(bool visible)
+{
+    _menu_view_display_file->setChecked(_toolbar_file->isVisible());
+    _menu_view_display_tools->setChecked(_toolbox->isVisible());
+    _menu_view_display_output->setChecked(_output->isVisible());
+    _menu_view_display_curve->setChecked(_curvebox->isVisible());
+    _menu_view_display_mark->setChecked(_markbox->isVisible());
+}
+
+void Refine::setCollectMenuEnable(bool isCollecting)
+{
+    _menu_init_curve->setDisabled(isCollecting);
+    _menu_init_editcurve->setDisabled(isCollecting);
+    _menu_file_import_config->setDisabled(isCollecting);
+    _menu_file_export_data->setDisabled(isCollecting);
+    _menu_file_export_frame->setDisabled(isCollecting);
 }

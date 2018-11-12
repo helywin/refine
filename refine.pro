@@ -26,6 +26,7 @@ INCLUDEPATH += ./src/gui \
                ./src/del \
 
 SOURCES += \
+        ./src/gui/About.cpp \
         ./src/gui/ChangeLog.cpp \
         ./src/gui/ColorPicker.cpp \
         ./src/gui/CurveBox.cpp \
@@ -38,7 +39,7 @@ SOURCES += \
         ./src/gui/FrameViewer.cpp \
         ./src/gui/LostFocus.cpp \
         ./src/gui/MarkBox.cpp \
-        ./src/gui/Messager.cpp \
+        ./src/gui/MessagerPanel.cpp \
         ./src/gui/Output.cpp \
         ./src/gui/Refine.cpp \
         ./src/gui/Settings.cpp \
@@ -52,8 +53,8 @@ SOURCES += \
         ./src/core/Csv.cpp \
         ./src/core/Curve.cpp \
         ./src/core/File.cpp \
+        ./src/core/FramePool.cpp \
         ./src/core/Initializer.cpp \
-        ./src/core/Log.cpp \
         ./src/core/Mark.cpp \
         ./src/core/Packer.cpp \
         ./src/core/Record.cpp \
@@ -75,6 +76,7 @@ SOURCES += \
         ./src/test/main.cpp \
 
 HEADERS += \
+        ./src/gui/About.hpp \
         ./src/gui/ChangeLog.hpp \
         ./src/gui/ColorPicker.hpp \
         ./src/gui/CurveBox.hpp \
@@ -87,7 +89,7 @@ HEADERS += \
         ./src/gui/FrameViewer.hpp \
         ./src/gui/LostFocus.hpp \
         ./src/gui/MarkBox.hpp \
-        ./src/gui/Messager.hpp \
+        ./src/gui/MessagerPanel.hpp \
         ./src/gui/Output.hpp \
         ./src/gui/Refine.hpp \
         ./src/gui/Settings.hpp \
@@ -101,8 +103,8 @@ HEADERS += \
         ./src/core/Csv.hpp \
         ./src/core/Curve.hpp \
         ./src/core/File.hpp \
+        ./src/core/FramePool.cpp \
         ./src/core/Initializer.hpp \
-        ./src/core/Log.hpp \
         ./src/core/Mark.hpp \
         ./src/core/Packer.hpp \
         ./src/core/Record.hpp \
@@ -124,7 +126,8 @@ HEADERS += \
 
 RESOURCES += \
     res/text.qrc \
-    res/ui.qrc
+    res/ui.qrc \
+    res/trans.qrc
 
 RC_FILE += res/refine.rc
 

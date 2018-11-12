@@ -29,7 +29,7 @@ CurveView::CurveView(QAbstractItemModel *model, QItemSelectionModel *selection,
     setColumnWidth(CurveModel::RemarkColumn, 200);
 
     setSelectionMode(QTableView::SingleSelection);
-    setSelectionBehavior(QTableView::SelectRows);
+    setSelectionBehavior(QTableView::SelectItems);
     setHorizontalScrollMode(QTableView::ScrollPerPixel);
     setVerticalScrollMode(QTableView::ScrollPerPixel);
     _frozen = new QTableView(this);

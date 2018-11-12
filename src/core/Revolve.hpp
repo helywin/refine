@@ -27,7 +27,7 @@
 #include "Initializer.hpp"
 #include "Transmit.hpp"
 #include "Initializer.hpp"
-#include "Messager.hpp"
+#include "MessagerPanel.hpp"
 #include "CurvePanel.hpp"
 #include "Packer.hpp"
 #include "TribeModel.hpp"
@@ -162,7 +162,7 @@ private:
 
 public slots:
 
-    void getFile(int type, const QString &file);
+    void getFile(int type, const QString &file, const QString &suffix);
 
     void collectError(int code);
 
@@ -176,6 +176,8 @@ signals:
     void curveLoaded();
 
     void canLostConnection();
+
+    void collectMenuEnable(bool isCollecting);
 };
 
 

@@ -7,7 +7,7 @@
 
 #include <QtWidgets/QFileDialog>
 #include <QtGui/QIcon>
-#include "Messager.hpp"
+#include "MessagerPanel.hpp"
 
 class FilePicker : public QFileDialog
 {
@@ -33,19 +33,37 @@ public:
         ResultDataCsv = 0x0800,
         In = 0x10000000,
         Out = 0x20000000,
-        ArchiveInFile = Archive + In,
-        ArchiveOutFile = Archive + Out,
-        CurveConfigInFile = CurveConfig + CurveConfigCsv +
-                            CurveConfigSoftcan + In,
-        CurveConfigOutFile = CurveConfig + CurveConfigCsv + Out,
-        ModeConfigInFile = ModeConfig + ModeConfigCsv + In,
-        ModeConfigOutFile = ModeConfig + ModeConfigCsv + Out,
-        FrameDataInFile = FrameData + In,
-        FrameDataOutFile = FrameData + FrameDataCsv + Out,
-        CurveDataInFile = CurveData + In,
-        CurveDataOutFile = CurveData + CurveDataCsv + Out,
-        ResultDataInFile = ResultData + In,
-        ResultDataOutFile = ResultData + Out,
+        ArchiveInFile = Archive
+                        + In,
+        ArchiveOutFile = Archive
+                         + Out,
+        CurveConfigInFile = CurveConfig
+                            //+ CurveConfigCsv
+                            + CurveConfigSoftcan
+                            + In,
+        CurveConfigOutFile = CurveConfig
+                             + CurveConfigCsv
+                             + Out,
+        ModeConfigInFile = ModeConfig
+                           //+ ModeConfigCsv
+                           + In,
+        ModeConfigOutFile = ModeConfig
+                            + ModeConfigCsv
+                            + Out,
+        FrameDataInFile = FrameData
+                          + In,
+        FrameDataOutFile = FrameData
+                           + FrameDataCsv
+                           + Out,
+        CurveDataInFile = CurveData
+                          + In,
+        CurveDataOutFile = CurveData
+                           + CurveDataCsv
+                           + Out,
+        ResultDataInFile = ResultData
+                           + In,
+        ResultDataOutFile = ResultData
+                            + Out,
     };
 private:
     FileType _type;
@@ -58,8 +76,6 @@ public:
 
     static QStringList extendNameWithStr(unsigned int type);
 
-    static QString extName(const QString &name);
-
     void loadArchive();
     void loadCurveConfig();
     void loadFrameData();
@@ -70,16 +86,16 @@ public:
     void saveFrameData();
     void saveCurveData();
     void saveModeConfig();
-
+public slots:
+    void showDialog();
 private:
     void setup();
 private slots:
 
-    void fileSelectedSlot(const QString &file) { emit pickFile(_type, file); };
-
+    void fileSelectedSlot(const QString &file);
 signals:
-    void message(Messager::MessageType type, const QString &msg);
-    void pickFile(int type, const QString &file);
+    void message(MessagerPanel::MessageType type, const QString &msg);
+    void pickFile(int type, const QString &file, const QString &suffix);
 };
 
 

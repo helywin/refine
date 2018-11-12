@@ -14,7 +14,6 @@
 #include "Curve.hpp"
 
 class Revolve;
-class Rect;
 /*!
  * @brief 显示曲线的控件类
  */
@@ -49,8 +48,6 @@ private:
 public:
     explicit Sketch(QWidget *parent, Revolve *revolve);
 
-    inline void setTribe(Tribe *tribe) { _tribe = tribe; }
-
     inline void setScroll(QScrollBar *scroller) { _h_scroll = scroller; }
 
     void setSmooth(bool enable);
@@ -81,6 +78,14 @@ private:
                         (Y_TOP) / (style.rangeOut()[1] - style.rangeOut()[0])
                         + Y_BOTTOM);
     }
+
+    void plotXAxis();
+
+    void plotYAxis();
+
+    void plotVernier();
+
+    void plotCurves();
 };
 
 

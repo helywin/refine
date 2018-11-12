@@ -12,7 +12,6 @@
 
 #include <QtCore/QString>
 #include "ControlCan.h"
-#include "Log.hpp"
 
 class Buffer;
 

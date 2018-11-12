@@ -47,7 +47,12 @@ void Sketch::resizeGL(int w, int h)
 void Sketch::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-//    glPushMatrix();
+    plotCurves();
+    glFlush();
+}
+
+void Sketch::plotCurves()
+{
     int start_pos = 0;
     int len = 0;
     if (_mode == DisplayMode::Rolling) {
@@ -82,14 +87,10 @@ void Sketch::paintGL()
                 glVertex2f(j, genY(iter[j + start_pos], cfg));
             }
             y_cal = genY(iter[j + start_pos + 1], cfg);
-            glVertex2f(j, y_cal);
+            glVertex2f(j + 1, y_cal);
         }
         glEnd();
     }
-//    glPopMatrix();
-//    swapBuffers();
-//    swapBuffers();
-    glFlush();
 }
 
 void Sketch::setSmooth(bool enable)
@@ -140,9 +141,24 @@ void Sketch::initData()
     if (_tribe->len() < X_RIGHT * _x_rate) {
         _h_scroll->setMaximum(0);
     } else {
-        _h_scroll->setMaximum((_tribe->len() - (int)ceil(X_RIGHT * _x_rate)));
+        _h_scroll->setMaximum((_tribe->len() - (int) ceil(X_RIGHT * _x_rate)));
     }
     QGLWidget::updateGL();
+}
+
+void Sketch::plotXAxis()
+{
+
+}
+
+void Sketch::plotYAxis()
+{
+
+}
+
+void Sketch::plotVernier()
+{
+
 }
 
 

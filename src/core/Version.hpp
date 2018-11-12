@@ -34,12 +34,12 @@ public:
 private:
     const static char _major = 0;   //! \brief 主要版本号
     const static char _micro = 0;   //! \brief 次要版本号
-    const static char _minor = 3;   //! \brief 最小版本号
+    const static char _minor = 11;   //! \brief 最小版本号
     const static char _build = 1;   //! \brief 构建版本
     const static char _year = 18;   //! \brief 构建时间，年
-    const static char _month = 10;  //! \brief 构建时间，月
-    const static char _day = 11;    //! \brief 构建时间，日
-    const static Identifier _identifier = Identifier::Demo; //! \brief 版本标识
+    const static char _month = 11;  //! \brief 构建时间，月
+    const static char _day = 12;    //! \brief 构建时间，日
+    const static Identifier _identifier = Identifier::Alpha; //! \brief 版本标识
 
 public:
     static QString str();

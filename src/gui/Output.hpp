@@ -11,7 +11,7 @@
 #include <QtWidgets/QLabel>
 
 class Refine;
-class Messager;
+class MessagerPanel;
 class Revolve;
 class FilePicker;
 
@@ -34,14 +34,9 @@ private:
     QLabel *_label_critical;
     QLabel *_label_fatal;
     QLabel *_label_debug;
-    Messager *_messager;
-    QAction *_visible;
+    MessagerPanel *_messager;
 public:
     explicit Output(QWidget *parent);
-protected:
-    void closeEvent(QCloseEvent *event) override;
-public:
-    inline void setAction(QAction *action) { _visible = action; }
 
 private:
     void setup();

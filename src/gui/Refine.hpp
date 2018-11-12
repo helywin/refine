@@ -22,15 +22,16 @@
 #include "FilePicker.hpp"
 #include "Toolbox.hpp"
 #include "CurveEditor.hpp"
-#include "Messager.hpp"
+#include "MessagerPanel.hpp"
 #include "Display.hpp"
 #include "StatusBar.hpp"
 #include "CurveBox.hpp"
 #include "MarkBox.hpp"
 #include "Settings.hpp"
+#include "About.hpp"
 
 class Output;
-class Messager;
+class MessagerPanel;
 class ChangeLog;
 class Settings;
 
@@ -49,9 +50,13 @@ private:
     QMenu *_menu_file_import;
     QAction *_menu_file_import_config;
     QAction *_menu_file_import_data;
+    QAction *_menu_file_import_frame;
+    QAction *_menu_file_import_mode;
     QMenu *_menu_file_export;
     QAction *_menu_file_export_config;
     QAction *_menu_file_export_data;
+    QAction *_menu_file_export_frame;
+    QAction *_menu_file_export_mode;
     QAction *_menu_file_settings;
     QAction *_menu_file_exit;
     QMenu *_menu_view;
@@ -102,6 +107,7 @@ private:
     MarkBox *_markbox;
     Display *_display;
     ChangeLog *_changelog;
+    About *_about;
     Settings *_settings;
     CurveEditor *_editor;
 
@@ -197,6 +203,10 @@ private slots:
     void displayAndHide(QAction *action);
 
     void setSmooth();
+
+    void widgetsVisibilityChanged(bool visible);
+
+    void setCollectMenuEnable(bool enable);
 signals:
     void message(int type, const QString &msg);
 

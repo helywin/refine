@@ -4,7 +4,7 @@
 
 #include <QtWidgets/QLabel>
 #include "Output.hpp"
-#include "Messager.hpp"
+#include "MessagerPanel.hpp"
 #include "Refine.hpp"
 
 const QColor Output::INFO = QColor(0x2e9950);
@@ -22,7 +22,7 @@ Output::Output(QWidget *parent) :
 void Output::setup()
 {
     setWindowTitle(tr("信息"));
-    _messager = new Messager(this);
+    _messager = new MessagerPanel(this);
     _content = new QWidget();
     _content->resize(200, 100);
     _layout = new QVBoxLayout(_content);
@@ -85,24 +85,17 @@ void Output::setup()
 void Output::connectToMessager(Refine *emitter)
 {
     connect(emitter, &Refine::message, _messager,
-            &Messager::showMessage);        //多个连接一个不能直接连接
+            &MessagerPanel::showMessage);        //多个连接一个不能直接连接
 }
 
 void Output::connectToMessager(Revolve *emitter)
 {
     connect(emitter, &Revolve::message, _messager,
-            &Messager::showMessage);
+            &MessagerPanel::showMessage);
 }
 
 void Output::connectToMessager(FilePicker *emitter)
 {
     connect(emitter, &FilePicker::message, _messager,
-            &Messager::showMessage);
-}
-
-void Output::closeEvent(QCloseEvent *event)
-{
-    hide();
-    _visible->setChecked(false);
-    event->setAccepted(false);
+            &MessagerPanel::showMessage);
 }

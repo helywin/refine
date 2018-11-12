@@ -16,6 +16,7 @@ ChangeLog::ChangeLog(QWidget *parent) :
 void ChangeLog::setup()
 {
     setWindowTitle(tr("变更"));
+//    setWindowFlag(Qt::SplashScreen);
     setWindowFlag(Qt::WindowType::WindowMaximizeButtonHint, true);
     setMinimumWidth(200);
     setMinimumHeight(200);

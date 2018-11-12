@@ -37,13 +37,6 @@ void CurveBox::resizeEvent(QResizeEvent *event)
 //    qDebug() << _curve_panel->width();
 }
 
-void CurveBox::closeEvent(QCloseEvent *event)
-{
-    _visible->setChecked(false);
-    event->setAccepted(false);
-    hide();
-}
-
 void CurveBox::connectModelToSketch(Sketch *sketch)
 {
     connect(_model, &TribeModel::tribeChanged,

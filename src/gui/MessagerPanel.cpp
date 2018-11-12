@@ -8,16 +8,16 @@
 #include <QtWidgets/QScrollBar>
 #include <QtGui/QTextCursor>
 #include <QtGui/QContextMenuEvent>
-#include "Messager.hpp"
+#include "MessagerPanel.hpp"
 #include "Output.hpp"
 
-Messager::Messager(QWidget *parent) :
+MessagerPanel::MessagerPanel(QWidget *parent) :
         QTextEdit(parent)
 {
     setup();
 }
 
-void Messager::setup()
+void MessagerPanel::setup()
 {
     _show_types = 0xff;
     setFont(QFont("微软雅黑", 10));
@@ -40,24 +40,24 @@ void Messager::setup()
     _menu->addAction(_menu_clear);
     _menu->addAction(_menu_open);
     connect(_menu_copy, &QAction::triggered,
-            this, &Messager::copy, Qt::DirectConnection);
+            this, &MessagerPanel::copy, Qt::DirectConnection);
     connect(_menu_all, &QAction::triggered,
-            this, &Messager::selectAll, Qt::DirectConnection);
+            this, &MessagerPanel::selectAll, Qt::DirectConnection);
     connect(_menu_clear, &QAction::triggered,
-            this, &Messager::clear, Qt::DirectConnection);
+            this, &MessagerPanel::clear, Qt::DirectConnection);
     connect(_menu_open, &QAction::triggered,
-            this, &Messager::openFile, Qt::DirectConnection);
+            this, &MessagerPanel::openFile, Qt::DirectConnection);
 }
 
 
-QString Messager::Cell::str() const
+QString MessagerPanel::Cell::str() const
 {
     QString str = _time.toString("hh:mm:ss") + " - ";
     str += _text;
     return str;
 }
 
-QString Messager::typeStr(Messager::MessageType type)
+QString MessagerPanel::typeStr(MessagerPanel::MessageType type)
 {
     QString str;
     switch (type) {
@@ -80,7 +80,7 @@ QString Messager::typeStr(Messager::MessageType type)
     return str;
 }
 
-void Messager::showMessage(int type, const QString &msg)
+void MessagerPanel::showMessage(int type, const QString &msg)
 {
     QTextCursor cursor = this->textCursor();
     cursor.clearSelection();
@@ -121,13 +121,13 @@ void Messager::showMessage(int type, const QString &msg)
     }
 }
 
-void Messager::contextMenuEvent(QContextMenuEvent *e)
+void MessagerPanel::contextMenuEvent(QContextMenuEvent *e)
 {
     _menu->exec(QCursor::pos());
     e->accept();
 }
 
-void Messager::openFile()
+void MessagerPanel::openFile()
 {
     QTextCursor cursor = textCursor();
     QString file = cursor.selectedText();

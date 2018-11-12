@@ -3,6 +3,7 @@
 //
 
 #include <QtCore/QStandardPaths>
+#include <QtCore/QDebug>
 #include "FilePicker.hpp"
 
 FilePicker::FilePicker(QWidget *parent) :
@@ -19,12 +20,20 @@ void FilePicker::setup()
     auto flag = windowFlags();
     flag = flag | Qt::WindowStaysOnTopHint;
     setWindowFlags(flag);
+/*
     setLabelText(QFileDialog::DialogLabel::LookIn, tr("查找范围"));
     setLabelText(QFileDialog::DialogLabel::FileType, tr("文件类型"));
     setLabelText(QFileDialog::DialogLabel::Accept, tr("确定"));
     setLabelText(QFileDialog::DialogLabel::FileName, tr("文件名"));
     setLabelText(QFileDialog::DialogLabel::Reject, tr("取消"));
+*/
     setOptions(QFileDialog::DontUseNativeDialog);
+    connect(this, &FilePicker::fileSelected,
+            this, &FilePicker::fileSelectedSlot, Qt::DirectConnection);
+}
+
+void FilePicker::showDialog()
+{
     QList<QUrl> urls;
     for (const auto &info : QDir::drives()) {
         urls << QUrl::fromLocalFile(info.filePath());
@@ -40,8 +49,7 @@ void FilePicker::setup()
     setDirectoryUrl(QUrl::fromLocalFile(QStandardPaths::standardLocations(
             QStandardPaths::DesktopLocation).first()));
     update();
-    connect(this, &FilePicker::fileSelected,
-            this, &FilePicker::fileSelectedSlot, Qt::DirectConnection);
+    show();
 }
 
 QStringList FilePicker::extendNames(unsigned int type)
@@ -175,7 +183,8 @@ void FilePicker::loadArchive()
     setWindowTitle(tr("读取包文件"));
     _type = ArchiveInFile;
     setNameFilters(extendNameWithStr(_type));
-    show();
+    setAcceptMode(QFileDialog::AcceptOpen);
+    showDialog();
 }
 
 void FilePicker::saveArchive()
@@ -185,66 +194,118 @@ void FilePicker::saveArchive()
     setWindowTitle(tr("保存包文件"));
     _type = ArchiveOutFile;
     setNameFilters(extendNameWithStr(_type));
-    show();
+    setAcceptMode(QFileDialog::AcceptSave);
+    showDialog();
 }
 
 void FilePicker::loadCurveConfig()
 {
     setFilter(QDir::Files | QDir::NoDotAndDotDot);
     setFileMode(ExistingFile);
-    setWindowTitle(tr("读取曲线配置"));
+    setWindowTitle(tr("导入曲线配置"));
     _type = CurveConfigInFile;
     setNameFilters(extendNameWithStr(_type));
-    show();
+    setAcceptMode(QFileDialog::AcceptOpen);
+    showDialog();
 }
 
 void FilePicker::saveCurveConfig()
 {
-
+    setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    setFileMode(AnyFile);
+    setWindowTitle(tr("导出曲线配置"));
+    _type = CurveConfigOutFile;
+    setNameFilters(extendNameWithStr(_type));
+    setAcceptMode(QFileDialog::AcceptSave);
+    showDialog();
 }
 
 void FilePicker::loadFrameData()
 {
-
+    setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    setFileMode(ExistingFile);
+    setWindowTitle(tr("导入报文数据"));
+    _type = CurveDataInFile;
+    setNameFilters(extendNameWithStr(_type));
+    setAcceptMode(QFileDialog::AcceptOpen);
+    showDialog();
 }
 
 void FilePicker::saveFrameData()
 {
-
+    setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    setFileMode(AnyFile);
+    setWindowTitle(tr("导出报文数据"));
+    _type = CurveDataOutFile;
+    setNameFilters(extendNameWithStr(_type));
+    setAcceptMode(QFileDialog::AcceptSave);
+    showDialog();
 }
 
 void FilePicker::loadModeConfig()
 {
-
+    setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    setFileMode(ExistingFile);
+    setWindowTitle(tr("导入工况配置文件"));
+    _type = ModeConfigInFile;
+    setNameFilters(extendNameWithStr(_type));
+    setAcceptMode(QFileDialog::AcceptOpen);
+    showDialog();
 }
 
 void FilePicker::saveModeConfig()
 {
-
+    setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    setFileMode(AnyFile);
+    setWindowTitle(tr("导出数据文件"));
+    _type = ModeConfigOutFile;
+    setNameFilters(extendNameWithStr(_type));
+    setAcceptMode(QFileDialog::AcceptSave);
+    showDialog();
 }
 
 void FilePicker::loadCurveData()
 {
     setFilter(QDir::Files | QDir::NoDotAndDotDot);
     setFileMode(ExistingFile);
-    setWindowTitle(tr("读取曲线配置"));
+    setWindowTitle(tr("导入曲线数据"));
     _type = CurveDataInFile;
     setNameFilters(extendNameWithStr(_type));
-    show();
+    setAcceptMode(QFileDialog::AcceptOpen);
+    showDialog();
 }
 
 void FilePicker::saveCurveData()
 {
-
+    setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    setFileMode(AnyFile);
+    setWindowTitle(tr("导出曲线数据"));
+    _type = CurveDataOutFile;
+    setNameFilters(extendNameWithStr(_type));
+    setAcceptMode(QFileDialog::AcceptSave);
+    showDialog();
 }
 
-QString FilePicker::extName(const QString &name)
+void FilePicker::fileSelectedSlot(const QString &file)
 {
-    QStringList list = name.split(QChar('.'));
-    if (list.size() == 1) {
-        return QString();
-    } else {
-        return list.last();
+//    this->directoryUrl().toLocalFile();
+    QString name = file;
+    QString suffix = QFileInfo(file).suffix();
+    QFileInfo info = QFileInfo(file);
+    if ((unsigned) _type & (unsigned) Out) {
+        QRegExp reg_exp("\\(\\*\\.(.*)\\)");
+        int pos = selectedNameFilter().indexOf(reg_exp);
+        QString suffix_temp;
+        if (pos > 0) {
+            suffix_temp = reg_exp.cap(1);
+        } else {
+            qCritical("FilePicker::fileSelectedSlot 不可预知错误");
+        }
+        if (suffix != suffix_temp) {
+            name += "." + suffix_temp;
+            suffix = suffix_temp;
+        }
     }
+    emit pickFile(_type, name, suffix);
 }
 

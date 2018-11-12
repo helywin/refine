@@ -14,7 +14,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QAction>
 
-class Messager : public QTextEdit
+class MessagerPanel : public QTextEdit
 {
 Q_OBJECT
 public:
@@ -26,7 +26,6 @@ public:
         Fatal = 0x08,
         Debug = 0x10
     };
-    static const int DURATION[4];
     class Cell
     {
     private:
@@ -68,7 +67,7 @@ private:
     QAction *_menu_clear;
     QAction *_menu_open;
 public:
-    explicit Messager(QWidget *parent = nullptr);
+    explicit MessagerPanel(QWidget *parent = nullptr);
 
     static QString typeStr(MessageType type);
 

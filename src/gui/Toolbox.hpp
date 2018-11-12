@@ -12,16 +12,8 @@ class Toolbox : public QDockWidget
 {
 Q_OBJECT
 private:
-    QAction *_visible;
-    ByteRangeFrame *_widget;
-
-public:
-protected:
-    void closeEvent(QCloseEvent *event) override;
 public:
     explicit Toolbox(QWidget *parent);
-
-    inline void setAction(QAction *action) { _visible = action; }
 private:
     void setup();
 };

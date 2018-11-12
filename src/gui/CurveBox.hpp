@@ -20,7 +20,6 @@ class CurveBox : public QDockWidget
 Q_OBJECT
 private:
 //    CurvePanel *_curve_panel;
-    QAction *_visible;
     TribeModel *_model;
     TribeView *_view;
     QItemSelectionModel *_selection;
@@ -31,17 +30,12 @@ private:
 public:
     explicit CurveBox(Tribe *tribe, QWidget *parent = nullptr);
 
-    inline void setAction(QAction *action) { _visible = action; }
-
     inline TribeModel& tribeModel() { return *_model; }
 
     void connectModelToSketch(Sketch *sketch);
 
 public slots:
     inline void updateData() { _model->genData(_tribe); };
-
-protected:
-    void closeEvent(QCloseEvent *event) override;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
