@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/res" lang="CN">
+        <file>icons/open.png</file>
+        <file>icons/save.png</file>
+        <file>icons/import.png</file>
+        <file>icons/export.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/exit.png</file>
+        <file>icons/display.png</file>
+        <file>icons/start.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/resume.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/timer.png</file>
+    </qresource>
+</RCC>

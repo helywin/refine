@@ -23,7 +23,8 @@ class Revolve;
 #define X_RIGHT 2000.0
 #define Y_BOTTOM 0.0
 #define Y_TOP 4096.0
-#define X_BLANK_RATE 0.02
+#define X_L_BLANK_RATE 0.15
+#define X_R_BLANK_RATE 0.02
 #define Y_BLANK_RATE 0.1
 
 class Sketch : public QGLWidget, public QGLFunctions, public Message
@@ -45,6 +46,7 @@ private:
     double _y_pos;
     double _x_rate;
     double _y_rate;
+    int _current_index;
 
 public:
     explicit Sketch(QWidget *parent, Revolve *revolve,
@@ -66,6 +68,8 @@ public:
         _msec = msec;
         _timer.setInterval(_msec);
     }
+
+    inline void setCurrentIndex(int index) { _current_index = index; }
 
 protected:
     void initializeGL() override;

@@ -30,10 +30,13 @@ void Refine::setup()
     initMenu(_menu_file, tr("文件(&F)"), _menubar);
     initMenu(_menu_file_open, tr("打开(&O)..."), _menu_file,
              tr("打开数据包文件"), QKeySequence("Ctrl+O"));
+    _menu_file_open->setIcon(QIcon(":res/icons/open.png"));
     initMenu(_menu_file_save, tr("保存(&S)..."), _menu_file,
              tr("保存数据包文件"), QKeySequence("Ctrl+S"));
+    _menu_file_save->setIcon(QIcon(":res/icons/save.png"));
     _menu_file->addSeparator();
     initMenu(_menu_file_import, tr("导入(&I)"), _menu_file);
+    _menu_file_import->setIcon(QIcon(":res/icons/import.png"));
     initMenu(_menu_file_import_config, tr("曲线配置(&C)..."),
              _menu_file_import, tr("导入曲线配置"));
     initMenu(_menu_file_import_data, tr("曲线数据(&D)..."),
@@ -43,6 +46,7 @@ void Refine::setup()
     initMenu(_menu_file_import_mode, tr("工况配置(&M)..."),
              _menu_file_import, tr("导入工况配置"));
     initMenu(_menu_file_export, tr("导出(&E)"), _menu_file);
+    _menu_file_export->setIcon(QIcon(":res/icons/export.png"));
     initMenu(_menu_file_export_config, tr("曲线配置(&C)..."),
              _menu_file_export, tr("导出曲线配置"));
     initMenu(_menu_file_export_data, tr("曲线数据(&D)..."),
@@ -54,11 +58,14 @@ void Refine::setup()
     _menu_file->addSeparator();
     initMenu(_menu_file_settings, tr("设置(&S)..."), _menu_file,
              tr("配置软件设置"), QKeySequence("Ctrl+`"));
+    _menu_file_settings->setIcon(QIcon(":res/icons/settings.png"));
     _menu_file->addSeparator();
     initMenu(_menu_file_exit, tr("退出(&E)"), _menu_file,
              tr("退出该软件"), QKeySequence("Alt+F4"));
+    _menu_file_exit->setIcon(QIcon(":res/icons/exit.png"));
     initMenu(_menu_view, tr("视图(&I)"), _menubar);
     initMenu(_menu_view_display, tr("显示(&D)"), _menu_view);
+    _menu_view_display->setIcon(QIcon(":res/icons/display.png"));
     _menu_view_display_group = new QActionGroup(_menu_view_display);
     _menu_view_display_group->setExclusive(false);
     initMenu(_menu_view_display_file, tr("文件工具栏(&F)"),
@@ -115,14 +122,19 @@ void Refine::setup()
     initMenu(_menu_control, tr("控制(&C)"), _menubar);
     initMenu(_menu_control_start, tr("开始(&S)"), _menu_control,
              tr("开始采集曲线"));
+    _menu_control_start->setIcon(QIcon(":res/icons/start.png"));
     initMenu(_menu_control_pause, tr("暂停(&P)"), _menu_control,
              tr("暂停采集曲线(曲线段结束)"));
+    _menu_control_pause->setIcon(QIcon(":res/icons/pause.png"));
     initMenu(_menu_control_resume, tr("继续(&R)"), _menu_control,
              tr("继续采集曲线(曲线段开始)"));
+    _menu_control_resume->setIcon(QIcon(":res/icons/resume.png"));
     initMenu(_menu_control_finish, tr("结束(&F)"), _menu_control,
              tr("结束采集曲线"));
+    _menu_control_finish->setIcon(QIcon(":res/icons/stop.png"));
     initMenu(_menu_tools, tr("工具(&T)"), _menubar);
     initMenu(_menu_tools_timer, tr("计时器(&T)"), _menu_tools);
+    _menu_tools_timer->setIcon(QIcon(":res/icons/timer.png"));
     _menu_tools_timer_group = new QActionGroup(_menu_tools_timer);
     _menu_tools_timer_group->setExclusive(false);
     initMenu(_menu_tools_timers[0], tr("计时器1"),
@@ -164,7 +176,7 @@ void Refine::setup()
 //    tabifyDockWidget(_toolbox, _output);
 //    _toolbox->raise();
 
-    _curvebox = new CurveBox(&_revolve.tribe(), this);
+    _curvebox = new CurveBox(&_revolve.tribe(), this, this);
     _curvebox->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _curvebox);

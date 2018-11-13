@@ -10,9 +10,10 @@
 #include "TribeView.hpp"
 #include "Sketch.hpp"
 
-CurveBox::CurveBox(Tribe *tribe, QWidget *parent) :
-    _tribe(tribe),
-    QDockWidget(parent)
+CurveBox::CurveBox(Tribe *tribe, Message *message, QWidget *parent) :
+        _tribe(tribe),
+        Message(message),
+        QDockWidget(parent)
 {
     setup();
 }
@@ -28,17 +29,26 @@ void CurveBox::setup()
     _view = new TribeView(_model, _selection, _h_header, _v_header, this);
     _h_header->setParent(_view);
     setWidget(_view);
+    connect(_selection, &QItemSelectionModel::selectionChanged,
+            this, &CurveBox::selectionChanged);
 }
 
 void CurveBox::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    qDebug() << event->size();
-//    qDebug() << _curve_panel->width();
+    qDebug() << "CurveBox::resizeEvent " << event->size();
 }
 
 void CurveBox::connectModelToSketch(Sketch *sketch)
 {
+    _sketch = sketch;
     connect(_model, &TribeModel::tribeChanged,
             sketch, &Sketch::updateGL, Qt::DirectConnection);
+}
+
+void CurveBox::selectionChanged(const QItemSelection &selected,
+                                const QItemSelection &deselected)
+{
+    emitMessage(Debug, tr("当前行 %1").arg(_view->currentIndex().row()));
+    _sketch->setCurrentIndex(_view->currentIndex().row());
 }

@@ -17,7 +17,8 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _x_pos(0),
         _y_pos(0),
         _x_rate(1),
-        _y_rate(0)
+        _y_rate(0),
+        _current_index(-1)
 {
     _timer.
             setInterval(_msec);
@@ -38,8 +39,8 @@ void Sketch::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glOrtho(X_LEFT - X_RIGHT * X_BLANK_RATE,
-            X_RIGHT + X_RIGHT * X_BLANK_RATE,
+    glOrtho(X_LEFT - X_RIGHT * X_L_BLANK_RATE,
+            X_RIGHT + X_RIGHT * X_R_BLANK_RATE,
             Y_BOTTOM - Y_TOP * Y_BLANK_RATE,
             Y_TOP + Y_TOP * Y_BLANK_RATE,
             0, 100);
@@ -48,7 +49,10 @@ void Sketch::resizeGL(int w, int h)
 void Sketch::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
+    plotXAxis();
+    plotYAxis();
     plotCurves();
+    plotVernier();
     glFlush();
 }
 

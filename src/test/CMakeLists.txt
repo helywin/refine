@@ -67,6 +67,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src/del)
 set(UI ${PROJECT_SOURCE_DIR}/res/ui.qrc)
 set(TEXT ${PROJECT_SOURCE_DIR}/res/text.qrc)
 set(TRANS ${PROJECT_SOURCE_DIR}/res/trans.qrc)
+set(ICONS ${PROJECT_SOURCE_DIR}/res/icons.qrc)
 
 
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
@@ -113,7 +114,8 @@ target_link_libraries(test_zip Qt5Core
         ${LIBNETTLE}
         ${LIBGNUTLS})
 
-add_executable(refine main.cpp ${CORE} ${GUI} ${MOD} ${DEL} ${UI} ${TEXT} ${TRANS})
+add_executable(refine main.cpp ${CORE} ${GUI} ${MOD} ${DEL}
+        ${UI} ${TEXT} ${TRANS} ${ICONS})
 target_link_libraries(refine
         ${LIBCAN}
         ${LIBOPENGL}

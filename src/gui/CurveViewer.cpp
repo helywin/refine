@@ -30,8 +30,5 @@ void CurveViewer::setup()
 
 void CurveViewer::valueChanged(int value)
 {
-//    qDebug() << "min " << _h_scroll->minimum()
-//             << "max " << _h_scroll->maximum()
-//             << "value " << value;
     _sketch->updateGL();
 }
