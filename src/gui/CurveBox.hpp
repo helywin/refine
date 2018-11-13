@@ -41,9 +41,6 @@ public slots:
 
     inline void updateData() { _model->genData(_tribe); };
 
-protected:
-    void resizeEvent(QResizeEvent *event) override;
-
 private:
     void setup();
 private slots:

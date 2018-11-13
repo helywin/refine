@@ -7,8 +7,8 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QWheelEvent>
-#include <QtOpenGL/QGLWidget>
-#include <QtOpenGL/QGLFunctions>
+#include <QtWidgets/QOpenGLWidget>
+#include <QtGui/QOpenGLFunctions>
 #include <QtWidgets/QScrollBar>
 #include "Tribe.hpp"
 #include "Curve.hpp"
@@ -23,11 +23,11 @@ class Revolve;
 #define X_RIGHT 2000.0
 #define Y_BOTTOM 0.0
 #define Y_TOP 4096.0
-#define X_L_BLANK_RATE 0.15
+#define X_L_BLANK 50
 #define X_R_BLANK_RATE 0.02
 #define Y_BLANK_RATE 0.1
 
-class Sketch : public QGLWidget, public QGLFunctions, public Message
+class Sketch : public QOpenGLWidget, protected QOpenGLFunctions, public Message
 {
 Q_OBJECT
 public:
@@ -47,6 +47,9 @@ private:
     double _x_rate;
     double _y_rate;
     int _current_index;
+    int _init_w;
+    double _left_axis_width;
+    bool _smooth;
 
 public:
     explicit Sketch(QWidget *parent, Revolve *revolve,

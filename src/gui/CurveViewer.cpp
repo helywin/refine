@@ -26,9 +26,10 @@ void CurveViewer::setup()
     _sketch->setScroll(_h_scroll);
     connect(_h_scroll, &QScrollBar::valueChanged,
             this, &CurveViewer::valueChanged, Qt::DirectConnection);
+    _h_scroll->setMaximum(0);
 }
 
 void CurveViewer::valueChanged(int value)
 {
-    _sketch->updateGL();
+    _sketch->update();
 }

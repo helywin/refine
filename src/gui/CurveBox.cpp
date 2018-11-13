@@ -33,17 +33,12 @@ void CurveBox::setup()
             this, &CurveBox::selectionChanged);
 }
 
-void CurveBox::resizeEvent(QResizeEvent *event)
-{
-    QWidget::resizeEvent(event);
-    qDebug() << "CurveBox::resizeEvent " << event->size();
-}
-
 void CurveBox::connectModelToSketch(Sketch *sketch)
 {
     _sketch = sketch;
     connect(_model, &TribeModel::tribeChanged,
-            sketch, &Sketch::updateGL, Qt::DirectConnection);
+            sketch, static_cast<void (Sketch::*)(void)>(&Sketch::update),
+            Qt::DirectConnection);
 }
 
 void CurveBox::selectionChanged(const QItemSelection &selected,
