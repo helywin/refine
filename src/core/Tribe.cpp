@@ -144,8 +144,8 @@ void Tribe::Cell::push(const Tribe::FillType fill, const float &v)
     }
 }
 
-Tribe::Tribe() :
-        _len(0) {}
+Tribe::Tribe(Message *message) :
+        Message(message), _len(0) {}
 
 /*!
  * @brief 清空数据
@@ -200,8 +200,7 @@ void Tribe::setUnFilled()
     }
 }
 
-Tribe::Style::Style()
-{}
+Tribe::Style::Style() {}
 
 Tribe::Style::Style(const Curve::Cell &cell)
 {

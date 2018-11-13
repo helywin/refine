@@ -16,12 +16,13 @@
 #include <QtCore/QString>
 #include <QtCore/QDebug>
 #include "Curve.hpp"
+#include "Message.hpp"
 
 /*!
  * @brief 把Softcan的曲线配置转化为可用配置的类
  */
 
-class Softcan
+class Softcan : public Message
 {
 public:
     class Cell
@@ -193,7 +194,7 @@ private:
     int _head;
 
 public:
-    Softcan();
+    explicit Softcan(Message *message = nullptr);
 
     friend QDataStream &operator>>(QDataStream &stream, Softcan &softcan);
 

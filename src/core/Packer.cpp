@@ -6,7 +6,8 @@
 #include <QtCore/QDir>
 #include "Packer.hpp"
 
-Packer::Packer(Initializer *init)
+Packer::Packer(Initializer *init, Message *message) :
+        Message(message)
 {
     _process.setProgram("bin/7zip/7z.exe");     //弄个32位的放在目录下面
     _init = init;

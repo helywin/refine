@@ -10,8 +10,9 @@
 #include <QtCore/QLine>
 #include <QtCore/QVector>
 #include <QtCore/QVariant>
+#include "Message.hpp"
 
-class Mark
+class Mark : public Message
 {
 public:
     enum MarkType

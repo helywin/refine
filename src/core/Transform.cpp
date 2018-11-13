@@ -10,7 +10,8 @@
 #include "Curve.hpp"
 #include "Tribe.hpp"
 
-Transform::Transform() :
+Transform::Transform(Message *message) :
+        Message(message),
         _curve(nullptr),
         _buffer(nullptr),
         _tribe(nullptr),

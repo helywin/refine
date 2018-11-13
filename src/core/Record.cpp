@@ -9,8 +9,9 @@
 #include "Record.hpp"
 
 
-Record::Record() :
-        _file(),
+Record::Record(Message *message) :
+        Message(message),
+        _file(message),
         _buffer(nullptr),
         _record(nullptr),
         _buffer_tail(),

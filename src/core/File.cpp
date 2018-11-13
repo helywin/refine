@@ -13,11 +13,12 @@
 #include "FramePool.hpp"
 
 
-File::File()
-        : _header(new File::Header()),
-          _stream(new QDataStream()),
-          _frame_obj_num(0),
-          _frame_cell_num(0)
+File::File(Message *message) :
+        Message(message),
+        _header(new File::Header()),
+        _stream(new QDataStream()),
+        _frame_obj_num(0),
+        _frame_cell_num(0)
 {
     initTable();
     _stream->setVersion(QDataStream::Qt_5_11);

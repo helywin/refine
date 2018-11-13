@@ -9,8 +9,11 @@
 #ifndef REFINE_TRANSMIT_HPP
 #define REFINE_TRANSMIT_HPP
 
+#include <QtCore/QObject>
+#include "Message.hpp"
 
-class Transmit
+
+class Transmit : public QObject, public Message
 {
 
 };

@@ -7,8 +7,10 @@
 #include "Sketch.hpp"
 
 
-CurveViewer::CurveViewer(QWidget *parent, Revolve *revolve) :
-        QWidget(parent), _sketch(new Sketch(this, revolve))
+CurveViewer::CurveViewer(QWidget *parent, Revolve *revolve, Message *message) :
+        QWidget(parent),
+        _sketch(new Sketch(this, revolve, this)),
+        Message(message)
 {
     setup();
 }

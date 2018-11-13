@@ -6,8 +6,10 @@
 #include "CurveViewer.hpp"
 #include "Sketch.hpp"
 
-Display::Display(QWidget *parent, Revolve *revolve) :
-        QWidget(parent), _viewer(new CurveViewer(this, revolve))
+Display::Display(QWidget *parent, Revolve *revolve, Message *message) :
+        QWidget(parent),
+        _viewer(new CurveViewer(this, revolve, this)),
+        Message(message)
 {
     setup();
 }
@@ -20,7 +22,7 @@ void Display::setup()
     _layout->setContentsMargins(0, 0, 0, 0);
     _layout->addWidget(_toolbar);
     _layout->addWidget(_viewer);
-    _toolbar->addAction("hello");
+    _toolbar->addAction("放大");
 }
 
 Sketch &Display::sketch()

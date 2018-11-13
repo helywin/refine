@@ -9,7 +9,7 @@
 #include "Sketch.hpp"
 
 Refine::Refine() :
-        _init(), _revolve(&_init), _translator()
+        Message(nullptr), _init(), _revolve(&_init), _translator()
 {
     setup();
 }
@@ -177,7 +177,7 @@ void Refine::setup()
     tabifyDockWidget(_curvebox, _markbox);
     _curvebox->raise();
 
-    _display = new Display(this, &_revolve);
+    _display = new Display(this, &_revolve, this);
     _revolve.setSketch(&_display->sketch());
     _curvebox->connectModelToSketch(&_display->sketch());
     setCentralWidget(_display);
@@ -293,9 +293,9 @@ void Refine::connectCan()
 {
     if (_menu_init_can->isChecked()) {
         if (_revolve.can().connect()) {
-            emit message(MessagerPanel::MessageType::Info, tr("连接成功"));
+            emitMessage(Info, tr("连接成功"));
         } else {
-            emit message(MessagerPanel::MessageType::Warning,
+            emitMessage(Warning,
                          tr("连接失败，检查CAN占用或连接情况"));
         }
     } else {
@@ -316,11 +316,11 @@ void Refine::connectCan()
             closed = _revolve.can().close();
         }
         if (closed) {      //与运算后面的语句可能不执行，看条件而定
-            emit message(MessagerPanel::MessageType::Info, tr("关闭成功"));
+            emitMessage(Info, tr("关闭成功"));
         } else if (flag) {
-            emit message(MessagerPanel::MessageType::Warning, tr("关闭失败"));
+            emitMessage(Warning, tr("关闭失败"));
         } else {
-            emit message(MessagerPanel::MessageType::Info, tr("关闭取消"));
+            emitMessage(Info, tr("关闭取消"));
         }
     }
     _menu_init_can->setChecked(_revolve.can().isConnected());
@@ -329,10 +329,10 @@ void Refine::connectCan()
 void Refine::fullScreen()
 {
     if (_menu_view_full->isChecked()) {
-        emit message(MessagerPanel::MessageType::Debug, tr("进入全屏模式"));
+        emitMessage(Debug, tr("进入全屏模式"));
         this->setWindowState(Qt::WindowFullScreen);
     } else {
-        emit message(MessagerPanel::MessageType::Debug, tr("退出全屏模式"));
+        emitMessage(Debug, tr("退出全屏模式"));
         this->setWindowState(Qt::WindowMaximized);
     }
 }
@@ -450,3 +450,4 @@ void Refine::setCollectMenuEnable(bool isCollecting)
     _menu_file_export_data->setDisabled(isCollecting);
     _menu_file_export_frame->setDisabled(isCollecting);
 }
+

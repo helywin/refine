@@ -12,14 +12,14 @@
 
 #include <QtCore/QString>
 #include "ControlCan.h"
-
+#include "Message.hpp"
 class Buffer;
 
 /*!
  * @brief 控制CAN的类
  */
 
-class Can
+class Can : public Message
 {
 public:
 public:
@@ -330,12 +330,6 @@ public:
         inline const VCI_ERR_INFO &error() const { return _error; }
 
         /*!
-         * @brief 上报错误
-         * @return 错误码
-         */
-        int report() const;
-
-        /*!
          * @brief 返回错误码
          * @return 错误码
          */
@@ -348,7 +342,7 @@ private:
     ErrorInfo _error_info;  //! \brief 错误
 
 public:
-    explicit Can();
+    explicit Can(Message *message = nullptr);
 
     /*!
      * @brief 返回配置引用
@@ -387,9 +381,9 @@ public:
     bool isConnected();
     void clear() const;
     int status() const;
+    int getError();
+    void reportError();
 
-private:
-    void getError();
 };
 
 

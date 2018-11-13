@@ -33,93 +33,10 @@ void Can::Config::setBaudRate(BaudRate rate)
 }
 
 /*!
- * @brief 报告CAN错误
- * @return CAN错误码
- */
-int Can::ErrorInfo::report() const
-{
-    QString str;
-    switch (_error.ErrCode) {
-        case Error::CanOverflow :
-            str = QString("CAN控制器内部FIFO溢出");
-            break;
-        case Error::CanErrorAlarm :
-            str = QString("CAN控制器错误报警");
-            break;
-        case Error::CanPassive :
-            str = QString("CAN控制器消极错误");
-            break;
-        case Error::CanLose :
-            str = QString("CAN控制器仲裁丢失");
-            break;
-        case Error::CanBusError :
-            str = QString("CAN控制器总线错误");
-            break;
-        case Error::CanBusOff :
-            str = QString("总线关闭错误");
-            break;
-        case Error::DeviceOpened :
-            str = QString("设备已经打开");
-            break;
-        case Error::DeviceOpen :
-            str = QString("打开设备错误");
-            break;
-        case Error::DeviceNotOpen :
-            str = QString("设备没有打开");
-            break;
-        case Error::BufferOverflow :
-            str = QString("缓冲区溢出");
-            break;
-        case Error::DeviceNotExist :
-            str = QString("此设备不存在");
-            break;
-        case Error::LoadKernelDll :
-            str = QString("装载动态库失败");
-            break;
-        case Error::CmdFailed :
-            str = QString("执行命令失败错误码");
-            break;
-        case Error::BufferCreate :
-            str = QString("内存不足");
-            break;
-        case Error::CanetePortOpened :
-            str = QString("端口已经被打开");
-            break;
-        case Error::CaneteIndexUsed :
-            str = QString("设备索引号已经被占用");
-            break;
-        case Error::RefTypeId :
-            str = QString("SetReference或GetReference是传递的RefType是不存在");
-            break;
-        case Error::CreateSocket :
-            str = QString("创建Socket时失败");
-            break;
-        case Error::OpenConnect :
-            str = QString("打开socket的连接时失败，可能设备连接已经存在");
-            break;
-        case Error::NoStartup :
-            str = QString("设备没启动");
-            break;
-        case Error::NoConnected :
-            str = QString("设备无连接");
-            break;
-        case Error::SendPartial :
-            str = QString("只发送了部分的CAN帧");
-            break;
-        case Error::SendTooFast :
-            str = QString("数据发得太快，Socket缓冲区满了");
-            break;
-        default:
-            str = QString("读取不到错误码，确认连接好CAN盒");
-            break;
-    }
-    return _error.ErrCode;
-}
-
-/*!
  * @brief 构造函数
  */
-Can::Can() :
+Can::Can(Message *message) :
+        Message(message),
         _status(Status::Closed),
         _config(),
         _error_info() {}
@@ -142,7 +59,7 @@ bool Can::open()
         if (_error_info.errorCode() == Error::DeviceOpened) {
             return true;
         } else {
-            _error_info.report();
+            reportError();
             return false;
         }
     }
@@ -164,6 +81,7 @@ bool Can::init()
         return true;
     } else {
         getError();
+        reportError();
         return false;
     }
 }
@@ -183,6 +101,7 @@ bool Can::start()
         return true;
     } else {
         getError();
+        reportError();
         return false;
     }
 }
@@ -218,7 +137,7 @@ bool Can::close()
     _status = Status::Closed;
     if (!flag) {
         getError();
-        _error_info.report();
+        reportError();
         return false;
     }
     return true;
@@ -236,7 +155,7 @@ bool Can::reset()
                         _config.deviceChannel());
     if (!flag) {
         getError();
-        _error_info.report();
+        reportError();
         return false;
     } else {
         _status = Status::Initialized;
@@ -277,7 +196,6 @@ int Can::collect(Buffer &buffer, const int delay)
         buffer.move();
         rtn = Succeed;
     } else {
-        qDebug() << "Can::collect " << length;
         buffer.headCell().setDataSize(0);   //改为空报文包还是接收
         buffer.move();
         rtn = Empty;
@@ -366,18 +284,23 @@ bool Can::isConnected()
     flag = VCI_ReadBoardInfo(_config.deviceType(),
                              _config.deviceIndex(),
                              &info);
-    return (bool) flag;
+    if (!flag) {
+        getError();
+        reportError();
+    }
+    return (bool)flag;
 }
 
 /*!
  * @brief 读取错误标志
  */
-void Can::getError()
+int Can::getError()
 {
     VCI_ReadErrInfo(_config.deviceType(),
                     _config.deviceIndex(),
                     _config.deviceChannel(),
                     &_error_info.error());
+    return _error_info.errorCode();
 }
 
 /*!
@@ -398,4 +321,84 @@ void Can::clear() const
 int Can::status() const
 {
     return _status;
+}
+
+void Can::reportError()
+{
+    QString str;
+    switch (_error_info.errorCode()) {
+        case Error::CanOverflow :
+            str = QString("CAN控制器内部FIFO溢出");
+            break;
+        case Error::CanErrorAlarm :
+            str = QString("CAN控制器错误报警");
+            break;
+        case Error::CanPassive :
+            str = QString("CAN控制器消极错误");
+            break;
+        case Error::CanLose :
+            str = QString("CAN控制器仲裁丢失");
+            break;
+        case Error::CanBusError :
+            str = QString("CAN控制器总线错误");
+            break;
+        case Error::CanBusOff :
+            str = QString("总线关闭错误");
+            break;
+        case Error::DeviceOpened :
+            str = QString("设备已经打开");
+            break;
+        case Error::DeviceOpen :
+            str = QString("打开设备错误");
+            break;
+        case Error::DeviceNotOpen :
+            str = QString("设备没有打开");
+            break;
+        case Error::BufferOverflow :
+            str = QString("缓冲区溢出");
+            break;
+        case Error::DeviceNotExist :
+            str = QString("此设备不存在");
+            break;
+        case Error::LoadKernelDll :
+            str = QString("装载动态库失败");
+            break;
+        case Error::CmdFailed :
+            str = QString("执行命令失败");
+            break;
+        case Error::BufferCreate :
+            str = QString("内存不足");
+            break;
+        case Error::CanetePortOpened :
+            str = QString("端口已经被打开");
+            break;
+        case Error::CaneteIndexUsed :
+            str = QString("设备索引号已经被占用");
+            break;
+        case Error::RefTypeId :
+            str = QString("SetReference或GetReference是传递的RefType是不存在");
+            break;
+        case Error::CreateSocket :
+            str = QString("创建Socket时失败");
+            break;
+        case Error::OpenConnect :
+            str = QString("打开socket的连接时失败，可能设备连接已经存在");
+            break;
+        case Error::NoStartup :
+            str = QString("设备没启动");
+            break;
+        case Error::NoConnected :
+            str = QString("设备无连接");
+            break;
+        case Error::SendPartial :
+            str = QString("只发送了部分的CAN帧");
+            break;
+        case Error::SendTooFast :
+            str = QString("数据发得太快，Socket缓冲区满了");
+            break;
+        default:
+            str = QString("读取不到错误码，确认连接好CAN盒");
+            break;
+    }
+    emitMessage(Warning, str);
 }

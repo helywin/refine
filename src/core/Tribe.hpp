@@ -16,13 +16,14 @@
 #include <QtCore/QFile>
 
 #include "Curve.hpp"
+#include "Message.hpp"
 
 class TribeModel;
 /*!
  * @brief 存储数据的缓冲区
  */
 
-class Tribe
+class Tribe : public Message
 {
 public:
     friend class Curve;
@@ -274,7 +275,7 @@ private:
 
 
 public:
-    Tribe();
+    explicit Tribe(Message *massage = nullptr);
 
     bool dumpToCsv(QFile &f) const;
 

@@ -32,7 +32,8 @@ FramePool::Cell::Cell(int index, VCI_CAN_OBJ &&obj) :
         _data(obj) {}
 
 
-FramePool::FramePool() : _initialized(false) {}
+FramePool::FramePool(Message *message) :
+        Message(message), _initialized(false) {}
 
 QDataStream &operator>>(QDataStream &stream, FramePool &pool)
 {
@@ -46,7 +47,7 @@ QDataStream &operator>>(QDataStream &stream, FramePool &pool)
     for (int i = 0; i < cell_num; ++i) {
         Buffer::Cell cell;
         stream >> cell;
-        for (int j = 0; j < cell.dataSize(); ++ j) {
+        for (int j = 0; j < cell.dataSize(); ++j) {
             pool._cells.append(FramePool::Cell(i, qMove(*cell[j])));
         }
     }

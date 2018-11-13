@@ -9,8 +9,9 @@
 #include <QtCore/QProcess>
 
 #include "Initializer.hpp"
+#include "Message.hpp"
 
-class Packer : public QObject
+class Packer : public QObject, public Message
 {
 Q_OBJECT
 public:
@@ -19,7 +20,7 @@ private:
     QProcess _process;
     Initializer *_init;
 public:
-    Packer(Initializer *init);
+    explicit Packer(Initializer *init, Message *message = nullptr);
     bool compress(const QStringList &file_list, const QString &dist_name);
 
     bool uncompress(const QString &file, const QString &dist_path);

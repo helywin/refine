@@ -31,6 +31,7 @@
 #include "CurvePanel.hpp"
 #include "Packer.hpp"
 #include "TribeModel.hpp"
+#include "Message.hpp"
 
 /*!
  * @brief 底层调度类
@@ -39,7 +40,7 @@
 class Sketch;
 class CurveEditor;
 
-class Revolve : public QObject
+class Revolve : public QObject, public Message
 {
 Q_OBJECT
 public:
@@ -105,7 +106,9 @@ public slots:
     bool begin(unsigned long msec, int config, int time);
     void pause();
     void resume();
+
     inline bool stop() { return stop(false); }
+
     bool stop(bool error);
     bool exit();
 public:
@@ -159,6 +162,12 @@ private:
     void genCurveConfigFile();
 
     void genArchiveFileName();
+
+protected:
+    inline void emitMessage(int type, const QString &msg) override
+    {
+        emit message(type, msg);
+    }
 
 public slots:
 

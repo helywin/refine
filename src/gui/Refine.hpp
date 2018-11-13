@@ -29,13 +29,14 @@
 #include "MarkBox.hpp"
 #include "Settings.hpp"
 #include "About.hpp"
+#include "Message.hpp"
 
 class Output;
 class MessagerPanel;
 class ChangeLog;
 class Settings;
 
-class Refine : public QMainWindow
+class Refine : public QMainWindow, public Message
 {
 Q_OBJECT
 private:
@@ -212,6 +213,11 @@ signals:
 
 protected:
     void closeEvent(QCloseEvent *event) override;
+
+    inline void emitMessage(int type, const QString &msg) override
+    {
+        emit message(type, msg);
+    }
 };
 
 

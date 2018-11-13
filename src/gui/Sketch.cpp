@@ -7,9 +7,10 @@
 #include "Sketch.hpp"
 #include "Revolve.hpp"
 
-Sketch::Sketch(QWidget *parent, Revolve *revolve) :
+Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         QGLWidget(parent),
         _tribe(&revolve->tribe()),
+        Message(message),
         _msec(10),
         _h_scroll(nullptr),
         _mode(Free),
@@ -143,6 +144,7 @@ void Sketch::initData()
     } else {
         _h_scroll->setMaximum((_tribe->len() - (int) ceil(X_RIGHT * _x_rate)));
     }
+    emitMessage(Debug, tr("重设滚动条大小: %1").arg(_h_scroll->maximum()));
     QGLWidget::updateGL();
 }
 

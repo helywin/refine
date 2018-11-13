@@ -8,7 +8,8 @@
 
 #include "Softcan.hpp"
 
-Softcan::Softcan() : _cells(), _head(-1) {}
+Softcan::Softcan(Message *message) :
+        Message(message), _cells(), _head(-1) {}
 
 bool Softcan::load(QFile &file)
 {

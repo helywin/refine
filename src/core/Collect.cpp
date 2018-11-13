@@ -9,7 +9,8 @@
 #include <QtCore/QDebug>
 #include "Collect.hpp"
 
-Collect::Collect() :
+Collect::Collect(Message *message) :
+        Message(message),
         _can(nullptr),
         _buffer(nullptr),
         _manner(FromCan),

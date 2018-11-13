@@ -9,12 +9,13 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
+#include "Message.hpp"
 
 class CurveViewer;
 class Revolve;
 class Sketch;
 
-class Display : public QWidget
+class Display : public QWidget, public Message
 {
 Q_OBJECT
 private:
@@ -22,7 +23,7 @@ private:
     QVBoxLayout *_layout;
     QToolBar *_toolbar;
 public:
-    Display(QWidget *parent, Revolve *revolve);
+    Display(QWidget *parent, Revolve *revolve, Message *message = nullptr);
 
     Sketch &sketch();
 private:

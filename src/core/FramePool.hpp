@@ -7,8 +7,9 @@
 
 #include <QtCore/QVector>
 #include "ControlCan.h"
+#include "Message.hpp"
 
-class FramePool
+class FramePool : public Message
 {
 public:
     class Cell
@@ -80,7 +81,7 @@ private:
     QVector<Cell> _cells;
     bool _initialized;
 public:
-    FramePool();
+    explicit FramePool(Message *message = nullptr);
 
     friend QDataStream &operator>>(QDataStream &stream, FramePool &pool);
 

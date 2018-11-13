@@ -9,11 +9,13 @@
 #ifndef REFINE_TRIGGER_HPP
 #define REFINE_TRIGGER_HPP
 
+#include "Message.hpp"
+
 /*!
  * @brief 判断工况是否触发类
  */
 
-class Trigger
+class Trigger : public Message
 {
 public:
     inline void reset() {}

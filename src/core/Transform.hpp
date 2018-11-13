@@ -13,6 +13,7 @@
 #include <QtCore/QFile>
 #include "File.hpp"
 #include "Buffer.hpp"
+#include "Message.hpp"
 
 class Curve;
 class Buffer;
@@ -22,7 +23,7 @@ class Tribe;
  * @brief 报文转换类
  */
 
-class Transform : public QThread
+class Transform : public QThread, public Message
 {
 Q_OBJECT
 public:
@@ -52,7 +53,7 @@ private:
     Command _cmd;
 
 public:
-    Transform();
+    explicit Transform(Message *message = nullptr);
 
     void setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
                    unsigned long msec = 10);

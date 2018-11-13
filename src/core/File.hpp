@@ -15,6 +15,7 @@
 #include <windows.h>
 #include <QtCore/QDateTime>
 #include "Buffer.hpp"
+#include "Message.hpp"
 
 class Curve;
 class Tribe;
@@ -49,7 +50,7 @@ class FramePool;
                   HEADER_MODIFIED_L + HEADER_RESV_L)
 #define DATA_POS HEADER_L
 
-class File
+class File : public Message
 {
 public:
     class Header
@@ -167,7 +168,7 @@ private:
     unsigned int _frame_cell_num;
 
 public:
-    File();
+    explicit File(Message *message = nullptr);
     ~File();
     File(const File &f) = delete;
     File &operator=(const File &f) = delete;

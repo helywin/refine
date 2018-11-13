@@ -14,8 +14,9 @@
 #include "Buffer.hpp"
 #include "Can.hpp"
 #include "File.hpp"
+#include "Message.hpp"
 
-class Collect : public QThread
+class Collect : public QThread, public Message
 {
 Q_OBJECT
 public:
@@ -59,7 +60,7 @@ private:
     unsigned long _msec;
 
 public:
-    Collect();
+    explicit Collect(Message *message = nullptr);
 
     void setParams(Can *can, Buffer *buffer,
                    Manner manner, unsigned long msec = 10,

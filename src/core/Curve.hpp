@@ -13,6 +13,7 @@
 #include <QtCore/QList>
 #include <QtCore/QFile>
 #include <QtCore/QMap>
+#include "Message.hpp"
 
 class Tribe;
 class CurveModel;
@@ -20,7 +21,7 @@ class CurveModel;
  * @brief 曲线配置类
  */
 
-class Curve
+class Curve : public Message
 {
 public:
     friend class CurveModel;
@@ -305,7 +306,8 @@ private:
     bool _initialized;
 
 public:
-    Curve() : _initialized(false) {}
+    explicit Curve(Message *message = nullptr) :
+            Message(message), _initialized(false) {}
 
     bool loadFromCsv(QFile &f);
 

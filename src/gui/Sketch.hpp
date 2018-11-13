@@ -12,6 +12,7 @@
 #include <QtWidgets/QScrollBar>
 #include "Tribe.hpp"
 #include "Curve.hpp"
+#include "Message.hpp"
 
 class Revolve;
 /*!
@@ -25,7 +26,7 @@ class Revolve;
 #define X_BLANK_RATE 0.02
 #define Y_BLANK_RATE 0.1
 
-class Sketch : public QGLWidget, public QGLFunctions
+class Sketch : public QGLWidget, public QGLFunctions, public Message
 {
 Q_OBJECT
 public:
@@ -46,7 +47,8 @@ private:
     double _y_rate;
 
 public:
-    explicit Sketch(QWidget *parent, Revolve *revolve);
+    explicit Sketch(QWidget *parent, Revolve *revolve,
+            Message *message = nullptr);
 
     inline void setScroll(QScrollBar *scroller) { _h_scroll = scroller; }
 

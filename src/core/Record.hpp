@@ -13,12 +13,13 @@
 #include <QtCore/QFile>
 #include "File.hpp"
 #include "Buffer.hpp"
+#include "Message.hpp"
 
 /*!
  * @brief 用来存储报文的类
  */
 
-class Record : public QThread
+class Record : public QThread, public Message
 {
 Q_OBJECT
 public:
@@ -52,7 +53,7 @@ private:
     unsigned long _msec;
 
 public:
-    Record();
+    explicit Record(Message *message = nullptr);
 
     inline void setParams(QFile *record, Buffer *buffer)
     {
