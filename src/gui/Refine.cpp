@@ -108,6 +108,7 @@ void Refine::setup()
     initMenu(_menu_init, tr("初始化(&I)"), _menubar);
     initMenu(_menu_init_option, tr("采集选项(&S)..."), _menu_init,
              tr("设置CAN、曲线配置和工况"));
+    _menu_init_option->setIcon(QIcon(":res/icons/config.png"));
     _menu_init->addSeparator();
     initMenu(_menu_init_can, tr("连接CAN(&C)"), _menu_init,
              tr("连接/断开CAN"), true);
@@ -163,6 +164,17 @@ void Refine::setup()
     _toolbar_file = new QToolBar(tr("文件(&F)"), this);
     this->addToolBar(_toolbar_file);
     _toolbar_file->addAction(_menu_file_open);
+    _toolbar_file->addAction(_menu_file_save);
+//    _toolbar_file->addAction(_menu_file_import_config);
+//    _toolbar_file->addAction(_menu_file_import_data);
+//    _toolbar_file->addAction(_menu_file_import_frame);
+//    _toolbar_file->addAction(_menu_file_import_mode);
+//    _toolbar_file->addAction(_menu_file_export_config);
+//    _toolbar_file->addAction(_menu_file_export_data);
+//    _toolbar_file->addAction(_menu_file_export_frame);
+//    _toolbar_file->addAction(_menu_file_export_mode);
+    _toolbar_file->addAction(_menu_file_settings);
+    _toolbar_file->addAction(_menu_file_exit);
 
     _toolbox = new Toolbox(this);
     _toolbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);

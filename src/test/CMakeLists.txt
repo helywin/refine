@@ -77,6 +77,7 @@ set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.dll.a)
 set(LIBZIP D:/msys32/mingw32/lib/libzip.dll.a)
 set(LIBZ D:/msys32/mingw32/lib/libz.dll.a)
 set(LIBBZ2 D:/msys32/mingw32/lib/libbz2.dll.a)
+set(LIBFREEGLUT D:/msys32/mingw32/lib/libfreeglut.dll.a)
 set(LIBNETTLE D:/msys32/mingw32/lib/libnettle.dll.a)
 set(LIBGNUTLS D:/msys32/mingw32/lib/libgnutls.dll.a)
 
@@ -120,6 +121,7 @@ target_link_libraries(refine
         ${LIBCAN}
         ${LIBOPENGL}
         ${LIBOMP}
+        ${LIBFREEGLUT}
         Qt5Core
         Qt5Widgets
         Qt5Gui

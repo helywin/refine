@@ -22,6 +22,8 @@ private:
     CurveViewer *_viewer;
     QVBoxLayout *_layout;
     QToolBar *_toolbar;
+    QAction *_zoom_plus;
+    QAction *_zoom_minus;
 public:
     Display(QWidget *parent, Revolve *revolve, Message *message = nullptr);
 

@@ -23,6 +23,7 @@ void CurveViewer::setup()
     _layout->addWidget(_sketch);
     _layout->addWidget(_h_scroll);
     _layout->setMargin(0);
+    _layout->setContentsMargins(0,0,0,0);
     _sketch->setScroll(_h_scroll);
     connect(_h_scroll, &QScrollBar::valueChanged,
             this, &CurveViewer::valueChanged, Qt::DirectConnection);

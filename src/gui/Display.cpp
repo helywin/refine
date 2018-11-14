@@ -18,11 +18,15 @@ void Display::setup()
 {
     _toolbar = new QToolBar(this);
     _layout = new QVBoxLayout(this);
+    _layout->setMargin(0);
     setLayout(_layout);
     _layout->setContentsMargins(0, 0, 0, 0);
     _layout->addWidget(_toolbar);
     _layout->addWidget(_viewer);
-    _toolbar->addAction("放大");
+    _zoom_plus = new QAction(QIcon(":res/icons/zoom+.png"), tr("放大"), this);
+    _zoom_minus = new QAction(QIcon(":res/icons/zoom-.png"), tr("缩小"), this);
+    _toolbar->addAction(_zoom_plus);
+    _toolbar->addAction(_zoom_minus);
 }
 
 Sketch &Display::sketch()

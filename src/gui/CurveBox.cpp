@@ -44,6 +44,12 @@ void CurveBox::connectModelToSketch(Sketch *sketch)
 void CurveBox::selectionChanged(const QItemSelection &selected,
                                 const QItemSelection &deselected)
 {
-    emitMessage(Debug, tr("当前行 %1").arg(_view->currentIndex().row()));
-    _sketch->setCurrentIndex(_view->currentIndex().row());
+    int index = _view->currentIndex().row();
+    emitMessage(Debug, tr("当前行 %1").arg(index));
+    if (index < 0) {
+        _sketch->setCurrentIndex(index, false);
+    } else {
+        _sketch->setCurrentIndex(index, _tribe->style(index).display());
+    }
+    _sketch->update();
 }

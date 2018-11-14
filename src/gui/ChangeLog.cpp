@@ -38,5 +38,5 @@ void ChangeLog::setup()
     QString changelog = stream.readAll();
     cursor.insertHtml(changelog);
     _layout->addWidget(_text);
-    _layout->setContentsMargins(0,0,0,0);
+    _layout->setContentsMargins(0, 0, 0, 0);
 }

@@ -25,8 +25,8 @@ void FilePicker::setup()
     setLabelText(QFileDialog::DialogLabel::FileType, tr("文件类型"));
     setLabelText(QFileDialog::DialogLabel::Accept, tr("确定"));
     setLabelText(QFileDialog::DialogLabel::FileName, tr("文件名"));
-    setLabelText(QFileDialog::DialogLabel::Reject, tr("取消"));
 */
+    setLabelText(QFileDialog::DialogLabel::Reject, tr("取消"));
     setOptions(QFileDialog::DontUseNativeDialog);
     connect(this, &FilePicker::fileSelected,
             this, &FilePicker::fileSelectedSlot, Qt::DirectConnection);
@@ -35,7 +35,8 @@ void FilePicker::setup()
 void FilePicker::showDialog()
 {
     QList<QUrl> urls;
-    for (const auto &info : QDir::drives()) {
+    for (int i = 0; i < 2; ++i) {
+        const auto &info = QDir::drives()[i];
         urls << QUrl::fromLocalFile(info.filePath());
     }
     urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(
