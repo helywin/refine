@@ -14,5 +14,7 @@ Toolbox::Toolbox(QWidget *parent) :
 void Toolbox::setup()
 {
     this->setWindowTitle(tr("工具箱"));
+    _progress = new InfiniteProgress(this);
+    this->setWidget(_progress);
 }
 

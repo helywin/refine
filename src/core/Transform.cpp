@@ -62,23 +62,56 @@ void Transform::run()
                 if (cur.canId() == buf[i]->ID &&
                     (cur.zeroByte() == -1 ||
                      cur.zeroByte() == buf[i]->Data[0])) {
+#if 0
+                    int value = 0;
+                    if (cur.highByte() != -1) {
+                        unsigned char h = buf[i]->Data[cur.highByte()];
+                        unsigned char l = buf[i]->Data[cur.lowByte()];
+                        auto high_pos0 = (unsigned char) cur.highByteRange()[0];
+                        auto f = (unsigned char) cur.highByteRange()[1];
+                        auto s = (unsigned char) cur.lowByteRange()[0];
+                        auto t = (unsigned char) cur.lowByteRange()[1];
+                        value = ((((unsigned char) (h << (7 - f))) >> (7 - f)) << (t - s + 1)) +
+                                (((unsigned char) (l << (7 - t))) >> (7 - t + s));
+                        if (cur.rangeIn()[0] < 0) {
+                            value = (signed short)(value);
+                        }
+                    } else {
+                        unsigned char l = buf[i]->Data[cur.lowByte()];
+                        auto s = (unsigned char) cur.lowByteRange()[0];
+                        auto t = (unsigned char) cur.lowByteRange()[1];
+                        value = ((unsigned char) (l << (7 - t))) >> (7 - t + s);
+                        if (cur.rangeIn()[0] < 0) {
+                            value = (signed char)(value);
+                        }
+                    }
+#endif
                     unsigned int high_byte = 0;
                     unsigned int low_byte = 0;
+                    int full = 0;
                     if (cur.highByte() != -1) {
                         high_byte = buf[i]->Data[cur.highByte()];
-                        high_byte <<= 7 - cur.highByteRange()[1];
-                        high_byte >>= 7 - cur.highByteRange()[1] +
-                                      cur.highByteRange()[0];
-                        high_byte <<= cur.lowByteRange()[1] -
-                                      cur.lowByteRange()[0] + 1;
+                        high_byte <<= (7 - cur.highByteRange()[1]);
+                        high_byte >>= (7 - cur.highByteRange()[1] + cur.highByteRange()[0]);
+                        high_byte <<= (cur.lowByteRange()[1] - cur.lowByteRange()[0] + 1);
+
+                        low_byte = buf[i]->Data[cur.lowByte()];
+                        low_byte <<= (7 - cur.lowByteRange()[1]);
+                        low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
+
+                        full = high_byte + low_byte;
+                        if (cur.rangeIn()[0] < 0) {
+                            full = (signed short)(full);
+                        }
                     } else {
-                        high_byte = 0;
+                        low_byte = buf[i]->Data[cur.lowByte()];
+                        low_byte <<= (7 - cur.lowByteRange()[1]);
+                        low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
+                        full = low_byte;
+                        if (cur.rangeIn()[0] < 0) {
+                            full = (signed char)(full);
+                        }
                     }
-                    low_byte = buf[i]->Data[cur.lowByte()];
-                    low_byte <<= 7 - cur.lowByteRange()[1];
-                    low_byte >>= 7 - cur.lowByteRange()[1] +
-                                 cur.lowByteRange()[0];
-                    unsigned int full = high_byte + low_byte;
                     float k;
                     float b;
                     k = (float) (cur.rangeOut()[1] -

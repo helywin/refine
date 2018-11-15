@@ -3,6 +3,7 @@
 //
 
 #include <QtWidgets/QApplication>
+#include <QtPlatformHeaders/QWindowsWindowFunctions>
 #include "Refine.hpp"
 #include "Output.hpp"
 #include "ChangeLog.hpp"
@@ -23,6 +24,8 @@ void Refine::setup()
     _win_state = Qt::WindowMaximized;
     _presentation = false;
     setWindowState(_win_state);
+    QWindowsWindowFunctions::
+    setHasBorderInFullScreen(this->windowHandle(), true);   //解决QOpenGLWidget全屏下不显示菜单的问题
     setWindowIcon(QIcon(":res/ui/logo.ico"));
     QApplication::setStyle("fusion");
     _menubar = new QMenuBar(this);
@@ -320,7 +323,7 @@ void Refine::connectCan()
             emitMessage(Info, tr("连接成功"));
         } else {
             emitMessage(Warning,
-                         tr("连接失败，检查CAN占用或连接情况"));
+                        tr("连接失败，检查CAN占用或连接情况"));
         }
     } else {
         int flag = 0;

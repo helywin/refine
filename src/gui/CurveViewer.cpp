@@ -17,11 +17,13 @@ CurveViewer::CurveViewer(QWidget *parent, Revolve *revolve, Message *message) :
 
 void CurveViewer::setup()
 {
-    _layout = new QVBoxLayout(this);
+    _layout = new QGridLayout(this);
     setLayout(_layout);
     _h_scroll = new QScrollBar(Qt::Orientation::Horizontal, this);
-    _layout->addWidget(_sketch);
-    _layout->addWidget(_h_scroll);
+    _v_scroll = new QScrollBar(Qt::Orientation::Vertical, this);
+    _layout->addWidget(_sketch, 0, 0);
+    _layout->addWidget(_h_scroll, 1, 0);
+    _layout->addWidget(_v_scroll, 0, 1);
     _layout->setMargin(0);
     _layout->setContentsMargins(0,0,0,0);
     _sketch->setScroll(_h_scroll);

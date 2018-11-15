@@ -241,6 +241,8 @@ public:
         }
 
         inline bool empty() const { return _empty; }
+
+        inline int fillType(int index) { return _fill[index]; }
     };
 
     /*!

@@ -27,7 +27,14 @@ class Transform : public QThread, public Message
 {
 Q_OBJECT
 public:
-
+    union ShortByte
+    {
+        unsigned short all;
+        struct {
+            unsigned char b0;
+            unsigned char b1;
+        }bit;
+    };
     enum Status
     {
         Stop,

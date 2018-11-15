@@ -206,8 +206,16 @@ void Sketch::plotYAxis()
     double xl = -_left_axis_width * 0.1;
     double xr = X_LEFT;
     QVector<double> y;
-    for (int i = 0; i < GRADUATE_NUM; ++i) {
-        y.append((Y_TOP - Y_BOTTOM) / (GRADUATE_NUM - 1) * i + Y_BOTTOM);
+    int graduate_num = GRADUATE_NUM;
+    if (_axis_index >= 0) {
+        int num = _tribe->style(_axis_index).rangeOut()[1] -
+                  _tribe->style(_axis_index).rangeOut()[0];
+        if (num < graduate_num) {
+            graduate_num = num + 1;
+        }
+    }
+    for (int i = 0; i < graduate_num; ++i) {
+        y.append((Y_TOP - Y_BOTTOM) / (graduate_num - 1) * i + Y_BOTTOM);
     }
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
@@ -222,13 +230,14 @@ void Sketch::plotYAxis()
     glFlush();
 
     if (_axis_index >= 0) {
-        QFont font("微软雅黑", 10);
+        QFont font("Helvetica", 10);
+        font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
         xl = -_left_axis_width * 0.9;
-        for (int i = 0; i < GRADUATE_NUM; ++i) {
+        for (int i = 0; i < graduate_num; ++i) {
             const int *range = _tribe->style(_axis_index).rangeOut();
             double v = (double) range[0] +
                        (range[1] - range[0]) *
-                       ((double) i / (double) (GRADUATE_NUM - 1));
+                       ((double) i / (double) (graduate_num - 1));
             QString str = QString("%1").arg(v, 0, 'f', 2);
             drawGlString(xl, y[i], str, color, font);
         }
@@ -242,7 +251,7 @@ void Sketch::plotYAxis()
     glEnable(GL_LINE_STIPPLE);
     glColor3d(0, 96.0 / 256, 48.0 / 256);
     glBegin(GL_LINES);
-    for (int i = 0; i < GRADUATE_NUM; ++i) {
+    for (int i = 0; i < graduate_num; ++i) {
         glVertex2d(xr, y[i]);
         glVertex2d(X_RIGHT, y[i]);
     }
@@ -260,10 +269,14 @@ void Sketch::plotVernier()
         return;
     }
     int data_pos = _h_scroll->value() + _vernier_pos;
+    const int vernier_dist = 10;
     QPainter painter;
     painter.begin(this);
     QColor color(0xffffff);
-    QFont font("微软雅黑", 10);
+    QFont font("Helvetica", 10);
+    int row_height = font.pointSize() + 4;
+    font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
+    QFontMetrics metrics(font, this);
     painter.setPen(color);
     painter.setFont(font);
     int x;
@@ -272,25 +285,77 @@ void Sketch::plotVernier()
     pointGlToQt(_vernier_pos, Y_BOTTOM, x, y1);
     pointGlToQt(_vernier_pos, Y_TOP, x, y2);
     painter.drawLine(x, y1, x, y2);
-    if (_tribe->len() <= _vernier_pos) {
+    if (_tribe->len() <= _vernier_pos || data_pos >= _tribe->len()) {
         return;
     }
-    painter.drawText(x + 10, y2 - 10,
-                     QString("时间 %1 s")
-                             .arg(data_pos / 100.0, 0, 'f', 2));
+    QString time_value = QString("时间 %1 s").arg(data_pos / 100.0, 0, 'f', 2);
+    int max_time_width = metrics.boundingRect(time_value).width();
+    if (rect().width() - x < max_time_width + vernier_dist) {
+        painter.drawText(QRect(x - vernier_dist - max_time_width,
+                               y2 - 10 - row_height,
+                               max_time_width, row_height), time_value,
+                         QTextOption(Qt::AlignRight | Qt::AlignHCenter));
+    } else {
+        painter.drawText(x + vernier_dist, y2 - 10, time_value);
+    }
+    int max_name_width = 0;
+    for (int i = 0; i < _tribe->size(); ++i) {
+        if (!_tribe->style(i).display()) {
+            continue;
+        }
+        int w = metrics.boundingRect(_tribe->style(i).name()).width();
+        if (max_name_width < w) {
+            max_name_width = w;
+        }
+    }
+    int max_value_width = 40;
     for (int i = 0; i < _tribe->size(); ++i) {
         if (!_tribe->style(i).display()) {
             continue;
         }
         color = _tribe->style(i).color();
         painter.setPen(color);
-        y2 += font.pointSize() + 4;
-        painter.drawText(x + 10, y2,
-                         QString::number((*_tribe)[i][data_pos], 'f', 0));
-        if (rect().width() - x < 100) {
-            painter.drawText(x - 100, y2, _tribe->style(i).name());
+        font.setBold(i == _current_index);
+        font.setUnderline(i == _current_index);
+        painter.setFont(font);
+        y2 += row_height;
+        QString value = QString("%1").arg((*_tribe)[i][data_pos], 0, 'f', 0);
+        QString name = _tribe->style(i).name();
+        QString suffix;
+        switch ((*_tribe)[i].fillType(data_pos)) {
+            case Tribe::FakeByZero:
+                suffix = "-";
+                break;
+            case Tribe::FakeByPrevious:
+                suffix = "+";
+                break;
+            default:
+                break;
+        }
+        if (rect().width() - x > max_name_width + max_value_width + 2 * vernier_dist) {
+            painter.drawText(x + vernier_dist, y2, value);
+            painter.drawText(x + vernier_dist + max_value_width, y2, name + suffix);
+        } else if (rect().width() - x < max_name_width + max_value_width + 2 * vernier_dist &&
+                   rect().width() - x > max_value_width + vernier_dist) {
+            painter.drawText(x + 10, y2, value);
+            painter.drawText(
+                    QRect(x - vernier_dist - max_name_width - 10, y2 - row_height,
+                            max_name_width + 10, row_height),
+                    suffix + name,
+                    QTextOption(Qt::AlignRight | Qt::AlignHCenter)
+            );
         } else {
-            painter.drawText(x + 60, y2, _tribe->style(i).name());
+            painter.drawText(
+                    QRect(x - vernier_dist - max_value_width, y2 - row_height, max_value_width, row_height),
+                    value,
+                    QTextOption(Qt::AlignRight | Qt::AlignHCenter)
+            );
+            painter.drawText(
+                    QRect(x - 2 * vernier_dist - max_name_width - max_value_width - 10,
+                            y2 - row_height, max_name_width + 10, row_height),
+                    suffix + name,
+                    QTextOption(Qt::AlignRight | Qt::AlignHCenter)
+            );
         }
     }
 
@@ -413,7 +478,7 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
             return;
         }
         int x0 = event->pos().x();
-        emitMessage(Debug, QString("鼠标位置 %1").arg(x0));
+//        emitMessage(Debug, QString("鼠标位置 %1").arg(x0));
         double x, y;
         pointQtToGl(x0, 0, x, y);
         if (x < 0) {

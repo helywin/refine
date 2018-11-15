@@ -261,8 +261,10 @@ void Softcan::toCurve(Curve &curve)
         cell.setHighRange(0, iter.firstBit());
         cell.setLowByte(iter.lowByte());
         cell.setLowRange(iter.thirdBit(), iter.secondBit());
-        cell.setRangeIn(iter.inputMin(), iter.inputMax());
-        cell.setRangeOut((int) iter.yMin(), (int) iter.yMax());
+        cell.setRangeIn(__min(iter.inputMin(), iter.inputMax()),
+                        __max(iter.inputMin(), iter.inputMax()));
+        cell.setRangeOut((int) __min(iter.yMin(), iter.yMax()),
+                         (int) __max(iter.yMin(), iter.yMax()));
         cell.setRemark(iter.intro());
         curve.append(qMove(cell));
     }

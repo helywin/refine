@@ -5,11 +5,25 @@
 #ifndef REFINE_INFINITEPROGRESS_HPP
 #define REFINE_INFINITEPROGRESS_HPP
 
-#include <QtWidgets/QProgressDialog>
+#include <QtWidgets/QWidget>
+#include <QtCore/QTimer>
 
-class InfiniteProgress
+class InfiniteProgress : public QWidget
 {
+Q_OBJECT
+private:
+    QColor _boarder;
+    QColor _fill;
+    QTimer _timer;
+    double _process;
+    double _len;
+public:
+    explicit InfiniteProgress(QWidget *parent, int msec = 10);
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
+private slots:
+    void updateProgress();
 };
 
 

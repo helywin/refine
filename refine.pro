@@ -14,6 +14,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = refine
 QMAKE_LFLAGS = -static
 QMAKE_LFLAGS_QT_DLL = -static
+DEFINES += QT_NO_DEBUG_OUTPUT
+DEFINES += QT_WARNING_DEBUG_OUTPUT
 TEMPLATE = app
 
 CONFIG += c++1z
@@ -27,6 +29,7 @@ INCLUDEPATH += ./src/gui \
 
 SOURCES += \
         ./src/gui/About.cpp \
+        ./src/gui/Block.cpp \
         ./src/gui/ChangeLog.cpp \
         ./src/gui/ColorPicker.cpp \
         ./src/gui/CurveBox.cpp \
@@ -36,11 +39,14 @@ SOURCES += \
         ./src/gui/CurveViewer.cpp \
         ./src/gui/Display.cpp \
         ./src/gui/FilePicker.cpp \
+        ./src/gui/FiniteProgress.cpp \
         ./src/gui/FrameViewer.cpp \
+        ./src/gui/InfiniteProgress.cpp \
         ./src/gui/LostFocus.cpp \
         ./src/gui/MarkBox.cpp \
         ./src/gui/MessagerPanel.cpp \
         ./src/gui/Output.cpp \
+        ./src/gui/Progress.cpp \
         ./src/gui/Refine.cpp \
         ./src/gui/Settings.cpp \
         ./src/gui/Sketch.cpp \
@@ -56,6 +62,7 @@ SOURCES += \
         ./src/core/FramePool.cpp \
         ./src/core/Initializer.cpp \
         ./src/core/Mark.cpp \
+        ./src/core/Message.cpp \
         ./src/core/Packer.cpp \
         ./src/core/Record.cpp \
         ./src/core/Revolve.cpp \
@@ -77,6 +84,7 @@ SOURCES += \
 
 HEADERS += \
         ./src/gui/About.hpp \
+        ./src/gui/Block.hpp \
         ./src/gui/ChangeLog.hpp \
         ./src/gui/ColorPicker.hpp \
         ./src/gui/CurveBox.hpp \
@@ -86,11 +94,14 @@ HEADERS += \
         ./src/gui/CurveViewer.hpp \
         ./src/gui/Display.hpp \
         ./src/gui/FilePicker.hpp \
+        ./src/gui/FiniteProgress.hpp \
         ./src/gui/FrameViewer.hpp \
+        ./src/gui/InfiniteProgress.hpp \
         ./src/gui/LostFocus.hpp \
         ./src/gui/MarkBox.hpp \
         ./src/gui/MessagerPanel.hpp \
         ./src/gui/Output.hpp \
+        ./src/gui/Progress.hpp \
         ./src/gui/Refine.hpp \
         ./src/gui/Settings.hpp \
         ./src/gui/Sketch.hpp \
@@ -103,9 +114,10 @@ HEADERS += \
         ./src/core/Csv.hpp \
         ./src/core/Curve.hpp \
         ./src/core/File.hpp \
-        ./src/core/FramePool.cpp \
+        ./src/core/FramePool.hpp \
         ./src/core/Initializer.hpp \
         ./src/core/Mark.hpp \
+        ./src/core/Message.hpp \
         ./src/core/Packer.hpp \
         ./src/core/Record.hpp \
         ./src/core/Revolve.hpp \
@@ -127,7 +139,8 @@ HEADERS += \
 RESOURCES += \
     res/text.qrc \
     res/ui.qrc \
-    res/trans.qrc
+    res/trans.qrc \
+    res/icons.qrc
 
 RC_FILE += res/refine.rc
 

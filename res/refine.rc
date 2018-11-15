@@ -5,8 +5,8 @@ IDI_ICON1 ICON DISCARDABLE "ui/logo.ico"
 #include <winver.h>
 #endif
 VS_VERSION_INFO VERSIONINFO
-    FILEVERSION 0,0,11,1
-    PRODUCTVERSION 0,0,11,1
+    FILEVERSION 0,0,12,1
+    PRODUCTVERSION 0,0,12,1
     FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
     FILEFLAGS VS_FF_DEBUG
@@ -24,12 +24,12 @@ VS_VERSION_INFO VERSIONINFO
                 VALUE "Comments", "BYD Vehicles Software"
                 VALUE "CompanyName", "BYD company LTd."
                 VALUE "FileDescription", "BYD Vehicles Software"
-                VALUE "FileVersion", "0.0.11.1"
+                VALUE "FileVersion", "0.0.12.1"
                 VALUE "InternalName", "refine.exe"
                 VALUE "LegalCopyright", "Copyright (C) 2018 BYD company LTd."
                 VALUE "OriginalFilename", "Refine.exe"
                 VALUE "ProductName", "Refine"
-                VALUE "ProductVersion", "0.0.11.1(alpha)"
+                VALUE "ProductVersion", "0.0.12.1(alpha)"
                 VALUE "PrivateBuild", "build by jiang"
                 VALUE "LegalTrademarks", "BYD"
             END

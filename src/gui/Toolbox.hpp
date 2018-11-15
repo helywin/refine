@@ -7,11 +7,13 @@
 
 #include <QtWidgets/QDockWidget>
 #include "ByteRangeFrame.hpp"
+#include "InfiniteProgress.hpp"
 
 class Toolbox : public QDockWidget
 {
 Q_OBJECT
 private:
+    InfiniteProgress *_progress;
 public:
     explicit Toolbox(QWidget *parent);
 private:

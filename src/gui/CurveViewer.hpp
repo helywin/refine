@@ -6,7 +6,7 @@
 #define REFINE_CURVEVIEWER_HPP
 
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QScrollBar>
 #include "Message.hpp"
 class Sketch;
@@ -17,7 +17,7 @@ class CurveViewer : public QWidget, public Message
 Q_OBJECT
 private:
     Sketch *_sketch;
-    QVBoxLayout *_layout;
+    QGridLayout *_layout;
     QScrollBar *_h_scroll;
     QScrollBar *_v_scroll;
 public:

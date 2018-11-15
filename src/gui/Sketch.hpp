@@ -62,7 +62,7 @@ public:
 
     void setSmooth(bool enable);
 
-    void start(int msec = 10);
+    void start(int msec = 20);
     void pause();
     void resume();
     void stop();
