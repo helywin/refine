@@ -13,6 +13,7 @@ ByteRangeFrame::ByteRangeFrame(bool checkable, QWidget *parent) :
 
 void ByteRangeFrame::setup()
 {
+//    setFocusPolicy(Qt::ClickFocus);
     setBackgroundRole(QPalette::Window);
     setAutoFillBackground(true);
     setFrameShape(QFrame::Box);

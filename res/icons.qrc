@@ -15,5 +15,6 @@
         <file>icons/timer.png</file>
         <file>icons/zoom+.png</file>
         <file>icons/zoom-.png</file>
+        <file>icons/search.png</file>
     </qresource>
 </RCC>

@@ -7,26 +7,33 @@
 
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QVBoxLayout>
 #include <QtCore/QItemSelectionModel>
 #include "TribeModel.hpp"
+#include "TribeSortModel.hpp"
 #include "Message.hpp"
 
 class CurvePanel;
 class TribeView;
 class Tribe;
 class Sketch;
+class CurveFilter;
 
 class CurveBox : public QDockWidget, public Message
 {
 Q_OBJECT
 private:
     TribeView *_view;
+    QWidget *_content;
+    QVBoxLayout *_layout;
     QItemSelectionModel *_selection;
     Tribe *_tribe;
     QHeaderView *_h_header;
     QHeaderView *_v_header;
 //    CurvePanel *_curve_panel;
     TribeModel *_model;
+    TribeSortModel *_proxy;
+    CurveFilter *_filter;
     Sketch *_sketch;
 
 public:

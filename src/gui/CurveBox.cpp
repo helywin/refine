@@ -9,6 +9,7 @@
 #include "CurvePanel.hpp"
 #include "TribeView.hpp"
 #include "Sketch.hpp"
+#include "CurveFilter.hpp"
 
 CurveBox::CurveBox(Tribe *tribe, Message *message, QWidget *parent) :
         _tribe(tribe),
@@ -21,14 +22,24 @@ CurveBox::CurveBox(Tribe *tribe, Message *message, QWidget *parent) :
 void CurveBox::setup()
 {
     setWindowTitle(tr("曲线"));
-//    _curve_panel = new CurvePanel(this);
-    _model = new TribeModel(this);
+    _content = new QWidget(this);
+    setWidget(_content);
+    _layout = new QVBoxLayout(_content);
+    _layout->setMargin(5);
+    _layout->setContentsMargins(0, 10, 10, 0);
+    _filter = new CurveFilter(_model, this);
+    _content->setLayout(_layout);
+    _layout->addWidget(_filter);
+    _model = new TribeModel(_content);
+    _proxy = new TribeSortModel(_content);
+    _proxy->setSourceModel(_model);
     _selection = new QItemSelectionModel(_model);
     _h_header = new QHeaderView(Qt::Horizontal);
     _v_header = new QHeaderView(Qt::Vertical);
-    _view = new TribeView(_model, _selection, _h_header, _v_header, this);
+    _view = new TribeView(_proxy, _selection, _h_header, _v_header, _content);
+//    _view->setSortingEnabled(true);
     _h_header->setParent(_view);
-    setWidget(_view);
+    _layout->addWidget(_view);
     connect(_selection, &QItemSelectionModel::selectionChanged,
             this, &CurveBox::selectionChanged);
 }

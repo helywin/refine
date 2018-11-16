@@ -171,16 +171,22 @@ void Sketch::plotCurves()
         } else {
             glLineWidth(cfg.width());
         }
+#if 0
         glBegin(GL_LINES);
-        float y_cal = 0;
-        for (int j = 0; j < len - 1; ++j) {
+        float y_cal = 0;src/gui/Sketch.cpp:181
             if (j) {
                 glVertex2f(j, y_cal);
             } else {
                 glVertex2f(j, genY(iter[j + start_pos], cfg));
-            }
-            y_cal = genY(iter[j + start_pos + 1], cfg);
+            }src/gui/Sketch.cpp:180
+            y_cal = genY(iter[j src/gui/Sketch.cpp:181+ start_pos + 1], cfg);
             glVertex2f(j + 1, y_cal);
+        }
+        glEnd();
+#endif
+        glBegin(GL_LINE_STRIP);
+        for (int j = 0; j < len; ++j) {
+            glVertex2f(j, genY(iter[j + start_pos], cfg));
         }
         glEnd();
     }

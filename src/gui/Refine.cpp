@@ -95,15 +95,20 @@ void Refine::setup()
     _menu_view_sketchmsec_group = new QActionGroup(_menu_view_sketchmsec);
     initMenu(_menu_view_sketchmsec_10, tr("10 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("10ms刷新间隔"), true, true);
+    _menu_view_sketchmsec_10->setData(10);
     initMenu(_menu_view_sketchmsec_20, tr("20 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("20ms刷新间隔"), true);
+    _menu_view_sketchmsec_20->setData(20);
     initMenu(_menu_view_sketchmsec_30, tr("30 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("30ms刷新间隔"), true);
+    _menu_view_sketchmsec_30->setData(30);
     initMenu(_menu_view_sketchmsec_50, tr("50 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("50ms刷新间隔"), true);
+    _menu_view_sketchmsec_50->setData(50);
     initMenu(_menu_view_sketchmsec_100, tr("100 ms"),
              _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("100ms刷新间隔"), true);
+    _menu_view_sketchmsec_100->setData(100);
     _menu_view_sketchmsec_group->setExclusive(true);
     initMenu(_menu_view_smooth, tr("反走样(&A)"), _menu_view,
              tr("开启/关闭反走样"), true, true);
@@ -427,17 +432,7 @@ void Refine::startTimers(QAction *action)
 
 void Refine::changeUpdateMsec(QAction *action)
 {
-    if (action == _menu_view_sketchmsec_10) {
-        _display->sketch().setMsec(10);
-    } else if (action == _menu_view_sketchmsec_20) {
-        _display->sketch().setMsec(20);
-    } else if (action == _menu_view_sketchmsec_30) {
-        _display->sketch().setMsec(30);
-    } else if (action == _menu_view_sketchmsec_50) {
-        _display->sketch().setMsec(50);
-    } else if (action == _menu_view_sketchmsec_100) {
-        _display->sketch().setMsec(100);
-    }
+    _display->sketch().setMsec(action->data().toInt());
 }
 
 void Refine::displayAndHide(QAction *action)
