@@ -134,6 +134,7 @@ void TribeModel::genData(Tribe *tribe)
     if (tribe) {
         beginResetModel();
         _tribe = tribe;
+//        qDebug() << "TribeModel::genData" << _tribe->header();
         endResetModel();
     } else {
         beginResetModel();

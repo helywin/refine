@@ -53,6 +53,8 @@ private:
     bool _smooth;
     bool _vernier;
     int _vernier_pos;
+    int _right_mouse_press_pos;
+    int _right_mouse_release_pos;
 
 public:
     explicit Sketch(QWidget *parent, Revolve *revolve,
@@ -116,8 +118,11 @@ private:
 
     void pointQtToGl(int x0, int y0, double &x1, double &y1);
 
-    void xGlToQt();
-    void xQtToGl();
+    int xGlToQt(double x);
+    double xQtToGl(int x);
+
+    int yGlToQt(double y);
+    double yQtToGl(int y);
 
     void drawFocusSign();
 
@@ -127,6 +132,8 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
 

@@ -265,3 +265,41 @@ void Tribe::genFromCurve(const Curve &curve)
     }
 }
 
+QStringList Tribe::header(Tribe::Selection selection) const
+{
+    QStringList list;
+    switch (selection) {
+        case SelectAll:
+            return _header;
+        case SelectChecked:
+            for (const auto &iter : _styles) {
+                if (iter.display()) {
+                    list.append(iter.name());
+                }
+            }
+            return list;
+        case SelectUnchecked:
+            for (const auto &iter : _styles) {
+                if (!iter.display()) {
+                    list.append(iter.name());
+                }
+            }
+            return list;
+        default:
+            return list;
+    }
+}
+
+void Tribe::displayAll()
+{
+    for (auto &iter : _styles) {
+        iter.setDisplay(true);
+    }
+}
+
+void Tribe::displayNone()
+{
+    for (auto &iter : _styles) {
+        iter.setDisplay(false);
+    }
+}

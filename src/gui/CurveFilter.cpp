@@ -22,13 +22,13 @@ void CurveFilter::setup()
     _menu = new QMenu(this);
     _case_sensitive = new QAction(tr("区分大小写(&C)"), _menu);
     _case_sensitive->setCheckable(true);
-    _curve_items = new QActionGroup(this);
-    _checked_items = new QAction(tr("选中(&S)"), _curve_items);
-    _checked_items->setData(QVariant(int(Selection::SelectChecked)));
-    _unchecked_items = new QAction(tr("未选中(&U)"), _curve_items);
-    _unchecked_items->setData(QVariant(int(Selection::SelectUnchecked)));
-    _all_items = new QAction(tr("所有(&A)"), _curve_items);
-    _all_items->setData(QVariant(int(Selection::SelectAll)));
+    _curve_selection = new QActionGroup(this);
+    _checked_items = new QAction(tr("选中(&S)"), _curve_selection);
+    _checked_items->setData(QVariant(int(Tribe::Selection::SelectChecked)));
+    _unchecked_items = new QAction(tr("未选中(&U)"), _curve_selection);
+    _unchecked_items->setData(QVariant(int(Tribe::Selection::SelectUnchecked)));
+    _all_items = new QAction(tr("所有(&A)"), _curve_selection);
+    _all_items->setData(QVariant(int(Tribe::Selection::SelectAll)));
     _checked_items->setCheckable(true);
     _unchecked_items->setCheckable(true);
     _all_items->setCheckable(true);
@@ -46,7 +46,7 @@ void CurveFilter::setup()
     _wildcard->setChecked(true);
     _menu->addAction(_case_sensitive);
     _menu->addSeparator();
-    _menu->addActions(_curve_items->actions());
+    _menu->addActions(_curve_selection->actions());
     _menu->addSeparator();
     _menu->addActions(_pattern->actions());
     _filter_btn = new QToolButton(this);
@@ -62,8 +62,15 @@ void CurveFilter::setup()
     options_action->setDefaultWidget(_filter_btn);
     addAction(options_action, QLineEdit::LeadingPosition);
     _completer.setCaseSensitivity(Qt::CaseInsensitive);
-//    _completer.setModel(_model);
     setCompleter(&_completer);
+
+
+    connect(_case_sensitive, &QAction::triggered,
+            this, &CurveFilter::changeCaseSensitive, Qt::DirectConnection);
+    connect(_curve_selection, &QActionGroup::triggered,
+            this, &CurveFilter::changeSelection, Qt::DirectConnection);
+    connect(_pattern, &QActionGroup::triggered,
+            this, &CurveFilter::changePatternSyntax, Qt::DirectConnection);
 }
 
 void CurveFilter::paintEvent(QPaintEvent *event)
@@ -91,5 +98,72 @@ void CurveFilter::setFound(bool is_found)
         setStyleSheet("QLineEdit { background: #ffffff;}");
     } else {
         setStyleSheet("QLineEdit { background: rgb(255, 204, 204);}");
+    }
+}
+
+Qt::CaseSensitivity CurveFilter::caseSensitivity() const
+{
+    return _case_sensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
+}
+
+void CurveFilter::setCaseSensitivity(Qt::CaseSensitivity cs)
+{
+    _case_sensitive->setChecked(cs == Qt::CaseSensitive);
+}
+
+QRegExp::PatternSyntax CurveFilter::patternSyntax() const
+{
+    return static_cast<QRegExp::PatternSyntax>(_pattern->checkedAction()->data().toInt());
+}
+
+void CurveFilter::setPatternSyntax(QRegExp::PatternSyntax s)
+{
+    for (auto *action : _pattern->actions()) {
+        if (action->data().toInt() == s) {
+            action->setChecked(true);
+            break;
+        }
+    }
+}
+
+Tribe::Selection CurveFilter::selection() const
+{
+    return static_cast<Tribe::Selection>(_curve_selection->checkedAction()->data().toInt());
+}
+
+void CurveFilter::setSelection(Tribe::Selection selection)
+{
+    for (auto *action : _curve_selection->actions()) {
+        if (action->data().toInt() == selection) {
+            action->setChecked(true);
+            break;
+        }
+    }
+}
+
+void CurveFilter::changeCaseSensitive()
+{
+    _completer.setCaseSensitivity(_case_sensitive->isChecked() ?
+                                  Qt::CaseSensitive : Qt::CaseInsensitive);
+}
+
+void CurveFilter::changeSelection(QAction *action)
+{
+    _complete_model->setSelection(
+            static_cast<Tribe::Selection>(action->data().toInt()));
+    _complete_model->genData();
+}
+
+void CurveFilter::changePatternSyntax(QAction *action)
+{
+    switch (action->data().toInt()) {
+        case QRegExp::RegExp2:
+            setCompleter(nullptr);
+            break;
+        case QRegExp::FixedString:
+        case QRegExp::Wildcard:
+        default:
+            setCompleter(&_completer);
+            break;
     }
 }

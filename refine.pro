@@ -34,6 +34,7 @@ SOURCES += \
         ./src/gui/ColorPicker.cpp \
         ./src/gui/CurveBox.cpp \
         ./src/gui/CurveEditor.cpp \
+        ./src/gui/CurveFilter.cpp \
         ./src/gui/CurvePanel.cpp \
         ./src/gui/CurveView.cpp \
         ./src/gui/CurveViewer.cpp \
@@ -73,7 +74,10 @@ SOURCES += \
         ./src/core/Trigger.cpp \
         ./src/core/Version.cpp \
         ./src/mod/CurveModel.cpp \
+        ./src/mod/CompleteModel.cpp \
         ./src/mod/TribeModel.cpp \
+        ./src/mod/TribeCompleteModel.cpp \
+        ./src/mod/TribeSortModel.cpp \
         ./src/del/ByteInput.cpp \
         ./src/del/ByteRangeFrame.cpp \
         ./src/del/ColorInput.cpp \
@@ -89,6 +93,7 @@ HEADERS += \
         ./src/gui/ColorPicker.hpp \
         ./src/gui/CurveBox.hpp \
         ./src/gui/CurveEditor.hpp \
+        ./src/gui/CurveFilter.hpp \
         ./src/gui/CurvePanel.hpp \
         ./src/gui/CurveView.hpp \
         ./src/gui/CurveViewer.hpp \
@@ -127,8 +132,11 @@ HEADERS += \
         ./src/core/Tribe.hpp \
         ./src/core/Trigger.hpp \
         ./src/core/Version.hpp \
+        ./src/mod/CompleteModel.hpp \
         ./src/mod/CurveModel.hpp \
         ./src/mod/TribeModel.hpp \
+        ./src/mod/TribeCompleteModel.hpp \
+        ./src/mod/TribeSortModel.hpp \
         ./src/del/ByteInput.hpp \
         ./src/del/ByteRangeFrame.hpp \
         ./src/del/ColorInput.hpp \

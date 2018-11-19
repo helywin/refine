@@ -23,25 +23,38 @@ void CurveBox::setup()
 {
     setWindowTitle(tr("曲线"));
     _content = new QWidget(this);
+    _search = new QWidget(_content);
     setWidget(_content);
-    _layout = new QVBoxLayout(_content);
-    _layout->setMargin(5);
-    _layout->setContentsMargins(0, 10, 10, 0);
-    _filter = new CurveFilter(_model, this);
-    _content->setLayout(_layout);
-    _layout->addWidget(_filter);
+    _layout_search = new QHBoxLayout(_search);
+    _check = new QCheckBox(_search);
+    _check->setCheckState(Qt::CheckState::Unchecked);
+    _search->setLayout(_layout_search);
+    _filter = new CurveFilter(_model, _search);
+    _layout_search->addWidget(_check);
+    _layout_search->addWidget(_filter);
+    _layout_search->setContentsMargins(0, 0, 0, 0);
+    _layout_content = new QVBoxLayout(_content);
+    _layout_content->setMargin(5);
+    _layout_content->setContentsMargins(0, 10, 10, 0);
+    _content->setLayout(_layout_content);
+    _layout_content->addWidget(_search);
     _model = new TribeModel(_content);
     _proxy = new TribeSortModel(_content);
     _proxy->setSourceModel(_model);
-    _selection = new QItemSelectionModel(_model);
+    _selection = new QItemSelectionModel(_proxy);
     _h_header = new QHeaderView(Qt::Horizontal);
     _v_header = new QHeaderView(Qt::Vertical);
     _view = new TribeView(_proxy, _selection, _h_header, _v_header, _content);
 //    _view->setSortingEnabled(true);
     _h_header->setParent(_view);
-    _layout->addWidget(_view);
+    _v_header->setParent(_view);
+    _layout_content->addWidget(_view);
+    _complete_model = new CompleteModel(_tribe, this);
+    _filter->setCompleteModel(_complete_model);
     connect(_selection, &QItemSelectionModel::selectionChanged,
             this, &CurveBox::selectionChanged);
+    connect(_check, &QCheckBox::stateChanged,
+            this, &CurveBox::setDisplayItem, Qt::DirectConnection);
 }
 
 void CurveBox::connectModelToSketch(Sketch *sketch)
@@ -50,6 +63,8 @@ void CurveBox::connectModelToSketch(Sketch *sketch)
     connect(_model, &TribeModel::tribeChanged,
             sketch, static_cast<void (Sketch::*)(void)>(&Sketch::update),
             Qt::DirectConnection);
+    connect(_model, &TribeModel::tribeChanged,
+            _complete_model, &CompleteModel::genData, Qt::DirectConnection);
 }
 
 void CurveBox::selectionChanged(const QItemSelection &selected,
@@ -63,4 +78,24 @@ void CurveBox::selectionChanged(const QItemSelection &selected,
         _sketch->setCurrentIndex(index, _tribe->style(index).display());
     }
     _sketch->update();
+}
+
+void CurveBox::setDisplayItem(int state)
+{
+    switch (state) {
+        case Qt::Checked:
+            _tribe->displayAll();
+            _model->genData(_tribe);
+            _sketch->update();
+            _complete_model->genData();
+            break;
+        case Qt::Unchecked:
+            _tribe->displayNone();
+            _model->genData(_tribe);
+            _sketch->update();
+            _complete_model->genData();
+            break;
+        default:
+            break;
+    }
 }

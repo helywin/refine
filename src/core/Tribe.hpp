@@ -267,6 +267,13 @@ public:
         }
     };
 
+    enum Selection
+    {
+        SelectChecked,
+        SelectUnchecked,
+        SelectAll
+    };
+
 private:
     QList<Style> _styles;       //! \brief 曲线显示配置
     QList<Cell> _cells;         //! \brief 曲线数据
@@ -357,6 +364,16 @@ public:
     inline Style &style(int index) { return _styles[index]; }
 
     inline const Style &style(int index) const { return _styles[index]; }
+
+    inline const QStringList &header() const { return _header; }
+
+    QStringList header(Selection selection) const;
+
+    inline const QVector<int> &segment() const { return _segment; }
+
+    void displayAll();
+
+    void displayNone();
 };
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);

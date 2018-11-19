@@ -166,11 +166,12 @@ void Sketch::plotCurves()
         const Tribe::Style &cfg = _tribe->styles()[i];
         QColor color = cfg.color();
         glColor3d(color.redF(), color.greenF(), color.blueF());
-        if (i == _current_index) {
-            glLineWidth(cfg.width() + 1);
-        } else {
-            glLineWidth(cfg.width());
-        }
+//        if (i == _current_index) {
+//            glLineWidth(cfg.width() + 1);
+//        } else {
+//            glLineWidth(cfg.width());
+//        }
+        glLineWidth(cfg.width());
 #if 0
         glBegin(GL_LINES);
         float y_cal = 0;src/gui/Sketch.cpp:181
@@ -279,17 +280,18 @@ void Sketch::plotVernier()
     QPainter painter;
     painter.begin(this);
     QColor color(0xffffff);
+    QBrush brush(color);
+    QPen pen(color);
     QFont font("Helvetica", 10);
     int row_height = font.pointSize() + 4;
     font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
     QFontMetrics metrics(font, this);
-    painter.setPen(color);
+    painter.setPen(pen);
+    painter.setBrush(brush);
     painter.setFont(font);
-    int x;
-    int y1;
-    int y2;
-    pointGlToQt(_vernier_pos, Y_BOTTOM, x, y1);
-    pointGlToQt(_vernier_pos, Y_TOP, x, y2);
+    int x = xGlToQt(_vernier_pos);
+    int y1 = yGlToQt(Y_BOTTOM);
+    int y2 = yGlToQt(Y_TOP);
     painter.drawLine(x, y1, x, y2);
     if (_tribe->len() <= _vernier_pos || data_pos >= _tribe->len()) {
         return;
@@ -320,10 +322,16 @@ void Sketch::plotVernier()
             continue;
         }
         color = _tribe->style(i).color();
-        painter.setPen(color);
+        pen.setColor(color);
+        painter.setPen(pen);
         font.setBold(i == _current_index);
         font.setUnderline(i == _current_index);
         painter.setFont(font);
+        if (i == _current_index) {
+            float y0 = genY((*_tribe)[i][data_pos], _tribe->style(i));
+            int d = _tribe->style(i).width() * 2 + 4;
+            painter.drawEllipse(x - d / 2, yGlToQt(y0) - d / 2, d, d);
+        }
         y2 += row_height;
         QString value = QString("%1").arg((*_tribe)[i][data_pos], 0, 'f', 0);
         QString name = _tribe->style(i).name();
@@ -346,19 +354,20 @@ void Sketch::plotVernier()
             painter.drawText(x + 10, y2, value);
             painter.drawText(
                     QRect(x - vernier_dist - max_name_width - 10, y2 - row_height,
-                            max_name_width + 10, row_height),
+                          max_name_width + 10, row_height),
                     suffix + name,
                     QTextOption(Qt::AlignRight | Qt::AlignHCenter)
             );
         } else {
             painter.drawText(
-                    QRect(x - vernier_dist - max_value_width, y2 - row_height, max_value_width, row_height),
+                    QRect(x - vernier_dist - max_value_width, y2 - row_height, max_value_width,
+                          row_height),
                     value,
                     QTextOption(Qt::AlignRight | Qt::AlignHCenter)
             );
             painter.drawText(
                     QRect(x - 2 * vernier_dist - max_name_width - max_value_width - 10,
-                            y2 - row_height, max_name_width + 10, row_height),
+                          y2 - row_height, max_name_width + 10, row_height),
                     suffix + name,
                     QTextOption(Qt::AlignRight | Qt::AlignHCenter)
             );
@@ -389,28 +398,14 @@ void Sketch::drawQtString(int x0, int y0, const QString &str,
 
 void Sketch::pointGlToQt(double x0, double y0, int &x1, int &y1)
 {
-    double left = X_LEFT - _left_axis_width;
-    double top = Y_TOP + Y_TOP * Y_BLANK_RATE;
-    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) -
-               (X_LEFT - _left_axis_width);
-    double h = (Y_TOP + Y_TOP * Y_BLANK_RATE) -
-               (Y_BOTTOM - Y_TOP * Y_BLANK_RATE);
-    int win_w = rect().width();
-    int win_h = rect().height();
-    x1 = (int) round(win_w * (x0 - left) / w);
-    y1 = (int) round(win_h * (top - y0) / h);
+    x1 = xGlToQt(x0);
+    y1 = yGlToQt(y0);
 }
 
 void Sketch::pointQtToGl(int x0, int y0, double &x1, double &y1)
 {
-    int win_w = rect().width();
-    int win_h = rect().height();
-    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) -
-               (X_LEFT - _left_axis_width);
-    double h = (Y_TOP + Y_TOP * Y_BLANK_RATE) -
-               (Y_BOTTOM - Y_TOP * Y_BLANK_RATE);
-    x1 = X_LEFT - _left_axis_width + (double) x0 / win_w * w;
-    y1 = Y_BOTTOM - Y_TOP * Y_BLANK_RATE + (double) (win_h - y0) / win_h * h;
+    x1 = xQtToGl(x0);
+    y1 = yQtToGl(y0);
 }
 
 void Sketch::wheelEvent(QWheelEvent *event)
@@ -424,10 +419,10 @@ void Sketch::keyPressEvent(QKeyEvent *event)
 
     int direction = 0;
     if (event->key() == Qt::Key_Right) {
-        direction = 1;
+        direction = -1;
     }
     if (event->key() == Qt::Key_Left) {
-        direction = -1;
+        direction = 1;
     }
     scrollMove(120 * direction);
     if (event->isAutoRepeat()) {
@@ -455,7 +450,7 @@ void Sketch::scrollMove(int angle)
         return;
     }
     auto delta = (int) (_h_scroll->maximum() * (angle / 2000.0));
-    int value = _h_scroll->value() + delta;
+    int value = _h_scroll->value() - delta;
     if (value > _h_scroll->maximum()) {
         value = _h_scroll->maximum();
     }
@@ -498,7 +493,54 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
+int Sketch::xGlToQt(double x)
+{
+    double left = X_LEFT - _left_axis_width;
+    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) -
+               (X_LEFT - _left_axis_width);
+    return (int) round(rect().width() * (x - left) / w);
+}
 
+double Sketch::xQtToGl(int x)
+{
+    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) -
+               (X_LEFT - _left_axis_width);
+    return X_LEFT - _left_axis_width + (double) x / rect().width() * w;
+}
+
+int Sketch::yGlToQt(double y)
+{
+    double top = Y_TOP + Y_TOP * Y_BLANK_RATE;
+    double h = (Y_TOP + Y_TOP * Y_BLANK_RATE) -
+               (Y_BOTTOM - Y_TOP * Y_BLANK_RATE);
+    return (int) round(rect().height() * (top - y) / h);
+}
+
+double Sketch::yQtToGl(int y)
+{
+    double h = (Y_TOP + Y_TOP * Y_BLANK_RATE) -
+               (Y_BOTTOM - Y_TOP * Y_BLANK_RATE);
+    return Y_BOTTOM - Y_TOP * Y_BLANK_RATE + (double) (rect().height() - y) / rect().height() * h;
+}
+
+void Sketch::mousePressEvent(QMouseEvent *event)
+{
+//    if (event->button() == Qt::RightButton) {
+//        _right_mouse_press_pos = event->x();
+//    }
+}
+
+void Sketch::mouseReleaseEvent(QMouseEvent *event)
+{
+//    if (event->button() == Qt::RightButton) {
+//        _right_mouse_release_pos = event->x();
+//        int start_pos = static_cast<int>((__min(_right_mouse_press_pos , _right_mouse_release_pos)  -
+//                _left_axis_width) * (X_RIGHT));
+//        _x_rate = (double) rect().width() / (abs(_right_mouse_press_pos -
+//                                                 _right_mouse_release_pos));
+//
+//    }
+}
 
 
 

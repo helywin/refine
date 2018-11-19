@@ -38,7 +38,7 @@ private:
     const static char _build = 1;   //! \brief 构建版本
     const static char _year = 18;   //! \brief 构建时间，年
     const static char _month = 11;  //! \brief 构建时间，月
-    const static char _day = 15;    //! \brief 构建时间，日
+    const static char _day = 19;    //! \brief 构建时间，日
     const static Identifier _identifier = Identifier::Alpha; //! \brief 版本标识
 
 public:

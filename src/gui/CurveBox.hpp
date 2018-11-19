@@ -8,10 +8,14 @@
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QCheckBox>
 #include <QtCore/QItemSelectionModel>
+#include <QtCore/QStringListModel>
 #include "TribeModel.hpp"
 #include "TribeSortModel.hpp"
 #include "Message.hpp"
+#include "CompleteModel.hpp"
 
 class CurvePanel;
 class TribeView;
@@ -25,7 +29,10 @@ Q_OBJECT
 private:
     TribeView *_view;
     QWidget *_content;
-    QVBoxLayout *_layout;
+    QCheckBox *_check;
+    QWidget *_search;
+    QVBoxLayout *_layout_content;
+    QHBoxLayout *_layout_search;
     QItemSelectionModel *_selection;
     Tribe *_tribe;
     QHeaderView *_h_header;
@@ -35,6 +42,7 @@ private:
     TribeSortModel *_proxy;
     CurveFilter *_filter;
     Sketch *_sketch;
+    CompleteModel *_complete_model;
 
 public:
     explicit CurveBox(Tribe *tribe, Message *message = nullptr,
@@ -53,6 +61,8 @@ private:
 private slots:
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected);
+
+    void setDisplayItem(int state);
 };
 
 

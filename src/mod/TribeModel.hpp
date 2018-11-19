@@ -24,6 +24,7 @@ public:
         RemarkColumn,
         ColumLast = RemarkColumn
     };
+
 private:
     Tribe *_tribe;
 
