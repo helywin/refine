@@ -16,7 +16,8 @@ public:
     enum Columns
     {
         ColumFirst = 0,
-        NameColumn = ColumFirst,
+        IndexColumn = ColumFirst,
+        NameColumn,
         UnitColumn,
         WidthColumn,
         ColorColumn,

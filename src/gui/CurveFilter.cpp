@@ -71,6 +71,8 @@ void CurveFilter::setup()
             this, &CurveFilter::changeSelection, Qt::DirectConnection);
     connect(_pattern, &QActionGroup::triggered,
             this, &CurveFilter::changePatternSyntax, Qt::DirectConnection);
+    connect(this, &CurveFilter::textChanged,
+            this, &CurveFilter::filterChanged, Qt::DirectConnection);
 }
 
 void CurveFilter::paintEvent(QPaintEvent *event)
@@ -139,12 +141,14 @@ void CurveFilter::setSelection(Tribe::Selection selection)
             break;
         }
     }
+    emit filterChanged();
 }
 
 void CurveFilter::changeCaseSensitive()
 {
     _completer.setCaseSensitivity(_case_sensitive->isChecked() ?
                                   Qt::CaseSensitive : Qt::CaseInsensitive);
+    emit filterChanged();
 }
 
 void CurveFilter::changeSelection(QAction *action)
@@ -152,6 +156,7 @@ void CurveFilter::changeSelection(QAction *action)
     _complete_model->setSelection(
             static_cast<Tribe::Selection>(action->data().toInt()));
     _complete_model->genData();
+    emit filterChanged();
 }
 
 void CurveFilter::changePatternSyntax(QAction *action)
@@ -166,4 +171,5 @@ void CurveFilter::changePatternSyntax(QAction *action)
             setCompleter(&_completer);
             break;
     }
+    emit filterChanged();
 }

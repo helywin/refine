@@ -11,15 +11,15 @@
 
 Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         QOpenGLWidget(parent),
-        _tribe(&revolve->tribe()),
         Message(message),
+        _tribe(&revolve->tribe()),
         _msec(10),
         _h_scroll(nullptr),
         _mode(Free),
         _x_pos(0),
         _y_pos(0),
         _x_rate(1),
-        _y_rate(0),
+        _y_rate(1),
         _current_index(-1),
         _axis_index(-1),
         _init_w(-1),
@@ -55,7 +55,7 @@ void Sketch::resizeGL(int w, int h)
     glLoadIdentity();
     if (_init_w == -1) {
         _init_w = w;
-        _left_axis_width = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) / 4.0;
+        _left_axis_width = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate / 4.0;
         glOrtho(X_LEFT - _left_axis_width,
                 X_RIGHT + X_RIGHT * X_R_BLANK_RATE,
                 Y_BOTTOM - Y_TOP * Y_BLANK_RATE,
@@ -63,9 +63,9 @@ void Sketch::resizeGL(int w, int h)
                 0, 100);
     } else {
         _left_axis_width = (0.8 * _init_w) / (w - 0.2 * _init_w) *
-                           (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) / 4;
+                           (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate  / 4.0;
         glOrtho(X_LEFT - _left_axis_width,
-                X_RIGHT + X_RIGHT * X_R_BLANK_RATE,
+                (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate ,
                 Y_BOTTOM - Y_TOP * Y_BLANK_RATE,
                 Y_TOP + Y_TOP * Y_BLANK_RATE,
                 0, 100);
@@ -127,6 +127,10 @@ void Sketch::initData()
     }
     _h_scroll->setPageStep((int) (X_RIGHT * _x_rate));
     emitMessage(Debug, tr("重设滚动条大小: %1").arg(_h_scroll->maximum()));
+    _current_index = -1;
+    _axis_index = -1;
+//    _x_rate = ;
+//    _y_rate = ;
     update();
 }
 
@@ -203,10 +207,11 @@ void Sketch::plotXAxis()
 void Sketch::plotYAxis()
 {
     QColor color;
-    if (_axis_index < 0) {
-        color = 0xffffff;
+    if (_current_index < 0) {
+        return;
+//        color = 0xffffff;
     } else {
-        color = _tribe->style(_axis_index).color();
+        color = _tribe->style(_current_index).color();
     }
     glColor3d(color.redF(), color.greenF(), color.blueF());
     glLineWidth(1);
@@ -214,9 +219,9 @@ void Sketch::plotYAxis()
     double xr = X_LEFT;
     QVector<double> y;
     int graduate_num = GRADUATE_NUM;
-    if (_axis_index >= 0) {
-        int num = _tribe->style(_axis_index).rangeOut()[1] -
-                  _tribe->style(_axis_index).rangeOut()[0];
+    if (_current_index >= 0) {
+        int num = _tribe->style(_current_index).rangeOut()[1] -
+                  _tribe->style(_current_index).rangeOut()[0];
         if (num < graduate_num) {
             graduate_num = num + 1;
         }
@@ -235,13 +240,28 @@ void Sketch::plotYAxis()
     glVertex2d(xr, Y_BOTTOM);
     glEnd();
     glFlush();
-
-    if (_axis_index >= 0) {
+    glLineStipple(4, 0x5555);
+    glEnable(GL_LINE_STIPPLE);
+    glColor3d(0, 96.0 / 256, 48.0 / 256);
+    glBegin(GL_LINES);
+    for (int i = 0; i < graduate_num; ++i) {
+        glVertex2d(xr, y[i]);
+        glVertex2d(X_RIGHT * _x_rate, y[i]);
+    }
+    glEnd();
+    glDisable(GL_LINE_STIPPLE);
+    if (hasFocus()) {
+        drawFocusSign();
+    }
+    if (!_tribe->style(_current_index).display()) {
+        return;
+    }
+    if (_current_index >= 0) {
         QFont font("Helvetica", 10);
         font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
         xl = -_left_axis_width * 0.9;
         for (int i = 0; i < graduate_num; ++i) {
-            const int *range = _tribe->style(_axis_index).rangeOut();
+            const int *range = _tribe->style(_current_index).rangeOut();
             double v = (double) range[0] +
                        (range[1] - range[0]) *
                        ((double) i / (double) (graduate_num - 1));
@@ -249,23 +269,9 @@ void Sketch::plotYAxis()
             drawGlString(xl, y[i], str, color, font);
         }
         drawGlString(xl, Y_TOP + Y_TOP * Y_BLANK_RATE / 2,
-                     _tribe->style(_axis_index).name(), color, font);
+                     _tribe->style(_current_index).name(), color, font);
         drawGlString(xl, Y_TOP * Y_BLANK_RATE / 2,
-                     _tribe->style(_axis_index).unit(), color, font);
-    }
-
-    glLineStipple(4, 0x5555);
-    glEnable(GL_LINE_STIPPLE);
-    glColor3d(0, 96.0 / 256, 48.0 / 256);
-    glBegin(GL_LINES);
-    for (int i = 0; i < graduate_num; ++i) {
-        glVertex2d(xr, y[i]);
-        glVertex2d(X_RIGHT, y[i]);
-    }
-    glEnd();
-    glDisable(GL_LINE_STIPPLE);
-    if (hasFocus()) {
-        drawFocusSign();
+                     _tribe->style(_current_index).unit(), color, font);
     }
 //    glFlush();
 }
@@ -323,6 +329,7 @@ void Sketch::plotVernier()
         }
         color = _tribe->style(i).color();
         pen.setColor(color);
+        pen.setWidth(_tribe->style(i).width());
         painter.setPen(pen);
         font.setBold(i == _current_index);
         font.setUnderline(i == _current_index);
@@ -496,14 +503,14 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
 int Sketch::xGlToQt(double x)
 {
     double left = X_LEFT - _left_axis_width;
-    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) -
+    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate -
                (X_LEFT - _left_axis_width);
     return (int) round(rect().width() * (x - left) / w);
 }
 
 double Sketch::xQtToGl(int x)
 {
-    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) -
+    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate -
                (X_LEFT - _left_axis_width);
     return X_LEFT - _left_axis_width + (double) x / rect().width() * w;
 }

@@ -19,9 +19,17 @@ class TribeModel;
 
 class CurveFilter : public QLineEdit
 {
-    Q_OBJECT
-    Q_PROPERTY(Qt::CaseSensitivity caseSensitivity READ caseSensitivity WRITE setCaseSensitivity)
-    Q_PROPERTY(QRegExp::PatternSyntax patternSyntax READ patternSyntax WRITE setPatternSyntax)
+Q_OBJECT
+    Q_PROPERTY(Qt::CaseSensitivity caseSensitivity
+                       READ
+                       caseSensitivity
+                       WRITE
+                       setCaseSensitivity)
+    Q_PROPERTY(QRegExp::PatternSyntax patternSyntax
+                       READ
+                       patternSyntax
+                       WRITE
+                       setPatternSyntax)
 private:
     QMenu *_menu;
     QAction *_case_sensitive;
@@ -70,6 +78,9 @@ private slots:
     void changeSelection(QAction *action);
 
     void changePatternSyntax(QAction *action);
+
+signals:
+    void filterChanged();
 
 };
 

@@ -63,6 +63,8 @@ private slots:
                           const QItemSelection &deselected);
 
     void setDisplayItem(int state);
+
+    void textFilterChanged();
 };
 
 

@@ -60,7 +60,7 @@ public:
     explicit Sketch(QWidget *parent, Revolve *revolve,
                     Message *message = nullptr);
 
-    inline void setScroll(QScrollBar *scroller) { _h_scroll = scroller; }
+    inline void setScroll(QScrollBar *scroll) { _h_scroll = scroll; }
 
     void setSmooth(bool enable);
 
@@ -109,10 +109,10 @@ private:
     void plotCurves();
 
     void drawGlString(double x0, double y0, const QString &str,
-                          const QColor &color, const QFont &font);
+                      const QColor &color, const QFont &font);
 
     void drawQtString(int x0, int y0, const QString &str, const QColor &color,
-                          const QFont &font);
+                      const QFont &font);
 
     void pointGlToQt(double x0, double y0, int &x1, int &y1);
 
@@ -127,6 +127,19 @@ private:
     void drawFocusSign();
 
     void scrollMove(int angle);
+
+    inline void setXRate(double x_rate)
+    {
+        _x_rate = x_rate;
+        update();
+    }
+
+    inline void setYRate(double y_rate)
+    {
+        _y_rate = y_rate;
+        update();
+    }
+
 protected:
     void wheelEvent(QWheelEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;

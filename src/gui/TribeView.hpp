@@ -13,7 +13,6 @@ Q_OBJECT
 public:
     explicit TribeView(QAbstractItemModel *model,
                        QItemSelectionModel *selection,
-                       QHeaderView *h, QHeaderView *v,
                        QWidget *parent = nullptr);
 };
 

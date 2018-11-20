@@ -8,22 +8,21 @@
 
 TribeView::TribeView(QAbstractItemModel *model,
                      QItemSelectionModel *selection,
-                     QHeaderView *h, QHeaderView *v,
                      QWidget *parent) :
         QTableView(parent)
 {
     setModel(model);
     setSelectionModel(selection);
-    setHorizontalHeader(h);
-    setVerticalHeader(v);
     verticalHeader()->setDefaultSectionSize(20);
+    verticalHeader()->setHidden(true);
     setAlternatingRowColors(true);
     setHorizontalScrollMode(QTableView::ScrollPerPixel);
     setVerticalScrollMode(QTableView::ScrollPerPixel);
     setSelectionMode(QTableView::SingleSelection);
     setSelectionBehavior(QTableView::SelectRows);
 
-    setColumnWidth(TribeModel::NameColumn, 220);
+    setColumnWidth(TribeModel::IndexColumn, 50);
+    setColumnWidth(TribeModel::NameColumn, 190);
     setColumnWidth(TribeModel::UnitColumn, 80);
     setColumnWidth(TribeModel::WidthColumn, 40);
     setColumnWidth(TribeModel::ColorColumn, 100);

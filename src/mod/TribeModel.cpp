@@ -42,6 +42,8 @@ QVariant TribeModel::data(const QModelIndex &index, int role) const
     switch (role) {
         case Qt::DisplayRole:
             switch (column) {
+                case IndexColumn:
+                    return QVariant(cell.index());
                 case NameColumn:
                     return QVariant(cell.nameStr());
                 case UnitColumn:
@@ -59,7 +61,7 @@ QVariant TribeModel::data(const QModelIndex &index, int role) const
             }
         case Qt::CheckStateRole:
         case Qt::UserRole:
-            if (column == NameColumn) {
+            if (column == IndexColumn) {
                 if (cell.display())
                     return Qt::Checked;
                 else
@@ -95,7 +97,7 @@ bool TribeModel::setData(const QModelIndex &index,
         case Qt::DisplayRole:
             return false;
         case Qt::CheckStateRole:
-            if (column == NameColumn) {
+            if (column == IndexColumn) {
                 cell._display = value.toBool();
                 dataChanged(index, index);
             }
@@ -116,8 +118,9 @@ Qt::ItemFlags TribeModel::flags(const QModelIndex &index) const
 //                          |
 //                          Qt::ItemIsEditable;
     switch (index.column()) {
-        case NameColumn:
+        case IndexColumn:
             return flags | Qt::ItemIsUserCheckable;
+        case NameColumn:
         case UnitColumn:
         case WidthColumn:
         case ColorColumn:

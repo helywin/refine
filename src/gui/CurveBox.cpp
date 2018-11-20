@@ -42,12 +42,15 @@ void CurveBox::setup()
     _proxy = new TribeSortModel(_content);
     _proxy->setSourceModel(_model);
     _selection = new QItemSelectionModel(_proxy);
-    _h_header = new QHeaderView(Qt::Horizontal);
-    _v_header = new QHeaderView(Qt::Vertical);
-    _view = new TribeView(_proxy, _selection, _h_header, _v_header, _content);
-//    _view->setSortingEnabled(true);
-    _h_header->setParent(_view);
-    _v_header->setParent(_view);
+//    _h_header = new QHeaderView(Qt::Horizontal);
+//    _h_header->setModel(_proxy);
+//    _v_header = new QHeaderView(Qt::Vertical);
+//    _v_header->setModel(_proxy);
+    _view = new TribeView(_proxy, _selection, _content);
+    _view->setSortingEnabled(true);
+    _view->sortByColumn(0, Qt::AscendingOrder);
+//    _h_header->setParent(_view);
+//    _v_header->setParent(_view);
     _layout_content->addWidget(_view);
     _complete_model = new CompleteModel(_tribe, this);
     _filter->setCompleteModel(_complete_model);
@@ -55,6 +58,8 @@ void CurveBox::setup()
             this, &CurveBox::selectionChanged);
     connect(_check, &QCheckBox::stateChanged,
             this, &CurveBox::setDisplayItem, Qt::DirectConnection);
+    connect(_filter, &CurveFilter::filterChanged,
+            this, &CurveBox::textFilterChanged);
 }
 
 void CurveBox::connectModelToSketch(Sketch *sketch)
@@ -98,4 +103,13 @@ void CurveBox::setDisplayItem(int state)
         default:
             break;
     }
+}
+
+void CurveBox::textFilterChanged()
+{
+    QRegExp reg_exp(_filter->text(),
+            _filter->caseSensitivity(),
+            _filter->patternSyntax());
+    _proxy->setFilterRegExp(reg_exp);
+    _proxy->setSelection(_filter->selection());
 }
