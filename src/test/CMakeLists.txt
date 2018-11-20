@@ -68,6 +68,7 @@ set(UI ${PROJECT_SOURCE_DIR}/res/ui.qrc)
 set(TEXT ${PROJECT_SOURCE_DIR}/res/text.qrc)
 set(TRANS ${PROJECT_SOURCE_DIR}/res/trans.qrc)
 set(ICONS ${PROJECT_SOURCE_DIR}/res/icons.qrc)
+set(RC ${PROJECT_SOURCE_DIR}/res/refine.rc)
 
 
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
@@ -115,7 +116,7 @@ target_link_libraries(test_zip Qt5Core
         ${LIBNETTLE}
         ${LIBGNUTLS})
 
-add_executable(refine main.cpp ${CORE} ${GUI} ${MOD} ${DEL}
+add_executable(refine main.cpp ${RC} ${CORE} ${GUI} ${MOD} ${DEL}
         ${UI} ${TEXT} ${TRANS} ${ICONS})
 target_link_libraries(refine
         ${LIBCAN}
@@ -126,3 +127,10 @@ target_link_libraries(refine
         Qt5Widgets
         Qt5Gui
         Qt5OpenGL)
+if (CMAKE_BUILD_TYPE MATCHES Release)
+    set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/release)
+    set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
+elseif (CMAKE_BUILD_TYPE MATCHES Debug)
+    set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/debug)
+    set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
+endif ()

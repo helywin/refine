@@ -12,8 +12,8 @@ QT       += core gui widgets opengl
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = refine
-QMAKE_LFLAGS = -static
-QMAKE_LFLAGS_QT_DLL = -static
+#QMAKE_LFLAGS = -static
+#QMAKE_LFLAGS_QT_DLL = -static
 DEFINES += QT_NO_DEBUG_OUTPUT
 DEFINES += QT_WARNING_DEBUG_OUTPUT
 TEMPLATE = app
