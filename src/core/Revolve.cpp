@@ -358,6 +358,15 @@ void Revolve::getFile(int type, const QString &file, const QString &suffix)
                     emitMessage(Warning,
                                 tr("载入曲线数据失败，检查配置格式"));
                 }
+            } else if (suffix == FilePicker::extendName(
+                    FilePicker::CurveDataSoftcan)) {
+                if (importSoftcanCurveData(file)) {
+                    emitMessage(Info,
+                                tr("载入SoftCAN曲线数据成功"));
+                } else {
+                    emitMessage(Warning,
+                                tr("载入SoftCAN曲线数据失败，检查配置格式"));
+                }
             } else {
                 emitMessage(Fatal,
                             tr("载入曲线数据扩展名超出预料"));
@@ -425,14 +434,14 @@ bool Revolve::outputCurveConfig(const QString &name)
 {
     File file;
     QFile f(name);
-    bool flag =   file.dumpCurveConfig(f, _curve);
+    bool flag = file.dumpCurveConfig(f, _curve);
     emitMessage(Debug, tr("导出曲线配置 %1").arg(name));
     return flag;
 }
 
 bool Revolve::exportCsvCurveConfig(const QString &name)
 {
-    bool flag =   _curve.dumpToCsv(name);
+    bool flag = _curve.dumpToCsv(name);
     emitMessage(Debug, tr("导出CSV曲线配置 %1").arg(name));
     return flag;
 }
@@ -467,6 +476,19 @@ bool Revolve::inputCurveData(const QString &name)
     _sketch->initData();
     _tribe_model->genData(&_tribe);
     emitMessage(Debug, tr("导入曲线数据 %1").arg(name));
+    return true;
+}
+
+bool Revolve::importSoftcanCurveData(const QString &name)
+{
+
+    if (!_softcan.load(name)) {
+        return false;
+    }
+    _softcan.toTribe(_tribe);
+    _sketch->initData();
+    _tribe_model->genData(&_tribe);
+    emitMessage(Debug, tr("导入SoftCAN曲线数据 %1").arg(name));
     return true;
 }
 
@@ -508,6 +530,7 @@ void Revolve::recordError(int code)
 {
 
 }
+
 
 
 

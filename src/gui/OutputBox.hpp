@@ -15,7 +15,7 @@ class MessagerPanel;
 class Revolve;
 class FilePicker;
 
-class Output : public QDockWidget
+class OutputBox : public QDockWidget
 {
 Q_OBJECT
 public:
@@ -36,7 +36,7 @@ private:
     QLabel *_label_debug;
     MessagerPanel *_messager;
 public:
-    explicit Output(QWidget *parent);
+    explicit OutputBox(QWidget *parent);
 
 private:
     void setup();

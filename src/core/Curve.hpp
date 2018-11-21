@@ -9,6 +9,7 @@
 #ifndef REFINE_CURVE_HPP
 #define REFINE_CURVE_HPP
 
+#include <QtCore/QDebug>
 #include <QtCore/QStringList>
 #include <QtCore/QList>
 #include <QtCore/QFile>
@@ -80,12 +81,12 @@ public:
 
         inline QString colorStr() const
         {
-            return QString("0x%1").arg(_color, 6, 16, QChar('0'));
+            return QString("0x") + QString("%1").arg(_color, 6, 16, QChar('0')).toUpper();
         }
 
         inline QString canIdStr() const
         {
-            return QString("0x%1").arg(_can_id, 3, 16, QChar('0'));
+            return QString("0x") + QString("%1").arg(_can_id, 3, 16, QChar('0')).toUpper();
         }
 
         inline QString zeroByteStr() const
@@ -371,13 +372,24 @@ public:
 
     inline const QStringList &header() const { return _header; }
 
-    inline int size() const { return _cells.size(); }
+    int size() const
+    {
+        if (_cells.isEmpty()) {
+//            qDebug() << "Curve::empty: ";
+//            qDebug() << _cells.size();
+            return 0;
+        } else {
+//            qDebug() << "Curve::size(): ";
+//            qDebug() << _cells.size();
+            return _cells.size();
+        }
+    }
 
     QStringList str() const;
     void append(const Cell &cell);
     void append(Cell &&cell);
     void insert(int index, const Curve::Cell &cell);
-    void insert(Cell &&cell, int index);
+    void insert(int index, Curve::Cell &&cell);
     void remove(int index);
     void remove(const QString &name);
     void clear();

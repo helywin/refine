@@ -4,9 +4,9 @@
 
 #include <QtWidgets/QWidgetAction>
 #include <QtGui/QPainter>
-#include "CurveFilter.hpp"
+#include "TribeFilter.hpp"
 
-CurveFilter::CurveFilter(TribeModel *model, QWidget *parent) :
+TribeFilter::TribeFilter(TribeModel *model, QWidget *parent) :
         QLineEdit(parent),
         _is_found(false),
         _model(model)
@@ -14,7 +14,7 @@ CurveFilter::CurveFilter(TribeModel *model, QWidget *parent) :
     setup();
 }
 
-void CurveFilter::setup()
+void TribeFilter::setup()
 {
     setClearButtonEnabled(true);
     _font = QFont("微软雅黑", 10);
@@ -66,18 +66,21 @@ void CurveFilter::setup()
 
 
     connect(_case_sensitive, &QAction::triggered,
-            this, &CurveFilter::changeCaseSensitive, Qt::DirectConnection);
+            this, &TribeFilter::changeCaseSensitive, Qt::DirectConnection);
     connect(_curve_selection, &QActionGroup::triggered,
-            this, &CurveFilter::changeSelection, Qt::DirectConnection);
+            this, &TribeFilter::changeSelection, Qt::DirectConnection);
     connect(_pattern, &QActionGroup::triggered,
-            this, &CurveFilter::changePatternSyntax, Qt::DirectConnection);
-    connect(this, &CurveFilter::textChanged,
-            this, &CurveFilter::filterChanged, Qt::DirectConnection);
+            this, &TribeFilter::changePatternSyntax, Qt::DirectConnection);
+    connect(this, &TribeFilter::textChanged,
+            this, &TribeFilter::filterChanged, Qt::DirectConnection);
 }
 
-void CurveFilter::paintEvent(QPaintEvent *event)
+void TribeFilter::paintEvent(QPaintEvent *event)
 {
+    _font.setStrikeOut(!_is_found);
     QLineEdit::paintEvent(event);
+    _font.setStrikeOut(false);
+    setFont(_font);
     QPainter painter;
     painter.begin(this);
     if (!hasFocus() && text().isEmpty()) {
@@ -91,34 +94,34 @@ void CurveFilter::paintEvent(QPaintEvent *event)
                          QTextOption(Qt::AlignVCenter | Qt::AlignLeft));
     }
     painter.end();
+    _font.setStrikeOut(!_is_found);
+    setFont(_font);
 }
 
-void CurveFilter::setFound(bool is_found)
+void TribeFilter::setFound(bool is_found)
 {
     _is_found = is_found;
-    if (_is_found) {
-        setStyleSheet("QLineEdit { background: #ffffff;}");
-    } else {
-        setStyleSheet("QLineEdit { background: rgb(255, 204, 204);}");
-    }
+    _font.setStrikeOut(!_is_found);
+    setFont(_font);
+    update();
 }
 
-Qt::CaseSensitivity CurveFilter::caseSensitivity() const
+Qt::CaseSensitivity TribeFilter::caseSensitivity() const
 {
     return _case_sensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
 }
 
-void CurveFilter::setCaseSensitivity(Qt::CaseSensitivity cs)
+void TribeFilter::setCaseSensitivity(Qt::CaseSensitivity cs)
 {
     _case_sensitive->setChecked(cs == Qt::CaseSensitive);
 }
 
-QRegExp::PatternSyntax CurveFilter::patternSyntax() const
+QRegExp::PatternSyntax TribeFilter::patternSyntax() const
 {
     return static_cast<QRegExp::PatternSyntax>(_pattern->checkedAction()->data().toInt());
 }
 
-void CurveFilter::setPatternSyntax(QRegExp::PatternSyntax s)
+void TribeFilter::setPatternSyntax(QRegExp::PatternSyntax s)
 {
     for (auto *action : _pattern->actions()) {
         if (action->data().toInt() == s) {
@@ -128,12 +131,12 @@ void CurveFilter::setPatternSyntax(QRegExp::PatternSyntax s)
     }
 }
 
-Tribe::Selection CurveFilter::selection() const
+Tribe::Selection TribeFilter::selection() const
 {
     return static_cast<Tribe::Selection>(_curve_selection->checkedAction()->data().toInt());
 }
 
-void CurveFilter::setSelection(Tribe::Selection selection)
+void TribeFilter::setSelection(Tribe::Selection selection)
 {
     for (auto *action : _curve_selection->actions()) {
         if (action->data().toInt() == selection) {
@@ -144,14 +147,14 @@ void CurveFilter::setSelection(Tribe::Selection selection)
     emit filterChanged();
 }
 
-void CurveFilter::changeCaseSensitive()
+void TribeFilter::changeCaseSensitive()
 {
     _completer.setCaseSensitivity(_case_sensitive->isChecked() ?
                                   Qt::CaseSensitive : Qt::CaseInsensitive);
     emit filterChanged();
 }
 
-void CurveFilter::changeSelection(QAction *action)
+void TribeFilter::changeSelection(QAction *action)
 {
     _complete_model->setSelection(
             static_cast<Tribe::Selection>(action->data().toInt()));
@@ -159,7 +162,7 @@ void CurveFilter::changeSelection(QAction *action)
     emit filterChanged();
 }
 
-void CurveFilter::changePatternSyntax(QAction *action)
+void TribeFilter::changePatternSyntax(QAction *action)
 {
     switch (action->data().toInt()) {
         case QRegExp::RegExp2:

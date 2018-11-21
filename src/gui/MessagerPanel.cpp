@@ -9,7 +9,7 @@
 #include <QtGui/QTextCursor>
 #include <QtGui/QContextMenuEvent>
 #include "MessagerPanel.hpp"
-#include "Output.hpp"
+#include "OutputBox.hpp"
 
 MessagerPanel::MessagerPanel(QWidget *parent) :
         QTextEdit(parent)
@@ -24,11 +24,11 @@ void MessagerPanel::setup()
     setLineWrapMode(QTextEdit::NoWrap);
     setReadOnly(true);
     setMinimumWidth(200);
-    _info_format.setForeground(QBrush(Output::INFO));
-    _warning_format.setForeground(QBrush(Output::WARNING));
-    _critical_format.setForeground(QBrush(Output::CRITICAL));
-    _fatal_format.setForeground(QBrush(Output::FATAL));
-    _debug_format.setForeground(QBrush(Output::DEBUG));
+    _info_format.setForeground(QBrush(OutputBox::INFO));
+    _warning_format.setForeground(QBrush(OutputBox::WARNING));
+    _critical_format.setForeground(QBrush(OutputBox::CRITICAL));
+    _fatal_format.setForeground(QBrush(OutputBox::FATAL));
+    _debug_format.setForeground(QBrush(OutputBox::DEBUG));
 //    setContextMenuPolicy(Qt::CustomContextMenu);
     _menu = new QMenu();
     _menu_copy = new QAction(tr("复制(&C)"), this);

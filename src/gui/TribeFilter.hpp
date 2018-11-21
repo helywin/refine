@@ -17,7 +17,7 @@
 
 class TribeModel;
 
-class CurveFilter : public QLineEdit
+class TribeFilter : public QLineEdit
 {
 Q_OBJECT
     Q_PROPERTY(Qt::CaseSensitivity caseSensitivity
@@ -48,7 +48,7 @@ private:
     TribeModel *_model;
     CompleteModel *_complete_model;
 public:
-    explicit CurveFilter(TribeModel *model, QWidget *parent = nullptr);
+    explicit TribeFilter(TribeModel *model, QWidget *parent = nullptr);
 
     inline void setCompleteModel(CompleteModel *model)
     {

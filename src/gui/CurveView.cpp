@@ -9,17 +9,29 @@
 
 CurveView::CurveView(QAbstractItemModel *model, QItemSelectionModel *selection,
                      QHeaderView *h, QHeaderView *v, QWidget *parent) :
-        QTableView(parent)
+        QTableView(parent),
+        _menu_edit(nullptr)
 {
     setModel(model);
     setSelectionModel(selection);
     setHorizontalHeader(h);
     setVerticalHeader(v);
+    _frozen = new QTableView(this);
+    _frozen->setModel(model);
+    _frozen->setSelectionModel(selection);
+    for (int col = 1; col < model->columnCount(); ++col) {
+        _frozen->setColumnHidden(col, true);
+    }
+    setup();
 
+}
+
+void CurveView::setup()
+{
     setColumnWidth(CurveModel::NameColumn, 200);
     setColumnWidth(CurveModel::UnitColumn, 80);
     setColumnWidth(CurveModel::WidthColumn, 40);
-    setColumnWidth(CurveModel::ColorColumn, 100);
+    setColumnWidth(CurveModel::ColorColumn, 120);
     setColumnWidth(CurveModel::CanIdColumn, 80);
     setColumnWidth(CurveModel::ZeroByteColumn, 80);
     setColumnWidth(CurveModel::HighByteColumn, 80);
@@ -32,17 +44,13 @@ CurveView::CurveView(QAbstractItemModel *model, QItemSelectionModel *selection,
     setSelectionBehavior(QTableView::SelectItems);
     setHorizontalScrollMode(QTableView::ScrollPerPixel);
     setVerticalScrollMode(QTableView::ScrollPerPixel);
-    _frozen = new QTableView(this);
-    _frozen->setModel(model);
-    _frozen->setSelectionModel(selection);
 
-    for (int col = 1; col < model->columnCount(); ++col) {
-        _frozen->setColumnHidden(col, true);
-    }
+    verticalHeader()->setMinimumWidth(30);
+
     _frozen->verticalHeader()->hide();
 //    _frozen->setFocusPolicy(Qt::NoFocus);
     _frozen->setSelectionMode(QTableView::SingleSelection);
-    _frozen->setSelectionBehavior(QTableView::SelectRows);
+    _frozen->setSelectionBehavior(QTableView::SelectItems);
     _frozen->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     viewport()->stackUnder(_frozen);
     _frozen->setColumnWidth(0, columnWidth(0));
@@ -50,6 +58,7 @@ CurveView::CurveView(QAbstractItemModel *model, QItemSelectionModel *selection,
     _frozen->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _frozen->setVerticalScrollMode(ScrollPerPixel);
     _frozen->show();
+
     connect(horizontalHeader(), &QHeaderView::sectionResized, this,
             &CurveView::updateSectionWidth);
     connect(verticalHeader(), &QHeaderView::sectionResized, this,
@@ -110,5 +119,24 @@ void CurveView::updateFrozenTableGeometry()
                          columnWidth(0) + 1,
                          viewport()->height() + horizontalHeader()->height() +
                          1);
+}
+
+void CurveView::popRightMenu(const QPoint &pos)
+{
+    if (_menu_edit) {
+        _menu_edit->exec(QCursor::pos());
+    }
+}
+
+void CurveView::setRightMenu(QMenu *menu)
+{
+    _menu_edit = menu;
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    _frozen->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(this, &CurveView::customContextMenuRequested,
+            this, &CurveView::popRightMenu, Qt::DirectConnection);
+    connect(_frozen, &QTableView::customContextMenuRequested,
+            this, &CurveView::popRightMenu, Qt::DirectConnection);
 }
 

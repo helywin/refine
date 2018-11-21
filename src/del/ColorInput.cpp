@@ -65,8 +65,15 @@ void ColorInput::paint(QPainter *painter, const QStyleOptionViewItem &option,
                        const QModelIndex &index) const
 {
     painter->setBrush(QBrush(QColor(index.data(Qt::EditRole).toUInt())));
-    painter->drawRect(option.rect.x() + 2, option.rect.y() + 2,
-                      40, option.rect.height() - 4);
+    QPen pen(QColor(0xffffff - index.data(Qt::EditRole).toUInt()));
+    pen.setWidth(2);
+    painter->setPen(pen);
+    const int margin = 4;
+    painter->drawRect(option.rect.x() + margin, option.rect.y() + margin,
+                      40 - margin * 2, option.rect.height() - margin * 2);
+    pen.setColor(Qt::black);
+    pen.setWidth(1);
+    painter->setPen(pen);
     painter->drawText(option.rect.x() + 44,
                       option.rect.y() + (option.rect.height() / 2 + 5),
                       index.data().toString());

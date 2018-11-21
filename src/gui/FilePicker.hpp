@@ -29,8 +29,9 @@ public:
         FrameDataCsv = 0x0080,
         CurveData = 0x0100,
         CurveDataCsv = 0x0200,
-        ResultData = 0x0400,
-        ResultDataCsv = 0x0800,
+        CurveDataSoftcan = 0x400,
+        ResultData = 0x0800,
+        ResultDataCsv = 0x1000,
         In = 0x10000000,
         Out = 0x20000000,
         ArchiveInFile = Archive
@@ -56,6 +57,7 @@ public:
                            + FrameDataCsv
                            + Out,
         CurveDataInFile = CurveData
+                          + CurveDataSoftcan
                           + In,
         CurveDataOutFile = CurveData
                            + CurveDataCsv

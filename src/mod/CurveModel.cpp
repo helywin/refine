@@ -69,9 +69,9 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
         case Qt::EditRole:
             switch (column) {
                 case NameColumn:
-                    return QVariant(cell.nameStr());
+                    return QVariant(cell.name());
                 case UnitColumn:
-                    return QVariant(cell.unitStr());
+                    return QVariant(cell.unit());
                 case WidthColumn:
                     return QVariant(cell._width);
                 case ColorColumn:
@@ -89,7 +89,7 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
                 case RangeOutColumn:
                     return QVariant(cell.rangeOutStr());
                 case RemarkColumn:
-                    return QVariant(cell.remarkStr());
+                    return QVariant(cell.remark());
                 default:
                     return QVariant();
             }
@@ -104,9 +104,13 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
             return QVariant();
         case Qt::DecorationRole:
             if (column == ColorColumn) {
-                return QColor(cell.color());
+                return QVariant(QColor((unsigned int)cell.color()));
             }
             return QVariant();
+        case Qt::ToolTipRole:
+            if (column == NameColumn) {
+                return QVariant(tr("序号:") + cell.indexStr());
+            }
         default:
             return QVariant();
     }
@@ -241,4 +245,43 @@ QVariant CurveModel::headerData(int section,
                 return QVariant();
         }
     }
+}
+
+bool CurveModel::insertRow(int row, const QModelIndex &parent)
+{
+    if (row >= _curve->size()) {
+        return false;
+    } else if (row < 0) {
+        row = 0;
+    }
+    beginResetModel();
+    _curve->insert(row, Curve::Cell(row));
+    endResetModel();
+    return true;
+}
+
+bool CurveModel::appendRow(int row, const QModelIndex &parent)
+{
+    if (row >= _curve->size()) {
+        return false;
+    } else if (row < 0) {
+        row = 0;
+    } else {
+        row += 1;
+    }
+    beginResetModel();
+    _curve->insert(row, Curve::Cell(row));
+    endResetModel();
+    return true;
+}
+
+bool CurveModel::removeRow(int row, const QModelIndex &parent)
+{
+    if (row < 0 || row >= _curve->size()) {
+        return false;
+    }
+    beginRemoveRows(parent, row, row);
+    _curve->remove(row);
+    endRemoveRows();
+    return true;
 }

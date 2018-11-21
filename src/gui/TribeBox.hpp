@@ -21,9 +21,9 @@ class CurvePanel;
 class TribeView;
 class Tribe;
 class Sketch;
-class CurveFilter;
+class TribeFilter;
 
-class CurveBox : public QDockWidget, public Message
+class TribeBox : public QDockWidget, public Message
 {
 Q_OBJECT
 private:
@@ -40,12 +40,12 @@ private:
 //    CurvePanel *_curve_panel;
     TribeModel *_model;
     TribeSortModel *_proxy;
-    CurveFilter *_filter;
+    TribeFilter *_filter;
     Sketch *_sketch;
     CompleteModel *_complete_model;
 
 public:
-    explicit CurveBox(Tribe *tribe, Message *message = nullptr,
+    explicit TribeBox(Tribe *tribe, Message *message = nullptr,
                       QWidget *parent = nullptr);
 
     inline TribeModel &tribeModel() { return *_model; }

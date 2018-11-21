@@ -5,13 +5,13 @@
 #include <QtWidgets/QAction>
 #include <QtGui/QResizeEvent>
 #include <QtCore/QDebug>
-#include "CurveBox.hpp"
+#include "TribeBox.hpp"
 #include "CurvePanel.hpp"
 #include "TribeView.hpp"
 #include "Sketch.hpp"
-#include "CurveFilter.hpp"
+#include "TribeFilter.hpp"
 
-CurveBox::CurveBox(Tribe *tribe, Message *message, QWidget *parent) :
+TribeBox::TribeBox(Tribe *tribe, Message *message, QWidget *parent) :
         _tribe(tribe),
         Message(message),
         QDockWidget(parent)
@@ -19,7 +19,7 @@ CurveBox::CurveBox(Tribe *tribe, Message *message, QWidget *parent) :
     setup();
 }
 
-void CurveBox::setup()
+void TribeBox::setup()
 {
     setWindowTitle(tr("曲线"));
     _content = new QWidget(this);
@@ -29,7 +29,7 @@ void CurveBox::setup()
     _check = new QCheckBox(_search);
     _check->setCheckState(Qt::CheckState::Unchecked);
     _search->setLayout(_layout_search);
-    _filter = new CurveFilter(_model, _search);
+    _filter = new TribeFilter(_model, _search);
     _layout_search->addWidget(_check);
     _layout_search->addWidget(_filter);
     _layout_search->setContentsMargins(0, 0, 0, 0);
@@ -41,7 +41,7 @@ void CurveBox::setup()
     _model = new TribeModel(_content);
     _proxy = new TribeSortModel(_content);
     _proxy->setSourceModel(_model);
-    _selection = new QItemSelectionModel(_proxy);
+    _selection = new QItemSelectionModel(_proxy, this);
 //    _h_header = new QHeaderView(Qt::Horizontal);
 //    _h_header->setModel(_proxy);
 //    _v_header = new QHeaderView(Qt::Vertical);
@@ -55,14 +55,14 @@ void CurveBox::setup()
     _complete_model = new CompleteModel(_tribe, this);
     _filter->setCompleteModel(_complete_model);
     connect(_selection, &QItemSelectionModel::selectionChanged,
-            this, &CurveBox::selectionChanged);
+            this, &TribeBox::selectionChanged);
     connect(_check, &QCheckBox::stateChanged,
-            this, &CurveBox::setDisplayItem, Qt::DirectConnection);
-    connect(_filter, &CurveFilter::filterChanged,
-            this, &CurveBox::textFilterChanged);
+            this, &TribeBox::setDisplayItem, Qt::DirectConnection);
+    connect(_filter, &TribeFilter::filterChanged,
+            this, &TribeBox::textFilterChanged);
 }
 
-void CurveBox::connectModelToSketch(Sketch *sketch)
+void TribeBox::connectModelToSketch(Sketch *sketch)
 {
     _sketch = sketch;
     connect(_model, &TribeModel::tribeChanged,
@@ -72,10 +72,14 @@ void CurveBox::connectModelToSketch(Sketch *sketch)
             _complete_model, &CompleteModel::genData, Qt::DirectConnection);
 }
 
-void CurveBox::selectionChanged(const QItemSelection &selected,
+void TribeBox::selectionChanged(const QItemSelection &selected,
                                 const QItemSelection &deselected)
 {
-    int index = _view->currentIndex().row();
+    QItemSelection selection = _proxy->mapSelectionToSource(selected);  //很重要，不然就是当前的行
+    if (selection.indexes().isEmpty()) {
+        return;
+    }
+    int index = selection.indexes().first().row();
     emitMessage(Debug, tr("当前行 %1").arg(index));
     if (index < 0) {
         _sketch->setCurrentIndex(index, false);
@@ -85,7 +89,7 @@ void CurveBox::selectionChanged(const QItemSelection &selected,
     _sketch->update();
 }
 
-void CurveBox::setDisplayItem(int state)
+void TribeBox::setDisplayItem(int state)
 {
     switch (state) {
         case Qt::Checked:
@@ -105,11 +109,12 @@ void CurveBox::setDisplayItem(int state)
     }
 }
 
-void CurveBox::textFilterChanged()
+void TribeBox::textFilterChanged()
 {
     QRegExp reg_exp(_filter->text(),
             _filter->caseSensitivity(),
             _filter->patternSyntax());
     _proxy->setFilterRegExp(reg_exp);
     _proxy->setSelection(_filter->selection());
+    _filter->setFound(_proxy->rowCount() != 0 && _model->rowCount() != 0);
 }

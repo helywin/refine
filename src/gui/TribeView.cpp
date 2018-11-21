@@ -12,7 +12,9 @@ TribeView::TribeView(QAbstractItemModel *model,
         QTableView(parent)
 {
     setModel(model);
-    setSelectionModel(selection);
+    if (selection) {
+        setSelectionModel(selection);
+    }
     verticalHeader()->setDefaultSectionSize(20);
     verticalHeader()->setHidden(true);
     setAlternatingRowColors(true);

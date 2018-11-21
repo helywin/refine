@@ -22,10 +22,14 @@ bool Softcan::load(QFile &file)
     stream.setByteOrder(QDataStream::ByteOrder::LittleEndian);
     stream.setDevice(&file);
     char magic[SOFTCAN_MAGIC_LEN];
-    stream.readRawData(magic, SOFTCAN_MAGIC_LEN);
-    if (!checkMagic(magic)) {
-        return false;
+    for (int i = 0; i < 50; ++i) {
+        stream.device()->seek(i);
+        stream.readRawData(magic, SOFTCAN_MAGIC_LEN);
+        if (checkMagic(magic)) {
+            break;
+        }
     }
+
 
     stream >> *this;
 
@@ -105,7 +109,7 @@ Softcan::Cell::Cell()
 //    _unit = 0;
 //    _intro = 0;
 //    _name = 0;
-    _save_flag = 0;
+    _save_data = 0;
 }
 
 QStringList Softcan::Cell::str() const
@@ -138,7 +142,7 @@ QStringList Softcan::Cell::str() const
     list.append(QString("横轴临时:%1").arg(_x_temp));
     list.append(QString("纵轴临时:%1").arg(_y_temp));
     list.append(QString("简介:") + _intro);
-    list.append(QString("保存标志:%1").arg(_save_flag));
+    list.append(QString("保存标志:%1").arg(_save_data));
     return list;
 }
 
@@ -172,7 +176,7 @@ QStringList Softcan::Cell::strClean() const
     list.append(QString("%1").arg(_x_temp));
     list.append(QString("%1").arg(_y_temp));
     list.append(_intro);
-    list.append(QString("%1").arg(_save_flag));
+    list.append(QString("%1").arg(_save_data));
     return list;
 }
 
@@ -224,7 +228,25 @@ QDataStream &operator>>(QDataStream &stream, Softcan::Cell &cell)
     cell._unit = Softcan::Cell::readWString(stream);
     cell._intro = Softcan::Cell::readWString(stream);
     cell._name = Softcan::Cell::readWString(stream);
-    stream >> cell._save_flag;
+    stream >> cell._save_data;
+    if (cell._save_data) {
+        int len;
+        stream >> len;
+        for (int i = 0; i < len; ++i) {
+            double v;
+            stream >> v;
+            cell._x.append(v);
+            if (stream.atEnd()) {
+                return stream;
+            }
+            stream >> v;
+            cell._y.append(v);
+            if (stream.atEnd()) {
+                return stream;
+            }
+        }
+    }
+    stream >> cell._format;
     return stream;
 }
 
@@ -237,9 +259,8 @@ QDataStream &operator>>(QDataStream &stream, Softcan &softcan)
             break;
         } else {
             unsigned char buf;
-            stream >> buf;
-            stream >> buf;
-            stream >> buf;
+            stream >> buf;      //对齐位
+            stream >> buf;      //对齐位
         }
     }
     return stream;
@@ -271,6 +292,35 @@ void Softcan::toCurve(Curve &curve)
     curve.setInitialized(true);
 }
 
+void Softcan::toTribe(Tribe &tribe)
+{
+    tribe.clear();
+    for (const auto &iter : _cells) {
+        if (iter.canId() == 0) {
+            break;      //导入时会出bug
+        }
+        Tribe::Style style;
+        style.setIndex(iter.index());
+        style.setDisplay(iter.visible());
+        style.setName(iter.name());
+        style.setUnit(iter.unit());
+        style.setWidth(iter.width());
+        style.setColor(iter.color());
+        style.setRangeOut((int) __min(iter.yMin(), iter.yMax()),
+                         (int) __max(iter.yMin(), iter.yMax()));
+        style.setRemark(iter.intro());
+        tribe.styles().append(qMove(style));
+        Tribe::Cell cell(iter.name());
+//        qDebug() << "Softcan::toTribe y.size() " << iter.y().size();
+        for (const auto &v : iter.y()) {
+            cell.push(Tribe::Data, (float)v);
+        }
+        tribe.setLen();
+        tribe.cells().append(qMove(cell));
+    }
+}
+
+
 QStringList Softcan::str() const
 {
     QStringList list;
@@ -283,7 +333,7 @@ QStringList Softcan::str() const
 bool Softcan::checkMagic(const char *array)
 {
     //! \brief Softcan老版本魔术头
-    const char *header("w\x00\x00\x00\xFF\xFF\x01\x00\x0C\0CCurveRecord");
+    const char *header("CCurveRecord");
 #if 0   //测试用
     QString header_s;
     QString array_s;
@@ -295,10 +345,11 @@ bool Softcan::checkMagic(const char *array)
     qDebug() << "array: " << array_s;
 #endif
     // 第一个为校验码之类的，不是确定值，所以从1开始
-    for (int i = 1; i < SOFTCAN_MAGIC_LEN; ++i) {
+    for (int i = 0; i < SOFTCAN_MAGIC_LEN; ++i) {
         if (array[i] != header[i]) {
             return false;
         }
     }
     return true;
 }
+

@@ -18,7 +18,7 @@ void ByteRangeFrame::setup()
     setAutoFillBackground(true);
     setFrameShape(QFrame::Box);
     _layout = new QHBoxLayout(this);
-    _layout->setContentsMargins(5, 2, 5, 2);
+    _layout->setContentsMargins(3, 0, 3, 0);
     setLayout(_layout);
     if (_checkable) {
         _check = new QCheckBox(this);

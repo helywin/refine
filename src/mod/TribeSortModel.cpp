@@ -8,7 +8,7 @@ TribeSortModel::TribeSortModel(QObject *parent) :
         QSortFilterProxyModel(parent),
         _selection(Tribe::SelectAll)
 {
-
+    setDynamicSortFilter(true);
 }
 
 bool TribeSortModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const

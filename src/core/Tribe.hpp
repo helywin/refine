@@ -99,7 +99,7 @@ public:
 
         inline QString colorStr() const
         {
-            return QString("0x%1").arg(_color, 6, 16, QChar('0'));
+            return QString("0x") + QString("%1").arg(_color, 6, 16, QChar('0')).toUpper();
         }
 
         inline QString rangeOutStr() const
@@ -302,6 +302,10 @@ public:
         return dumpToCsv(file);
     }
 
+    inline QList<Cell> &cells() { return _cells; }
+
+    inline const QList<Cell> &cells() const { return _cells; }
+
     inline Iter begin() { return Iter(this, 0); }
 
     inline Iter end() { return Iter(this, _cells.size()); }
@@ -332,6 +336,14 @@ public:
     {
         Q_ASSERT(_header.contains(name));
         return _cells[_header.indexOf(name)];
+    }
+
+    inline void setLen() {
+        if (_cells.isEmpty()) {
+            _len = 0;
+        } else {
+            _len = _cells[0].size();
+        }
     }
 
     inline int len() const { return _len; }

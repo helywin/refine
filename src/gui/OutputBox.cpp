@@ -3,23 +3,23 @@
 //
 
 #include <QtWidgets/QLabel>
-#include "Output.hpp"
+#include "OutputBox.hpp"
 #include "MessagerPanel.hpp"
 #include "Refine.hpp"
 
-const QColor Output::INFO = QColor(0x2e9950);
-const QColor Output::WARNING = QColor(0xfb7a02);
-const QColor Output::CRITICAL = QColor(0xbf180f);
-const QColor Output::FATAL = QColor(0x252525);
-const QColor Output::DEBUG = QColor(0x65728c);
+const QColor OutputBox::INFO = QColor(0x2e9950);
+const QColor OutputBox::WARNING = QColor(0xfb7a02);
+const QColor OutputBox::CRITICAL = QColor(0xbf180f);
+const QColor OutputBox::FATAL = QColor(0x252525);
+const QColor OutputBox::DEBUG = QColor(0x65728c);
 
-Output::Output(QWidget *parent) :
+OutputBox::OutputBox(QWidget *parent) :
         QDockWidget(parent)
 {
     setup();
 }
 
-void Output::setup()
+void OutputBox::setup()
 {
     setWindowTitle(tr("信息"));
     _messager = new MessagerPanel(this);
@@ -52,11 +52,11 @@ void Output::setup()
     QPalette palette_critical = _label_critical->palette();
     QPalette palette_fatal = _label_fatal->palette();
     QPalette palette_debug = _label_debug->palette();
-    palette_info.setColor(QPalette::ColorRole::Window, Output::INFO);
-    palette_warning.setColor(QPalette::ColorRole::Window, Output::WARNING);
-    palette_critical.setColor(QPalette::ColorRole::Window, Output::CRITICAL);
-    palette_fatal.setColor(QPalette::ColorRole::Window, Output::FATAL);
-    palette_debug.setColor(QPalette::ColorRole::Window, Output::DEBUG);
+    palette_info.setColor(QPalette::ColorRole::Window, OutputBox::INFO);
+    palette_warning.setColor(QPalette::ColorRole::Window, OutputBox::WARNING);
+    palette_critical.setColor(QPalette::ColorRole::Window, OutputBox::CRITICAL);
+    palette_fatal.setColor(QPalette::ColorRole::Window, OutputBox::FATAL);
+    palette_debug.setColor(QPalette::ColorRole::Window, OutputBox::DEBUG);
     _label_info->setPalette(palette_info);
     _label_warning->setPalette(palette_warning);
     _label_critical->setPalette(palette_critical);
@@ -82,19 +82,19 @@ void Output::setup()
     _layout->addWidget(_messager);
 }
 
-void Output::connectToMessager(Refine *emitter)
+void OutputBox::connectToMessager(Refine *emitter)
 {
     connect(emitter, &Refine::message, _messager,
             &MessagerPanel::showMessage);        //多个连接一个不能直接连接
 }
 
-void Output::connectToMessager(Revolve *emitter)
+void OutputBox::connectToMessager(Revolve *emitter)
 {
     connect(emitter, &Revolve::message, _messager,
             &MessagerPanel::showMessage);
 }
 
-void Output::connectToMessager(FilePicker *emitter)
+void OutputBox::connectToMessager(FilePicker *emitter)
 {
     connect(emitter, &FilePicker::message, _messager,
             &MessagerPanel::showMessage);

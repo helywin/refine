@@ -49,7 +49,7 @@ void FilePicker::showDialog()
     setSidebarUrls(urls);
     setDirectoryUrl(QUrl::fromLocalFile(QStandardPaths::standardLocations(
             QStandardPaths::DesktopLocation).first()));
-    update();
+    selectUrl(QUrl());
     show();
 }
 
@@ -110,6 +110,8 @@ QString FilePicker::extendName(unsigned int type)
             return QString("fmd");
         case CurveData:
             return QString("cvd");
+        case CurveDataSoftcan:
+            return QString("can");
         case ResultData:
             return QString("rsd");
         case CurveConfigCsv:
@@ -165,6 +167,10 @@ QStringList FilePicker::extendNameWithStr(unsigned int type)
     if (type & (unsigned int) CurveDataCsv) {
         exts.append(tr("曲线数据") +
                     QString("(*.%1)").arg(extendName(CurveDataCsv)));
+    }
+    if (type & (unsigned int) CurveDataSoftcan) {
+        exts.append(tr("SoftCAN曲线数据") +
+                    QString("(*.%1)").arg(extendName(CurveDataSoftcan)));
     }
     if (type & (unsigned int) ResultData) {
         exts.append(tr("结果数据") +

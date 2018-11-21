@@ -6,16 +6,18 @@
 #define REFINE_DOCKER_HPP
 
 #include <QtWidgets/QDockWidget>
-#include "ByteRangeFrame.hpp"
-#include "InfiniteProgress.hpp"
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QVBoxLayout>
 
-class Toolbox : public QDockWidget
+class Commandbox : public QDockWidget
 {
 Q_OBJECT
 private:
-    InfiniteProgress *_progress;
+    QWidget *_content;
+    QVBoxLayout *_layout;
+    QTabWidget *_tab;
 public:
-    explicit Toolbox(QWidget *parent);
+    explicit Commandbox(QWidget *parent);
 private:
     void setup();
 };

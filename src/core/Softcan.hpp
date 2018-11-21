@@ -16,6 +16,7 @@
 #include <QtCore/QString>
 #include <QtCore/QDebug>
 #include "Curve.hpp"
+#include "Tribe.hpp"
 #include "Message.hpp"
 
 /*!
@@ -57,7 +58,12 @@ public:
         QString _unit;
         QString _intro;
         QString _name;
-        bool _save_flag;
+        bool _save_data;    //是否保存数据
+
+        QVector<double> _x;
+        QVector<double> _y;
+
+        unsigned char _format;
 
     public:
         Cell();
@@ -181,9 +187,21 @@ public:
 
         inline QString &name() { return _name; }
 
-        inline bool saveFlag() const { return _save_flag; }
+        inline bool saveFlag() const { return _save_data; }
 
-        inline bool &saveFlag() { return _save_flag; }
+        inline bool &saveFlag() { return _save_data; }
+
+        inline QVector<double> &x() { return _x; }
+
+        inline const QVector<double> &x() const { return _x; }
+
+        inline QVector<double> &y() { return _y; }
+
+        inline const QVector<double> &y() const { return _y; }
+
+        inline unsigned char format() const { return _format; }
+
+        inline unsigned char &format() { return _format; }
 
         QStringList str() const;
         QStringList strClean() const;
@@ -199,6 +217,8 @@ public:
     friend QDataStream &operator>>(QDataStream &stream, Softcan &softcan);
 
     void toCurve(Curve &curve);
+
+    void toTribe(Tribe &tribe);
 
     bool load(QFile &file);
 
@@ -256,7 +276,7 @@ public:
 
     QStringList str() const;
 
-#define SOFTCAN_MAGIC_LEN 22
+#define SOFTCAN_MAGIC_LEN 12
     static bool checkMagic(const char *array);
 
 private:

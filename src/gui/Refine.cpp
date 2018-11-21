@@ -5,7 +5,7 @@
 #include <QtWidgets/QApplication>
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
 #include "Refine.hpp"
-#include "Output.hpp"
+#include "OutputBox.hpp"
 #include "ChangeLog.hpp"
 #include "Sketch.hpp"
 
@@ -75,9 +75,9 @@ void Refine::setup()
              _menu_view_display_group, _menu_view_display,
              tr("工具栏显示/隐藏"), true, true);
     _menu_view_display->addSeparator();
-    initMenu(_menu_view_display_tools, tr("工具箱窗口(&T)"),
+    initMenu(_menu_view_display_command, tr("命令窗口(&T)"),
              _menu_view_display_group, _menu_view_display,
-             tr("工具箱窗口显示/隐藏"), true, true);
+             tr("命令窗口显示/隐藏"), true, true);
     initMenu(_menu_view_display_output, tr("输出窗口(&O)"),
              _menu_view_display_group, _menu_view_display,
              tr("输出窗口显示/隐藏"), true, true);
@@ -120,14 +120,6 @@ void Refine::setup()
     _menu_init->addSeparator();
     initMenu(_menu_init_can, tr("连接CAN(&C)"), _menu_init,
              tr("连接/断开CAN"), true);
-    _menu_init->addSeparator();
-    initMenu(_menu_init_curve, tr("加载曲线配置(&L)..."), _menu_init,
-             tr("加载曲线配置"));
-    initMenu(_menu_init_editcurve, tr("编辑曲线配置(&E)..."), _menu_init,
-             tr("编辑曲线配置"));
-    _menu_init->addSeparator();
-    initMenu(_menu_init_mode, tr("加载工况配置(&L)..."), _menu_init,
-             tr("加载工况配置"));
     initMenu(_menu_control, tr("控制(&C)"), _menubar);
     initMenu(_menu_control_start, tr("开始(&S)"), _menu_control,
              tr("开始采集曲线"));
@@ -142,6 +134,8 @@ void Refine::setup()
              tr("结束采集曲线"));
     _menu_control_finish->setIcon(QIcon(":res/icons/stop.png"));
     initMenu(_menu_tools, tr("工具(&T)"), _menubar);
+    initMenu(_menu_tool_editcurve, tr("编辑曲线配置(&E)..."), _menu_tools,
+             tr("编辑曲线配置"));
     initMenu(_menu_tools_timer, tr("计时器(&T)"), _menu_tools);
     _menu_tools_timer->setIcon(QIcon(":res/icons/timer.png"));
     _menu_tools_timer_group = new QActionGroup(_menu_tools_timer);
@@ -184,40 +178,40 @@ void Refine::setup()
     _toolbar_file->addAction(_menu_file_settings);
     _toolbar_file->addAction(_menu_file_exit);
 
-    _toolbox = new Toolbox(this);
-    _toolbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::LeftDockWidgetArea, _toolbox);
+    _commandbox = new Commandbox(this);
+    _commandbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::LeftDockWidgetArea, _commandbox);
 
-    _output = new Output(this);
-    _output->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::LeftDockWidgetArea, _output);
-    _output->connectToMessager(this);
-    _output->connectToMessager(&_revolve);
-//    tabifyDockWidget(_toolbox, _output);
+    _outputbox = new OutputBox(this);
+    _outputbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::LeftDockWidgetArea, _outputbox);
+    _outputbox->connectToMessager(this);
+    _outputbox->connectToMessager(&_revolve);
+    tabifyDockWidget(_commandbox, _outputbox);
 //    _toolbox->raise();
 
-    _curvebox = new CurveBox(&_revolve.tribe(), this, this);
-    _curvebox->setAllowedAreas(
+    _tribebox = new TribeBox(&_revolve.tribe(), this, this);
+    _tribebox->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, _curvebox);
-    _revolve.setTribeModel(&_curvebox->tribeModel());
+    addDockWidget(Qt::RightDockWidgetArea, _tribebox);
+    _revolve.setTribeModel(&_tribebox->tribeModel());
 
     _markbox = new MarkBox(this);
     _markbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _markbox);
 
-    tabifyDockWidget(_curvebox, _markbox);
-    _curvebox->raise();
+    tabifyDockWidget(_tribebox, _markbox);
+    _tribebox->raise();
 
     _display = new Display(this, &_revolve, this);
     _revolve.setSketch(&_display->sketch());
-    _curvebox->connectModelToSketch(&_display->sketch());
+    _tribebox->connectModelToSketch(&_display->sketch());
     setCentralWidget(_display);
 
     _statusbar = new StatusBar(this);
     this->setStatusBar(_statusbar);
     _file_picker = new FilePicker(this);
-    _output->connectToMessager(_file_picker);
+    _outputbox->connectToMessager(_file_picker);
 
     _changelog = new ChangeLog(this);
     _about = new About(this);
@@ -238,6 +232,8 @@ void Refine::setup()
             _file_picker, &FilePicker::saveArchive, Qt::DirectConnection);
     connect(_menu_file_import_config, &QAction::triggered,
             _file_picker, &FilePicker::loadCurveConfig, Qt::DirectConnection);
+    connect(_editor->actionImport(), &QAction::triggered,
+            _file_picker, &FilePicker::loadCurveConfig);
     connect(_menu_file_import_data, &QAction::triggered,
             _file_picker, &FilePicker::loadCurveData, Qt::DirectConnection);
     connect(_menu_file_import_frame, &QAction::triggered,
@@ -246,21 +242,21 @@ void Refine::setup()
             _file_picker, &FilePicker::loadModeConfig, Qt::DirectConnection);
     connect(_menu_file_export_config, &QAction::triggered,
             _file_picker, &FilePicker::saveCurveConfig, Qt::DirectConnection);
+    connect(_editor->actionExport(), &QAction::triggered,
+            _file_picker, &FilePicker::saveCurveConfig);
     connect(_menu_file_export_data, &QAction::triggered,
             _file_picker, &FilePicker::saveCurveData, Qt::DirectConnection);
     connect(_menu_file_export_frame, &QAction::triggered,
             _file_picker, &FilePicker::saveFrameData, Qt::DirectConnection);
     connect(_menu_file_export_mode, &QAction::triggered,
             _file_picker, &FilePicker::saveModeConfig, Qt::DirectConnection);
-    connect(_menu_init_curve, &QAction::triggered,
-            _file_picker, &FilePicker::loadCurveConfig, Qt::DirectConnection);
     connect(_menu_view_full, &QAction::triggered,
             this, &Refine::fullScreen, Qt::DirectConnection);
     connect(_menu_file_exit, &QAction::triggered,
             this, &Refine::close, Qt::DirectConnection);
     connect(_menu_init_can, &QAction::triggered,
             this, &Refine::connectCan, Qt::DirectConnection);
-    connect(_menu_init_editcurve, &QAction::triggered,
+    connect(_menu_tool_editcurve, &QAction::triggered,
             _editor, &CurveEditor::show, Qt::DirectConnection);
     connect(_menu_control_start, &QAction::triggered,
             this, &Refine::startRevolve, Qt::DirectConnection);
@@ -288,11 +284,11 @@ void Refine::setup()
             this, &Refine::setSmooth, Qt::DirectConnection);
     connect(_toolbar_file, &QToolBar::visibilityChanged,
             this, &Refine::widgetsVisibilityChanged);
-    connect(_toolbox, &QDockWidget::visibilityChanged,
+    connect(_commandbox, &QDockWidget::visibilityChanged,
             this, &Refine::widgetsVisibilityChanged);
-    connect(_output, &QDockWidget::visibilityChanged,
+    connect(_outputbox, &QDockWidget::visibilityChanged,
             this, &Refine::widgetsVisibilityChanged);
-    connect(_curvebox, &QDockWidget::visibilityChanged,
+    connect(_tribebox, &QDockWidget::visibilityChanged,
             this, &Refine::widgetsVisibilityChanged);
     connect(_markbox, &QDockWidget::visibilityChanged,
             this, &Refine::widgetsVisibilityChanged);
@@ -439,12 +435,12 @@ void Refine::displayAndHide(QAction *action)
 {
     if (action == _menu_view_display_file) {
         _toolbar_file->setVisible(_menu_view_display_file->isChecked());
-    } else if (action == _menu_view_display_tools) {
-        _toolbox->setVisible(_menu_view_display_tools->isChecked());
+    } else if (action == _menu_view_display_command) {
+        _commandbox->setVisible(_menu_view_display_command->isChecked());
     } else if (action == _menu_view_display_output) {
-        _output->setVisible(_menu_view_display_output->isChecked());
+        _outputbox->setVisible(_menu_view_display_output->isChecked());
     } else if (action == _menu_view_display_curve) {
-        _curvebox->setVisible(_menu_view_display_curve->isChecked());
+        _tribebox->setVisible(_menu_view_display_curve->isChecked());
     } else if (action == _menu_view_display_mark) {
         _markbox->setVisible(_menu_view_display_mark->isChecked());
     }
@@ -458,16 +454,15 @@ void Refine::setSmooth()
 void Refine::widgetsVisibilityChanged(bool visible)
 {
     _menu_view_display_file->setChecked(_toolbar_file->isVisible());
-    _menu_view_display_tools->setChecked(_toolbox->isVisible());
-    _menu_view_display_output->setChecked(_output->isVisible());
-    _menu_view_display_curve->setChecked(_curvebox->isVisible());
+    _menu_view_display_command->setChecked(_commandbox->isVisible());
+    _menu_view_display_output->setChecked(_outputbox->isVisible());
+    _menu_view_display_curve->setChecked(_tribebox->isVisible());
     _menu_view_display_mark->setChecked(_markbox->isVisible());
 }
 
 void Refine::setCollectMenuEnable(bool isCollecting)
 {
-    _menu_init_curve->setDisabled(isCollecting);
-    _menu_init_editcurve->setDisabled(isCollecting);
+    _menu_tool_editcurve->setDisabled(isCollecting);
     _menu_file_import_config->setDisabled(isCollecting);
     _menu_file_export_data->setDisabled(isCollecting);
     _menu_file_export_frame->setDisabled(isCollecting);

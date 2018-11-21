@@ -132,6 +132,7 @@ public:
     bool importCsvFrameData(const QString &name);
 
     bool inputCurveData(const QString &name);
+    bool importSoftcanCurveData(const QString &name);
     bool outputCurveData(const QString &name);
     bool exportCsvCurveData(const QString &name);
 

@@ -30,5 +30,4 @@ private:
     bool isDisplayRule(bool display) const;
 };
 
-
 #endif //REFINE_TRIBESORTMODEL_HPP

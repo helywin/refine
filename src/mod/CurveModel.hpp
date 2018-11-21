@@ -46,6 +46,13 @@ public:
                         int role) const override;
 public slots:
     void genData(Curve *curve);
+
+public:
+    bool insertRow(int row, const QModelIndex &parent = QModelIndex());
+
+    bool appendRow(int row, const QModelIndex &parent = QModelIndex());
+
+    bool removeRow(int row, const QModelIndex &parent = QModelIndex());
 };
 
 

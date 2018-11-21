@@ -20,18 +20,18 @@
 #include "Initializer.hpp"
 #include "Revolve.hpp"
 #include "FilePicker.hpp"
-#include "Toolbox.hpp"
+#include "Commandbox.hpp"
 #include "CurveEditor.hpp"
 #include "MessagerPanel.hpp"
 #include "Display.hpp"
 #include "StatusBar.hpp"
-#include "CurveBox.hpp"
+#include "TribeBox.hpp"
 #include "MarkBox.hpp"
 #include "Settings.hpp"
 #include "About.hpp"
 #include "Message.hpp"
 
-class Output;
+class OutputBox;
 class MessagerPanel;
 class ChangeLog;
 class Settings;
@@ -64,7 +64,7 @@ private:
     QMenu *_menu_view_display;
     QActionGroup *_menu_view_display_group;
     QAction *_menu_view_display_file;
-    QAction *_menu_view_display_tools;
+    QAction *_menu_view_display_command;
     QAction *_menu_view_display_output;
     QAction *_menu_view_display_curve;
     QAction *_menu_view_display_mark;
@@ -81,15 +81,13 @@ private:
     QMenu *_menu_init;
     QAction *_menu_init_option;
     QAction *_menu_init_can;
-    QAction *_menu_init_curve;
-    QAction *_menu_init_editcurve;
-    QAction *_menu_init_mode;
     QMenu *_menu_control;
     QAction *_menu_control_start;
     QAction *_menu_control_pause;
     QAction *_menu_control_resume;
     QAction *_menu_control_finish;
     QMenu *_menu_tools;
+    QAction *_menu_tool_editcurve;
     QMenu *_menu_tools_timer;
     QActionGroup *_menu_tools_timer_group;
     QAction *_menu_tools_timers[3];
@@ -102,9 +100,9 @@ private:
     QAction *_menu_help_about;
     QToolBar *_toolbar_file;
 
-    Toolbox *_toolbox;
-    Output *_output;
-    CurveBox *_curvebox;
+    Commandbox *_commandbox;
+    OutputBox *_outputbox;
+    TribeBox *_tribebox;
     MarkBox *_markbox;
     Display *_display;
     ChangeLog *_changelog;

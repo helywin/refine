@@ -127,6 +127,11 @@ target_link_libraries(refine
         Qt5Widgets
         Qt5Gui
         Qt5OpenGL)
+
+add_executable(test_list test_list.cpp)
+target_link_libraries(test_list
+        Qt5Core)
+
 if (CMAKE_BUILD_TYPE MATCHES Release)
     set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/release)
     set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})

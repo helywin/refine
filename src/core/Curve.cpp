@@ -142,36 +142,65 @@ void Curve::append(const Curve::Cell &cell)
 {
     _header.append(cell.name());
     _cells.append(cell);
+    updateHeader();
 }
 
 void Curve::append(Curve::Cell &&cell)
 {
     _header.append(cell.name());
     _cells.append(cell);
+    updateHeader();
 }
 
 void Curve::insert(int index, const Curve::Cell &cell)
 {
     _header.insert(index, cell.name());
-    _cells.insert(index, cell);
+    Cell c(cell);
+    c.setIndex(index);
+    _cells.insert(index, c);
+    for (int i = index + 1; i < _cells.size(); ++i) {
+        _cells[i].setIndex(i);
+    }
+    updateHeader();
 }
 
-void Curve::insert(Curve::Cell &&cell, int index)
+void Curve::insert(int index, Curve::Cell &&cell)
 {
-    _header.insert(index, cell.name());
-    _cells.insert(index, qMove(cell));
+    if (_cells.isEmpty()) {
+        _header.append(cell.name());
+        cell.setIndex(0);
+        _cells.append(qMove(cell));
+    } else {
+        _header.insert(index, cell.name());
+        cell.setIndex(index);
+        qDebug() << "Curve::insert _cells.size(): " << _cells.size();
+        _cells.insert(index, qMove(cell));
+        for (int i = index + 1; i < _cells.size(); ++i) {
+            _cells[i].setIndex(i);
+        }
+    }
+    updateHeader();
 }
 
 void Curve::remove(int index)
 {
     _header.removeAt(index);
     _cells.removeAt(index);
+    for (int i = index; i < _cells.size(); ++i) {
+        _cells[i].setIndex(i);
+    }
+    updateHeader();
 }
 
 void Curve::remove(const QString &name)
 {
-    _cells.removeAt(_header.indexOf(name));
-    _header.removeOne(name);
+    int index = _header.indexOf(name);
+    _cells.removeAt(index);
+    _header.removeAt(index);
+    for (int i = index; i < _cells.size(); ++i) {
+        _cells[i].setIndex(i);
+    }
+    updateHeader();
 }
 
 
@@ -203,10 +232,10 @@ Curve::Cell::Cell() : Cell(0) {}
 
 
 Curve::Cell::Cell(int index) :
-        _index((short) index),
+        _index(index),
         _display(false),
-        _name(QString("未命名")),
-        _unit(QString("无单位")),
+        _name(QString("未命名%1").arg(index)),
+        _unit(QString("NULL")),
         _width(1),
         _color(0xFFFFFF),
         _can_id(0x777),
@@ -217,8 +246,7 @@ Curve::Cell::Cell(int index) :
         _low_range({0, 7}),
         _range_in({0, 100}),
         _range_out({0, 100}),
-        _remark(QString("无"))
-{}
+        _remark(QString("无")) {}
 
 bool Curve::Cell::check() const     //不准备用csv文件，方法也不写了
 {
@@ -250,20 +278,20 @@ void Curve::Cell::setHighByteByStr(const QString &s)
         _high_byte = -1;
     } else {
         QStringList list = s.split(QChar(';'));
-        _high_byte = list[0].toShort();
+        _high_byte = list[0].toInt();
         list = list[1].split(QChar('~'));
-        _high_range[0] = static_cast<unsigned char> (list[0].toUShort());
-        _high_range[1] = static_cast<unsigned char> (list[1].toUShort());
+        _high_range[0] = list[0].toInt();
+        _high_range[1] = list[1].toInt();
     }
 }
 
 void Curve::Cell::setLowByteByStr(const QString &s)
 {
     QStringList list = s.split(QChar(';'));
-    _low_byte = list[0].toShort();
+    _low_byte = list[0].toInt();
     list = list[1].split(QChar('~'));
-    _low_range[0] = static_cast<unsigned char> (list[0].toUShort());
-    _low_range[1] = static_cast<unsigned char> (list[1].toUShort());
+    _low_range[0] = list[0].toInt();
+    _low_range[1] = list[1].toInt();
 }
 
 QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)
