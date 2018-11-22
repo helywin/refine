@@ -12,7 +12,7 @@ class InfiniteProgress : public QWidget
 {
 Q_OBJECT
 private:
-    QColor _boarder;
+    QColor _border;
     QColor _fill;
     QTimer _timer;
     double _process;

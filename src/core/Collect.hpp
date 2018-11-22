@@ -58,6 +58,7 @@ private:
     Status _status;
     Command _cmd;
     unsigned long _msec;
+    int _frames_loop;
 
 public:
     explicit Collect(Message *message = nullptr);
@@ -83,6 +84,8 @@ protected:
 
 signals:
     void info(int code);
+
+    void baudRate(double baud_rate);
 };
 
 

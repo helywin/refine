@@ -18,7 +18,8 @@ Collect::Collect(Message *message) :
         _file(),
         _status(Stop),
         _cmd(None),
-        _msec(10) {}
+        _msec(10),
+        _frames_loop(0) {}
 
 
 void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
@@ -32,11 +33,20 @@ void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
 }
 
 #define NO_FRAME_TIMES 100  //隔多少次会报接收空白帧
+#define CAN_OBJ_BITS ((4+4+5+8+3)*8)
 
 void Collect::run()
 {
+    int time = 0;
     while (_cmd != CommandStop) {
         msleep(_msec);
+        if (time >= 1000) {
+            double kbps = (CAN_OBJ_BITS * _frames_loop) / (double)time;
+            emit baudRate(kbps);
+            _msec = 0;
+            _frames_loop = 0;
+        }
+        time += _msec;
         if (_cmd == CommandPause) {
             if (_status == Running) {
                 _status = Pause;
@@ -64,6 +74,7 @@ void Collect::run()
                     cnt %= NO_FRAME_TIMES;
                 }
             } else {
+                _frames_loop += (*_buffer->last()).dataSize();
                 cnt = 0;
             }
         }

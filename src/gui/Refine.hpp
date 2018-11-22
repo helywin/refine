@@ -30,6 +30,7 @@
 #include "Settings.hpp"
 #include "About.hpp"
 #include "Message.hpp"
+#include "BaudRate.hpp"
 
 class OutputBox;
 class MessagerPanel;
@@ -100,6 +101,8 @@ private:
     QAction *_menu_help_about;
     QToolBar *_toolbar_file;
 
+    QWidget *_central;
+    QHBoxLayout *_layout;
     Commandbox *_commandbox;
     OutputBox *_outputbox;
     TribeBox *_tribebox;
@@ -111,6 +114,7 @@ private:
     CurveEditor *_editor;
 
     StatusBar *_statusbar;
+    BaudRate *_baud_rate;
 
     Qt::WindowState _win_state;
     bool _presentation;
@@ -188,6 +192,10 @@ private:
 private slots:
 
     void fullScreen();
+
+    void presentation();
+
+    void exitPresentation();
 
     void startRevolve();
 

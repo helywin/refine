@@ -52,6 +52,8 @@ public:
 
     void connectModelToSketch(Sketch *sketch);
 
+    inline QWidget *content() { return _content; }
+
 public slots:
 
     inline void updateData() { _model->genData(_tribe); };

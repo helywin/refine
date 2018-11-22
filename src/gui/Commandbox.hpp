@@ -8,6 +8,7 @@
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
+#include "BaudRate.hpp"
 
 class Commandbox : public QDockWidget
 {

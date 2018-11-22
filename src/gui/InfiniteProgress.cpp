@@ -9,7 +9,7 @@
 #include <cmath>
 
 InfiniteProgress::InfiniteProgress(QWidget *parent, int msec) :
-        _boarder(),
+        _border(),
         _fill(),
         QWidget(parent),
         _timer(),
@@ -29,12 +29,12 @@ void InfiniteProgress::paintEvent(QPaintEvent *event)
     auto rect = event->rect().marginsRemoved(QMargins(2, 2, 2, 2));
     QPainter painter;
     painter.begin(this);
-    QPen pen(_boarder);
+    QPen pen(_border);
     pen.setWidth(1);
     QBrush brush(_fill);
     painter.setPen(pen);
     painter.drawRect(rect);
-    painter.setBrush(_fill);
+    painter.setBrush(brush);
     if (_process <= _len) {
         painter.drawRect(rect.x(), rect.y(),
                          (int)round(rect.width() * _process), rect.height());

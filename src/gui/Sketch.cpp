@@ -439,6 +439,9 @@ void Sketch::keyPressEvent(QKeyEvent *event)
         _vernier ^= 1;
         update();
     }
+    if (event->key() == Qt::Key_F12) {
+        event->setAccepted(false);
+    }
     emitMessage(Debug, QString("按下 %1").arg(event->key()));
 }
 

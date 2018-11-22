@@ -188,6 +188,8 @@ signals:
     void canLostConnection();
 
     void collectMenuEnable(bool isCollecting);
+
+    void baudRate(double baud_rate);
 };
 
 

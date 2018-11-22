@@ -68,6 +68,7 @@ bool Revolve::begin(unsigned long msec, int config, int time)
         _tribe_model->genData(&_tribe);
         genCurveDataFile();
         _transform.setParams(&_curve, &_buffer, &_tribe, msec);
+        connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
         _collect.begin();
         _transform.begin();
     } else {
@@ -98,9 +99,11 @@ bool Revolve::stop(bool error)
     }
     if (!error) {
         _collect.stop();
+        disconnect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
     } else {
         _menu_init_can->setChecked(false);
         _can.close();
+        disconnect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
     }
     if ((unsigned) _config & (unsigned) WithTiming) {
         _timer_stop.stop();

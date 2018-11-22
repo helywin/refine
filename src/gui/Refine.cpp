@@ -203,12 +203,23 @@ void Refine::setup()
     tabifyDockWidget(_tribebox, _markbox);
     _tribebox->raise();
 
-    _display = new Display(this, &_revolve, this);
+    _central = new QWidget(this);
+    _layout = new QHBoxLayout(_central);
+    _layout->setContentsMargins(0, 0, 0, 0);
+    _central->setLayout(_layout);
+    setCentralWidget(_central);
+
+    _display = new Display(_central, &_revolve, this);
     _revolve.setSketch(&_display->sketch());
     _tribebox->connectModelToSketch(&_display->sketch());
-    setCentralWidget(_display);
+    _layout->addWidget(_display);
+    _display->setParentLayout(_layout);
+    _display->addDock(_tribebox);
+    _display->addDock(_markbox);
 
     _statusbar = new StatusBar(this);
+    _baud_rate = new BaudRate(_statusbar);
+    _statusbar->addPermanentWidget(_baud_rate);
     this->setStatusBar(_statusbar);
     _file_picker = new FilePicker(this);
     _outputbox->connectToMessager(_file_picker);
@@ -294,6 +305,12 @@ void Refine::setup()
             this, &Refine::widgetsVisibilityChanged);
     connect(&_revolve, &Revolve::collectMenuEnable,
             this, &Refine::setCollectMenuEnable);
+    connect(&_revolve, &Revolve::baudRate,
+            _baud_rate, &BaudRate::setBaudRate);
+    connect(_menu_view_presentation, &QAction::triggered,
+            this, &Refine::presentation, Qt::DirectConnection);
+    connect(_display, &Display::exitPresentation,
+            this, &Refine::exitPresentation);
 }
 
 void Refine::setLanguage()
@@ -363,6 +380,18 @@ void Refine::fullScreen()
         emitMessage(Debug, tr("退出全屏模式"));
         this->setWindowState(Qt::WindowMaximized);
     }
+}
+
+void Refine::presentation()
+{
+    if (_menu_view_presentation->isChecked()) {
+        _display->enablePresentation();
+    }
+}
+
+void Refine::exitPresentation()
+{
+    _menu_view_presentation->setChecked(false);
 }
 
 void Refine::closeEvent(QCloseEvent *event)

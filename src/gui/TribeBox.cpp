@@ -118,3 +118,4 @@ void TribeBox::textFilterChanged()
     _proxy->setSelection(_filter->selection());
     _filter->setFound(_proxy->rowCount() != 0 && _model->rowCount() != 0);
 }
+

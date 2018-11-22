@@ -77,10 +77,10 @@ void TribeFilter::setup()
 
 void TribeFilter::paintEvent(QPaintEvent *event)
 {
-    _font.setStrikeOut(!_is_found);
+//    _font.setStrikeOut(!_is_found);
     QLineEdit::paintEvent(event);
-    _font.setStrikeOut(false);
-    setFont(_font);
+//    _font.setStrikeOut(false);
+//    setFont(_font);
     QPainter painter;
     painter.begin(this);
     if (!hasFocus() && text().isEmpty()) {
@@ -94,8 +94,8 @@ void TribeFilter::paintEvent(QPaintEvent *event)
                          QTextOption(Qt::AlignVCenter | Qt::AlignLeft));
     }
     painter.end();
-    _font.setStrikeOut(!_is_found);
-    setFont(_font);
+//    _font.setStrikeOut(!_is_found);
+//    setFont(_font);
 }
 
 void TribeFilter::setFound(bool is_found)

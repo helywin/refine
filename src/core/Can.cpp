@@ -286,7 +286,7 @@ bool Can::isConnected()
                              &info);
     if (!flag) {
         getError();
-        reportError();
+//        reportError();
     }
     return (bool)flag;
 }
