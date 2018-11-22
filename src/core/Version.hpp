@@ -26,8 +26,8 @@ public:
     {
         None = 0x00,    //!< 无
         Demo = 0x01,    //!< 测试
-        Alpha = 0x02,   //!< A版
-        Beta = 0x04,    //!< B版
+        Alpha = 0x02,   //!< Alpha版
+        Beta = 0x04,    //!< Beta版
         Gamma = 0x08,   //!< 接近正式版
         Release = 0x10  //!< 发行版
     };

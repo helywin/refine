@@ -13,7 +13,7 @@ Record::Record(Message *message) :
         Message(message),
         _file(message),
         _buffer(nullptr),
-        _record(nullptr),
+        _record(),
         _buffer_tail(),
         _buffer_head(),
         _status(Stop),
@@ -43,7 +43,7 @@ void Record::run()
 void Record::begin()
 {
     _cmd = None;
-    if (_file.dumpFrameRecordBegin(*_record)) {
+    if (_file.dumpFrameRecordBegin(_record)) {
         start();
         _status = Running;
     }
@@ -54,7 +54,7 @@ void Record::stop(bool error)
     _cmd = CommandStop;
     while (isRunning()) {}
     if (!error) {
-        _file.dumpFrameRecordFinish(*_record);
+        _file.dumpFrameRecordFinish(_record);
     }
     _status = Stop;
 }

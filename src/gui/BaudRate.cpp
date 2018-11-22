@@ -27,7 +27,7 @@ void BaudRate::setup()
     _progress->setMaximum(_maximum_baud_rate);
     _layout->addWidget(_progress, 1);
     _layout->addWidget(_label);
-    setBaudRate(0);
+    setBaudRate(90);
 }
 
 void BaudRate::setBaudRate(double baud_rate)

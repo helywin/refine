@@ -4,29 +4,33 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QDataStream>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
 #include "File.hpp"
 #include "Curve.hpp"
 #include "Can.hpp"
 #include "Buffer.hpp"
 
-int main() {
-    Curve curve;
-    Curve curve1;
-    curve.loadFromCsv(QString("D:/jiang.wenqiang/code/refine/config/配置.csv"));
-    QFile cvc("D:/jiang.wenqiang/code/refine/data/a.cvc");
-    File f;
-    f.dumpCurveConfig(cvc, curve);
-    f.loadCurveConfig(cvc, curve1);
-    qDebug() << curve.str();
-    for (auto &it : curve) {
-        qDebug() << it.str();
-    }
-    QFile objf("D:/jiang.wenqiang/code/refine/data/obj.cvc");
-    objf.open(QIODevice::WriteOnly);
-    QDataStream s(&objf);
-    Buffer buffer;
-    for (auto &iter : buffer) {
-
+int main()
+{
+    QDir dir0("sub0");
+    QDir dir1("sub1");
+    QFileInfo f(dir0, "a.txt");
+    QFile ff("sub0/a.txt");
+    if (f.exists()) {
+        qDebug() << "f.fileName(): " << f.fileName();
+        qDebug() << "f.absolutePath(): " << f.absolutePath();
+        qDebug() << "f.absoluteFilePath(): " << f.absoluteFilePath();
+        qDebug() << "dir1.absolutePath(): " << dir1.absolutePath();
+        qDebug() << "dir1.path(): " << dir1.path();
+        if (QFile::copy(f.absoluteFilePath(), dir1.absolutePath() + "/" + f.fileName())) {
+            QFile::remove(f.absoluteFilePath());
+        }
+    } else {
+        if (QFile::copy(dir1.absolutePath() + "/" + f.fileName(),
+                        dir0.absolutePath() + "/" + f.fileName())) {
+            QFile::remove(dir1.absolutePath() + "/" + f.fileName());
+        }
     }
     return 0;
 }

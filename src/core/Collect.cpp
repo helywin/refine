@@ -23,12 +23,14 @@ Collect::Collect(Message *message) :
 
 
 void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
-                        unsigned long msec, QFile *frame_file)
+                        unsigned long msec, const QString &name)
 {
     _can = can;
     _buffer = buffer;
     _manner = manner;
-    _frame_file = frame_file;
+    if (!name.isEmpty()) {
+        _frame_file.setFileName(name);
+    }
     _msec = msec;
 }
 
@@ -40,10 +42,11 @@ void Collect::run()
     int time = 0;
     while (_cmd != CommandStop) {
         msleep(_msec);
-        if (time >= 1000) {
+        if (time >= 500) {
             double kbps = (CAN_OBJ_BITS * _frames_loop) / (double)time;
+//            emitMessage(Debug, QString("波特率: %1").arg(kbps));
             emit baudRate(kbps);
-            _msec = 0;
+            time = 0;
             _frames_loop = 0;
         }
         time += _msec;

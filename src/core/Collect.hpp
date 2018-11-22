@@ -53,7 +53,7 @@ private:
     Can *_can;
     Buffer *_buffer;
     Manner _manner;
-    QFile *_frame_file;
+    QFile _frame_file;
     File _file;
     Status _status;
     Command _cmd;
@@ -65,7 +65,7 @@ public:
 
     void setParams(Can *can, Buffer *buffer,
                    Manner manner, unsigned long msec = 10,
-                   QFile *frame_file = nullptr);
+                   const QString &name = QString());
 
     void begin();
 

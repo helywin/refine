@@ -206,6 +206,12 @@ public:
     bool loadCurveConfig(QFile &file, Curve &curve);
     bool dumpCurveConfig(QFile &file, const Curve &curve);
 
+    inline bool dumpCurveConfig(const QString &name, const Curve &curve)
+    {
+        QFile file(name);
+        return dumpCurveConfig(file, curve);
+    }
+
 public:
     bool loadFrameRecord(QFile &file, FramePool &pool);
 

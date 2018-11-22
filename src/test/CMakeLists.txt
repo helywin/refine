@@ -82,39 +82,39 @@ set(LIBFREEGLUT D:/msys32/mingw32/lib/libfreeglut.dll.a)
 set(LIBNETTLE D:/msys32/mingw32/lib/libnettle.dll.a)
 set(LIBGNUTLS D:/msys32/mingw32/lib/libgnutls.dll.a)
 
-add_executable(file test_file.cpp ${CORE})
-target_link_libraries(file ${LIBCAN}
+add_executable(file test_file.cpp)
+target_link_libraries(file
         Qt5Core)
 
-add_executable(collect test_collect.cpp ${CORE})
-target_link_libraries(collect ${LIBCAN}
-        Qt5Core)
+#add_executable(collect test_collect.cpp ${CORE})
+#target_link_libraries(collect ${LIBCAN}
+#        Qt5Core)
+#
+#add_executable(frame frame_viewer_main.cpp ${CORE} ${GUI})
+#target_link_libraries(frame ${LIBCAN}
+#        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
+#
+#add_executable(scope test_scope.cpp ${CORE} ${GUI})
+#target_link_libraries(scope ${LIBCAN}
+#        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
+#
+#add_executable(buffer test_buffer.cpp ${CORE} ${GUI})
+#target_link_libraries(buffer ${LIBCAN}
+#        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
+#
+#add_executable(thread test_thread.cpp TestThread.h)
+#target_link_libraries(thread Qt5Core)
+#
+#add_executable(setting test_setting.cpp ../core/Initializer.cpp ../core/Initializer.hpp)
+#target_link_libraries(setting Qt5Core)
 
-add_executable(frame frame_viewer_main.cpp ${CORE} ${GUI})
-target_link_libraries(frame ${LIBCAN}
-        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
-
-add_executable(scope test_scope.cpp ${CORE} ${GUI})
-target_link_libraries(scope ${LIBCAN}
-        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
-
-add_executable(buffer test_buffer.cpp ${CORE} ${GUI})
-target_link_libraries(buffer ${LIBCAN}
-        Qt5Core Qt5Widgets Qt5Gui Qt5OpenGL ${LIBOPENGL})
-
-add_executable(thread test_thread.cpp TestThread.h)
-target_link_libraries(thread Qt5Core)
-
-add_executable(setting test_setting.cpp ../core/Initializer.cpp ../core/Initializer.hpp)
-target_link_libraries(setting Qt5Core)
-
-add_executable(test_zip test_zip.cpp ../core/Packer.cpp ../core/Packer.hpp)
-target_link_libraries(test_zip Qt5Core
-        ${LIBZIP}
-        ${LIBZ}
-        ${LIBBZ2}
-        ${LIBNETTLE}
-        ${LIBGNUTLS})
+#add_executable(test_zip test_zip.cpp ../core/Packer.cpp ../core/Packer.hpp)
+#target_link_libraries(test_zip Qt5Core
+#        ${LIBZIP}
+#        ${LIBZ}
+#        ${LIBBZ2}
+#        ${LIBNETTLE}
+#        ${LIBGNUTLS})
 
 add_executable(refine main.cpp ${RC} ${CORE} ${GUI} ${MOD} ${DEL}
         ${UI} ${TEXT} ${TRANS} ${ICONS})
@@ -128,9 +128,6 @@ target_link_libraries(refine
         Qt5Gui
         Qt5OpenGL)
 
-add_executable(test_list test_list.cpp)
-target_link_libraries(test_list
-        Qt5Core)
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
     set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/release)

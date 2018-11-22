@@ -32,7 +32,7 @@ void TribeBox::setup()
     _filter = new TribeFilter(_model, _search);
     _layout_search->addWidget(_check);
     _layout_search->addWidget(_filter);
-    _layout_search->setContentsMargins(0, 0, 0, 0);
+    _layout_search->setContentsMargins(5, 0, 0, 0);
     _layout_content = new QVBoxLayout(_content);
     _layout_content->setMargin(5);
     _layout_content->setContentsMargins(0, 10, 10, 0);

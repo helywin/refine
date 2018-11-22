@@ -13,4 +13,6 @@ MarkBox::MarkBox(QWidget *parent) : QDockWidget(parent)
 void MarkBox::setup()
 {
     setWindowTitle(tr("标注"));
+    _content = new QWidget(this);
+    setWidget(_content);
 }

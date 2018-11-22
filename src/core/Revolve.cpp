@@ -14,6 +14,7 @@
 Revolve::Revolve(Initializer *init) :
         Message(),
         _init(init),
+        _manage(init, this),
         _can(this),
         _curve(this),
         _buffer(100),
@@ -24,14 +25,10 @@ Revolve::Revolve(Initializer *init) :
         _sketch(nullptr),
         _softcan(this),
         _timer_stop(),
-        _store_frames(),
-        _collect_frames(),
-        _store_curvedata(),
         _msec(10),
         _time(10),
         _config(),
-        _status(Stop),
-        _packer(init, this)
+        _status(Stop)
 {
     _config = 0x00;
     connect(&_timer_stop, &QTimer::timeout, this,
@@ -58,7 +55,8 @@ bool Revolve::begin(unsigned long msec, int config, int time)
     _config = config;
     _time = time;
     _collect.setParams(&_can, &_buffer, Collect::FromCan, msec);
-    genName();
+    _manage.generate();
+    //! @deprecated genName();
     if ((unsigned) _config & (unsigned) Config::WithTransform) {
         if (!_curve.isInitialized()) {
             emitMessage(Warning, tr("开始失败，没有加载曲线配置"));
@@ -66,7 +64,7 @@ bool Revolve::begin(unsigned long msec, int config, int time)
         }
         _tribe.genFromCurve(_curve);
         _tribe_model->genData(&_tribe);
-        genCurveDataFile();
+        //! @deprecated genCurveDataFile();
         _transform.setParams(&_curve, &_buffer, &_tribe, msec);
         connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
         _collect.begin();
@@ -78,8 +76,8 @@ bool Revolve::begin(unsigned long msec, int config, int time)
         _sketch->start();
     }
     if ((unsigned) _config & (unsigned) WithRecord) {
-        genFramesDataFile();
-        _record.setParams(&_store_frames, &_buffer);
+        //! @deprecated genFramesDataFile();
+        _record.setParams(_manage.frameData().absoluteFilePath(), &_buffer);
         _record.begin();
     }
     if ((unsigned) _config & (unsigned) WithTiming) {
@@ -111,33 +109,17 @@ bool Revolve::stop(bool error)
     QStringList files;
     QStringList paths;
     if ((unsigned) _config & (unsigned) WithTransform) {
-        _transform.stop(&_store_curvedata);
-        QString name = _store_curvedata.fileName();
-        files << _store_curvedata_name;
-        paths << name;
+        _transform.stop(_manage.curveData().absoluteFilePath());
     }
     if ((unsigned) _config & (unsigned) WithRecord) {
         _record.stop();
-        QString name = _store_frames.fileName();
-        files << _store_frames_name;
-        paths << name;
     }
     if (_sketch) {
         _sketch->stop();
     }
-    genCurveConfigFile();
-    paths << _store_curveconfig.fileName();
-    files << _store_curveconfig_name;
-    _file.dumpCurveConfig(_store_curveconfig, _curve);
-    genArchiveFileName();
-    if (_packer.compress(files, _store_archive_name)) {
-        for (const auto &path : paths) {
-            QFile::remove(path);
-        }
-        emitMessage(Info, tr("生成数据 ") + _store_archive_name);
-    } else {
-        emitMessage(Critical, tr("包文件生成失败"));
-    }
+    _file.dumpCurveConfig(_manage.curveConfig().absoluteFilePath(), _curve);
+    _manage.compress();
+    _manage.copyToCache();
     _status = Stop;
     emitMessage(Info, tr("停止采集成功"));
     return true;
@@ -220,55 +202,7 @@ void Revolve::resume()
 
 void Revolve::setCollectManner(Collect::Manner manner, QString &collect_frame)
 {
-    _collect_frames.setFileName(collect_frame);
-    _collect.setParams(&_can, &_buffer, manner, _msec, &_collect_frames);
-}
-
-void Revolve::genName()
-{
-    _name = QDateTime::currentDateTime()
-            .toString(_init->get(Initializer::Core,
-                                 Initializer::NameFormat).toString());
-}
-
-void Revolve::genFramesDataFile()
-{
-    _store_frames.close();
-    _store_frames_name =
-            _name + "." + FilePicker::extendName(FilePicker::FrameData);
-    _store_frames.setFileName(
-            _init->get(Initializer::Core, Initializer::DataDir).toString() +
-            _store_frames_name);
-    qDebug() << "生成报文数据文件名: " << _store_frames.fileName();
-}
-
-void Revolve::genCurveDataFile()
-{
-    _store_curvedata.close();
-    _store_curvedata_name =
-            _name + "." + FilePicker::extendName(FilePicker::CurveData);
-    _store_curvedata.setFileName(
-            _init->get(Initializer::Core, Initializer::DataDir).toString() +
-            _store_curvedata_name);
-    qDebug() << "生成曲线数据文件名: " << _store_curvedata.fileName();
-}
-
-void Revolve::genCurveConfigFile()
-{
-    _store_curveconfig.close();
-    _store_curveconfig_name =
-            _name + "." + FilePicker::extendName(FilePicker::CurveConfig);
-    _store_curveconfig.setFileName(
-            _init->get(Initializer::Core, Initializer::DataDir).toString() +
-            _store_curveconfig_name);
-    qDebug() << "生成曲线配置文件名: " << _store_curveconfig.fileName();
-}
-
-void Revolve::genArchiveFileName()
-{
-    _store_archive_name =
-            _name + "." + FilePicker::extendName(FilePicker::Archive);
-    qDebug() << "生成曲线配置文件名: " << _store_archive_name;
+    _collect.setParams(&_can, &_buffer, manner, _msec, QString());  //不从文件采集
 }
 
 void Revolve::getFile(int type, const QString &file, const QString &suffix)

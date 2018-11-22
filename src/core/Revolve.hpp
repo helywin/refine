@@ -29,9 +29,9 @@
 #include "Initializer.hpp"
 #include "MessagerPanel.hpp"
 #include "CurvePanel.hpp"
-#include "Packer.hpp"
 #include "TribeModel.hpp"
 #include "Message.hpp"
+#include "FileManage.hpp"
 
 /*!
  * @brief 底层调度类
@@ -61,6 +61,7 @@ public:
 
 private:
     Initializer *_init;
+    FileManage _manage;
     Can _can;
     Curve _curve;
     Buffer _buffer;
@@ -72,20 +73,10 @@ private:
     Softcan _softcan;           //! \brief softcan配置转换工具
     File _file;
     QTimer _timer_stop;                     //! \brief 采样时钟
-    QFile _store_frames;                    //! \brief 自动存储的报文数据
-    QString _store_frames_name;             //! \brief 自动存储的报文数据名字
-    QFile _collect_frames;                  //! \brief 从GUI读取的量
-    QFile _store_curvedata;                 //! \brief 自动存储的曲线数据
-    QString _store_curvedata_name;          //! \brief 自动存储的曲线数据名字
-    QFile _store_curveconfig;               //! \brief 曲线配置存储
-    QString _store_curveconfig_name;        //! \brief 曲线配置存储名字
-    QString _store_archive_name;            //! \brief 打包文件名字
     unsigned long _msec;                    //! \brief 采样周期
     int _time;                              //! \brief 自动停止时间
     int _config;
-    QString _name;
     Status _status;
-    Packer _packer;
 
     Sketch *_sketch;
     TribeModel *_tribe_model;
@@ -96,7 +87,7 @@ private:
 public:
     explicit Revolve(Initializer *init);
 
-    ~Revolve();
+    ~Revolve() final;
 
     //Can配置
     inline Can::Config &canConfig() { return _can.config(); }
@@ -151,18 +142,6 @@ public:
     inline void setCurveEditor(CurveEditor *editor) { _curve_editor = editor; }
 
     inline void setActionCan(QAction *action) { _menu_init_can = action; }
-
-private:
-    //生成临时存储文件
-    void genName();
-
-    void genFramesDataFile();
-
-    void genCurveDataFile();
-
-    void genCurveConfigFile();
-
-    void genArchiveFileName();
 
 protected:
     inline void emitMessage(int type, const QString &msg) override

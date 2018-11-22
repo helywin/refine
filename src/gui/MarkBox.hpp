@@ -9,7 +9,9 @@
 
 class MarkBox : public QDockWidget
 {
-    Q_OBJECT
+Q_OBJECT
+private:
+    QWidget *_content;
 public:
     explicit MarkBox(QWidget *parent);
 private:

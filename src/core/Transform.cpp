@@ -148,12 +148,13 @@ void Transform::begin()
     _status = Running;
 }
 
-void Transform::stop(QFile *file)
+void Transform::stop(const QString &file)
 {
     _cmd = CommandStop;
     while (isRunning()) {}
-    if (file != nullptr) {
-        _file.dumpCurveRecord(*file, *_tribe);
+    if (!file.isEmpty()) {
+        QFile f(file);
+        _file.dumpCurveRecord(f, *_tribe);
     }
     _status = Stop;
 }

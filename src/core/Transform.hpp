@@ -67,7 +67,7 @@ public:
 
     void begin();
 
-    void stop(QFile *file = nullptr);
+    void stop(const QString &file = nullptr);
 
     inline void pause() { _cmd = CommandPause; }
 

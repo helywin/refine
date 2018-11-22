@@ -45,7 +45,7 @@ public:
 private:
     File _file;
     Buffer *_buffer;
-    QFile *_record;
+    QFile _record;
     Buffer::Iter _buffer_tail;
     Buffer::Iter _buffer_head;
     Status _status;
@@ -55,9 +55,9 @@ private:
 public:
     explicit Record(Message *message = nullptr);
 
-    inline void setParams(QFile *record, Buffer *buffer)
+    inline void setParams(const QString &file, Buffer *buffer)
     {
-        _record = record;
+        _record.setFileName(file);
         _buffer = buffer;
         _buffer_tail.setParams(_buffer, 0);
         _buffer_head.setParams(_buffer, 0);

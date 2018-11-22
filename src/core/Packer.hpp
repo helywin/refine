@@ -16,16 +16,16 @@ class Packer : public QObject, public Message
 Q_OBJECT
 public:
 private:
-    const char *PASSWORD = "by_Refine";
+    const QString S = tr("by_Refine");
     QProcess _process;
     Initializer *_init;
+
 public:
     explicit Packer(Initializer *init, Message *message = nullptr);
+
     bool compress(const QStringList &file_list, const QString &dist_name);
 
     bool uncompress(const QString &file, const QString &dist_path);
-
-    void testzip();
 
 };
 

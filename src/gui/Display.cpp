@@ -52,7 +52,7 @@ void Display::enablePresentation()
     _right_tab->clear();
     _parent_layout->removeWidget(this);
     for (auto &iter : _docks) {
-        qDebug() << "Display::enablePresentation " << (iter->widget() == nullptr);
+//        qDebug() << "Display::enablePresentation " << (iter->widget() == nullptr);
         _right_tab->addTab(iter->widget(), iter->windowTitle());
     }
     _right_tab->setVisible(true);

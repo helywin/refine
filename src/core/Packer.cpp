@@ -23,8 +23,8 @@ bool Packer::compress(const QStringList &file_list, const QString &dist_name)
          //         << "-sdel"
          << dist_name;
     args << file_list;
-    args << "-p" + QString(PASSWORD);
-    qDebug() << args.join(' ');
+    args << QString("-p<%1>").arg(S, 10, QChar('.'));
+//    qDebug() << args.join(' ');
     _process.setArguments(args);
     _process.start();
     _process.waitForFinished();     //阻塞式设计
@@ -34,12 +34,6 @@ bool Packer::compress(const QStringList &file_list, const QString &dist_name)
         return false;
     }
     return true;
-}
-
-void Packer::testzip()
-{
-    qDebug() << "compress: " << compress({"test.pdf"}, "fra me.ref");
-    qDebug() << "uncompress: " << uncompress("fra me.ref", "temp");
 }
 
 bool Packer::uncompress(const QString &file, const QString &dist_path)
@@ -54,8 +48,8 @@ bool Packer::uncompress(const QString &file, const QString &dist_path)
     if (dist_path != ".") {
         args << "-o" + dist_path;
     }
-    args << "-p" + QString(PASSWORD);
-    qDebug() << args.join(' ');
+    args << QString("-p<%1>").arg(S, 10, QChar('.'));
+//    qDebug() << args.join(' ');
     _process.setArguments(args);
     _process.start();
     _process.waitForFinished();     //阻塞式设计肯定不行
