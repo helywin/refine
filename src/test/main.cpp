@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     QTranslator t;
     t.load(":/res/trans/qt_zh_CN.qm");
-    app.installTranslator(&t);
+    QApplication::installTranslator(&t);
     Refine refine;
     refine.show();
     return QApplication::exec();

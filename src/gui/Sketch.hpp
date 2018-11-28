@@ -9,6 +9,7 @@
 #include <QtGui/QWheelEvent>
 #include <QtWidgets/QOpenGLWidget>
 #include <QtGui/QOpenGLFunctions>
+#include <QtGui/QOpenGLBuffer>
 #include <QtWidgets/QScrollBar>
 #include "Tribe.hpp"
 #include "Curve.hpp"

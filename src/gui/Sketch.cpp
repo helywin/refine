@@ -380,7 +380,6 @@ void Sketch::plotVernier()
             );
         }
     }
-
     painter.end();
 }
 

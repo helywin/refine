@@ -86,6 +86,14 @@ add_executable(file test_file.cpp)
 target_link_libraries(file
         Qt5Core)
 
+add_executable(test_gl test_gl.cpp MyOpenGLWidget.cpp MyOpenGLWidget.hpp)
+target_link_libraries(test_gl
+        Qt5Core
+        Qt5Widgets
+        Qt5OpenGL
+        Qt5Gui
+        ${LIBOPENGL})
+
 #add_executable(collect test_collect.cpp ${CORE})
 #target_link_libraries(collect ${LIBCAN}
 #        Qt5Core)
