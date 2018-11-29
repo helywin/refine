@@ -9,6 +9,8 @@
 #include "Transform.hpp"
 #include "Curve.hpp"
 #include "Tribe.hpp"
+#include "Sketch.hpp"
+#include "Combine.hpp"
 
 Transform::Transform(Message *message) :
         Message(message),
@@ -19,13 +21,15 @@ Transform::Transform(Message *message) :
         _status(Stop),
         _cmd(None) {}
 
-void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
+void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe, Combine *combine,
                           unsigned long msec)
 {
     _curve = curve;
     _buffer = buffer;
     _tribe = tribe;
+    _combine = combine;
     _msec = msec;
+    _tribe->setMsec((int)msec);
 }
 
 void Transform::run()
@@ -56,12 +60,13 @@ void Transform::run()
 //#pragma omp parallel for
 //    for (int k = 0; k < _tribe->size(); ++k) {
 //        Tribe::Cell &tr = (*_tribe)[k];
-        for (Tribe::Cell &tr : *_tribe) {
+        for (int i = 0; i < _tribe->size(); ++i) {
+            Tribe::Cell &tr = (*_tribe)[i];
             const Curve::Cell &cur = (*_curve)[tr.name()];
-            for (unsigned int i = 0; (i < buf.dataSize()) && !tr.fill(); ++i) {
-                if (cur.canId() == buf[i]->ID &&
+            for (unsigned int j = 0; (j < buf.dataSize()) && !tr.fill(); ++j) {
+                if (cur.canId() == buf[j]->ID &&
                     (cur.zeroByte() == -1 ||
-                     cur.zeroByte() == buf[i]->Data[0])) {
+                     cur.zeroByte() == buf[j]->Data[0])) {
 #if 0
                     int value = 0;
                     if (cur.highByte() != -1) {
@@ -90,12 +95,12 @@ void Transform::run()
                     unsigned int low_byte = 0;
                     int full = 0;
                     if (cur.highByte() != -1) {
-                        high_byte = buf[i]->Data[cur.highByte()];
+                        high_byte = buf[j]->Data[cur.highByte()];
                         high_byte <<= (7 - cur.highByteRange()[1]);
                         high_byte >>= (7 - cur.highByteRange()[1] + cur.highByteRange()[0]);
                         high_byte <<= (cur.lowByteRange()[1] - cur.lowByteRange()[0] + 1);
 
-                        low_byte = buf[i]->Data[cur.lowByte()];
+                        low_byte = buf[j]->Data[cur.lowByte()];
                         low_byte <<= (7 - cur.lowByteRange()[1]);
                         low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
 
@@ -104,7 +109,7 @@ void Transform::run()
                             full = (signed short)(full);
                         }
                     } else {
-                        low_byte = buf[i]->Data[cur.lowByte()];
+                        low_byte = buf[j]->Data[cur.lowByte()];
                         low_byte <<= (7 - cur.lowByteRange()[1]);
                         low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
                         full = low_byte;
@@ -132,6 +137,10 @@ void Transform::run()
                     tr.push(Tribe::FakeByPrevious, tr.data().constLast());
                 }
             }
+            auto y = (float) ((tr.data().last() - cur.rangeOut()[0]) *
+                              (Y_POINTS) / (cur.rangeOut()[1] - cur.rangeOut()[0]) + Y_BOTTOM);
+            _combine->cells()[i].data().append(float(tr.size() - 1) * (_msec / 1000.0f));
+            _combine->cells()[i].data().append(y);
         }
 #ifdef TEST_SEC
         qDebug() << t.msecsTo(QTime::currentTime());

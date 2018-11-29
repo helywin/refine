@@ -8,10 +8,11 @@
 #include <QtCore/QTimer>
 #include <QtGui/QWheelEvent>
 #include <QtWidgets/QOpenGLWidget>
-#include <QtGui/QOpenGLFunctions>
+#include <QtGui/QOpenGLExtraFunctions>
 #include <QtGui/QOpenGLBuffer>
 #include <QtWidgets/QScrollBar>
 #include "Tribe.hpp"
+#include "Combine.hpp"
 #include "Curve.hpp"
 #include "Message.hpp"
 
@@ -21,28 +22,65 @@ class Revolve;
  */
 
 #define X_LEFT 0.0
-#define X_RIGHT 2000.0
+//! \brief 默认的OpenGL横坐标宽度
+#define X_POINTS 2000.0
 #define Y_BOTTOM 0.0
-#define Y_TOP 4096.0
+//! \brief 默认的OpenGL纵坐标宽度
+#define Y_POINTS 4096.0
 #define X_L_BLANK 50
 #define X_R_BLANK_RATE 0.02
 #define Y_BLANK_RATE 0.1
 
-class Sketch : public QOpenGLWidget, protected QOpenGLFunctions, public Message
+class Sketch :
+        public QOpenGLWidget,
+        protected QOpenGLExtraFunctions,
+        public Message
 {
 Q_OBJECT
 public:
+    /*!
+     * @brief 显示模式
+     */
     enum DisplayMode
     {
+        Waiting,
         Rolling,
-        Free
+        Free,
+        Empty
     };
+
+    /*!
+     * @brief 区间数据
+     */
+    struct Pattern
+    {
+        int index;
+        Tribe::Slice slice;
+    };
+
+    /*!
+     * @brief 游标数据
+     */
+    struct Vernier
+    {
+        int index;
+        double pos;
+    };
+
 private:
     Tribe *_tribe;
+    Combine *_combine;
     QTimer _timer;
+    DisplayMode _mode;
     int _msec;
     QScrollBar *_h_scroll;
-    DisplayMode _mode;
+
+    //! \brief OpenGL坐标范围
+    double _x_start;
+    double _x_end;
+    double _y_start;
+    double _y_end;
+
     int _x_pos;
     double _y_pos;
     double _x_rate;
@@ -53,6 +91,7 @@ private:
     double _left_axis_width;
     bool _smooth;
     bool _vernier;
+    int _graduate_num;
     int _vernier_pos;
     int _right_mouse_press_pos;
     int _right_mouse_release_pos;
@@ -70,7 +109,7 @@ public:
     void resume();
     void stop();
 
-    void initData();
+    void init();
 
     inline void setMsec(int msec)
     {
@@ -78,14 +117,17 @@ public:
         _timer.setInterval(_msec);
     }
 
-    inline void
-    setCurrentIndex(int index, bool is_checked)
+    inline void setCurrentIndex(int index, bool is_checked)
     {
         _current_index = index;
         if (is_checked) {
             _axis_index = index;
         }
     }
+
+public slots:
+
+    inline void setGraduateNum(int num) { _graduate_num = num; }
 
 protected:
     void initializeGL() override;
@@ -97,13 +139,15 @@ private:
     inline float genY(float y, const Tribe::Style &style)
     {
         return (float) ((y - style.rangeOut()[0]) *
-                        (Y_TOP) / (style.rangeOut()[1] - style.rangeOut()[0])
+                        (Y_POINTS) / (style.rangeOut()[1] - style.rangeOut()[0])
                         + Y_BOTTOM);
     }
 
     void plotXAxis();
 
     void plotYAxis();
+
+    void plotYGrid();
 
     void plotVernier();
 

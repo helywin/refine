@@ -256,7 +256,7 @@ public:
     public:
         Iter(Tribe *tribe, int pos) : _tribe(tribe), _pos(pos) {}
 
-        inline bool operator!=(const Iter &other) { return _pos != other._pos; }
+        inline bool operator!=(const Iter &other) const { return _pos != other._pos; }
 
         inline Cell &operator*() { return _tribe->_cells[_pos]; }
 
@@ -265,6 +265,44 @@ public:
             _pos += 1;
             return *this;
         }
+    };
+
+    class ConstIter
+    {
+    private:
+        const Tribe *_tribe;
+        int _pos;
+    public:
+        ConstIter(const Tribe *tribe, int pos) : _tribe(tribe), _pos(pos) {}
+
+        inline bool operator!=(const ConstIter &other) const { return _pos != other._pos; }
+
+        inline const Cell &operator*() const { return _tribe->_cells[_pos]; }
+
+        inline const ConstIter operator++()
+        {
+            _pos += 1;
+            return *this;
+        }
+    };
+
+    class Slice
+    {
+    private:
+        const Tribe *_tribe;
+        int _start;
+        int _end;
+    public:
+        Slice(Tribe *tribe, int start, int end) :
+                _tribe(tribe),
+                _start(start),
+                _end(end) {}
+
+        inline const Tribe *tribe() const { return _tribe; }
+
+        inline const int start() const { return _start; }
+
+        inline const int end() const { return _end; }
     };
 
     enum Selection
@@ -281,6 +319,7 @@ private:
     QVector<int> _segment;      //! \brief 曲线分段
     int _len;
     TribeModel *_model;
+    int _msec;
 
 
 public:
@@ -308,7 +347,11 @@ public:
 
     inline Iter begin() { return Iter(this, 0); }
 
+    inline ConstIter begin() const { return ConstIter(this, 0); }
+
     inline Iter end() { return Iter(this, _cells.size()); }
+
+    inline ConstIter end() const { return ConstIter(this, _cells.size()); }
 
     friend QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);
 
@@ -338,11 +381,17 @@ public:
         return _cells[_header.indexOf(name)];
     }
 
-    inline void setLen() {
+    void setLen()
+    {
         if (_cells.isEmpty()) {
             _len = 0;
         } else {
             _len = _cells[0].size();
+            for (const auto &iter : _cells) {
+                if (_len > iter.size()) {
+                    _len = iter.size();
+                }
+            }
         }
     }
 
@@ -386,6 +435,12 @@ public:
     void displayAll();
 
     void displayNone();
+
+    inline Slice slice(int start, int end) { return Slice(this, start, end); }
+
+    inline void setMsec(int msec) { _msec = msec; }
+
+    inline int msec() const { return _msec; }
 };
 
 QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);

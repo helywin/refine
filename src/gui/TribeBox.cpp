@@ -9,6 +9,7 @@
 #include "CurvePanel.hpp"
 #include "TribeView.hpp"
 #include "Sketch.hpp"
+#include "SketchY.hpp"
 #include "TribeFilter.hpp"
 
 TribeBox::TribeBox(Tribe *tribe, Message *message, QWidget *parent) :
@@ -72,6 +73,14 @@ void TribeBox::connectModelToSketch(Sketch *sketch)
             _complete_model, &CompleteModel::genData, Qt::DirectConnection);
 }
 
+void TribeBox::connectModelToSketchY(SketchY *sketch_y)
+{
+    _sketch_y = sketch_y;
+    connect(_model, &TribeModel::tribeChanged,
+            sketch_y, static_cast<void (SketchY::*)(void)>(&Sketch::update),
+            Qt::DirectConnection);
+}
+
 void TribeBox::selectionChanged(const QItemSelection &selected,
                                 const QItemSelection &deselected)
 {
@@ -83,10 +92,13 @@ void TribeBox::selectionChanged(const QItemSelection &selected,
     emitMessage(Debug, tr("当前行 %1").arg(index));
     if (index < 0) {
         _sketch->setCurrentIndex(index, false);
+        _sketch_y->setCurrentIndex(index, false);
     } else {
         _sketch->setCurrentIndex(index, _tribe->style(index).display());
+        _sketch_y->setCurrentIndex(index, _tribe->style(index).display());
     }
     _sketch->update();
+    _sketch_y->update();
 }
 
 void TribeBox::setDisplayItem(int state)

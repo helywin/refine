@@ -17,6 +17,7 @@
 class CurveViewer;
 class Revolve;
 class Sketch;
+class SketchY;
 
 class Display : public QSplitter, public Message
 {
@@ -38,6 +39,8 @@ public:
     Display(QWidget *parent, Revolve *revolve, Message *message = nullptr);
 
     Sketch &sketch();
+
+    SketchY &sketchY();
 
     inline void addDock(QDockWidget *dock)
     {

@@ -273,23 +273,20 @@ public:
         };
     };
 
-    class IterConst
+    class ConstIter
     {
     private:
         const Curve *_curve;
         int _pos;
 
     public:
-        IterConst(const Curve *curve, int pos) : _curve(curve), _pos(pos) {}
+        ConstIter(const Curve *curve, int pos) : _curve(curve), _pos(pos) {}
 
-        inline bool operator!=(const IterConst &other)
-        {
-            return _pos != other._pos;
-        }
+        inline bool operator!=(const ConstIter &other) const { return _pos != other._pos; }
 
         inline const Cell &operator*() { return (*_curve)[_pos]; }
 
-        const IterConst &operator++()
+        const ConstIter &operator++()
         {
             _pos += 1;
             return *this;
@@ -396,11 +393,11 @@ public:
 
     inline Iter begin() { return Iter(this, 0); }
 
-    inline IterConst begin() const { return IterConst(this, 0); }
+    inline ConstIter begin() const { return ConstIter(this, 0); }
 
     inline Iter end() { return Iter(this, _cells.size()); }
 
-    inline IterConst end() const { return IterConst(this, _cells.size()); }
+    inline ConstIter end() const { return ConstIter(this, _cells.size()); }
 
     inline void setInitialized(bool flag) { _initialized = flag; }
 

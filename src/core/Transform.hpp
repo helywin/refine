@@ -18,6 +18,7 @@
 class Curve;
 class Buffer;
 class Tribe;
+class Combine;
 
 /*!
  * @brief 报文转换类
@@ -54,6 +55,7 @@ private:
     Curve *_curve;
     Buffer *_buffer;
     Tribe *_tribe;
+    Combine *_combine;
     File _file;
     unsigned long _msec;
     Status _status;
@@ -62,7 +64,7 @@ private:
 public:
     explicit Transform(Message *message = nullptr);
 
-    void setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
+    void setParams(Curve *curve, Buffer *buffer, Tribe *tribe, Combine *combine,
                    unsigned long msec = 10);
 
     void begin();

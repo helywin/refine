@@ -35,7 +35,7 @@ QDataStream &operator<<(QDataStream &stream, const Tribe &tribe)
 {
     stream << tribe.size();
     stream << tribe.len();
-    stream << (int) 0;
+    stream << tribe.msec();
     stream << (int) 0;
     stream << (int) 0;
     stream << (int) 0;
@@ -58,10 +58,13 @@ QDataStream &operator>>(QDataStream &stream, Tribe &tribe)
     int reserved = 0;
     stream >> size;
     stream >> tribe._len;
+    stream >> tribe._msec;
     stream >> reserved;
     stream >> reserved;
     stream >> reserved;
-    stream >> reserved;
+    if (tribe.msec() == 0) {    //兼容旧的格式 before v0.0.16
+        tribe.setMsec(10);
+    }
     for (int i = 0; i < size; ++i) {
         Tribe::Style style;
         stream >> style;
@@ -145,7 +148,7 @@ void Tribe::Cell::push(const Tribe::FillType fill, const float &v)
 }
 
 Tribe::Tribe(Message *message) :
-        Message(message), _len(0) {}
+        Message(message), _len(0), _msec(10) {}
 
 /*!
  * @brief 清空数据

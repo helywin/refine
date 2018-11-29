@@ -46,6 +46,11 @@ Sketch &Display::sketch()
     return _viewer->sketch();
 }
 
+SketchY &Display::sketchY()
+{
+    return _viewer->sketchY();
+}
+
 void Display::enablePresentation()
 {
     hide();

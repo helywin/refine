@@ -21,6 +21,7 @@ class CurvePanel;
 class TribeView;
 class Tribe;
 class Sketch;
+class SketchY;
 class TribeFilter;
 
 class TribeBox : public QDockWidget, public Message
@@ -42,6 +43,7 @@ private:
     TribeSortModel *_proxy;
     TribeFilter *_filter;
     Sketch *_sketch;
+    SketchY *_sketch_y;
     CompleteModel *_complete_model;
 
 public:
@@ -51,6 +53,8 @@ public:
     inline TribeModel &tribeModel() { return *_model; }
 
     void connectModelToSketch(Sketch *sketch);
+
+    void connectModelToSketchY(SketchY *sketch_y);
 
     inline QWidget *content() { return _content; }
 

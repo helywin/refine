@@ -13,6 +13,7 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         QOpenGLWidget(parent),
         Message(message),
         _tribe(&revolve->tribe()),
+        _combine(&revolve->combine()),
         _msec(10),
         _h_scroll(nullptr),
         _mode(Free),
@@ -23,10 +24,10 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _current_index(-1),
         _axis_index(-1),
         _init_w(-1),
-        _left_axis_width((X_RIGHT + X_RIGHT * X_R_BLANK_RATE) / 4.0),
+        _left_axis_width((X_POINTS + X_POINTS * X_R_BLANK_RATE) / 4.0),
         _smooth(true),
         _vernier(false),
-        _vernier_pos(int(X_RIGHT * _x_rate / 2))
+        _vernier_pos(int(X_POINTS * _x_rate / 2))
 {
     _timer.setInterval(_msec);
     setMinimumWidth(400);
@@ -53,23 +54,12 @@ void Sketch::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    if (_init_w == -1) {
-        _init_w = w;
-        _left_axis_width = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate / 4.0;
-        glOrtho(X_LEFT - _left_axis_width,
-                X_RIGHT + X_RIGHT * X_R_BLANK_RATE,
-                Y_BOTTOM - Y_TOP * Y_BLANK_RATE,
-                Y_TOP + Y_TOP * Y_BLANK_RATE,
-                0, 100);
-    } else {
-        _left_axis_width = (0.8 * _init_w) / (w - 0.2 * _init_w) *
-                           (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate  / 4.0;
-        glOrtho(X_LEFT - _left_axis_width,
-                (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate ,
-                Y_BOTTOM - Y_TOP * Y_BLANK_RATE,
-                Y_TOP + Y_TOP * Y_BLANK_RATE,
-                0, 100);
-    }
+    glOrtho(X_LEFT,
+            (X_POINTS + X_POINTS * X_R_BLANK_RATE) * _x_rate,
+            Y_BOTTOM - Y_POINTS * Y_BLANK_RATE,
+            Y_POINTS + Y_POINTS * Y_BLANK_RATE,
+            0,
+            100);
 
 }
 
@@ -77,7 +67,7 @@ void Sketch::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     plotXAxis();
-    plotYAxis();
+//    plotYAxis();
     plotCurves();
     plotVernier();
     glFlush();
@@ -100,7 +90,7 @@ void Sketch::pause()
 {
     _timer.stop();
     _h_scroll->setDisabled(false);
-    initData();
+    init();
 }
 
 void Sketch::resume()
@@ -114,18 +104,18 @@ void Sketch::stop()
     _timer.stop();
     _mode = Free;
     _h_scroll->setDisabled(false);
-    initData();
+    init();
 }
 
-void Sketch::initData()
+void Sketch::init()
 {
     _h_scroll->setMinimum(0);
-    if (_tribe->len() < X_RIGHT * _x_rate) {
+    if (_tribe->len() < X_POINTS * _x_rate) {
         _h_scroll->setMaximum(0);
     } else {
-        _h_scroll->setMaximum((_tribe->len() - (int) ceil(X_RIGHT * _x_rate)));
+        _h_scroll->setMaximum((_tribe->len() - (int) ceil(X_POINTS * _x_rate)));
     }
-    _h_scroll->setPageStep((int) (X_RIGHT * _x_rate));
+    _h_scroll->setPageStep((int) (X_POINTS * _x_rate));
     emitMessage(Debug, tr("重设滚动条大小: %1").arg(_h_scroll->maximum()));
     _current_index = -1;
     _axis_index = -1;
@@ -148,17 +138,17 @@ void Sketch::plotCurves()
     int start_pos = 0;
     int len = 0;
     if (_mode == DisplayMode::Rolling) {
-        if (_tribe->len() < X_RIGHT * _x_rate) {
+        if (_tribe->len() < X_POINTS * _x_rate) {
             len = _tribe->len();
         } else {
-            len = (int) (X_RIGHT * _x_rate);
+            len = (int) (X_POINTS * _x_rate);
             start_pos = _tribe->len() - len;
         }
     } else if (_mode == DisplayMode::Free) {
-        if (_tribe->len() < X_RIGHT * _x_rate) {
+        if (_tribe->len() < X_POINTS * _x_rate) {
             len = _tribe->len();
         } else {
-            len = (int) (X_RIGHT * _x_rate);
+            len = (int) (X_POINTS * _x_rate);
             start_pos = _h_scroll->value();
         }
     }
@@ -196,6 +186,24 @@ void Sketch::plotCurves()
         glEnd();
     }
 }
+/*
+
+void Sketch::plotCurves()
+{
+    switch (_mode) {
+        case Rolling:
+            break;
+        case Free:
+            break;
+        case Waiting:
+            break;
+        case Empty:
+            break;
+    }
+}
+
+*/
+
 
 void Sketch::plotXAxis()
 {
@@ -227,7 +235,7 @@ void Sketch::plotYAxis()
         }
     }
     for (int i = 0; i < graduate_num; ++i) {
-        y.append((Y_TOP - Y_BOTTOM) / (graduate_num - 1) * i + Y_BOTTOM);
+        y.append((Y_POINTS - Y_BOTTOM) / (graduate_num - 1) * i + Y_BOTTOM);
     }
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
@@ -236,7 +244,7 @@ void Sketch::plotYAxis()
         glVertex2d(xl, iter);
         glVertex2d(xr, iter);
     }
-    glVertex2d(xr, Y_TOP);
+    glVertex2d(xr, Y_POINTS);
     glVertex2d(xr, Y_BOTTOM);
     glEnd();
     glFlush();
@@ -246,7 +254,7 @@ void Sketch::plotYAxis()
     glBegin(GL_LINES);
     for (int i = 0; i < graduate_num; ++i) {
         glVertex2d(xr, y[i]);
-        glVertex2d(X_RIGHT * _x_rate, y[i]);
+        glVertex2d(X_POINTS * _x_rate, y[i]);
     }
     glEnd();
     glDisable(GL_LINE_STIPPLE);
@@ -268,12 +276,17 @@ void Sketch::plotYAxis()
             QString str = QString("%1").arg(v, 0, 'f', 2);
             drawGlString(xl, y[i], str, color, font);
         }
-        drawGlString(xl, Y_TOP + Y_TOP * Y_BLANK_RATE / 2,
+        drawGlString(xl, Y_POINTS + Y_POINTS * Y_BLANK_RATE / 2,
                      _tribe->style(_current_index).name(), color, font);
-        drawGlString(xl, Y_TOP * Y_BLANK_RATE / 2,
+        drawGlString(xl, Y_POINTS * Y_BLANK_RATE / 2,
                      _tribe->style(_current_index).unit(), color, font);
     }
 //    glFlush();
+}
+
+void Sketch::plotYGrid()
+{
+
 }
 
 void Sketch::plotVernier()
@@ -297,7 +310,7 @@ void Sketch::plotVernier()
     painter.setFont(font);
     int x = xGlToQt(_vernier_pos);
     int y1 = yGlToQt(Y_BOTTOM);
-    int y2 = yGlToQt(Y_TOP);
+    int y2 = yGlToQt(Y_POINTS);
     painter.drawLine(x, y1, x, y2);
     if (_tribe->len() <= _vernier_pos || data_pos >= _tribe->len()) {
         return;
@@ -494,8 +507,8 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
         if (x < 0) {
             x = 0;
         }
-        if (x > X_RIGHT * _x_rate) {
-            x = X_RIGHT * _x_rate;
+        if (x > X_POINTS * _x_rate) {
+            x = X_POINTS * _x_rate;
         }
         _vernier_pos = int(x);
         update();
@@ -504,32 +517,33 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
 
 int Sketch::xGlToQt(double x)
 {
-    double left = X_LEFT - _left_axis_width;
-    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate -
-               (X_LEFT - _left_axis_width);
+    double left = X_LEFT;
+    double w = (X_POINTS + X_POINTS * X_R_BLANK_RATE) * _x_rate -
+               (X_LEFT);
     return (int) round(rect().width() * (x - left) / w);
 }
 
 double Sketch::xQtToGl(int x)
 {
-    double w = (X_RIGHT + X_RIGHT * X_R_BLANK_RATE) * _x_rate -
-               (X_LEFT - _left_axis_width);
-    return X_LEFT - _left_axis_width + (double) x / rect().width() * w;
+    double w = (X_POINTS + X_POINTS * X_R_BLANK_RATE) * _x_rate -
+               (X_LEFT);
+    return X_LEFT + (double) x / rect().width() * w;
 }
 
 int Sketch::yGlToQt(double y)
 {
-    double top = Y_TOP + Y_TOP * Y_BLANK_RATE;
-    double h = (Y_TOP + Y_TOP * Y_BLANK_RATE) -
-               (Y_BOTTOM - Y_TOP * Y_BLANK_RATE);
+    double top = Y_POINTS + Y_POINTS * Y_BLANK_RATE;
+    double h = (Y_POINTS + Y_POINTS * Y_BLANK_RATE) -
+               (Y_BOTTOM - Y_POINTS * Y_BLANK_RATE);
     return (int) round(rect().height() * (top - y) / h);
 }
 
 double Sketch::yQtToGl(int y)
 {
-    double h = (Y_TOP + Y_TOP * Y_BLANK_RATE) -
-               (Y_BOTTOM - Y_TOP * Y_BLANK_RATE);
-    return Y_BOTTOM - Y_TOP * Y_BLANK_RATE + (double) (rect().height() - y) / rect().height() * h;
+    double h = (Y_POINTS + Y_POINTS * Y_BLANK_RATE) -
+               (Y_BOTTOM - Y_POINTS * Y_BLANK_RATE);
+    return Y_BOTTOM - Y_POINTS * Y_BLANK_RATE +
+           (double) (rect().height() - y) / rect().height() * h;
 }
 
 void Sketch::mousePressEvent(QMouseEvent *event)

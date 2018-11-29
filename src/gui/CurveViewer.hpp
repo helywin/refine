@@ -7,17 +7,22 @@
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QScrollBar>
 #include "Message.hpp"
 class Sketch;
+class SketchY;
 class Revolve;
 
 class CurveViewer : public QWidget, public Message
 {
 Q_OBJECT
 private:
+    SketchY *_sketch_y;
     Sketch *_sketch;
     QGridLayout *_layout;
+    QWidget *_widget_sketch;
+    QHBoxLayout *_layout_sketch;
     QScrollBar *_h_scroll;
     QScrollBar *_v_scroll;
 public:
@@ -25,6 +30,8 @@ public:
             Message *message = nullptr);
 
     inline Sketch &sketch() { return *_sketch; }
+
+    inline SketchY &sketchY() { return *_sketch_y; }
 private:
     void setup();
 private slots:
