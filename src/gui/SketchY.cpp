@@ -33,24 +33,28 @@ void SketchY::paintGL()
 
 void SketchY::setup()
 {
+    setMinimumHeight(150);
     setFixedWidth(80);
 }
 
 #define MINIMUM_PIXEL 40
-#define MAXIMUM_PIXEL 70
+#define MAXIMUM_PIXEL 50
 #define Y_AXIS_LINES_LEN 7
 
 
 void SketchY::plotYAxis()
 {
-    int top = qRound(rect().height() * (Y_BLANK_RATE / (1 + 2 * Y_BLANK_RATE)));
-    int bottom = qRound(rect().height() * (1 - (Y_BLANK_RATE / (1 + 2 * Y_BLANK_RATE))));
+    int top = 45 + 1;
+    int bottom = rect().height() - 45 - 1;
     int range = bottom - top;
-    int num = _graduate_num;
+    int num = 10;
     int xr = rect().right();
     int xl = xr - Y_AXIS_LINES_LEN;
     int xt = qRound(rect().width() * 0.1);
     if (_current_index == -1) {
+        if (_tribe->size() == 0) {
+            return;
+        }
         _painter.begin(this);
         _painter.setPen(QColor(Qt::white));
         _painter.drawLine(xr, top, xr, bottom);
@@ -63,16 +67,19 @@ void SketchY::plotYAxis()
     font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
     _painter.setFont(font);
     _painter.setPen(style.color());
-    if (style.rangeOut()[1] - style.rangeOut()[0] < _graduate_num) {
-        _graduate_num = style.rangeOut()[1] - style.rangeOut()[0];
+    bool is_logic = style.rangeOut()[1] - style.rangeOut()[0] < num;
+//    qDebug() << "SketchY::plotYAxis() is_logic: " << is_logic;
+    if (is_logic) {
+        num = style.rangeOut()[1] - style.rangeOut()[0];
     }
-    while (range / _graduate_num < MINIMUM_PIXEL && _graduate_num > 1) {
-        _graduate_num -= 1;
+    while (range / num > MAXIMUM_PIXEL && !is_logic) {
+        num += 1;
     }
-    while (range / _graduate_num > MAXIMUM_PIXEL) {
-        _graduate_num += 1;
+    while (range / num < MINIMUM_PIXEL && num > 1) {
+        num -= 1;
     }
     if (num != _graduate_num) {
+        _graduate_num = num;
         emit graduateNumChanged(_graduate_num);
     }
 

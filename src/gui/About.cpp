@@ -61,7 +61,7 @@ void About::setup() {
     intro->setAutoFillBackground(true);
 
     copyright = new QLabel(this);
-    copyright->setText(tr("Copyright (C) 2018 BYD company LTd."));
+    copyright->setText(tr("No Copyright"));
     copyright->setFont(font);
     copyright->move(240, 180);
     copyright->resize(240, 20);

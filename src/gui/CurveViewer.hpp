@@ -11,6 +11,8 @@
 #include <QtWidgets/QScrollBar>
 #include "Message.hpp"
 class Sketch;
+class SketchXTop;
+class SketchX;
 class SketchY;
 class Revolve;
 
@@ -19,10 +21,12 @@ class CurveViewer : public QWidget, public Message
 Q_OBJECT
 private:
     SketchY *_sketch_y;
+    SketchXTop *_sketch_xtop;
+    SketchX *_sketch_x;
     Sketch *_sketch;
     QGridLayout *_layout;
     QWidget *_widget_sketch;
-    QHBoxLayout *_layout_sketch;
+    QGridLayout *_layout_sketch;
     QScrollBar *_h_scroll;
     QScrollBar *_v_scroll;
 public:

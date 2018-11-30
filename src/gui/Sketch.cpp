@@ -23,8 +23,6 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _y_rate(1),
         _current_index(-1),
         _axis_index(-1),
-        _init_w(-1),
-        _left_axis_width((X_POINTS + X_POINTS * X_R_BLANK_RATE) / 4.0),
         _smooth(true),
         _vernier(false),
         _vernier_pos(int(X_POINTS * _x_rate / 2))
@@ -55,9 +53,9 @@ void Sketch::resizeGL(int w, int h)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glOrtho(X_LEFT,
-            (X_POINTS + X_POINTS * X_R_BLANK_RATE) * _x_rate,
-            Y_BOTTOM - Y_POINTS * Y_BLANK_RATE,
-            Y_POINTS + Y_POINTS * Y_BLANK_RATE,
+            X_POINTS * _x_rate,
+            Y_BOTTOM,
+            Y_POINTS * _y_rate,
             0,
             100);
 
@@ -124,6 +122,7 @@ void Sketch::init()
     update();
 }
 
+
 void Sketch::plotCurves()
 {
     if (_smooth) {
@@ -154,6 +153,7 @@ void Sketch::plotCurves()
     }
     for (int i = 0; i < _tribe->size(); ++i) {
         const Tribe::Cell &iter = (*_tribe)[i];
+        const Combine::Cell &com = (*_combine)[i];
         if (!(_tribe->styles())[i].display()) {
             continue;
         }
@@ -181,107 +181,32 @@ void Sketch::plotCurves()
 #endif
         glBegin(GL_LINE_STRIP);
         for (int j = 0; j < len; ++j) {
-            glVertex2f(j, genY(iter[j + start_pos], cfg));
+            glVertex2f(j, com.data()[(j + start_pos) * 2 + 1]);
         }
         glEnd();
     }
 }
-/*
 
-void Sketch::plotCurves()
+
+/*void Sketch::plotCurves()
 {
     switch (_mode) {
         case Rolling:
             break;
         case Free:
+
             break;
         case Waiting:
             break;
         case Empty:
             break;
     }
-}
-
-*/
+}*/
 
 
 void Sketch::plotXAxis()
 {
 
-}
-
-#define GRADUATE_NUM 11
-
-void Sketch::plotYAxis()
-{
-    QColor color;
-    if (_current_index < 0) {
-        return;
-//        color = 0xffffff;
-    } else {
-        color = _tribe->style(_current_index).color();
-    }
-    glColor3d(color.redF(), color.greenF(), color.blueF());
-    glLineWidth(1);
-    double xl = -_left_axis_width * 0.1;
-    double xr = X_LEFT;
-    QVector<double> y;
-    int graduate_num = GRADUATE_NUM;
-    if (_current_index >= 0) {
-        int num = _tribe->style(_current_index).rangeOut()[1] -
-                  _tribe->style(_current_index).rangeOut()[0];
-        if (num < graduate_num) {
-            graduate_num = num + 1;
-        }
-    }
-    for (int i = 0; i < graduate_num; ++i) {
-        y.append((Y_POINTS - Y_BOTTOM) / (graduate_num - 1) * i + Y_BOTTOM);
-    }
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_BLEND);
-    glBegin(GL_LINES);
-    for (const auto iter : y) {
-        glVertex2d(xl, iter);
-        glVertex2d(xr, iter);
-    }
-    glVertex2d(xr, Y_POINTS);
-    glVertex2d(xr, Y_BOTTOM);
-    glEnd();
-    glFlush();
-    glLineStipple(4, 0x5555);
-    glEnable(GL_LINE_STIPPLE);
-    glColor3d(0, 96.0 / 256, 48.0 / 256);
-    glBegin(GL_LINES);
-    for (int i = 0; i < graduate_num; ++i) {
-        glVertex2d(xr, y[i]);
-        glVertex2d(X_POINTS * _x_rate, y[i]);
-    }
-    glEnd();
-    glDisable(GL_LINE_STIPPLE);
-    if (hasFocus()) {
-        drawFocusSign();
-    }
-    if (!_tribe->style(_current_index).display()) {
-        return;
-    }
-    if (_current_index >= 0) {
-        QFont font("Helvetica", 10);
-        font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
-        xl = -_left_axis_width * 0.9;
-        for (int i = 0; i < graduate_num; ++i) {
-            const int *range = _tribe->style(_current_index).rangeOut();
-            double v = (double) range[0] +
-                       (range[1] - range[0]) *
-                       ((double) i / (double) (graduate_num - 1));
-            QString str = QString("%1").arg(v, 0, 'f', 2);
-            drawGlString(xl, y[i], str, color, font);
-        }
-        drawGlString(xl, Y_POINTS + Y_POINTS * Y_BLANK_RATE / 2,
-                     _tribe->style(_current_index).name(), color, font);
-        drawGlString(xl, Y_POINTS * Y_BLANK_RATE / 2,
-                     _tribe->style(_current_index).unit(), color, font);
-    }
-//    glFlush();
 }
 
 void Sketch::plotYGrid()
@@ -518,32 +443,27 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
 int Sketch::xGlToQt(double x)
 {
     double left = X_LEFT;
-    double w = (X_POINTS + X_POINTS * X_R_BLANK_RATE) * _x_rate -
-               (X_LEFT);
+    double w = X_POINTS * _x_rate - X_LEFT;
     return (int) round(rect().width() * (x - left) / w);
 }
 
 double Sketch::xQtToGl(int x)
 {
-    double w = (X_POINTS + X_POINTS * X_R_BLANK_RATE) * _x_rate -
-               (X_LEFT);
+    double w = X_POINTS * _x_rate - X_LEFT;
     return X_LEFT + (double) x / rect().width() * w;
 }
 
 int Sketch::yGlToQt(double y)
 {
-    double top = Y_POINTS + Y_POINTS * Y_BLANK_RATE;
-    double h = (Y_POINTS + Y_POINTS * Y_BLANK_RATE) -
-               (Y_BOTTOM - Y_POINTS * Y_BLANK_RATE);
+    double top = Y_POINTS;
+    double h = Y_POINTS - Y_BOTTOM;
     return (int) round(rect().height() * (top - y) / h);
 }
 
 double Sketch::yQtToGl(int y)
 {
-    double h = (Y_POINTS + Y_POINTS * Y_BLANK_RATE) -
-               (Y_BOTTOM - Y_POINTS * Y_BLANK_RATE);
-    return Y_BOTTOM - Y_POINTS * Y_BLANK_RATE +
-           (double) (rect().height() - y) / rect().height() * h;
+    double h = Y_POINTS - Y_BOTTOM;
+    return Y_BOTTOM + (double) (rect().height() - y) / rect().height() * h;
 }
 
 void Sketch::mousePressEvent(QMouseEvent *event)

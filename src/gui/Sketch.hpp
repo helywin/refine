@@ -87,8 +87,6 @@ private:
     double _y_rate;
     int _current_index;
     int _axis_index;
-    int _init_w;
-    double _left_axis_width;
     bool _smooth;
     bool _vernier;
     int _graduate_num;
@@ -144,8 +142,6 @@ private:
     }
 
     void plotXAxis();
-
-    void plotYAxis();
 
     void plotYGrid();
 
