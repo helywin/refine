@@ -67,6 +67,9 @@ public:
         double pos;
     };
 
+    const double Y_MIN = 0;
+    const double Y_MAX = 4096;
+
 private:
     Tribe *_tribe;
     Combine *_combine;
@@ -76,6 +79,7 @@ private:
     QScrollBar *_h_scroll;
 
     //! \brief OpenGL坐标范围
+    int _points;
     double _x_start;
     double _x_end;
     double _y_start;
@@ -86,13 +90,15 @@ private:
     double _x_rate;
     double _y_rate;
     int _current_index;
-    int _axis_index;
     bool _smooth;
     bool _vernier;
     int _graduate_num;
     int _vernier_pos;
-    int _right_mouse_press_pos;
-    int _right_mouse_release_pos;
+
+    GLuint *_curve_buffers;
+    GLuint *_vaos;
+    GLsizei _buffer_size;   //also vao_nums
+
 
 public:
     explicit Sketch(QWidget *parent, Revolve *revolve,
@@ -115,13 +121,7 @@ public:
         _timer.setInterval(_msec);
     }
 
-    inline void setCurrentIndex(int index, bool is_checked)
-    {
-        _current_index = index;
-        if (is_checked) {
-            _axis_index = index;
-        }
-    }
+    inline void setCurrentIndex(int index) { _current_index = index; }
 
 public slots:
 

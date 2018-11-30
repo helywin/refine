@@ -10,6 +10,10 @@ Combine::Combine() :
 void Combine::genFromTribe(const Tribe &tribe)
 {
     reset(tribe.size());
+    if (_cells.isEmpty()) {
+        _len = 0;
+        return;
+    }
     for (int i = 0; i < tribe.size(); ++i) {
         for (int j = 0; j < tribe.len(); ++j) {
             auto y = (float)
@@ -17,10 +21,6 @@ void Combine::genFromTribe(const Tribe &tribe)
                      (tribe.style(i).rangeOut()[1] - tribe.style(i).rangeOut()[0]) + 0);
             append(i, (j - 1) * tribe.msec() / 1000.0f, y);
         }
-    }
-    if (_cells.isEmpty()) {
-        _len = 0;
-        return;
     }
     _len = _cells[0].data().size();
     for (const auto &cell : _cells) {

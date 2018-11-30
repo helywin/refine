@@ -426,6 +426,7 @@ bool Revolve::importSoftcanCurveData(const QString &name)
     _softcan.toTribe(_tribe);
     _combine.genFromTribe(_tribe);
     _sketch->init();
+    _sketch->update();
     _tribe_model->genData(&_tribe);
     emitMessage(Debug, tr("导入SoftCAN曲线数据 %1").arg(name));
     return true;

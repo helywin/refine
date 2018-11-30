@@ -16,16 +16,19 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _combine(&revolve->combine()),
         _msec(10),
         _h_scroll(nullptr),
-        _mode(Free),
+        _points(2000),
+        _mode(Waiting),
         _x_pos(0),
         _y_pos(0),
         _x_rate(1),
         _y_rate(1),
+        _x_start(0),
+        _x_end(20),
         _current_index(-1),
-        _axis_index(-1),
         _smooth(true),
         _vernier(false),
-        _vernier_pos(int(X_POINTS * _x_rate / 2))
+        _vernier_pos(int(X_POINTS * _x_rate / 2)),
+        _buffer_size(-1)
 {
     _timer.setInterval(_msec);
     setMinimumWidth(400);
@@ -52,23 +55,17 @@ void Sketch::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glOrtho(X_LEFT,
-            X_POINTS * _x_rate,
-            Y_BOTTOM,
-            Y_POINTS * _y_rate,
-            0,
-            100);
+    glOrtho(_x_start, _x_end, Y_MIN, Y_MIN + Y_MAX, 0, 100);
 
 }
 
 void Sketch::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    plotXAxis();
-//    plotYAxis();
+//    plotXAxis();
     plotCurves();
-    plotVernier();
-    glFlush();
+//    plotVernier();
+//    glFlush();
 }
 
 void Sketch::setSmooth(bool enable)
@@ -107,22 +104,44 @@ void Sketch::stop()
 
 void Sketch::init()
 {
-    _h_scroll->setMinimum(0);
-    if (_tribe->len() < X_POINTS * _x_rate) {
-        _h_scroll->setMaximum(0);
-    } else {
-        _h_scroll->setMaximum((_tribe->len() - (int) ceil(X_POINTS * _x_rate)));
+    _points = _tribe->len();
+#ifdef VERTEX
+    if (_buffer_size > 0) {
+        glDeleteBuffers(_buffer_size, _curve_buffers);
+        glDeleteVertexArrays(_buffer_size, _vaos);
+        delete[]_vaos;
+        delete[]_curve_buffers;
+        qDebug() << "Sketch::init() delete";
     }
-    _h_scroll->setPageStep((int) (X_POINTS * _x_rate));
-    emitMessage(Debug, tr("重设滚动条大小: %1").arg(_h_scroll->maximum()));
-    _current_index = -1;
-    _axis_index = -1;
-//    _x_rate = ;
-//    _y_rate = ;
-    update();
+
+    _buffer_size = _tribe->size();
+    qDebug() << "Sketch::init() size: " << _buffer_size;
+    if (_buffer_size <= 0) {
+        return;
+    }
+    _curve_buffers = new GLuint[_buffer_size];
+    _vaos = new GLuint[_buffer_size];
+
+    glGenBuffers(_buffer_size, _curve_buffers);
+    glGenVertexArrays(_buffer_size, _vaos);
+
+    qopengl_GLsizeiptr size = sizeof(float) * _combine->len();
+    qDebug() << "Sketch::init() vsize: " << size;
+    for (GLsizei i = 0; i < _buffer_size; ++i) {
+        glBindBuffer(GL_ARRAY_BUFFER, _curve_buffers[i]);
+        glBufferData(GL_ARRAY_BUFFER, size, (*_combine)[i].data().data(), GL_DYNAMIC_DRAW);
+
+        glBindVertexArray(_vaos[i]);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+        glEnableVertexAttribArray(0);
+    }
+#endif
+    _mode = Free;
+    glOrtho(_x_start, _x_end, Y_MIN, Y_MIN + Y_MAX, 0, 100);
 }
 
 
+/*
 void Sketch::plotCurves()
 {
     if (_smooth) {
@@ -186,22 +205,75 @@ void Sketch::plotCurves()
         glEnd();
     }
 }
+*/
 
-
-/*void Sketch::plotCurves()
+void Sketch::plotCurves()
 {
+    if (_smooth) {
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    } else {
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+    }
     switch (_mode) {
         case Rolling:
             break;
         case Free:
-
+#ifdef VERTEX
+            {
+            for (int i = 0; i < _tribe->size(); ++i) {
+                if (!_tribe->style(i).display()) {
+                    continue;
+                }
+                QColor color = _tribe->style(i).color();
+                qDebug() << "Sketch::plotCurves() color: " << color;
+                glColor3d(color.redF(), color.greenF(), color.redF());
+                glLineWidth(_tribe->style(i).width());
+                glBindVertexArray(_vaos[i]);
+                glDrawArrays(GL_LINE_STRIP, 0, _points);
+                glFlush();
+            }
+            qDebug() << "Sketch::plotCurves() points: " << _points;
+            glBegin(GL_LINES);
+            glVertex2d(0, 0);
+            glVertex2d(5, 1000);
+            glEnd();
+            glFlush();
             break;
+        }
+#else
+        {
+
+            for (int i = 0; i < _tribe->size(); ++i) {
+                if (!_tribe->style(i).display()) {
+                    continue;
+                }
+                QColor color = _tribe->style(i).color();
+                qDebug() << "Sketch::plotCurves() color: " << color;
+                glColor3d(color.redF(), color.greenF(), color.blueF());
+                glLineWidth(_tribe->style(i).width());
+                glBegin(GL_LINE_STRIP);
+                for (int j = 0; j < _points - 1; ++j) {
+                    glVertex2f((*_combine)[i].data()[j * 2],
+                               (*_combine)[i].data()[j * 2 + 1]);
+                    glVertex2f((*_combine)[i].data()[(j + 1) * 2],
+                               (*_combine)[i].data()[(j + 1) * 2 + 1]);
+                }
+                glEnd();
+                glFlush();
+            }
+            break;
+        }
+#endif
         case Waiting:
             break;
         case Empty:
             break;
     }
-}*/
+}
 
 
 void Sketch::plotXAxis()

@@ -13,6 +13,8 @@ class MyOpenGLWidget :
         protected QOpenGLExtraFunctions
 {
 Q_OBJECT
+public:
+    MyOpenGLWidget();
 private:
 protected:
     void initializeGL() override;
