@@ -122,6 +122,7 @@ private:
     FilePicker *_file_picker;
     QTime _timer[3];
     bool _timer_start[3];
+    QTimer _wake_up;
 
 public:
     Refine();
@@ -214,6 +215,11 @@ private slots:
     void widgetsVisibilityChanged(bool visible);
 
     void setCollectMenuEnable(bool enable);
+
+    void setWakeUp();
+
+    void keepWakeUp();
+
 signals:
     void message(int type, const QString &msg);
 

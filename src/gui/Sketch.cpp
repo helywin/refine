@@ -252,7 +252,7 @@ void Sketch::plotCurves()
                     continue;
                 }
                 QColor color = _tribe->style(i).color();
-                qDebug() << "Sketch::plotCurves() color: " << color;
+//                qDebug() << "Sketch::plotCurves() color: " << color;
                 glColor3d(color.redF(), color.greenF(), color.blueF());
                 glLineWidth(_tribe->style(i).width());
                 glBegin(GL_LINE_STRIP);

@@ -9,6 +9,12 @@
 #include "ChangeLog.hpp"
 #include "Sketch.hpp"
 
+#ifdef Q_OS_WIN
+
+#include <windows.h>
+
+#endif
+
 Refine::Refine() :
         Message(nullptr), _init(), _revolve(&_init), _translator()
 {
@@ -238,6 +244,8 @@ void Refine::setup()
     _timer_start[1] = false;
     _timer_start[2] = false;
 
+    _wake_up.setInterval(3 * 60 * 1000);
+
     connect(_menu_file_open, &QAction::triggered,
             _file_picker, &FilePicker::loadArchive, Qt::DirectConnection);
     connect(_menu_file_save, &QAction::triggered,
@@ -312,6 +320,10 @@ void Refine::setup()
             this, &Refine::presentation, Qt::DirectConnection);
     connect(_display, &Display::exitPresentation,
             this, &Refine::exitPresentation);
+    connect(_menu_tools_wakeup, &QAction::triggered,
+            this, &Refine::setWakeUp, Qt::DirectConnection);
+    connect(&_wake_up, &QTimer::timeout,
+            this, &Refine::keepWakeUp, Qt::DirectConnection);
 }
 
 void Refine::setLanguage()
@@ -496,5 +508,25 @@ void Refine::setCollectMenuEnable(bool isCollecting)
     _menu_file_import_config->setDisabled(isCollecting);
     _menu_file_export_data->setDisabled(isCollecting);
     _menu_file_export_frame->setDisabled(isCollecting);
+}
+
+void Refine::setWakeUp()
+{
+    if (_menu_tools_wakeup->isChecked()) {
+        _wake_up.start();
+    } else {
+        _wake_up.stop();
+    }
+}
+
+void Refine::keepWakeUp()
+{
+#ifdef Q_OS_WIN
+    keybd_event(VK_CAPITAL, 0, 0, 0);
+    keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
+    keybd_event(VK_CAPITAL, 0, 0, 0);
+    keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
+    emitMessage(Debug, "唤醒屏幕");
+#endif
 }
 
