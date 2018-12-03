@@ -3,6 +3,9 @@
 //
 
 #include "Combine.hpp"
+#include "Sketch.hpp"
+
+
 
 Combine::Combine() :
         _len(0) {}
@@ -17,9 +20,9 @@ void Combine::genFromTribe(const Tribe &tribe)
     for (int i = 0; i < tribe.size(); ++i) {
         for (int j = 0; j < tribe.len(); ++j) {
             auto y = (float)
-                    ((tribe[i].data()[j] - tribe.style(i).rangeOut()[0]) * (Y_POINTS) /
+                    ((tribe[i].data()[j] - tribe.style(i).rangeOut()[0]) * (Sketch::Y_POINTS) /
                      (tribe.style(i).rangeOut()[1] - tribe.style(i).rangeOut()[0]) + 0);
-            append(i, (j - 1) * tribe.msec() / 1000.0f, y);
+            append(i, y);
         }
     }
     _len = _cells[0].data().size();

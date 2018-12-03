@@ -32,10 +32,9 @@ Revolve::Revolve(Initializer *init) :
 {
     _config = 0x00;
     connect(&_timer_stop, &QTimer::timeout, this,
-            static_cast<bool (Revolve::*)(void)>(&Revolve::stop),
-            Qt::DirectConnection);
-    connect(&_collect, &Collect::info, this, &Revolve::collectError,
-            Qt::AutoConnection);
+            static_cast<bool (Revolve::*)(void)>(&Revolve::stop), Qt::DirectConnection);
+    connect(&_collect, &Collect::info, this, &Revolve::collectError, Qt::AutoConnection);
+    connect(&_transform, &Transform::resetHScroll, this, &Revolve::resetHScroll);
 }
 
 Revolve::~Revolve() {}
@@ -73,7 +72,7 @@ bool Revolve::begin(unsigned long msec, int config, int time)
         _collect.begin();
     }
     if (_sketch) {
-        _sketch->start();
+//        _sketch->start();
     }
     if ((unsigned) _config & (unsigned) WithRecord) {
         //! @deprecated genFramesDataFile();
@@ -115,12 +114,13 @@ bool Revolve::stop(bool error)
         _record.stop();
     }
     if (_sketch) {
-        _sketch->stop();
+//        _sketch->stop();
     }
     _file.dumpCurveConfig(_manage.curveConfig().absoluteFilePath(), _curve);
     _manage.compress();
     _manage.copyToCache();
     _status = Stop;
+    emit resetHScroll(_tribe.len(), true);
     emitMessage(Info, tr("停止采集成功"));
     return true;
 }
@@ -128,7 +128,7 @@ bool Revolve::stop(bool error)
 bool Revolve::exit()
 {
     if (_sketch) {
-        _sketch->stop();
+//        _sketch->stop();
     }
     if ((unsigned) _config & (unsigned) WithTiming) {
         _timer_stop.stop();
@@ -166,7 +166,7 @@ void Revolve::pause()
         _timer_stop.stop();
     }
     if (_sketch) {
-        _sketch->pause();
+//        _sketch->pause();
     }
     _status = Pause;
     emitMessage(Info, tr("暂停采集成功"));
@@ -194,7 +194,7 @@ void Revolve::resume()
         _timer_stop.stop();
     }
     if (_sketch) {
-        _sketch->resume();
+//        _sketch->resume();
     }
     _status = Running;
     emitMessage(Info, tr("继续采集成功"));
@@ -413,6 +413,7 @@ bool Revolve::inputCurveData(const QString &name)
     _combine.genFromTribe(_tribe);
     _sketch->init();
     _tribe_model->genData(&_tribe);
+    emit resetHScroll(_tribe.len(), true);
     emitMessage(Debug, tr("导入曲线数据 %1").arg(name));
     return true;
 }
@@ -428,6 +429,7 @@ bool Revolve::importSoftcanCurveData(const QString &name)
     _sketch->init();
     _sketch->update();
     _tribe_model->genData(&_tribe);
+    emit resetHScroll(_tribe.len(), true);
     emitMessage(Debug, tr("导入SoftCAN曲线数据 %1").arg(name));
     return true;
 }

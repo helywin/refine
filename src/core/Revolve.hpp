@@ -173,6 +173,8 @@ signals:
     void collectMenuEnable(bool isCollecting);
 
     void baudRate(double baud_rate);
+
+    void resetHScroll(int size, bool reset);
 };
 
 

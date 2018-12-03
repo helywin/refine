@@ -21,15 +21,6 @@ class Revolve;
  * @brief 显示曲线的控件类
  */
 
-#define X_LEFT 0.0
-//! \brief 默认的OpenGL横坐标宽度
-#define X_POINTS 2000.0
-#define Y_BOTTOM 0.0
-//! \brief 默认的OpenGL纵坐标宽度
-#define Y_POINTS 4096.0
-#define X_L_BLANK 50
-#define X_R_BLANK_RATE 0.02
-#define Y_BLANK_RATE 0.1
 
 class Sketch :
         public QOpenGLWidget,
@@ -55,7 +46,7 @@ public:
     struct Pattern
     {
         int index;
-        Tribe::Slice slice;
+        Tribe::Slice slice;     //absolute pos
     };
 
     /*!
@@ -64,67 +55,78 @@ public:
     struct Vernier
     {
         int index;
-        double pos;
+        int pos;                //relative pos
+        int start;              //absolute pos
     };
 
-    const double Y_MIN = 0;
-    const double Y_MAX = 4096;
+    const static double X_LEFT;
+    const static int X_POINTS;
+
+    const static double Y_BOTTOM;
+    const static double Y_POINTS;
 
 private:
     Tribe *_tribe;
     Combine *_combine;
-    QTimer _timer;
     DisplayMode _mode;
-    int _msec;
-    QScrollBar *_h_scroll;
 
     //! \brief OpenGL坐标范围
-    int _points;
-    double _x_start;
-    double _x_end;
-    double _y_start;
-    double _y_end;
-
-    int _x_pos;
-    double _y_pos;
+    int _x_start;
     double _x_rate;
+    int _x_end;
+    double _y_start;
     double _y_rate;
+
     int _current_index;
     bool _smooth;
-    bool _vernier;
+    bool _vernier_visible;
+    bool _vernier_fix;
+    QVector<Vernier> _verniers;
+    QVector<Pattern> _patterns;
     int _graduate_num;
-    int _vernier_pos;
 
+#ifdef VERTEX
     GLuint *_curve_buffers;
     GLuint *_vaos;
     GLsizei _buffer_size;   //also vao_nums
-
+#endif
 
 public:
     explicit Sketch(QWidget *parent, Revolve *revolve,
                     Message *message = nullptr);
 
-    inline void setScroll(QScrollBar *scroll) { _h_scroll = scroll; }
-
     void setSmooth(bool enable);
-
-    void start(int msec = 20);
-    void pause();
-    void resume();
-    void stop();
 
     void init();
 
-    inline void setMsec(int msec)
-    {
-        _msec = msec;
-        _timer.setInterval(_msec);
-    }
-
     inline void setCurrentIndex(int index) { _current_index = index; }
 
-public slots:
+    inline int xStart() const { return _x_start; }
 
+    inline int xPoints() const { return qRound(X_POINTS * _x_rate); }
+
+    inline void setXRate(double rate) { _x_rate = rate; }
+
+    inline void setXStart(int start) { _x_start = start; }
+
+    inline double yStart() const { return _y_start; }
+
+    inline double yPoints() const { return Y_POINTS * _y_rate; }
+
+    inline void setYStart(double start) { _y_start = start; }
+
+    inline void setYRate(double rate) { _y_rate = rate; }
+
+    inline void calculateXEnd()
+    {
+        _x_end = _x_start + xPoints();
+        if (_tribe->len() < _x_end) {
+            _x_end = _x_start + _tribe->len();
+        }
+    }
+
+
+public slots:
     inline void setGraduateNum(int num) { _graduate_num = num; }
 
 protected:
@@ -133,19 +135,13 @@ protected:
     void paintGL() override;
 
 private:
-
-    inline float genY(float y, const Tribe::Style &style)
-    {
-        return (float) ((y - style.rangeOut()[0]) *
-                        (Y_POINTS) / (style.rangeOut()[1] - style.rangeOut()[0])
-                        + Y_BOTTOM);
-    }
-
-    void plotXAxis();
+    void plotXGrid();
 
     void plotYGrid();
 
-    void plotVernier();
+    void plotVerniers();
+
+    void plotPatterns();
 
     void plotCurves();
 
@@ -167,27 +163,16 @@ private:
 
     void drawFocusSign();
 
-    void scrollMove(int angle);
-
-    inline void setXRate(double x_rate)
-    {
-        _x_rate = x_rate;
-        update();
-    }
-
-    inline void setYRate(double y_rate)
-    {
-        _y_rate = y_rate;
-        update();
-    }
-
 protected:
     void wheelEvent(QWheelEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
-    void keyReleaseEvent(QKeyEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+
+signals:
+    void scrollMove(int angle);
+
 };
 
 

@@ -89,7 +89,7 @@ void TribeBox::selectionChanged(const QItemSelection &selected,
         return;
     }
     int index = selection.indexes().first().row();
-    emitMessage(Debug, tr("当前行 %1").arg(index));
+//    emitMessage(Debug, tr("当前行 %1").arg(index));
     if (index < 0) {
         _sketch->setCurrentIndex(index);
         _sketch_y->setCurrentIndex(index, false);

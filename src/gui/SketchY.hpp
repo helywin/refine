@@ -29,6 +29,8 @@ public:
     {
         if (is_checked) {
             _current_index = index;
+        } else {
+            _current_index = -1;
         }
     }
 

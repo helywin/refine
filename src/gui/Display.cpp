@@ -2,9 +2,8 @@
 // Created by jiang.wenqiang on 2018/10/23.
 //
 
+#include <QtGui/QKeyEvent>
 #include "Display.hpp"
-#include "CurveViewer.hpp"
-#include "Sketch.hpp"
 
 Display::Display(QWidget *parent, Revolve *revolve, Message *message) :
         QSplitter(parent),
@@ -39,16 +38,6 @@ void Display::setup()
     setStretchFactor(1 , 17);
     _right_tab->setVisible(false);
     _before_fullscreen = windowFlags();
-}
-
-Sketch &Display::sketch()
-{
-    return _viewer->sketch();
-}
-
-SketchY &Display::sketchY()
-{
-    return _viewer->sketchY();
 }
 
 void Display::enablePresentation()

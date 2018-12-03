@@ -13,8 +13,8 @@
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 #include "Message.hpp"
+#include "CurveViewer.hpp"
 
-class CurveViewer;
 class Revolve;
 class Sketch;
 class SketchY;
@@ -35,12 +35,15 @@ private:
     bool _presentation;
     Qt::WindowFlags _before_fullscreen;
     QLayout *_parent_layout;
+
 public:
     Display(QWidget *parent, Revolve *revolve, Message *message = nullptr);
 
-    Sketch &sketch();
+    inline Sketch *sketch() { return _viewer->sketch(); }
 
-    SketchY &sketchY();
+    inline SketchY *sketchY() { return _viewer->sketchY(); }
+
+    inline CurveViewer *curveViewer() { return _viewer; }
 
     inline void addDock(QDockWidget *dock)
     {

@@ -9,14 +9,13 @@
 #include "SketchX.hpp"
 #include "SketchXTop.hpp"
 
-
 CurveViewer::CurveViewer(QWidget *parent, Revolve *revolve, Message *message) :
         QWidget(parent),
+        Message(message),
         _sketch_y(new SketchY(this, revolve, this)),
         _sketch_x(new SketchX(this, this)),
         _sketch_xtop(new SketchXTop(this, this)),
-        _sketch(new Sketch(this, revolve, this)),
-        Message(message)
+        _sketch(new Sketch(this, revolve, this))
 {
     setup();
 }
@@ -44,15 +43,39 @@ void CurveViewer::setup()
     _layout->addWidget(_v_scroll, 0, 1);
     _layout->setMargin(0);
     _layout->setContentsMargins(0, 0, 0, 0);
-    _sketch->setScroll(_h_scroll);
     connect(_h_scroll, &QScrollBar::valueChanged,
-            this, &CurveViewer::valueChanged, Qt::DirectConnection);
+            this, &CurveViewer::hScrollChanged, Qt::DirectConnection);
     connect(_sketch_y, &SketchY::graduateNumChanged, _sketch, &Sketch::setGraduateNum);
     _h_scroll->setMaximum(0);
     _v_scroll->setMaximum(0);
 }
 
-void CurveViewer::valueChanged(int value)
+void CurveViewer::hScrollChanged(int value)
 {
+    _sketch->setXStart(value);
     _sketch->update();
+}
+
+void CurveViewer::resetHScroll(int len, bool reset)
+{
+    _h_scroll->setMinimum(0);
+    int points = _sketch->xPoints();
+    if (len <= points) {
+        _h_scroll->setMaximum(0);
+    } else {
+        _h_scroll->setMaximum(len - points);
+    }
+    _h_scroll->setPageStep(points);
+    if (reset) {
+        _h_scroll->setValue(0);
+        update();
+    } else {
+        _h_scroll->setValue(_h_scroll->maximum());
+    }
+    emitMessage(Debug, tr("重设滚动条大小: %1").arg(_h_scroll->maximum()));
+}
+
+void CurveViewer::resetVScroll(int len)
+{
+
 }

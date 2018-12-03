@@ -9,10 +9,6 @@
 #include <QtCore/QVector>
 #include "Tribe.hpp"
 
-#ifndef Y_POINTS
-#define Y_POINTS 4096.0
-#endif
-
 class Combine
 {
 public:
@@ -72,9 +68,8 @@ public:
 
     void genFromTribe(const Tribe &tribe);
 
-    inline void append(int index, float x, float y)
+    inline void append(int index, float y)
     {
-        _cells[index].data().append(x);
         _cells[index].data().append(y);
     }
 };

@@ -216,9 +216,9 @@ void Refine::setup()
     setCentralWidget(_central);
 
     _display = new Display(_central, &_revolve, this);
-    _revolve.setSketch(&_display->sketch());
-    _tribebox->connectModelToSketch(&_display->sketch());
-    _tribebox->connectModelToSketchY(&_display->sketchY());
+    _revolve.setSketch(_display->sketch());
+    _tribebox->connectModelToSketch(_display->sketch());
+    _tribebox->connectModelToSketchY(_display->sketchY());
     _layout->addWidget(_display);
     _display->setParentLayout(_layout);
     _display->addDock(_tribebox);
@@ -324,6 +324,8 @@ void Refine::setup()
             this, &Refine::setWakeUp, Qt::DirectConnection);
     connect(&_wake_up, &QTimer::timeout,
             this, &Refine::keepWakeUp, Qt::DirectConnection);
+    connect(&_revolve, &Revolve::resetHScroll,
+            _display->curveViewer(), &CurveViewer::resetHScroll);
 }
 
 void Refine::setLanguage()
@@ -470,7 +472,7 @@ void Refine::startTimers(QAction *action)
 
 void Refine::changeUpdateMsec(QAction *action)
 {
-    _display->sketch().setMsec(action->data().toInt());
+//    _display->sketch().setMsec(action->data().toInt());
 }
 
 void Refine::displayAndHide(QAction *action)
@@ -490,7 +492,7 @@ void Refine::displayAndHide(QAction *action)
 
 void Refine::setSmooth()
 {
-    _display->sketch().setSmooth(_menu_view_smooth->isChecked());
+    _display->sketch()->setSmooth(_menu_view_smooth->isChecked());
 }
 
 void Refine::widgetsVisibilityChanged(bool visible)

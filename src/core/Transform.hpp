@@ -79,6 +79,9 @@ public:
 
 protected:
     void run() override;
+
+signals:
+    void resetHScroll(int size, bool reset);
 };
 
 

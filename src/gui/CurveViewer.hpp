@@ -10,6 +10,7 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QScrollBar>
 #include "Message.hpp"
+
 class Sketch;
 class SketchXTop;
 class SketchX;
@@ -29,17 +30,24 @@ private:
     QGridLayout *_layout_sketch;
     QScrollBar *_h_scroll;
     QScrollBar *_v_scroll;
+
 public:
-    explicit CurveViewer(QWidget *parent, Revolve *revolve,
-            Message *message = nullptr);
+    explicit CurveViewer(QWidget *parent, Revolve *revolve, Message *message = nullptr);
 
-    inline Sketch &sketch() { return *_sketch; }
+    inline Sketch *sketch() { return _sketch; }
 
-    inline SketchY &sketchY() { return *_sketch_y; }
+    inline SketchY *sketchY() { return _sketch_y; }
+
+    void resetHScroll(int len, bool reset);
+
+    void resetVScroll(int len);
+
 private:
     void setup();
+
 private slots:
-    void valueChanged(int value);
+    void hScrollChanged(int value);
+
 };
 
 

@@ -29,7 +29,7 @@ void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe, Combine *c
     _tribe = tribe;
     _combine = combine;
     _msec = msec;
-    _tribe->setMsec((int)msec);
+    _tribe->setMsec((int) msec);
 }
 
 void Transform::run()
@@ -106,7 +106,7 @@ void Transform::run()
 
                         full = high_byte + low_byte;
                         if (cur.rangeIn()[0] < 0) {
-                            full = (signed short)(full);
+                            full = (signed short) (full);
                         }
                     } else {
                         low_byte = buf[j]->Data[cur.lowByte()];
@@ -114,7 +114,7 @@ void Transform::run()
                         low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
                         full = low_byte;
                         if (cur.rangeIn()[0] < 0) {
-                            full = (signed char)(full);
+                            full = (signed char) (full);
                         }
                     }
                     float k;
@@ -138,9 +138,16 @@ void Transform::run()
                 }
             }
             auto y = (float) ((tr.data().last() - cur.rangeOut()[0]) *
-                              (Y_POINTS) / (cur.rangeOut()[1] - cur.rangeOut()[0]) + Y_BOTTOM);
-            _combine->cells()[i].data().append(float(tr.size() - 1) * (_msec / 1000.0f));
+                              (Sketch::Y_POINTS) / (cur.rangeOut()[1] - cur.rangeOut()[0]) +
+                              Sketch::Y_BOTTOM);
             _combine->cells()[i].data().append(y);
+#define RESIZE_FREQ 1
+            static int reset = 0;
+            reset += 1;
+            reset %= RESIZE_FREQ;
+            if (reset == 0) {
+                emit resetHScroll(_tribe->len(), false);
+            }
         }
 #ifdef TEST_SEC
         qDebug() << t.msecsTo(QTime::currentTime());
