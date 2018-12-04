@@ -2,7 +2,6 @@
 // Created by jiang.wenqiang on 2018/9/28.
 //
 
-#include <cmath>
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
 #include <QtCore/QVector>
@@ -20,12 +19,12 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _tribe(&revolve->tribe()),
         _combine(&revolve->combine()),
         _mode(Empty),
-        _x_rate(0.01),
+        _x_rate(1),
         _y_rate(1),
         _x_start(0),
         _current_index(-1),
         _smooth(true),
-        _vernier_visible(false),
+        _vernier_visible(true),
         _vernier_fix(false)
 {
     setMinimumWidth(200);
@@ -49,17 +48,22 @@ void Sketch::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glOrtho(0, xPoints(), _y_start, _y_start + yPoints(), 0, 100);
+    //让顶上和底部多出一像素，关闭反走样值为0的曲线不会消失
+    glOrtho(0, X_POINTS, _y_start - Y_POINTS / (double) w,
+            _y_start + Y_POINTS * (1 + 1 / (double) w), 0, 100);
 
 }
 
 void Sketch::paintGL()
 {
     calculateXEnd();
+    _x_sec = 1 / _x_rate;
     glClear(GL_COLOR_BUFFER_BIT);
 //    plotXAxis();
+    plotYGrid();
     plotCurves();
     plotVerniers();
+//    drawFocusSign();
     glFlush();
 }
 
@@ -222,17 +226,25 @@ void Sketch::plotCurves()
                 glLineWidth(_tribe->style(i).width());
                 glBegin(GL_LINE_STRIP);
                 for (int j = 0; j < xPoints(); ++j) {
-                    glVertex2f(j, (*_combine)[i].data()[j + _x_start]);
+                    glVertex2f(float(j * _x_sec), (*_combine)[i].data()[j + _x_start]);
+                }
+                if (_x_start + xPoints() < _tribe->len()) {
+                    glVertex2f(float(xPoints() * _x_sec),
+                               (*_combine)[i].data()[xPoints() + _x_start]);
                 }
                 glEnd();
                 glFlush();
                 glPointSize(_tribe->style(i).width() * 2 + 2);
                 glBegin(GL_POINTS);
-                if ((double)rect().width() / xPoints() >= 8) {
+                if ((double) rect().width() / xPoints() >= 15) {
                     for (int j = 0; j < xPoints(); ++j) {
                         if (_tribe->at(i).fillType(j + _x_start) == Tribe::Fill::Data) {
-                            glVertex2f(j, (*_combine)[i].data()[j + _x_start]);
+                            glVertex2f(float(j * _x_sec), (*_combine)[i].data()[j + _x_start]);
                         }
+                    }
+                    if (_x_start + xPoints() < _tribe->len()) {
+                        glVertex2f(float(xPoints() * _x_sec),
+                                   (*_combine)[i].data()[xPoints() + _x_start]);
                     }
                 }
                 glEnd();
@@ -272,9 +284,49 @@ void Sketch::plotXGrid()
 
 }
 
+#define MINIMUM_PIXEL 40
+#define MAXIMUM_PIXEL 50
+
 void Sketch::plotYGrid()
 {
+    glDisable(GL_LINE_SMOOTH);
+    glDisable(GL_BLEND);
+    if (_current_index < 0) {
+        return;
+    }
+    qDebug() << "Sketch::plotYGrid()";
+    Tribe::Style &style = _tribe->style(_current_index);
+    int num = 10;
+    int range = rect().height() - 2;
+    bool is_logic = style.rangeOut()[1] - style.rangeOut()[0] < num;
+//    qDebug() << "SketchY::plotYAxis() is_logic: " << is_logic;
+    if (is_logic) {
+        num = style.rangeOut()[1] - style.rangeOut()[0];
+    }
+    while (range / num > MAXIMUM_PIXEL && !is_logic) {
+        num += 1;
+    }
+    while (range / num < MINIMUM_PIXEL && num > 1) {
+        num -= 1;
+    }
+    if (num != _y_graduate_num) {
+        _y_graduate_num = num;
+    }
 
+    QColor color(0, 96, 48);
+    glLineStipple(4, 0x5555);
+    glLineWidth(1);
+    glEnable(GL_LINE_STIPPLE);
+    glColor3d(color.redF(), color.greenF(), color.blueF());
+    glBegin(GL_LINES);
+    for (int i = 0; i <= _y_graduate_num; ++i) {
+        double y = (Y_POINTS * _y_rate) * (i / double(_y_graduate_num));
+        glVertex2d(0, y);
+        glVertex2d(X_POINTS, y);
+    }
+    glEnd();
+    glDisable(GL_LINE_STIPPLE);
+    glFlush();
 }
 
 void Sketch::plotVerniers()
@@ -288,15 +340,16 @@ void Sketch::plotVerniers()
     for (const auto &v : _verniers) {
         int data_pos;
         if (_vernier_fix) {
-            data_pos = v.pos + _x_start;
+            data_pos = qRound(v.pos * _x_rate) + v.start;
         } else {
-            data_pos = v.start;
+            data_pos = qRound(v.pos * _x_rate) + _x_start;
         }
         const int vernier_dist = 10;
+        const int font_size = 10;
         QColor color(0xffffff);
         QBrush brush(color);
         QPen pen(color);
-        QFont font("Helvetica", 10);
+        QFont font("Helvetica", font_size);
         int row_height = font.pointSize() + 4;
         font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
         QFontMetrics metrics(font, this);
@@ -305,9 +358,9 @@ void Sketch::plotVerniers()
         painter.setFont(font);
         int x;
         if (_vernier_fix) {
-            x = xGlToQt(v.pos);
+            x = xGlToQt(v.start + v.pos - _x_start);
         } else {
-            x = xGlToQt(v.start - _x_start);
+            x = xGlToQt(v.pos);
         }
         int y1 = yGlToQt(Y_BOTTOM);
         int y2 = yGlToQt(Y_POINTS);
@@ -319,11 +372,11 @@ void Sketch::plotVerniers()
         int max_time_width = metrics.boundingRect(time_value).width();
         if (rect().width() - x < max_time_width + vernier_dist) {
             painter.drawText(QRect(x - vernier_dist - max_time_width,
-                                   y2 - 10 - row_height,
+                                   y2 - font_size - row_height,
                                    max_time_width, row_height), time_value,
                              QTextOption(Qt::AlignRight | Qt::AlignHCenter));
         } else {
-            painter.drawText(x + vernier_dist, y2 - 10, time_value);
+            painter.drawText(x + vernier_dist, y2 - font_size, time_value);
         }
         int max_name_width = 0;
         for (int i = 0; i < _tribe->size(); ++i) {
@@ -336,9 +389,14 @@ void Sketch::plotVerniers()
             }
         }
         int max_value_width = 40;
+        int max_cnt = rect().height() / (font_size + vernier_dist);
+        int cnt = 0;
         for (int i = 0; i < _tribe->size(); ++i) {
             if (!_tribe->style(i).display()) {
                 continue;
+            }
+            if (cnt > max_cnt) {
+                break;  //多画也是看不到，反而增加重绘时间
             }
             color = _tribe->style(i).color();
             pen.setColor(color);
@@ -375,7 +433,7 @@ void Sketch::plotVerniers()
                 painter.drawText(x + 10, y2, value);
                 painter.drawText(
                         QRect(x - vernier_dist - max_name_width - 10, y2 - row_height,
-                              max_name_width + 10, row_height),
+                              max_name_width + font_size, row_height),
                         suffix + name,
                         QTextOption(Qt::AlignRight | Qt::AlignHCenter)
                 );
@@ -452,7 +510,7 @@ void Sketch::keyPressEvent(QKeyEvent *event)
     }
     scrollMove(120 * direction);
     if (event->isAutoRepeat()) {
-        return;
+        return;     //后面的事件不会是重复按键的
     }
     if (event->key() == Qt::Key_L) {
         _vernier_visible ^= 1;
@@ -460,6 +518,18 @@ void Sketch::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_F12) {
         event->setAccepted(false);
+    }
+    if (event->key() == Qt::Key_Equal) {
+        emit zoomXPlus();
+    }
+    if (event->key() == Qt::Key_Minus) {
+        emit zoomXMinus();
+    }
+    if (event->key() == Qt::Key_D) {
+        emit zoomXDefault();
+    }
+    if (event->key() == Qt::Key_M) {
+        emit zoomXMinimum();
     }
     emitMessage(Debug, QString("按下 %1").arg(event->key()));
 }
@@ -494,11 +564,11 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
         if (x < 0) {
             x = 0;
         }
-        if (x > X_POINTS * _x_rate) {
-            x = X_POINTS * _x_rate;
+        if (x > X_POINTS) {
+            x = X_POINTS;
         }
-        _verniers[0].pos = int(x);
-        _verniers[0].start = _x_start + int(x);
+        _verniers[0].pos = x;
+        _verniers[0].start = _x_start;
         update();
     }
 }
@@ -506,13 +576,13 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
 int Sketch::xGlToQt(double x)
 {
     double left = X_LEFT;
-    double w = xPoints() - X_LEFT;
-    return (int) round(rect().width() * (x - left) / w);
+    double w = X_POINTS - X_LEFT;
+    return qRound(rect().width() * (x - left) / w);
 }
 
 double Sketch::xQtToGl(int x)
 {
-    double w = xPoints() - X_LEFT;
+    double w = X_POINTS - X_LEFT;
     return X_LEFT + (double) x / rect().width() * w;
 }
 
@@ -520,7 +590,7 @@ int Sketch::yGlToQt(double y)
 {
     double top = Y_POINTS;
     double h = Y_POINTS - Y_BOTTOM;
-    return (int) round(rect().height() * (top - y) / h);
+    return qRound(rect().height() * (top - y) / h);
 }
 
 double Sketch::yQtToGl(int y)

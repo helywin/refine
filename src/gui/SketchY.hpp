@@ -22,6 +22,8 @@ private:
     QPainter _painter;
     int _current_index;
     int _graduate_num;
+    double _y_min;
+    double _y_rate;
 public:
     explicit SketchY(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
@@ -42,9 +44,6 @@ protected:
 private:
     void setup();
     void plotYAxis();
-
-signals:
-    void graduateNumChanged(int num);
 };
 
 

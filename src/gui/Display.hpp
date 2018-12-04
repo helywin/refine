@@ -12,6 +12,11 @@
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QActionGroup>
 #include "Message.hpp"
 #include "CurveViewer.hpp"
 
@@ -28,8 +33,17 @@ private:
     QTabWidget *_right_tab;
     QVBoxLayout *_layout;
     QToolBar *_toolbar;
+    QMenuBar *_menubar;
+    QMenu *_menu_zoom;
+    QActionGroup *_menu_zoom_group;
+    QAction *_menu_zoom_plus;
+    QAction *_menu_zoom_minus;
+    QAction *_menu_zoom_origin;
+    QAction *_menu_zoom_minimum;
     QAction *_zoom_plus;
     QAction *_zoom_minus;
+    QPushButton *_btn_zoom;
+    QPushButton *_btn_zoom_minus;
     QVector<QDockWidget *> _docks;
     QVector<QWidget *> _widgets;
     bool _presentation;
@@ -63,6 +77,9 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 private:
     void setup();
+
+private slots:
+    void changeZoomMode(QAction *action);
 
 signals:
     void exitPresentation();

@@ -3,6 +3,7 @@
 //
 
 #include <QtGui/QKeyEvent>
+#include <QtPlatformHeaders/QWindowsWindowFunctions>
 #include "Display.hpp"
 
 Display::Display(QWidget *parent, Revolve *revolve, Message *message) :
@@ -26,18 +27,46 @@ void Display::setup()
     _layout->setContentsMargins(0, 0, 0, 0);
     _layout->addWidget(_toolbar);
     _layout->addWidget(_viewer);
-    _zoom_plus = new QAction(QIcon(":res/icons/zoom+.png"), tr("放大"), _left_panel);
-    _zoom_minus = new QAction(QIcon(":res/icons/zoom-.png"), tr("缩小"), _left_panel);
-    _toolbar->addAction(_zoom_plus);
-    _toolbar->addAction(_zoom_minus);
-
+    _menubar = new QMenuBar(_left_panel);
+    _menu_zoom = new QMenu(tr("放大"), _menubar);
+    _menu_zoom_group = new QActionGroup(_menu_zoom);
+    _menu_zoom_plus = new QAction(tr("放大"), _menu_zoom_group);
+    _menu_zoom_plus->setShortcut(QKeySequence("="));
+    _menu_zoom_plus->setCheckable(true);
+    _menu_zoom_plus->setChecked(true);
+    _menu_zoom_minus = new QAction(tr("缩小"), _menu_zoom_group);
+    _menu_zoom_minus->setShortcut(QKeySequence("-"));
+    _menu_zoom_minus->setCheckable(true);
+    _menu_zoom_group->setExclusive(true);
+    _menu_zoom_origin = new QAction(tr("默认"), _menu_zoom);
+    _menu_zoom_origin->setShortcut(QKeySequence("D"));
+    _menu_zoom_minimum = new QAction(tr("最小"), _menu_zoom);
+    _menu_zoom_minimum->setShortcut(QKeySequence("M"));
+    _menu_zoom->addActions(_menu_zoom_group->actions());
+    _menu_zoom->addSeparator();
+    _menu_zoom->addAction(_menu_zoom_origin);
+    _menu_zoom->addAction(_menu_zoom_minimum);
+    _btn_zoom = new QPushButton(QIcon(":res/icons/zoom+.png"), tr(""), _left_panel);
+    _btn_zoom->setIconSize(QSize(32, 32));
+//    _btn_zoom->setMenu(_menu_zoom);
+    _btn_zoom->setContentsMargins(0, 0, 0, 0);
+    _toolbar->addWidget(_btn_zoom);
+    _menubar->addMenu(_menu_zoom);
+//    _menubar->addActions(_menu_zoom->actions());
+    _layout->setMenuBar(_menubar);
     _right_tab = new QTabWidget(this);
     _right_tab->setTabPosition(QTabWidget::South);
     addWidget(_right_tab);
-    setStretchFactor(0 , 45);
-    setStretchFactor(1 , 17);
+    setStretchFactor(0, 45);
+    setStretchFactor(1, 17);
     _right_tab->setVisible(false);
     _before_fullscreen = windowFlags();
+    connect(_menu_zoom_plus, &QAction::triggered, _viewer, &CurveViewer::zoomXPlus);
+    connect(_menu_zoom_minus, &QAction::triggered, _viewer, &CurveViewer::zoomXMinus);
+    connect(_menu_zoom_origin, &QAction::triggered, _viewer, &CurveViewer::zoomXDefault);
+    connect(_menu_zoom_minimum, &QAction::triggered, _viewer, &CurveViewer::zoomXMinimum);
+    connect(_menu_zoom_group, &QActionGroup::triggered,
+            this, &Display::changeZoomMode, Qt::DirectConnection);
 }
 
 void Display::enablePresentation()
@@ -51,6 +80,8 @@ void Display::enablePresentation()
     }
     _right_tab->setVisible(true);
     setWindowFlag(Qt::Window);
+    QWindowsWindowFunctions::
+    setHasBorderInFullScreen(this->windowHandle(), true);   //解决全屏无菜单的问题
     showFullScreen();
     _presentation = true;
 }
@@ -89,5 +120,15 @@ void Display::closeEvent(QCloseEvent *event)
     if (_presentation) {
         disablePresentation();
         event->setAccepted(false);
+    }
+}
+
+void Display::changeZoomMode(QAction *action)
+{
+    _menu_zoom->setTitle(action->text());
+    if (action == _menu_zoom_plus) {
+        _btn_zoom->setIcon(QIcon(":res/icons/zoom+.png"));
+    } else {
+        _btn_zoom->setIcon(QIcon(":res/icons/zoom-.png"));
     }
 }

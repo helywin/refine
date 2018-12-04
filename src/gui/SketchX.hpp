@@ -9,12 +9,19 @@
 #include <QtGui/QPainter>
 #include "Message.hpp"
 
+class Tribe;
+class Revolve;
+
 class SketchX : public QOpenGLWidget, public Message
 {
 Q_OBJECT
 private:
+    int _x_graduate_num;
+    Tribe *_tribe;
+    QPainter _painter;
+
 public:
-    explicit SketchX(Message *message = nullptr, QWidget *parent = nullptr);
+    explicit SketchX(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
 protected:
     void initializeGL() override;
@@ -23,6 +30,8 @@ protected:
 
 private:
     void setup();
+
+    void plotXAxis();
 };
 
 

@@ -3,10 +3,14 @@
 //
 
 #include "SketchX.hpp"
+#include "Revolve.hpp"
+#include "Tribe.hpp"
 
-SketchX::SketchX(Message *message, QWidget *parent) :
+SketchX::SketchX(Message *message, Revolve *revolve, QWidget *parent) :
         Message(message),
-        QOpenGLWidget(parent)
+        QOpenGLWidget(parent),
+        _tribe(&revolve->tribe()),
+        _x_graduate_num(10)
 {
     setup();
 }
@@ -28,5 +32,46 @@ void SketchX::resizeGL(int w, int h)
 
 void SketchX::paintGL()
 {
-    QOpenGLWidget::paintGL();
+    plotXAxis();
+}
+
+#define MINIMUM_PIXEL 40
+#define MAXIMUM_PIXEL 50
+#define X_AXIS_LINES_LEN 7
+
+void SketchX::plotXAxis()
+{
+    int left = 1;
+    int right = rect().width() - 1;
+    int range = right - left;
+    int num = 10;
+    const int font_size = 10;
+    int yt = rect().top() + 5;
+    int yb = yt + X_AXIS_LINES_LEN;
+    int ytx = yb + 7+ font_size;
+    QColor color(0, 96, 48);
+    _painter.begin(this);
+    QFont font("Helvetica", font_size);
+    font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
+    _painter.setFont(font);
+    _painter.setPen(color);
+    while (range / num > MAXIMUM_PIXEL) {
+        num += 1;
+    }
+    while (range / num < MINIMUM_PIXEL && num > 1) {
+        num -= 1;
+    }
+    if (num != _x_graduate_num) {
+        _x_graduate_num = num;
+    }
+    for (int i = 0; i <= _x_graduate_num; ++i) {
+        double y_val = (20.0 - 0) / _x_graduate_num * i;
+        int x = qRound(left + (double(range) / double(_x_graduate_num) * i));
+        _painter.drawLine(x, yt, x, yb);
+        if (i != _x_graduate_num) {
+            _painter.drawText(x, ytx, QString("%1s").arg(y_val, 0, 'f', 2));
+        }
+    }
+    _painter.drawLine(left, yt, right, yt);
+    _painter.end();
 }

@@ -55,8 +55,8 @@ public:
     struct Vernier
     {
         int index;
-        int pos;                //relative pos
-        int start;              //absolute pos
+        double pos;                 //relative pos
+        int start;                  //absolute pos
     };
 
     const static double X_LEFT;
@@ -73,6 +73,7 @@ private:
     //! \brief OpenGL坐标范围
     int _x_start;
     double _x_rate;
+    double _x_sec;
     int _x_end;
     double _y_start;
     double _y_rate;
@@ -83,7 +84,8 @@ private:
     bool _vernier_fix;
     QVector<Vernier> _verniers;
     QVector<Pattern> _patterns;
-    int _graduate_num;
+    int _y_graduate_num;
+    int _x_graduate_num;
 
 #ifdef VERTEX
     GLuint *_curve_buffers;
@@ -105,6 +107,8 @@ public:
 
     inline int xPoints() const { return qRound(X_POINTS * _x_rate); }
 
+    inline double xRate() const { return _x_rate; }
+
     inline void setXRate(double rate) { _x_rate = rate; }
 
     inline void setXStart(int start) { _x_start = start; }
@@ -115,6 +119,8 @@ public:
 
     inline void setYStart(double start) { _y_start = start; }
 
+    inline double yRate() const { return _y_rate; }
+
     inline void setYRate(double rate) { _y_rate = rate; }
 
     inline void calculateXEnd()
@@ -124,10 +130,6 @@ public:
             _x_end = _x_start + _tribe->len();
         }
     }
-
-
-public slots:
-    inline void setGraduateNum(int num) { _graduate_num = num; }
 
 protected:
     void initializeGL() override;
@@ -172,6 +174,14 @@ protected:
 
 signals:
     void scrollMove(int angle);
+
+    void zoomXPlus();
+
+    void zoomXMinus();
+
+    void zoomXDefault();
+
+    void zoomXMinimum();
 
 };
 

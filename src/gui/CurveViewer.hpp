@@ -16,6 +16,7 @@ class SketchXTop;
 class SketchX;
 class SketchY;
 class Revolve;
+class Tribe;
 
 class CurveViewer : public QWidget, public Message
 {
@@ -30,6 +31,7 @@ private:
     QGridLayout *_layout_sketch;
     QScrollBar *_h_scroll;
     QScrollBar *_v_scroll;
+    Tribe *_tribe;
 
 public:
     explicit CurveViewer(QWidget *parent, Revolve *revolve, Message *message = nullptr);
@@ -41,6 +43,17 @@ public:
     void resetHScroll(int len, bool reset);
 
     void resetVScroll(int len);
+
+public slots:
+    void zoomXPlus();
+    void zoomXMinus();
+    void zoomXDefault();
+    void zoomXMinimum();
+
+    void zoomYPlus();
+    void zoomYMinus();
+    void zoomYDefault();
+    void zoomYMinimum();
 
 private:
     void setup();

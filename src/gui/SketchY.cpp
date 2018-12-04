@@ -11,7 +11,8 @@ SketchY::SketchY(Message *message, Revolve *revolve, QWidget *parent) :
         QOpenGLWidget(parent),
         _tribe(&revolve->tribe()),
         _current_index(-1),
-        _graduate_num(10)
+        _graduate_num(10),
+        _y_rate(1.0)
 {
     setup();
 }
@@ -34,7 +35,7 @@ void SketchY::paintGL()
 void SketchY::setup()
 {
     setMinimumHeight(150);
-    setFixedWidth(80);
+    setFixedWidth(60);
 }
 
 #define MINIMUM_PIXEL 40
@@ -44,7 +45,7 @@ void SketchY::setup()
 
 void SketchY::plotYAxis()
 {
-    int top = 45 + 1;
+    int top = 45;
     int bottom = rect().height() - 45 - 1;
     int range = bottom - top;
     int num = 10;
@@ -67,7 +68,13 @@ void SketchY::plotYAxis()
     font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
     _painter.setFont(font);
     _painter.setPen(style.color());
-    bool is_logic = style.rangeOut()[1] - style.rangeOut()[0] < num;
+    bool is_logic;
+    if (_y_rate == 1.0) {
+        is_logic = style.rangeOut()[1] - style.rangeOut()[0] < num;
+        _y_min = style.rangeOut()[0];
+    } else {
+        is_logic = false;
+    }
 //    qDebug() << "SketchY::plotYAxis() is_logic: " << is_logic;
     if (is_logic) {
         num = style.rangeOut()[1] - style.rangeOut()[0];
@@ -80,17 +87,17 @@ void SketchY::plotYAxis()
     }
     if (num != _graduate_num) {
         _graduate_num = num;
-        emit graduateNumChanged(_graduate_num);
     }
 
     _painter.drawText(xt, top / 2 + 5, style.name());
     _painter.drawText(xt, bottom + top / 2 + 5, style.unit());
-    for (int i = 0; i < _graduate_num + 1; ++i) {
-        double y_val = style.rangeOut()[1] -
-                       double(style.rangeOut()[1] - style.rangeOut()[0]) / _graduate_num * i;
+    for (int i = 0; i <= _graduate_num; ++i) {
+        double y_val = _y_min +
+                       double(style.rangeOut()[1] - style.rangeOut()[0])
+                       * _y_rate / _graduate_num * i;
         int y = qRound(top + (double(range) / double(_graduate_num) * i));
         _painter.drawLine(xl, y, xr, y);
-        _painter.drawText(xt, y + 5, QString("%1").arg(y_val, 0, 'f', 2));
+        _painter.drawText(xt, y + 5, QString("%1").arg(y_val, 0, 'f', 1));
     }
     _painter.drawLine(xr, top, xr, bottom);
     _painter.end();

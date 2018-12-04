@@ -8,14 +8,17 @@
 #include "SketchY.hpp"
 #include "SketchX.hpp"
 #include "SketchXTop.hpp"
+#include "Revolve.hpp"
+#include "Tribe.hpp"
 
 CurveViewer::CurveViewer(QWidget *parent, Revolve *revolve, Message *message) :
         QWidget(parent),
         Message(message),
         _sketch_y(new SketchY(this, revolve, this)),
-        _sketch_x(new SketchX(this, this)),
+        _sketch_x(new SketchX(this, revolve ,this)),
         _sketch_xtop(new SketchXTop(this, this)),
-        _sketch(new Sketch(this, revolve, this))
+        _sketch(new Sketch(this, revolve, this)),
+        _tribe(&revolve->tribe())
 {
     setup();
 }
@@ -28,9 +31,9 @@ void CurveViewer::setup()
     _layout_sketch->setContentsMargins(0, 0, 0, 0);
     _widget_sketch->setLayout(_layout_sketch);
     _layout_sketch->addWidget(_sketch_y, 0, 0, 3, 1);
-    _layout_sketch->addWidget(_sketch_x, 0, 1, 1, 1);
+    _layout_sketch->addWidget(_sketch_xtop, 0, 1, 1, 1);
     _layout_sketch->addWidget(_sketch, 1, 1, 1, 1);
-    _layout_sketch->addWidget(_sketch_xtop, 2, 1, 1, 1);
+    _layout_sketch->addWidget(_sketch_x, 2, 1, 1, 1);
     auto right_blank = new QOpenGLWidget(this);
     right_blank->setFixedWidth(15);
     _layout_sketch->addWidget(right_blank, 0, 2, 3, 1);
@@ -43,11 +46,14 @@ void CurveViewer::setup()
     _layout->addWidget(_v_scroll, 0, 1);
     _layout->setMargin(0);
     _layout->setContentsMargins(0, 0, 0, 0);
-    connect(_h_scroll, &QScrollBar::valueChanged,
-            this, &CurveViewer::hScrollChanged, Qt::DirectConnection);
-    connect(_sketch_y, &SketchY::graduateNumChanged, _sketch, &Sketch::setGraduateNum);
     _h_scroll->setMaximum(0);
     _v_scroll->setMaximum(0);
+    connect(_h_scroll, &QScrollBar::valueChanged,
+            this, &CurveViewer::hScrollChanged, Qt::DirectConnection);
+    connect(_sketch, &Sketch::zoomXPlus, this, &CurveViewer::zoomXPlus);
+    connect(_sketch, &Sketch::zoomXMinus, this, &CurveViewer::zoomXMinus);
+    connect(_sketch, &Sketch::zoomXDefault, this, &CurveViewer::zoomXDefault);
+    connect(_sketch, &Sketch::zoomXMinimum, this, &CurveViewer::zoomXMinimum);
 }
 
 void CurveViewer::hScrollChanged(int value)
@@ -76,6 +82,82 @@ void CurveViewer::resetHScroll(int len, bool reset)
 }
 
 void CurveViewer::resetVScroll(int len)
+{
+
+}
+
+void CurveViewer::zoomXPlus()
+{
+    double rate = _sketch->xRate() / 1.5;
+    if (rate < 1e-2){
+        rate = 1e-2;
+    }
+    _sketch->setXRate(rate);
+    _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->update();
+    _sketch->update();
+}
+
+void CurveViewer::zoomXMinus()
+{
+    double rate = _sketch->xRate() * 1.5;
+    if(rate > _tribe->len() / (double)Sketch::X_POINTS) {
+        rate = _tribe->len() / (double)Sketch::X_POINTS;
+    }
+    _sketch->setXRate(rate);
+    int max = _tribe->len() - _sketch->xPoints();
+    if (_h_scroll->value() > max) {
+        _h_scroll->setValue(max);
+    }
+    _h_scroll->setMaximum(max);
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->update();
+    _sketch->update();
+}
+
+void CurveViewer::zoomXDefault()
+{
+    _sketch->setXRate(1);
+    int max = _tribe->len() - _sketch->xPoints();
+    if (_h_scroll->value() > max) {
+        _h_scroll->setValue(max);
+    }
+    _h_scroll->setMaximum(max);
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->update();
+    _sketch->update();
+}
+
+void CurveViewer::zoomXMinimum()
+{
+    _sketch->setXRate(_tribe->len() / (double)Sketch::X_POINTS);
+    int max = _tribe->len() - _sketch->xPoints();
+    if (_h_scroll->value() > max) {
+        _h_scroll->setValue(max);
+    }
+    _h_scroll->setMaximum(max);
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->update();
+    _sketch->update();
+}
+
+void CurveViewer::zoomYPlus()
+{
+
+}
+
+void CurveViewer::zoomYMinus()
+{
+
+}
+
+void CurveViewer::zoomYDefault()
+{
+
+}
+
+void CurveViewer::zoomYMinimum()
 {
 
 }
