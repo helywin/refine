@@ -19,9 +19,19 @@ private:
     int _x_graduate_num;
     Tribe *_tribe;
     QPainter _painter;
+    int _points;
+    int _start;
+    int _end;
+    int _msec;
 
 public:
     explicit SketchX(Message *message, Revolve *revolve, QWidget *parent = nullptr);
+
+    inline void setPoints(int points) { _points = points; }
+
+    inline void setXStart(int start) { _start = start; }
+
+    inline void setMsec(int msec) { _msec = msec; }
 
 protected:
     void initializeGL() override;

@@ -61,6 +61,7 @@ void Sketch::paintGL()
     glClear(GL_COLOR_BUFFER_BIT);
 //    plotXAxis();
     plotYGrid();
+    plotXGrid();
     plotCurves();
     plotVerniers();
 //    drawFocusSign();
@@ -278,14 +279,49 @@ void Sketch::plotCurves()
     }
 }
 
+#define X_MINIMUM_PIXEL 60
+#define X_MAXIMUM_PIXEL 70
 
 void Sketch::plotXGrid()
 {
-
+    glDisable(GL_LINE_SMOOTH);
+    glDisable(GL_BLEND);
+    if (_current_index < 0) {
+        return;
+    }
+    int num = 10;
+    int range = rect().width();
+    while (range / num > X_MAXIMUM_PIXEL) {
+        num += 1;
+    }
+    while (range / num < X_MINIMUM_PIXEL && num > 1) {
+        num -= 1;
+    }
+    if (num != _x_graduate_num) {
+        _x_graduate_num = num;
+    }
+    QColor color(0, 96, 48);
+    glLineStipple(4, 0x5555);
+    glLineWidth(1);
+    glEnable(GL_LINE_STIPPLE);
+    glColor3d(color.redF(), color.greenF(), color.blueF());
+    glBegin(GL_LINES);
+    for (int i = 0; i <= _x_graduate_num; ++i) {
+        double x = (X_POINTS) * (i / double(_x_graduate_num));
+        glVertex2d(x, 0);
+        glVertex2d(x, Y_POINTS);
+    }
+    glEnd();
+    glDisable(GL_LINE_STIPPLE);
+    glFlush();
 }
 
-#define MINIMUM_PIXEL 40
-#define MAXIMUM_PIXEL 50
+#undef X_MINIMUM_PIXEL
+#undef X_MAXIMUM_PIXEL
+
+
+#define Y_MINIMUM_PIXEL 40
+#define Y_MAXIMUM_PIXEL 50
 
 void Sketch::plotYGrid()
 {
@@ -294,7 +330,7 @@ void Sketch::plotYGrid()
     if (_current_index < 0) {
         return;
     }
-    qDebug() << "Sketch::plotYGrid()";
+//    qDebug() << "Sketch::plotYGrid()";
     Tribe::Style &style = _tribe->style(_current_index);
     int num = 10;
     int range = rect().height() - 2;
@@ -303,10 +339,10 @@ void Sketch::plotYGrid()
     if (is_logic) {
         num = style.rangeOut()[1] - style.rangeOut()[0];
     }
-    while (range / num > MAXIMUM_PIXEL && !is_logic) {
+    while (range / num > Y_MAXIMUM_PIXEL && !is_logic) {
         num += 1;
     }
-    while (range / num < MINIMUM_PIXEL && num > 1) {
+    while (range / num < Y_MINIMUM_PIXEL && num > 1) {
         num -= 1;
     }
     if (num != _y_graduate_num) {
@@ -320,7 +356,7 @@ void Sketch::plotYGrid()
     glColor3d(color.redF(), color.greenF(), color.blueF());
     glBegin(GL_LINES);
     for (int i = 0; i <= _y_graduate_num; ++i) {
-        double y = (Y_POINTS * _y_rate) * (i / double(_y_graduate_num));
+        double y = (Y_POINTS) * (i / double(_y_graduate_num));
         glVertex2d(0, y);
         glVertex2d(X_POINTS, y);
     }
@@ -328,6 +364,9 @@ void Sketch::plotYGrid()
     glDisable(GL_LINE_STIPPLE);
     glFlush();
 }
+
+#undef Y_MINIMUM_PIXEL
+#undef Y_MAXIMUM_PIXEL
 
 void Sketch::plotVerniers()
 {

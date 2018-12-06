@@ -48,6 +48,7 @@ void CurveViewer::setup()
     _layout->setContentsMargins(0, 0, 0, 0);
     _h_scroll->setMaximum(0);
     _v_scroll->setMaximum(0);
+    _v_scroll->setVisible(false);
     connect(_h_scroll, &QScrollBar::valueChanged,
             this, &CurveViewer::hScrollChanged, Qt::DirectConnection);
     connect(_sketch, &Sketch::zoomXPlus, this, &CurveViewer::zoomXPlus);
@@ -59,7 +60,9 @@ void CurveViewer::setup()
 void CurveViewer::hScrollChanged(int value)
 {
     _sketch->setXStart(value);
+    _sketch_x->setXStart(value);
     _sketch->update();
+    _sketch_x->update();
 }
 
 void CurveViewer::resetHScroll(int len, bool reset)
@@ -95,6 +98,7 @@ void CurveViewer::zoomXPlus()
     _sketch->setXRate(rate);
     _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
     _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->setPoints(_sketch->xPoints());
     _sketch_x->update();
     _sketch->update();
 }
@@ -112,6 +116,7 @@ void CurveViewer::zoomXMinus()
     }
     _h_scroll->setMaximum(max);
     _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->setPoints(_sketch->xPoints());
     _sketch_x->update();
     _sketch->update();
 }
@@ -125,6 +130,7 @@ void CurveViewer::zoomXDefault()
     }
     _h_scroll->setMaximum(max);
     _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->setPoints(_sketch->xPoints());
     _sketch_x->update();
     _sketch->update();
 }
@@ -138,6 +144,7 @@ void CurveViewer::zoomXMinimum()
     }
     _h_scroll->setMaximum(max);
     _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->setPoints(_sketch->xPoints());
     _sketch_x->update();
     _sketch->update();
 }

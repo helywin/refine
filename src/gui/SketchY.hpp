@@ -22,8 +22,8 @@ private:
     QPainter _painter;
     int _current_index;
     int _graduate_num;
-    double _y_min;
-    double _y_rate;
+    double _y_start;
+    double _y_points;
 public:
     explicit SketchY(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
@@ -35,6 +35,10 @@ public:
             _current_index = -1;
         }
     }
+
+    inline void setYStart(double start) { _y_start = start; }
+
+    inline void setYPoints(double points) { _y_points = points; }
 
 protected:
     void initializeGL() override;
