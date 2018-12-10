@@ -67,6 +67,7 @@ public:
         int _width;   //
         int _color;    //
         int _range_out[2];      //
+        int _precision;
         QString _remark;        //
 #define RESERVED_LEN 8
         int _reserved[RESERVED_LEN];
@@ -107,6 +108,11 @@ public:
             return QString("%1~%2").arg(_range_out[0]).arg(_range_out[1]);
         }
 
+        inline QString precisionStr() const
+        {
+            return QString::number(_precision);
+        }
+
         inline QString remarkStr() const { return QString(_remark); }
 
         //val getter
@@ -123,6 +129,8 @@ public:
         inline int color() const { return _color; }
 
         inline const int *rangeOut() const { return _range_out; }
+
+        inline int precision() const { return _precision; }
 
         inline QString remark() const { return _remark; }
 
@@ -147,6 +155,8 @@ public:
             _range_out[1] = list[1].toInt();
         }
 
+        inline void setPrecisionByStr(const QString &s) { _precision = s.toInt(); }
+
         inline void setRemarkByStr(QString &s) { _remark = s; }
 
         //setter
@@ -167,6 +177,8 @@ public:
             _range_out[0] = range0;
             _range_out[1] = range1;
         }
+
+        inline void setPrecision(int precision) { _precision = precision; }
 
         inline void setRemark(const QString &s) { _remark = s; }
     };

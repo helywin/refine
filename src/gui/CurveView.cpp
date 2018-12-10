@@ -38,6 +38,7 @@ void CurveView::setup()
     setColumnWidth(CurveModel::LowByteColumn, 80);
     setColumnWidth(CurveModel::RangeInColumn, 100);
     setColumnWidth(CurveModel::RangeOutColumn, 100);
+    setColumnWidth(CurveModel::PrecisionColumn, 40);
     setColumnWidth(CurveModel::RemarkColumn, 200);
 
     setSelectionMode(QTableView::SingleSelection);

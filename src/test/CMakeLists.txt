@@ -68,7 +68,9 @@ set(UI ${PROJECT_SOURCE_DIR}/res/ui.qrc)
 set(TEXT ${PROJECT_SOURCE_DIR}/res/text.qrc)
 set(TRANS ${PROJECT_SOURCE_DIR}/res/trans.qrc)
 set(ICONS ${PROJECT_SOURCE_DIR}/res/icons.qrc)
-set(RC ${PROJECT_SOURCE_DIR}/res/refine.rc)
+set(RC ${PROJECT_SOURCE_DIR}/res/main.rc)
+set(MAIN ${PROJECT_SOURCE_DIR}/res/main.qrc)
+set(QSS ${PROJECT_SOURCE_DIR}/res/qss.qrc)
 
 
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
@@ -125,7 +127,9 @@ target_link_libraries(test_gl
 #        ${LIBGNUTLS})
 
 add_executable(refine main.cpp ${RC} ${CORE} ${GUI} ${MOD} ${DEL}
-        ${UI} ${TEXT} ${TRANS} ${ICONS})
+        ${UI} ${TEXT} ${TRANS} ${ICONS}
+        #${MAIN} ${QSS}
+        )
 target_link_libraries(refine
         ${LIBCAN}
         ${LIBOPENGL}

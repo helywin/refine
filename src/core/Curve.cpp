@@ -96,6 +96,10 @@ bool Curve::loadFromCsv(QFile &f)
                 cell.setRangeOutByStr(list[i]);
                 continue;
             }
+            if (iter == "精度") {
+                cell.setPrecisionByStr(list[i]);
+                continue;
+            }
             if (iter == "备注") {
                 cell.setRemarkByStr(list[i]);
                 continue;
@@ -246,6 +250,7 @@ Curve::Cell::Cell(int index) :
         _low_range({0, 7}),
         _range_in({0, 100}),
         _range_out({0, 100}),
+        _precision(0),
         _remark(QString("无")) {}
 
 bool Curve::Cell::check() const     //不准备用csv文件，方法也不写了
@@ -268,6 +273,7 @@ QStringList Curve::Cell::str() const
     list.append(lowByteStr());
     list.append(rangeInStr());
     list.append(rangeOutStr());
+    list.append(precisionStr());
     list.append(remarkStr());
     return list;
 }
@@ -314,6 +320,7 @@ QDataStream &operator<<(QDataStream &stream, const Curve::Cell &cell)
            << cell._range_in[1]
            << cell._range_out[0]
            << cell._range_out[1]
+           << cell._precision
            << cell._remark;
     for (const auto &res : cell._reserved) {
         stream << res;
@@ -341,6 +348,7 @@ QDataStream &operator>>(QDataStream &stream, Curve::Cell &cell)
            >> cell._range_in[1]
            >> cell._range_out[0]
            >> cell._range_out[1]
+           >> cell._precision
            >> cell._remark;
     for (auto &res : cell._reserved) {
         stream >> res;

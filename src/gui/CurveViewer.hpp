@@ -32,6 +32,8 @@ private:
     QScrollBar *_h_scroll;
     QScrollBar *_v_scroll;
     Tribe *_tribe;
+    bool _zoom_x;
+    bool _zoom_y;
 
 public:
     explicit CurveViewer(QWidget *parent, Revolve *revolve, Message *message = nullptr);
@@ -45,22 +47,19 @@ public:
     void resetVScroll(int len);
 
 public slots:
-    void zoomXPlus();
-    void zoomXMinus();
-    void zoomXDefault();
-    void zoomXMinimum();
-
-    void zoomYPlus();
-    void zoomYMinus();
-    void zoomYDefault();
-    void zoomYMinimum();
+    void zoomPlus();
+    void zoomMinus();
+    void zoomDefault();
+    void zoomMinimum();
+    inline void setXZoom(bool flag) { _zoom_x = flag; }
+    inline void setYZoom(bool flag) { _zoom_y = flag; }
 
 private:
     void setup();
 
 private slots:
     void hScrollChanged(int value);
-
+    void vScrollChanged(int value);
 };
 
 

@@ -23,7 +23,7 @@ private:
     int _current_index;
     int _graduate_num;
     double _y_start;
-    double _y_points;
+    double _y_rate;
 public:
     explicit SketchY(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
@@ -38,7 +38,7 @@ public:
 
     inline void setYStart(double start) { _y_start = start; }
 
-    inline void setYPoints(double points) { _y_points = points; }
+    inline void setYRate(double rate) { _y_rate = rate; }
 
 protected:
     void initializeGL() override;

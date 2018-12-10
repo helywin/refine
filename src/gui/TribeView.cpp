@@ -29,6 +29,7 @@ TribeView::TribeView(QAbstractItemModel *model,
     setColumnWidth(TribeModel::WidthColumn, 40);
     setColumnWidth(TribeModel::ColorColumn, 100);
     setColumnWidth(TribeModel::RangeOutColumn, 100);
+    setColumnWidth(TribeModel::PrecisionColumn, 40);
     setColumnWidth(TribeModel::RemarkColumn, 200);
 }
 

@@ -21,7 +21,7 @@ int CurveModel::rowCount(const QModelIndex &parent) const
 
 int CurveModel::columnCount(const QModelIndex &parent) const
 {
-    return ColumLast + 1;
+    return ColumLast;
 }
 
 QVariant CurveModel::data(const QModelIndex &index, int role) const
@@ -61,6 +61,8 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
                     return QVariant(cell.rangeInStr());
                 case RangeOutColumn:
                     return QVariant(cell.rangeOutStr());
+                case PrecisionColumn:
+                    return QVariant(cell.precisionStr());
                 case RemarkColumn:
                     return QVariant(cell.remarkStr());
                 default:
@@ -73,11 +75,11 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
                 case UnitColumn:
                     return QVariant(cell.unit());
                 case WidthColumn:
-                    return QVariant(cell._width);
+                    return QVariant(cell.width());
                 case ColorColumn:
-                    return QVariant(cell._color);
+                    return QVariant(cell.color());
                 case CanIdColumn:
-                    return QVariant(cell._can_id);
+                    return QVariant(cell.canId());
                 case ZeroByteColumn:
                     return QVariant(cell.zeroByteStr());
                 case HighByteColumn:
@@ -88,6 +90,8 @@ QVariant CurveModel::data(const QModelIndex &index, int role) const
                     return QVariant(cell.rangeInStr());
                 case RangeOutColumn:
                     return QVariant(cell.rangeOutStr());
+                case PrecisionColumn:
+                    return QVariant(cell.precision());
                 case RemarkColumn:
                     return QVariant(cell.remark());
                 default:
@@ -142,13 +146,13 @@ bool CurveModel::setData(const QModelIndex &index,
                     cell.setUnitByStr(value.toString());
                     return true;
                 case WidthColumn:
-                    cell._width = value.toInt();
+                    cell.setWidth(value.toInt());
                     return true;
                 case ColorColumn:
-                    cell._color = value.toUInt();
+                    cell.setColor(value.toUInt());
                     return true;
                 case CanIdColumn:
-                    cell._can_id = value.toInt();
+                    cell.setCanId(value.toInt());
                     return true;
                 case ZeroByteColumn:
                     cell.setZeroByteByStr(value.toString());
@@ -164,6 +168,9 @@ bool CurveModel::setData(const QModelIndex &index,
                     return true;
                 case RangeOutColumn:
                     cell.setRangeOutByStr(value.toString());
+                    return true;
+                case PrecisionColumn:
+                    cell.setPrecision(value.toInt());
                     return true;
                 case RemarkColumn:
                     cell.setRemarkByStr(value.toString());
@@ -231,6 +238,7 @@ QVariant CurveModel::headerData(int section,
                     case LowByteColumn:return tr("低字节");
                     case RangeInColumn:return tr("输入范围");
                     case RangeOutColumn:return tr("输出范围");
+                    case PrecisionColumn:return tr("精度");
                     case RemarkColumn:return tr("备注");
                     default:return QVariant();
                 }

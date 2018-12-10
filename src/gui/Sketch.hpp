@@ -71,12 +71,12 @@ private:
     DisplayMode _mode;
 
     //! \brief OpenGL坐标范围
-    int _x_start;
-    double _x_rate;
-    double _x_sec;
+    int _x_start;           //点的索引位置
+    double _x_rate;         //0~无穷
+    double _x_sec;          //浮点
     int _x_end;
-    double _y_start;
-    double _y_rate;
+    double _y_start;        //都是取0-1内的浮点
+    double _y_rate;         //都是取0-1内的浮点
 
     int _current_index;
     bool _smooth;
@@ -175,13 +175,13 @@ protected:
 signals:
     void scrollMove(int angle);
 
-    void zoomXPlus();
+    void zoomPlus();
 
-    void zoomXMinus();
+    void zoomMinus();
 
-    void zoomXDefault();
+    void zoomDefault();
 
-    void zoomXMinimum();
+    void zoomMinimum();
 
 };
 

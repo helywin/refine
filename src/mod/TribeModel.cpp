@@ -22,7 +22,7 @@ int TribeModel::rowCount(const QModelIndex &parent) const
 
 int TribeModel::columnCount(const QModelIndex &parent) const
 {
-    return ColumLast + 1;
+    return ColumLast;
 }
 
 QVariant TribeModel::data(const QModelIndex &index, int role) const
@@ -54,6 +54,8 @@ QVariant TribeModel::data(const QModelIndex &index, int role) const
                     return QVariant(cell.colorStr());
                 case RangeOutColumn:
                     return QVariant(cell.rangeOutStr());
+                case PrecisionColumn:
+                    return QVariant(cell.precisionStr());
                 case RemarkColumn:
                     return QVariant(cell.remarkStr());
                 default:
@@ -163,6 +165,8 @@ QVariant TribeModel::headerData(int section,
                         return tr("颜色");
                     case RangeOutColumn:
                         return tr("输出范围");
+                    case PrecisionColumn:
+                        return tr("精度");
                     case RemarkColumn:
                         return tr("备注");
                     default:

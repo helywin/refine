@@ -220,6 +220,7 @@ Tribe::Style &Tribe::Style::operator=(const Curve::Cell &cell)
     _color = cell._color;
     _range_out[0] = cell._range_out[0];
     _range_out[1] = cell._range_out[1];
+    _precision = cell._precision;
     _remark = cell._remark;
     return *this;
 }
@@ -234,7 +235,8 @@ QDataStream &operator<<(QDataStream &stream, const Tribe::Style &style)
            << style._color
            << style._range_out[0]
            << style._range_out[1]
-           << style._remark;
+           << style._precision
+            << style._remark;
     for (const auto &res : style._reserved) {
         stream << res;
     }
@@ -251,6 +253,7 @@ QDataStream &operator>>(QDataStream &stream, Tribe::Style &style)
            >> style._color
            >> style._range_out[0]
            >> style._range_out[1]
+           >> style._precision
            >> style._remark;
     for (auto &res : style._reserved) {
         stream >> res;

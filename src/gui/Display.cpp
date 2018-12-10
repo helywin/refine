@@ -29,6 +29,15 @@ void Display::setup()
     _layout->addWidget(_viewer);
     _menubar = new QMenuBar(_left_panel);
     _menu_zoom = new QMenu(tr("放大"), _menubar);
+    _menu_zoom_axis = new QActionGroup(_menu_zoom);
+    _menu_zoom_x = new QAction(tr("x轴"), _menu_zoom_axis);
+    _menu_zoom_x->setCheckable(true);
+    _menu_zoom_x->setChecked(true);
+    _menu_zoom_y = new QAction(tr("y轴"), _menu_zoom_axis);
+    _menu_zoom_y->setCheckable(true);
+    _menu_zoom_xy = new QAction(tr("x+y轴"), _menu_zoom_axis);
+    _menu_zoom_xy->setCheckable(true);
+    _menu_zoom_axis->setExclusive(true);
     _menu_zoom_group = new QActionGroup(_menu_zoom);
     _menu_zoom_plus = new QAction(tr("放大"), _menu_zoom_group);
     _menu_zoom_plus->setShortcut(QKeySequence("="));
@@ -42,6 +51,8 @@ void Display::setup()
     _menu_zoom_origin->setShortcut(QKeySequence("D"));
     _menu_zoom_minimum = new QAction(tr("最小"), _menu_zoom);
     _menu_zoom_minimum->setShortcut(QKeySequence("M"));
+    _menu_zoom->addActions(_menu_zoom_axis->actions());
+    _menu_zoom->addSeparator();
     _menu_zoom->addActions(_menu_zoom_group->actions());
     _menu_zoom->addSeparator();
     _menu_zoom->addAction(_menu_zoom_origin);
@@ -61,10 +72,23 @@ void Display::setup()
     setStretchFactor(1, 17);
     _right_tab->setVisible(false);
     _before_fullscreen = windowFlags();
-    connect(_menu_zoom_plus, &QAction::triggered, _viewer, &CurveViewer::zoomXPlus);
-    connect(_menu_zoom_minus, &QAction::triggered, _viewer, &CurveViewer::zoomXMinus);
-    connect(_menu_zoom_origin, &QAction::triggered, _viewer, &CurveViewer::zoomXDefault);
-    connect(_menu_zoom_minimum, &QAction::triggered, _viewer, &CurveViewer::zoomXMinimum);
+    connect(_menu_zoom_axis, &QActionGroup::triggered, this,
+            [=](QAction *action) {
+                if (action == _menu_zoom_x) {
+                    _viewer->setXZoom(true);
+                    _viewer->setYZoom(false);
+                } else if(action == _menu_zoom_y) {
+                    _viewer->setYZoom(true);
+                    _viewer->setXZoom(false);
+                } else {
+                    _viewer->setXZoom(true);
+                    _viewer->setYZoom(true);
+                }
+            });
+    connect(_menu_zoom_plus, &QAction::triggered, _viewer, &CurveViewer::zoomPlus);
+    connect(_menu_zoom_minus, &QAction::triggered, _viewer, &CurveViewer::zoomMinus);
+    connect(_menu_zoom_origin, &QAction::triggered, _viewer, &CurveViewer::zoomDefault);
+    connect(_menu_zoom_minimum, &QAction::triggered, _viewer, &CurveViewer::zoomMinimum);
     connect(_menu_zoom_group, &QActionGroup::triggered,
             this, &Display::changeZoomMode, Qt::DirectConnection);
 }

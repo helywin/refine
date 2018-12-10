@@ -35,6 +35,10 @@ private:
     QToolBar *_toolbar;
     QMenuBar *_menubar;
     QMenu *_menu_zoom;
+    QActionGroup *_menu_zoom_axis;
+    QAction *_menu_zoom_x;
+    QAction *_menu_zoom_y;
+    QAction *_menu_zoom_xy;
     QActionGroup *_menu_zoom_group;
     QAction *_menu_zoom_plus;
     QAction *_menu_zoom_minus;

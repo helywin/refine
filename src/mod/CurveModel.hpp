@@ -28,8 +28,9 @@ public:
         LowByteColumn,
         RangeInColumn,
         RangeOutColumn,
+        PrecisionColumn,
         RemarkColumn,
-        ColumLast = RemarkColumn
+        ColumLast
     };
 private:
     Curve *_curve;

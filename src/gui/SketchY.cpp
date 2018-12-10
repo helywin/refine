@@ -12,7 +12,8 @@ SketchY::SketchY(Message *message, Revolve *revolve, QWidget *parent) :
         _tribe(&revolve->tribe()),
         _current_index(-1),
         _graduate_num(10),
-        _y_points(1.0)
+        _y_start(0.0),
+        _y_rate(1.0)
 {
     setup();
 }
@@ -69,12 +70,7 @@ void SketchY::plotYAxis()
     _painter.setFont(font);
     _painter.setPen(style.color());
     bool is_logic;
-    if (_y_points == 1.0) {
-        is_logic = style.rangeOut()[1] - style.rangeOut()[0] < num;
-        _y_start = style.rangeOut()[0];
-    } else {
-        is_logic = false;
-    }
+    is_logic = (_y_rate == 1.0) && (style.rangeOut()[1] - style.rangeOut()[0] < num);     //无奈之举
 //    qDebug() << "SketchY::plotYAxis() is_logic: " << is_logic;
     if (is_logic) {
         num = style.rangeOut()[1] - style.rangeOut()[0];
@@ -92,9 +88,10 @@ void SketchY::plotYAxis()
     _painter.drawText(xt, top / 2 + 5, style.name());
     _painter.drawText(xt, bottom + top / 2 + 5, style.unit());
     for (int i = 0; i <= _graduate_num; ++i) {
-        double y_val = _y_start +
-                       double(style.rangeOut()[1] - style.rangeOut()[0])
-                       * _y_points / _graduate_num * i;
+        double y_val = style.rangeOut()[0]
+                + (style.rangeOut()[1] - style.rangeOut()[0]) * _y_start
+                + double(style.rangeOut()[1] - style.rangeOut()[0])
+                * (_y_rate) / _graduate_num * (_graduate_num - i);
         int y = qRound(top + (double(range) / double(_graduate_num) * i));
         _painter.drawLine(xl, y, xr, y);
         _painter.drawText(xt, y + 5, QString("%1").arg(y_val, 0, 'f', 1));

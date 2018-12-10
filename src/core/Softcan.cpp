@@ -286,6 +286,7 @@ void Softcan::toCurve(Curve &curve)
                         __max(iter.inputMin(), iter.inputMax()));
         cell.setRangeOut((int) __min(iter.yMin(), iter.yMax()),
                          (int) __max(iter.yMin(), iter.yMax()));
+        cell.setPrecision(0);
         cell.setRemark(iter.intro());
         curve.append(qMove(cell));
     }
@@ -308,6 +309,7 @@ void Softcan::toTribe(Tribe &tribe)
         style.setColor(iter.color());
         style.setRangeOut((int) __min(iter.yMin(), iter.yMax()),
                          (int) __max(iter.yMin(), iter.yMax()));
+        style.setPrecision(0);
         style.setRemark(iter.intro());
         tribe.styles().append(qMove(style));
         Tribe::Cell cell(iter.name());

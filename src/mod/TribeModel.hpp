@@ -22,8 +22,9 @@ public:
         WidthColumn,
         ColorColumn,
         RangeOutColumn,
+        PrecisionColumn,
         RemarkColumn,
-        ColumLast = RemarkColumn
+        ColumLast
     };
 
 private:

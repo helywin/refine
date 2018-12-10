@@ -20,8 +20,9 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _combine(&revolve->combine()),
         _mode(Empty),
         _x_rate(1),
-        _y_rate(1),
         _x_start(0),
+        _y_rate(1.0),
+        _y_start(0.0),
         _current_index(-1),
         _smooth(true),
         _vernier_visible(true),
@@ -227,11 +228,14 @@ void Sketch::plotCurves()
                 glLineWidth(_tribe->style(i).width());
                 glBegin(GL_LINE_STRIP);
                 for (int j = 0; j < xPoints(); ++j) {
-                    glVertex2f(float(j * _x_sec), (*_combine)[i].data()[j + _x_start]);
+                    glVertex2f(float(j * _x_sec),
+                               float(((*_combine)[i].data()[j + _x_start] -
+                                      Y_POINTS * _y_start) / _y_rate));
                 }
                 if (_x_start + xPoints() < _tribe->len()) {
                     glVertex2f(float(xPoints() * _x_sec),
-                               (*_combine)[i].data()[xPoints() + _x_start]);
+                               float(((*_combine)[i].data()[xPoints() + _x_start] -
+                                      Y_POINTS * _y_start) / _y_rate));
                 }
                 glEnd();
                 glFlush();
@@ -240,12 +244,15 @@ void Sketch::plotCurves()
                 if ((double) rect().width() / xPoints() >= 15) {
                     for (int j = 0; j < xPoints(); ++j) {
                         if (_tribe->at(i).fillType(j + _x_start) == Tribe::Fill::Data) {
-                            glVertex2f(float(j * _x_sec), (*_combine)[i].data()[j + _x_start]);
+                            glVertex2f(float(j * _x_sec),
+                                       float(((*_combine)[i].data()[j + _x_start] -
+                                              Y_POINTS * _y_start) / _y_rate));
                         }
                     }
                     if (_x_start + xPoints() < _tribe->len()) {
                         glVertex2f(float(xPoints() * _x_sec),
-                                   (*_combine)[i].data()[xPoints() + _x_start]);
+                                   float(((*_combine)[i].data()[xPoints() + _x_start] -
+                                          Y_POINTS * _y_start) / _y_rate));
                     }
                 }
                 glEnd();
@@ -407,16 +414,16 @@ void Sketch::plotVerniers()
         if (_tribe->len() <= v.pos || data_pos >= _tribe->len()) {
             return;
         }
-        QString time_value = QString("时间 %1 s").arg(data_pos / 100.0, 0, 'f', 2);
-        int max_time_width = metrics.boundingRect(time_value).width();
-        if (rect().width() - x < max_time_width + vernier_dist) {
-            painter.drawText(QRect(x - vernier_dist - max_time_width,
-                                   y2 - font_size - row_height,
-                                   max_time_width, row_height), time_value,
-                             QTextOption(Qt::AlignRight | Qt::AlignHCenter));
-        } else {
-            painter.drawText(x + vernier_dist, y2 - font_size, time_value);
-        }
+//        QString time_value = QString("时间 %1 s").arg(data_pos / 100.0, 0, 'f', 2);
+//        int max_time_width = metrics.boundingRect(time_value).width();
+//        if (rect().width() - x < max_time_width + vernier_dist) {
+//            painter.drawText(QRect(x - vernier_dist - max_time_width,
+//                                   y2 - font_size - row_height,
+//                                   max_time_width, row_height), time_value,
+//                             QTextOption(Qt::AlignRight | Qt::AlignHCenter));
+//        } else {
+//            painter.drawText(x + vernier_dist, y2 - font_size, time_value);
+//        }
         int max_name_width = 0;
         for (int i = 0; i < _tribe->size(); ++i) {
             if (!_tribe->style(i).display()) {
@@ -427,7 +434,7 @@ void Sketch::plotVerniers()
                 max_name_width = w;
             }
         }
-        int max_value_width = 40;
+        int min_value_width = 40;
         int max_cnt = rect().height() / (font_size + vernier_dist);
         int cnt = 0;
         for (int i = 0; i < _tribe->size(); ++i) {
@@ -446,12 +453,15 @@ void Sketch::plotVerniers()
             painter.setFont(font);
             if (i == _current_index) {
 //            float y0 = genY((*_tribe)[i][data_pos], _tribe->style(i));
-                float y0 = (*_combine)[i].data()[data_pos];
+//                float y0 = (*_combine)[i].data()[data_pos];
+                auto y0 = float(((*_combine)[i].data()[data_pos] -
+                                 Y_POINTS * _y_start) / _y_rate);
                 int d = _tribe->style(i).width() * 2 + 4;
                 painter.drawEllipse(x - d / 2, yGlToQt(y0) - d / 2, d, d);
             }
             y2 += row_height;
-            QString value = QString("%1").arg((*_tribe)[i][data_pos], 0, 'f', 0);
+            QString value = QString("%1").arg((*_tribe)[i][data_pos], 0, 'f',
+                                              _tribe->style(i).precision());
             QString name = _tribe->style(i).name();
             QString suffix;
             switch ((*_tribe)[i].fillType(data_pos)) {
@@ -464,6 +474,7 @@ void Sketch::plotVerniers()
                 default:
                     break;
             }
+            int max_value_width = min_value_width + _tribe->style(i).precision() * font_size;
             if (rect().width() - x > max_name_width + max_value_width + 2 * vernier_dist) {
                 painter.drawText(x + vernier_dist, y2, value);
                 painter.drawText(x + vernier_dist + max_value_width, y2, name + suffix);
@@ -478,13 +489,13 @@ void Sketch::plotVerniers()
                 );
             } else {
                 painter.drawText(
-                        QRect(x - vernier_dist - max_value_width, y2 - row_height, max_value_width,
+                        QRect(x - vernier_dist - min_value_width, y2 - row_height, min_value_width,
                               row_height),
                         value,
                         QTextOption(Qt::AlignRight | Qt::AlignHCenter)
                 );
                 painter.drawText(
-                        QRect(x - 2 * vernier_dist - max_name_width - max_value_width - 10,
+                        QRect(x - 2 * vernier_dist - max_name_width - min_value_width - 10,
                               y2 - row_height, max_name_width + 10, row_height),
                         suffix + name,
                         QTextOption(Qt::AlignRight | Qt::AlignHCenter)
@@ -559,16 +570,16 @@ void Sketch::keyPressEvent(QKeyEvent *event)
         event->setAccepted(false);
     }
     if (event->key() == Qt::Key_Equal) {
-        emit zoomXPlus();
+        emit zoomPlus();
     }
     if (event->key() == Qt::Key_Minus) {
-        emit zoomXMinus();
+        emit zoomMinus();
     }
     if (event->key() == Qt::Key_D) {
-        emit zoomXDefault();
+        emit zoomDefault();
     }
     if (event->key() == Qt::Key_M) {
-        emit zoomXMinimum();
+        emit zoomMinimum();
     }
     emitMessage(Debug, QString("按下 %1").arg(event->key()));
 }
