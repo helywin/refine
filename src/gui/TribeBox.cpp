@@ -55,6 +55,16 @@ void TribeBox::setup()
     _layout_content->addWidget(_view);
     _complete_model = new CompleteModel(_tribe, this);
     _filter->setCompleteModel(_complete_model);
+    _width = new SpinInput(5, 1, this);
+    _precision = new SpinInput(5, 0, this);
+    _unit = new ComboInput(true,
+                           QStringList({"NULL", "mA", "A", "mV", "V", "rpm", "mm", "cm", "m",
+                                        "m/s", "m/s²", "On/Off", "Status", "kph", "Hz", "KHz",
+                                        "bar", "%", "rad/s", "Nm", "N", "℃"}),
+                           this);
+    _view->setItemDelegateForColumn(TribeModel::UnitColumn, _unit);
+    _view->setItemDelegateForColumn(TribeModel::WidthColumn, _width);
+    _view->setItemDelegateForColumn(TribeModel::PrecisionColumn, _precision);
     connect(_selection, &QItemSelectionModel::selectionChanged,
             this, &TribeBox::selectionChanged);
     connect(_check, &QCheckBox::stateChanged,
@@ -124,8 +134,8 @@ void TribeBox::setDisplayItem(int state)
 void TribeBox::textFilterChanged()
 {
     QRegExp reg_exp(_filter->text(),
-            _filter->caseSensitivity(),
-            _filter->patternSyntax());
+                    _filter->caseSensitivity(),
+                    _filter->patternSyntax());
     _proxy->setFilterRegExp(reg_exp);
     _proxy->setSelection(_filter->selection());
     _filter->setFound(_proxy->rowCount() != 0 && _model->rowCount() != 0);

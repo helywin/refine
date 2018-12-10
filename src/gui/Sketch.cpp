@@ -17,7 +17,6 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         QOpenGLWidget(parent),
         Message(message),
         _tribe(&revolve->tribe()),
-        _combine(&revolve->combine()),
         _mode(Empty),
         _x_rate(1),
         _x_start(0),
@@ -219,23 +218,22 @@ void Sketch::plotCurves()
 #else
         {
             for (int i = 0; i < _tribe->size(); ++i) {
-                if (!_tribe->style(i).display()) {
+                const Tribe::Style &st = _tribe->style(i);
+                if (!st.display()) {
                     continue;
                 }
-                QColor color = _tribe->style(i).color();
+                QColor color = st.color();
 //                qDebug() << "Sketch::plotCurves() color: " << color;
                 glColor3d(color.redF(), color.greenF(), color.blueF());
-                glLineWidth(_tribe->style(i).width());
+                glLineWidth(st.width());
                 glBegin(GL_LINE_STRIP);
                 for (int j = 0; j < xPoints(); ++j) {
                     glVertex2f(float(j * _x_sec),
-                               float(((*_combine)[i].data()[j + _x_start] -
-                                      Y_POINTS * _y_start) / _y_rate));
+                               yToGl((*_tribe)[i].data()[j + _x_start], st));
                 }
                 if (_x_start + xPoints() < _tribe->len()) {
                     glVertex2f(float(xPoints() * _x_sec),
-                               float(((*_combine)[i].data()[xPoints() + _x_start] -
-                                      Y_POINTS * _y_start) / _y_rate));
+                               yToGl((*_tribe)[i].data()[_x_start + xPoints()], st));
                 }
                 glEnd();
                 glFlush();
@@ -245,14 +243,12 @@ void Sketch::plotCurves()
                     for (int j = 0; j < xPoints(); ++j) {
                         if (_tribe->at(i).fillType(j + _x_start) == Tribe::Fill::Data) {
                             glVertex2f(float(j * _x_sec),
-                                       float(((*_combine)[i].data()[j + _x_start] -
-                                              Y_POINTS * _y_start) / _y_rate));
+                                       yToGl((*_tribe)[i].data()[j + _x_start], st));
                         }
                     }
                     if (_x_start + xPoints() < _tribe->len()) {
                         glVertex2f(float(xPoints() * _x_sec),
-                                   float(((*_combine)[i].data()[xPoints() + _x_start] -
-                                          Y_POINTS * _y_start) / _y_rate));
+                                   yToGl((*_tribe)[i].data()[_x_start + xPoints()], st));
                     }
                 }
                 glEnd();
@@ -438,26 +434,25 @@ void Sketch::plotVerniers()
         int max_cnt = rect().height() / (font_size + vernier_dist);
         int cnt = 0;
         for (int i = 0; i < _tribe->size(); ++i) {
+            const Tribe::Style &st = _tribe->style(i);
             if (!_tribe->style(i).display()) {
                 continue;
             }
             if (cnt > max_cnt) {
                 break;  //多画也是看不到，反而增加重绘时间
             }
-            color = _tribe->style(i).color();
+            const Tribe::Cell &tr  = (*_tribe).cells()[i];
+            color = st.color();
             pen.setColor(color);
-            pen.setWidth(_tribe->style(i).width());
+            pen.setWidth(st.width());
             painter.setPen(pen);
             font.setBold(i == _current_index);
             font.setUnderline(i == _current_index);
             painter.setFont(font);
             if (i == _current_index) {
-//            float y0 = genY((*_tribe)[i][data_pos], _tribe->style(i));
-//                float y0 = (*_combine)[i].data()[data_pos];
-                auto y0 = float(((*_combine)[i].data()[data_pos] -
-                                 Y_POINTS * _y_start) / _y_rate);
-                int d = _tribe->style(i).width() * 2 + 4;
-                painter.drawEllipse(x - d / 2, yGlToQt(y0) - d / 2, d, d);
+                int d = st.width() * 2 + 4;
+                painter.drawEllipse(x - d / 2,
+                        yGlToQt(yToGl(tr.data()[data_pos], st)) - d / 2, d, d);
             }
             y2 += row_height;
             QString value = QString("%1").arg((*_tribe)[i][data_pos], 0, 'f',

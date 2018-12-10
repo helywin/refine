@@ -16,6 +16,9 @@
 #include "TribeSortModel.hpp"
 #include "Message.hpp"
 #include "CompleteModel.hpp"
+#include "SpecInput.hpp"
+#include "SpinInput.hpp"
+#include "ComboInput.hpp"
 
 class CurvePanel;
 class TribeView;
@@ -45,6 +48,9 @@ private:
     Sketch *_sketch;
     SketchY *_sketch_y;
     CompleteModel *_complete_model;
+    SpinInput *_width;
+    SpinInput *_precision;
+    ComboInput *_unit;
 
 public:
     explicit TribeBox(Tribe *tribe, Message *message = nullptr,

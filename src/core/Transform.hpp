@@ -55,7 +55,6 @@ private:
     Curve *_curve;
     Buffer *_buffer;
     Tribe *_tribe;
-    Combine *_combine;
     File _file;
     unsigned long _msec;
     Status _status;
@@ -64,7 +63,7 @@ private:
 public:
     explicit Transform(Message *message = nullptr);
 
-    void setParams(Curve *curve, Buffer *buffer, Tribe *tribe, Combine *combine,
+    void setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
                    unsigned long msec = 10);
 
     void begin();

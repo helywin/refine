@@ -10,7 +10,6 @@
 #include "Curve.hpp"
 #include "Tribe.hpp"
 #include "Sketch.hpp"
-#include "Combine.hpp"
 
 Transform::Transform(Message *message) :
         Message(message),
@@ -21,13 +20,12 @@ Transform::Transform(Message *message) :
         _status(Stop),
         _cmd(None) {}
 
-void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe, Combine *combine,
+void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
                           unsigned long msec)
 {
     _curve = curve;
     _buffer = buffer;
     _tribe = tribe;
-    _combine = combine;
     _msec = msec;
     _tribe->setMsec((int) msec);
 }
@@ -137,10 +135,6 @@ void Transform::run()
                     tr.push(Tribe::FakeByPrevious, tr.data().constLast());
                 }
             }
-            auto y = (float) ((tr.data().last() - cur.rangeOut()[0]) *
-                              (Sketch::Y_POINTS) / (cur.rangeOut()[1] - cur.rangeOut()[0]) +
-                              Sketch::Y_BOTTOM);
-            _combine->cells()[i].data().append(y);
 #define RESIZE_FREQ 1
             static int reset = 0;
             reset += 1;

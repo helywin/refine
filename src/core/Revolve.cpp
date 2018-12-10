@@ -64,7 +64,7 @@ bool Revolve::begin(unsigned long msec, int config, int time)
         _tribe.genFromCurve(_curve);
         _tribe_model->genData(&_tribe);
         //! @deprecated genCurveDataFile();
-        _transform.setParams(&_curve, &_buffer, &_tribe, &_combine, _msec);
+        _transform.setParams(&_curve, &_buffer, &_tribe, _msec);
         connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
         _collect.begin();
         _transform.begin();
@@ -410,7 +410,6 @@ bool Revolve::inputCurveData(const QString &name)
     if (!file.loadCurveRecord(f, _tribe)) {
         return false;
     }
-    _combine.genFromTribe(_tribe);
     _sketch->init();
     _tribe_model->genData(&_tribe);
     emit resetHScroll(_tribe.len(), true);
@@ -425,7 +424,6 @@ bool Revolve::importSoftcanCurveData(const QString &name)
         return false;
     }
     _softcan.toTribe(_tribe);
-    _combine.genFromTribe(_tribe);
     _sketch->init();
     _sketch->update();
     _tribe_model->genData(&_tribe);

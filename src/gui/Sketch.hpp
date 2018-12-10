@@ -12,7 +12,6 @@
 #include <QtGui/QOpenGLBuffer>
 #include <QtWidgets/QScrollBar>
 #include "Tribe.hpp"
-#include "Combine.hpp"
 #include "Curve.hpp"
 #include "Message.hpp"
 
@@ -67,7 +66,6 @@ public:
 
 private:
     Tribe *_tribe;
-    Combine *_combine;
     DisplayMode _mode;
 
     //! \brief OpenGL坐标范围
@@ -129,6 +127,14 @@ public:
         if (_tribe->len() < _x_end) {
             _x_end = _x_start + _tribe->len();
         }
+    }
+
+    inline float yToGl(float y, const Tribe::Style &style)
+    {
+        auto y0 = static_cast<float>
+                ((y - style.rangeOut()[0]) * (Sketch::Y_POINTS) /
+                 (style.rangeOut()[1] - style.rangeOut()[0]) + 0);
+        return float(y0 - Y_POINTS * _y_start / _y_rate);
     }
 
 protected:

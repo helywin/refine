@@ -61,6 +61,25 @@ QVariant TribeModel::data(const QModelIndex &index, int role) const
                 default:
                     return QVariant();
             }
+        case Qt::EditRole:
+            switch (column) {
+                case NameColumn:
+                    return QVariant(cell.name());
+                case UnitColumn:
+                    return QVariant(cell.unit());
+                case WidthColumn:
+                    return QVariant(cell.width());
+                case ColorColumn:
+                    return QVariant(cell.colorStr());
+                case RangeOutColumn:
+                    return QVariant(cell.rangeOutStr());
+                case PrecisionColumn:
+                    return QVariant(cell.precision());
+                case RemarkColumn:
+                    return QVariant(cell.remarkStr());
+                default:
+                    return QVariant();
+            }
         case Qt::CheckStateRole:
         case Qt::UserRole:
             if (column == IndexColumn) {
@@ -95,6 +114,7 @@ bool TribeModel::setData(const QModelIndex &index,
         qCritical("CurveModel::setData 数组越界");
     }
     Tribe::Style &cell = _tribe->_styles[row];
+    QString s;
     switch (role) {
         case Qt::DisplayRole:
             return false;
@@ -102,6 +122,35 @@ bool TribeModel::setData(const QModelIndex &index,
             if (column == IndexColumn) {
                 cell._display = value.toBool();
                 dataChanged(index, index);
+            }
+            tribeChanged();
+            return true;
+        case Qt::EditRole:
+            switch (column) {
+                case NameColumn:
+                    cell.setName(value.toString());
+                    break;
+                case UnitColumn:
+                    cell.setUnit(value.toString());
+                    break;
+                case WidthColumn:
+                    cell.setWidth(value.toInt());
+                    break;
+                case ColorColumn:
+//                    QVariant(cell.colorStr());
+                    break;
+                case RangeOutColumn:
+                    s = value.toString();
+                    cell.setRangeOutByStr(s);
+                    break;
+                case PrecisionColumn:
+                    cell.setPrecision(value.toInt());
+                    break;
+                case RemarkColumn:
+                    cell.setRemark(value.toString());
+                    break;
+                default:
+                    break;
             }
             tribeChanged();
             return true;
@@ -115,19 +164,20 @@ Qt::ItemFlags TribeModel::flags(const QModelIndex &index) const
     if (!_tribe || !index.isValid()) {
         return QAbstractTableModel::flags(index);
     }
-    Qt::ItemFlags flags = Qt::ItemIsSelectable |
-                          Qt::ItemIsEnabled;
-//                          |
-//                          Qt::ItemIsEditable;
+    Qt::ItemFlags flags = Qt::ItemIsSelectable
+                          | Qt::ItemIsEnabled;
     switch (index.column()) {
         case IndexColumn:
             return flags | Qt::ItemIsUserCheckable;
         case NameColumn:
         case UnitColumn:
         case WidthColumn:
-        case ColorColumn:
         case RangeOutColumn:
+        case PrecisionColumn:
         case RemarkColumn:
+            flags |= Qt::ItemIsEditable;
+            return flags;
+        case ColorColumn:
             return flags;
         default:
             return QAbstractTableModel::flags(index);

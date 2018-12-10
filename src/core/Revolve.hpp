@@ -32,7 +32,6 @@
 #include "TribeModel.hpp"
 #include "Message.hpp"
 #include "FileManage.hpp"
-#include "Combine.hpp"
 
 /*!
  * @brief 底层调度类
@@ -69,7 +68,6 @@ private:
     Collect _collect;
     Transmit _transmit;
     Tribe _tribe;
-    Combine _combine;
     Transform _transform;
     Record _record;
     Softcan _softcan;           //! \brief softcan配置转换工具
@@ -132,8 +130,6 @@ public:
     inline Can &can() { return _can; }
 
     inline Tribe &tribe() { return _tribe; }
-
-    inline Combine &combine() { return _combine; }
 
     inline Curve &curve() { return _curve; }
 
