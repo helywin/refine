@@ -209,7 +209,12 @@ QDataStream &operator>>(QDataStream &stream, Softcan::Cell &cell)
     stream >> cell._third_bit;
     stream >> cell._input_max;
     stream >> cell._input_min;
-    stream >> cell._color;
+    unsigned int color;
+    stream >> color;
+    color = ((color & 0x0000ffu) << 16u)
+            + (color & 0x00ff00u)
+            + ((color & 0xff0000u) >> 16u);  //COLORREF转RGB
+    cell._color = color;
     stream >> cell._width;
     stream >> cell._visible;
     stream >> cell._sample_mode;
@@ -308,14 +313,14 @@ void Softcan::toTribe(Tribe &tribe)
         style.setWidth(iter.width());
         style.setColor(iter.color());
         style.setRangeOut((int) __min(iter.yMin(), iter.yMax()),
-                         (int) __max(iter.yMin(), iter.yMax()));
+                          (int) __max(iter.yMin(), iter.yMax()));
         style.setPrecision(0);
         style.setRemark(iter.intro());
         tribe.styles().append(qMove(style));
         Tribe::Cell cell(iter.name());
 //        qDebug() << "Softcan::toTribe y.size() " << iter.y().size();
         for (const auto &v : iter.y()) {
-            cell.push(Tribe::Data, (float)v);
+            cell.push(Tribe::Data, (float) v);
         }
         tribe.setLen();
         tribe.cells().append(qMove(cell));

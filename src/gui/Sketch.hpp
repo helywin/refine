@@ -39,6 +39,13 @@ public:
         Empty
     };
 
+    enum Movement
+    {
+        MoveNone,
+        MoveVernier,
+        MoveZoomRect
+    };
+
     /*!
      * @brief 区间数据
      */
@@ -85,11 +92,13 @@ private:
     int _y_graduate_num;
     int _x_graduate_num;
 
+    Movement _movement;
     bool _zoom_x;
     bool _zoom_y;
 
     QRect _zoom_rect;
-    bool _zoom_by_rect;
+    bool _plot_zoom_rect;
+    bool _zoom_finish;
 
 #ifdef VERTEX
     GLuint *_curve_buffers;
@@ -182,6 +191,8 @@ private:
     double yQtToGl(int y);
 
     void drawFocusSign();
+
+    bool isMouseOnDragItem(int x);
 
 protected:
     void wheelEvent(QWheelEvent *event) override;

@@ -23,17 +23,19 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _y_rate(1.0),
         _y_start(0.0),
         _current_index(-1),
-        _smooth(true),
+        _smooth(false),
         _vernier_visible(true),
         _vernier_fix(false),
-        _zoom_by_rect(false),
+        _plot_zoom_rect(false),
+        _zoom_finish(true),
         _zoom_x(true),
-        _zoom_y(false)
+        _zoom_y(false),
+        _movement(MoveNone)
 {
     setMinimumWidth(200);
     setFocusPolicy(Qt::ClickFocus);
     _verniers.append(Vernier({0, 0, 0}));
-//    setMouseTracking(true);
+    setMouseTracking(true);
 }
 
 void Sketch::initializeGL()
@@ -187,7 +189,7 @@ void Sketch::plotCurves()
     if (_smooth) {
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA);
         glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
     } else {
         glDisable(GL_LINE_SMOOTH);
@@ -627,44 +629,53 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
             event->setAccepted(false);
             return;
         }
-        int x0 = event->pos().x();
+        if (_movement == MoveVernier) {
+            int x0 = event->pos().x();
 //        emitMessage(Debug, QString("鼠标位置 %1").arg(x0));
-        double x, y;
-        pointQtToGl(x0, 0, x, y);
-        if (x < 0) {
-            x = 0;
+            double x = xQtToGl(x0);
+            if (x < 0) {
+                x = 0;
+            }
+            if (x > X_POINTS) {
+                x = X_POINTS;
+            }
+            _verniers[0].pos = x;
+            _verniers[0].start = _x_start;
+            update();
+        } else if (_movement == MoveZoomRect) {
+            QPoint point = event->pos();
+            if (point.x() < 0) {
+                point.setX(0);
+            }
+            if (point.x() >= rect().width()) {
+                point.setX(rect().width());
+            }
+            if (point.y() < 0) {
+                point.setY(0);
+            }
+            if (point.y() > rect().height()) {
+                point.setY(rect().height());
+            }
+            if (!_zoom_x && !_zoom_y) {
+                return;
+            }
+            if (_zoom_x && !_zoom_y) {
+                point.setY(rect().height());
+            }
+            if (!_zoom_x && _zoom_y) {
+                point.setX(rect().width());
+            }
+            _zoom_rect.setBottomRight(point);
+            update();
         }
-        if (x > X_POINTS) {
-            x = X_POINTS;
+    } else if (event->buttons() & Qt::RightButton) {}
+    else {
+        qDebug() << "move";
+        if (isMouseOnDragItem(event->pos().x())) {
+            setCursor(Qt::SizeHorCursor);
+        } else {
+            setCursor(Qt::ArrowCursor);
         }
-        _verniers[0].pos = x;
-        _verniers[0].start = _x_start;
-        update();
-    } else if (event->buttons() & Qt::RightButton) {
-        QPoint point = event->pos();
-        if (point.x() < 0) {
-            point.setX(0);
-        }
-        if (point.x() >= rect().width()) {
-            point.setX(rect().width());
-        }
-        if (point.y() < 0) {
-            point.setY(0);
-        }
-        if (point.y() > rect().height()) {
-            point.setY(rect().height());
-        }
-        if (!_zoom_x && !_zoom_y) {
-            return;
-        }
-        if (_zoom_x && !_zoom_y) {
-            point.setY(rect().height());
-        }
-        if (!_zoom_x && _zoom_y) {
-            point.setX(rect().width());
-        }
-        _zoom_rect.setBottomRight(point);
-        update();
     }
 }
 
@@ -694,45 +705,89 @@ double Sketch::yQtToGl(int y)
     return Y_BOTTOM + (double) (rect().height() - y) / rect().height() * h;
 }
 
+#define MOUSE_DRAG_DISTANCE 5
+
 void Sketch::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::RightButton) {
-        QPoint point = event->pos();
-        if (!_zoom_x && !_zoom_y) {
-            return;
+    grabMouse();
+    if (event->button() == Qt::LeftButton) {
+        int vpos = xGlToQt(_verniers[0].pos);
+        if (qAbs(vpos - event->pos().x()) < MOUSE_DRAG_DISTANCE) {
+            setCursor(Qt::SizeHorCursor);
+            _movement = MoveVernier;
+        } else {
+            if (!_zoom_finish) {
+                return;
+            }
+            QPoint point = event->pos();
+            if (!_zoom_x && !_zoom_y) {
+                return;
+            }
+            _plot_zoom_rect = true;
+            if (_zoom_x && !_zoom_y) {
+                point.setY(0);
+            }
+            if (!_zoom_x && _zoom_y) {
+                point.setX(0);
+            }
+            _plot_zoom_rect = true;
+            _zoom_finish = false;
+            _zoom_rect.setTopLeft(point);
+            _zoom_rect.setBottomRight(point);
+            setCursor(Qt::CrossCursor);
+            _movement = MoveZoomRect;
         }
-        _zoom_by_rect = true;
-        if (_zoom_x && !_zoom_y) {
-            point.setY(0);
-        }
-        if (!_zoom_x && _zoom_y) {
-            point.setX(0);
-        }
-        _zoom_rect.setTopLeft(point);
-        _zoom_rect.setBottomRight(point);
     }
 }
 
+
+#define MINIMUM_ZOOM_RECT_WIDTH 20
+#define MINIMUM_ZOOM_RECT_HEIGHT 20
+
 void Sketch::mouseReleaseEvent(QMouseEvent *event)
 {
-//    if (event->button() == Qt::RightButton) {
-//        _right_mouse_release_pos = event->x();
-//        int start_pos = static_cast<int>((__min(_right_mouse_press_pos , _right_mouse_release_pos)  -
-//                _left_axis_width) * (X_RIGHT));
-//        _x_rate = (double) rect().width() / (abs(_right_mouse_press_pos -
-//                                                 _right_mouse_release_pos));
-//
-//    }
-}
+    emitMessage(Debug, QString("x:%1, y:%2").arg(event->pos().x()).arg(event->pos().y()));
+    emitMessage(Debug, QString("rect::L:%1 R:%2 T:%3 B:%4")
+            .arg(_zoom_rect.left())
+            .arg(_zoom_rect.right())
+            .arg(_zoom_rect.top())
+            .arg(_zoom_rect.bottom())
+    );
+//    qDebug() << event->buttons();     //松开鼠标事件buttons只会返回还按着的
+    if (!(event->buttons() & Qt::LeftButton)) { //松开鼠标左键
+        if (_movement == MoveVernier) {}
+        else if (_movement == MoveZoomRect) {
+            if (!_zoom_finish) {
 
-#define MINIMUM_ZOOM_RECT_WIDTH 50
-#define MINIMUM_ZOOM_RECT_HEIGHT 50
+                auto x_rate = (double) (qAbs(_zoom_rect.width())) / rect().width();
+                auto x_start =
+                        (double) qMin(_zoom_rect.left(), _zoom_rect.right()) / rect().width();
+                auto y_rate = (double) (qAbs(_zoom_rect.height())) / rect().height();
+                auto y_start = (rect().height()
+                                - (double) qMax(_zoom_rect.top(), _zoom_rect.bottom()))
+                               / rect().height();
+                if (qAbs(_zoom_rect.width()) >= MINIMUM_ZOOM_RECT_WIDTH
+                    && qAbs(_zoom_rect.height()) >= MINIMUM_ZOOM_RECT_HEIGHT) {
+                    emit zoom(x_rate, x_start, y_rate, y_start);
+                } else {
+                    emitMessage(Warning, tr("放大选区过小"));
+                }
+                _zoom_finish = true;
+                _plot_zoom_rect = false;
+                update();
+            }
+            setCursor(Qt::ArrowCursor);
+        }
+    }
+    _movement = MoveNone;
+    releaseMouse();
+}
 
 void Sketch::plotZoomRect()
 {
     QColor color_pen(0xffffff);
     QColor color_brush(0xff, 0xff, 0xff, 100);
-    if (!_zoom_by_rect) {
+    if (!_plot_zoom_rect) {
         return;
     }
     if (qAbs(_zoom_rect.width()) < MINIMUM_ZOOM_RECT_WIDTH
@@ -765,29 +820,19 @@ void Sketch::plotZoomRect()
 
 void Sketch::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton) {
-        if (_zoom_by_rect) {
-            if (_zoom_rect.contains(event->pos())) {
-                auto x_rate = (double) (qAbs(_zoom_rect.width())) / rect().width();
-                auto x_start =
-                        (double) qMin(_zoom_rect.left(), _zoom_rect.right()) / rect().width();
-                auto y_rate = (double) (qAbs(_zoom_rect.height())) / rect().height();
-                auto y_start = (rect().height()
-                                - (double) qMax(_zoom_rect.top(), _zoom_rect.bottom()))
-                               / rect().height();
-                if (qAbs(_zoom_rect.width()) >= MINIMUM_ZOOM_RECT_WIDTH
-                    && qAbs(_zoom_rect.height()) >= MINIMUM_ZOOM_RECT_HEIGHT) {
-                    emit zoom(x_rate, x_start, y_rate, y_start);
-                } else {
-                    emitMessage(Warning, tr("放大选区过小"));
-                }
-            } else {
-                emitMessage(Debug, tr("取消放大"));
-            }
-            _zoom_by_rect = false;
-            update();
+
+}
+
+bool Sketch::isMouseOnDragItem(int x)
+{
+    for (const auto &ver : _verniers) {
+        if (qAbs(xGlToQt(ver.pos) - x) < MOUSE_DRAG_DISTANCE) {
+            return true;
         }
     }
+//    for (const auto &pat : _patterns) {
+//    }
+    return false;
 }
 
 
