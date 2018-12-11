@@ -85,6 +85,12 @@ private:
     int _y_graduate_num;
     int _x_graduate_num;
 
+    bool _zoom_x;
+    bool _zoom_y;
+
+    QRect _zoom_rect;
+    bool _zoom_by_rect;
+
 #ifdef VERTEX
     GLuint *_curve_buffers;
     GLuint *_vaos;
@@ -132,10 +138,14 @@ public:
     inline float yToGl(float y, const Tribe::Style &style)
     {
         auto y0 = static_cast<float>
-                ((y - style.rangeOut()[0]) * (Sketch::Y_POINTS) /
-                 (style.rangeOut()[1] - style.rangeOut()[0]) + 0);
-        return float(y0 - Y_POINTS * _y_start / _y_rate);
+        ((y - style.rangeOut()[0]) * (Sketch::Y_POINTS) /
+         (style.rangeOut()[1] - style.rangeOut()[0]) + 0);
+        return float((y0 - Y_POINTS * _y_start) / _y_rate);
     }
+
+    inline void setXZoom(bool flag) { _zoom_x = flag; }
+
+    inline void setYZoom(bool flag) { _zoom_y = flag; }
 
 protected:
     void initializeGL() override;
@@ -152,6 +162,8 @@ private:
     void plotPatterns();
 
     void plotCurves();
+
+    void plotZoomRect();
 
     void drawGlString(double x0, double y0, const QString &str,
                       const QColor &color, const QFont &font);
@@ -177,7 +189,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 signals:
     void scrollMove(int angle);
 
@@ -188,6 +200,8 @@ signals:
     void zoomDefault();
 
     void zoomMinimum();
+
+    void zoom(double x_rate, double x_start, double y_rate, double y_start);
 
 };
 

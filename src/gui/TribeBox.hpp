@@ -2,8 +2,8 @@
 // Created by jiang.wenqiang on 2018/10/23.
 //
 
-#ifndef REFINE_CURVEBOX_HPP
-#define REFINE_CURVEBOX_HPP
+#ifndef REFINE_TRIBEBOX_HPP
+#define REFINE_TRIBEBOX_HPP
 
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QHeaderView>
@@ -80,4 +80,4 @@ private slots:
 };
 
 
-#endif //REFINE_CURVEBOX_HPP
+#endif //REFINE_TRIBEBOX_HPP

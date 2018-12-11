@@ -51,8 +51,9 @@ public slots:
     void zoomMinus();
     void zoomDefault();
     void zoomMinimum();
-    inline void setXZoom(bool flag) { _zoom_x = flag; }
-    inline void setYZoom(bool flag) { _zoom_y = flag; }
+    void setXZoom(bool flag);
+    void setYZoom(bool flag);
+    void zoom(double x_rate, double x_start, double y_rate, double y_start);
 
 private:
     void setup();

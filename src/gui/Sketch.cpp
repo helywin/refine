@@ -25,7 +25,10 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _current_index(-1),
         _smooth(true),
         _vernier_visible(true),
-        _vernier_fix(false)
+        _vernier_fix(false),
+        _zoom_by_rect(false),
+        _zoom_x(true),
+        _zoom_y(false)
 {
     setMinimumWidth(200);
     setFocusPolicy(Qt::ClickFocus);
@@ -64,6 +67,7 @@ void Sketch::paintGL()
     plotXGrid();
     plotCurves();
     plotVerniers();
+    plotZoomRect();
 //    drawFocusSign();
     glFlush();
 }
@@ -441,7 +445,7 @@ void Sketch::plotVerniers()
             if (cnt > max_cnt) {
                 break;  //多画也是看不到，反而增加重绘时间
             }
-            const Tribe::Cell &tr  = (*_tribe).cells()[i];
+            const Tribe::Cell &tr = (*_tribe).cells()[i];
             color = st.color();
             pen.setColor(color);
             pen.setWidth(st.width());
@@ -451,8 +455,29 @@ void Sketch::plotVerniers()
             painter.setFont(font);
             if (i == _current_index) {
                 int d = st.width() * 2 + 4;
-                painter.drawEllipse(x - d / 2,
-                        yGlToQt(yToGl(tr.data()[data_pos], st)) - d / 2, d, d);
+                int y = yGlToQt(yToGl(tr.data()[data_pos], st));
+                if (y < 0) {
+                    pen.setWidth(0);
+                    painter.setPen(pen);
+                    QPolygon polygon;
+                    polygon.append(QPoint(x, 0));
+                    polygon.append(QPoint(x + 4, 8));
+                    polygon.append(QPoint(x, 6));
+                    polygon.append(QPoint(x - 4, 8));
+                    painter.drawPolygon(polygon);
+                } else if (y > rect().height()) {
+                    pen.setWidth(1);
+                    painter.setPen(pen);
+                    QPolygon polygon;
+                    polygon.append(QPoint(x, rect().height()));
+                    polygon.append(QPoint(x + 4, rect().height() - 8));
+                    polygon.append(QPoint(x, rect().height() - 6));
+                    polygon.append(QPoint(x - 4, rect().height() - 8));
+                    painter.drawPolygon(polygon);
+                } else {
+                    painter.drawEllipse(x - d / 2,
+                                        y - d / 2, d, d);
+                }
             }
             y2 += row_height;
             QString value = QString("%1").arg((*_tribe)[i][data_pos], 0, 'f',
@@ -615,6 +640,31 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
         _verniers[0].pos = x;
         _verniers[0].start = _x_start;
         update();
+    } else if (event->buttons() & Qt::RightButton) {
+        QPoint point = event->pos();
+        if (point.x() < 0) {
+            point.setX(0);
+        }
+        if (point.x() >= rect().width()) {
+            point.setX(rect().width());
+        }
+        if (point.y() < 0) {
+            point.setY(0);
+        }
+        if (point.y() > rect().height()) {
+            point.setY(rect().height());
+        }
+        if (!_zoom_x && !_zoom_y) {
+            return;
+        }
+        if (_zoom_x && !_zoom_y) {
+            point.setY(rect().height());
+        }
+        if (!_zoom_x && _zoom_y) {
+            point.setX(rect().width());
+        }
+        _zoom_rect.setBottomRight(point);
+        update();
     }
 }
 
@@ -646,9 +696,21 @@ double Sketch::yQtToGl(int y)
 
 void Sketch::mousePressEvent(QMouseEvent *event)
 {
-//    if (event->button() == Qt::RightButton) {
-//        _right_mouse_press_pos = event->x();
-//    }
+    if (event->button() == Qt::RightButton) {
+        QPoint point = event->pos();
+        if (!_zoom_x && !_zoom_y) {
+            return;
+        }
+        _zoom_by_rect = true;
+        if (_zoom_x && !_zoom_y) {
+            point.setY(0);
+        }
+        if (!_zoom_x && _zoom_y) {
+            point.setX(0);
+        }
+        _zoom_rect.setTopLeft(point);
+        _zoom_rect.setBottomRight(point);
+    }
 }
 
 void Sketch::mouseReleaseEvent(QMouseEvent *event)
@@ -661,6 +723,71 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
 //                                                 _right_mouse_release_pos));
 //
 //    }
+}
+
+#define MINIMUM_ZOOM_RECT_WIDTH 50
+#define MINIMUM_ZOOM_RECT_HEIGHT 50
+
+void Sketch::plotZoomRect()
+{
+    QColor color_pen(0xffffff);
+    QColor color_brush(0xff, 0xff, 0xff, 100);
+    if (!_zoom_by_rect) {
+        return;
+    }
+    if (qAbs(_zoom_rect.width()) < MINIMUM_ZOOM_RECT_WIDTH
+        || qAbs(_zoom_rect.height()) < MINIMUM_ZOOM_RECT_HEIGHT) {
+        color_pen.setRgb(0xffcccc);
+        color_brush = QColor(0xff, 0xcc, 0xcc, 100);
+    }
+    QRect rect_adjust = _zoom_rect;
+    if (rect_adjust.bottom() > rect().height() - 2) {
+        rect_adjust.setBottom(rect_adjust.bottom() - 2);
+    }
+    if (rect_adjust.top() > rect().height() - 2) {
+        rect_adjust.setTop(rect_adjust.top() - 2);
+    }
+    if (rect_adjust.right() > rect().width() - 2) {
+        rect_adjust.setRight(rect_adjust.right() - 2);
+    }
+    if (rect_adjust.left() > rect().width() - 2) {
+        rect_adjust.setLeft(rect_adjust.left() - 2);
+    }
+    QPainter painter;
+    painter.begin(this);
+    QPen pen(color_pen, 2);
+    QBrush brush(color_brush);
+    painter.setPen(pen);
+    painter.setBrush(brush);
+    painter.drawRect(rect_adjust);
+    painter.end();
+}
+
+void Sketch::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton) {
+        if (_zoom_by_rect) {
+            if (_zoom_rect.contains(event->pos())) {
+                auto x_rate = (double) (qAbs(_zoom_rect.width())) / rect().width();
+                auto x_start =
+                        (double) qMin(_zoom_rect.left(), _zoom_rect.right()) / rect().width();
+                auto y_rate = (double) (qAbs(_zoom_rect.height())) / rect().height();
+                auto y_start = (rect().height()
+                                - (double) qMax(_zoom_rect.top(), _zoom_rect.bottom()))
+                               / rect().height();
+                if (qAbs(_zoom_rect.width()) >= MINIMUM_ZOOM_RECT_WIDTH
+                    && qAbs(_zoom_rect.height()) >= MINIMUM_ZOOM_RECT_HEIGHT) {
+                    emit zoom(x_rate, x_start, y_rate, y_start);
+                } else {
+                    emitMessage(Warning, tr("放大选区过小"));
+                }
+            } else {
+                emitMessage(Debug, tr("取消放大"));
+            }
+            _zoom_by_rect = false;
+            update();
+        }
+    }
 }
 
 
