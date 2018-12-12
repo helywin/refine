@@ -46,6 +46,17 @@ public:
         MoveZoomRect
     };
 
+    enum ZoomEdge
+    {
+        NoEdge = 0x00,
+        EdgeLeft = 0x01,
+        EdgeRight = 0x02,
+        EdgeX = EdgeLeft | EdgeRight,   //运算的或相当于意思上的与
+        EdgeTop = 0x04,
+        EdgeBottom = 0x08,
+        EdgeY = EdgeTop | EdgeBottom
+    };
+
     /*!
      * @brief 区间数据
      */
@@ -83,10 +94,14 @@ private:
     double _y_start;        //都是取0-1内的浮点
     double _y_rate;         //都是取0-1内的浮点
 
+    QColor _background_color;
+    QColor _grid_color;
+
     int _current_index;
     bool _smooth;
     bool _vernier_visible;
     bool _vernier_fix;
+    bool _vernier_back;
     QVector<Vernier> _verniers;
     QVector<Pattern> _patterns;
     int _y_graduate_num;
@@ -144,7 +159,7 @@ public:
         }
     }
 
-    inline float yToGl(float y, const Tribe::Style &style)
+    inline float yToGl(float y, const Tribe::Style &style) const
     {
         auto y0 = static_cast<float>
         ((y - style.rangeOut()[0]) * (Sketch::Y_POINTS) /
@@ -155,6 +170,38 @@ public:
     inline void setXZoom(bool flag) { _zoom_x = flag; }
 
     inline void setYZoom(bool flag) { _zoom_y = flag; }
+
+    inline double xZoomPos() const { return _verniers[0].pos / X_POINTS; }
+
+    double yZoomPos() const;
+
+    inline void setBackgroundColor(const QColor &color)
+    {
+        _background_color = color;
+        glClearColor((float) _background_color.redF(), (float) _background_color.greenF(),
+                     (float) _background_color.blueF(), (float) _background_color.alphaF());
+        update();
+    }
+
+    inline void setGridColor(const QColor &color)
+    {
+        _grid_color = color;
+        update();
+    }
+
+    void zoomPlusFixed();
+
+    void zoomMinusFixed();
+
+    void zoomPlusRect();
+
+    bool xZoomPlusLimit() const;
+
+    bool yZoomPlusLimit() const;
+
+    inline double maximumXRate() const { return _tribe->len() / (double) Sketch::X_POINTS; }
+
+    inline double maximumYRate() const { return 1; }
 
 protected:
     void initializeGL() override;
@@ -184,11 +231,11 @@ private:
 
     void pointQtToGl(int x0, int y0, double &x1, double &y1);
 
-    int xGlToQt(double x);
-    double xQtToGl(int x);
+    int xGlToQt(double x) const;
+    double xQtToGl(int x) const;
 
-    int yGlToQt(double y);
-    double yQtToGl(int y);
+    int yGlToQt(double y) const;
+    double yQtToGl(int y) const;
 
     void drawFocusSign();
 
@@ -204,15 +251,16 @@ protected:
 signals:
     void scrollMove(int angle);
 
-    void zoomPlus();
+    void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
 
-    void zoomMinus();
+    void zoomMinus(double x_rate, double x_start,
+                   double y_rate, double y_start, int edge);
 
     void zoomDefault();
 
     void zoomMinimum();
 
-    void zoom(double x_rate, double x_start, double y_rate, double y_start);
+    void vernierMove(int pos, double time);
 
 };
 

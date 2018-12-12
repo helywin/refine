@@ -13,9 +13,22 @@ class SketchXTop : public QOpenGLWidget, public Message
 {
 Q_OBJECT
 private:
-
+    int _vernier_pos;
+    bool _vernier_visible;
+    double _time;
 public:
     explicit SketchXTop(Message *message = nullptr, QWidget *parent = nullptr);
+
+    inline void setVernierVisible(bool visible) { _vernier_visible = visible; }
+
+public slots:
+
+    inline void vernierTextMove(int pos, double time)
+    {
+        _vernier_pos = pos;
+        _time = time;
+        update();
+    };
 
 protected:
     void initializeGL() override;

@@ -3,6 +3,7 @@
 //
 
 #include <QtCore/QDebug>
+#include <QtCore/QtMath>
 #include "CurveViewer.hpp"
 #include "Sketch.hpp"
 #include "SketchY.hpp"
@@ -15,8 +16,8 @@ CurveViewer::CurveViewer(QWidget *parent, Revolve *revolve, Message *message) :
         QWidget(parent),
         Message(message),
         _sketch_y(new SketchY(this, revolve, this)),
-        _sketch_x(new SketchX(this, revolve, this)),
         _sketch_xtop(new SketchXTop(this, this)),
+        _sketch_x(new SketchX(this, revolve, this)),
         _sketch(new Sketch(this, revolve, this)),
         _tribe(&revolve->tribe()),
         _zoom_x(true),
@@ -54,11 +55,11 @@ void CurveViewer::setup()
             this, &CurveViewer::hScrollChanged, Qt::DirectConnection);
     connect(_v_scroll, &QScrollBar::valueChanged,
             this, &CurveViewer::vScrollChanged, Qt::DirectConnection);
-    connect(_sketch, &Sketch::zoomPlus, this, &CurveViewer::zoomPlus);
-    connect(_sketch, &Sketch::zoomMinus, this, &CurveViewer::zoomMinus);
     connect(_sketch, &Sketch::zoomDefault, this, &CurveViewer::zoomDefault);
     connect(_sketch, &Sketch::zoomMinimum, this, &CurveViewer::zoomMinimum);
-    connect(_sketch, &Sketch::zoom, this, &CurveViewer::zoom);
+    connect(_sketch, &Sketch::zoomPlus, this, &CurveViewer::zoomPlus);
+    connect(_sketch, &Sketch::zoomMinus, this, &CurveViewer::zoomMinus);
+    connect(_sketch, &Sketch::vernierMove, _sketch_xtop, &SketchXTop::vernierTextMove);
 }
 
 void CurveViewer::hScrollChanged(int value)
@@ -103,99 +104,49 @@ void CurveViewer::resetVScroll(int len)
     _v_scroll->setMaximum(int(Sketch::Y_POINTS));
 }
 
-void CurveViewer::zoomPlus()
-{
-    if (_zoom_x) {
-        double rate = _sketch->xRate() / 1.5;
-        if (rate < 1e-2) {
-            rate = 1e-2;
-        }
-        _sketch->setXRate(rate);
-        _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
-        _h_scroll->setPageStep(_sketch->xPoints());
-        _sketch_x->setPoints(_sketch->xPoints());
-        _sketch_x->update();
-    }
-    if (_zoom_y) {
-        double rate = _sketch->yRate() / 1.5;
-        if (rate < 1e-2) {
-            rate = 1e-2;
-        }
-        bool first = _sketch->yRate() == 1.0;
-        int last_v;
-        if (first) {
-            last_v = int(Sketch::Y_POINTS * (1 - rate));
-        } else {
-            last_v = _v_scroll->maximum() - _v_scroll->value();
-        }
-        _v_scroll->setMaximum(int(Sketch::Y_POINTS * (1 - rate)));
-        _v_scroll->setPageStep(int(Sketch::Y_POINTS * rate));
-        _sketch->setYRate(rate);
-        _v_scroll->setValue(int(_v_scroll->maximum() - last_v));
-        _sketch_y->setYStart(_sketch->yStart());
-        _sketch_y->setYRate(_sketch->yRate());
-        _sketch_y->update();
-    }
-    _sketch->update();
-}
-
-void CurveViewer::zoomMinus()
-{
-    if (_zoom_x) {
-        double rate = _sketch->xRate() * 1.5;
-        if (rate > _tribe->len() / (double) Sketch::X_POINTS) {
-            rate = _tribe->len() / (double) Sketch::X_POINTS;
-        }
-        _sketch->setXRate(rate);
-        int max = _tribe->len() - _sketch->xPoints();
-        if (_h_scroll->value() > max) {
-            _h_scroll->setValue(max);
-        }
-        _h_scroll->setMaximum(max);
-        _h_scroll->setPageStep(_sketch->xPoints());
-        _sketch_x->setPoints(_sketch->xPoints());
-        _sketch_x->update();
-    }
-    if (_zoom_y) {
-        double rate = _sketch->yRate() * 1.5;
-        if (rate > 1.0) {
-            rate = 1;
-        }
-        _sketch->setYRate(rate);
-        _v_scroll->setMaximum(int(Sketch::Y_POINTS * (1 - _sketch->yRate())));
-        _v_scroll->setPageStep(int(Sketch::Y_POINTS * _sketch->yRate()));
-        _sketch_y->setYRate(_sketch->yRate());
-        if (_sketch->yStart() + _sketch->yRate() > 1) {
-            _sketch->setYStart(1 - _sketch->yRate());
-            _v_scroll->setValue(0);
-        }
-        _sketch_y->setYStart(_sketch->yStart());
-        _sketch_y->update();
-    }
-    _sketch->update();
-}
+//void CurveViewer::zoomPlus()
+//{
+//    if (_zoom_x) {
+//        double rate = _sketch->xRate() / 1.5;
+//        if (rate < 1e-2) {
+//            rate = 1e-2;
+//        }
+//        _sketch->setXRate(rate);
+//        _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
+//        _h_scroll->setPageStep(_sketch->xPoints());
+//        _sketch_x->setPoints(_sketch->xPoints());
+//        _sketch_x->update();
+//    }
+//    if (_zoom_y) {
+//        double rate = _sketch->yRate() / 1.5;
+//        if (rate < 1e-2) {
+//            rate = 1e-2;
+//        }
+////        bool first = _sketch->yRate() == 1.0;
+////        int last_v;
+////        if (first) {
+////            last_v = int(Sketch::Y_POINTS * (1 - rate));
+////        } else {
+////        }
+//        int last_v = _v_scroll->maximum() - _v_scroll->value();
+//        _v_scroll->setMaximum(int(Sketch::Y_POINTS * (1 - rate)));
+//        _v_scroll->setPageStep(int(Sketch::Y_POINTS * rate));
+//        _sketch->setYRate(rate);
+//        _v_scroll->setValue(int(_v_scroll->maximum() - last_v));
+//        _sketch_y->setYStart(_sketch->yStart());
+//        _sketch_y->setYRate(_sketch->yRate());
+//        _sketch_y->update();
+//    }
+//    _sketch->update();
+//}
 
 void CurveViewer::zoomDefault()
 {
     if (_zoom_x) {
-        _sketch->setXRate(1);
-        int max = _tribe->len() - _sketch->xPoints();
-        if (_h_scroll->value() > max) {
-            _h_scroll->setValue(max);
-        }
-        _h_scroll->setMaximum(max);
-        _h_scroll->setPageStep(_sketch->xPoints());
-        _sketch_x->setPoints(_sketch->xPoints());
-        _sketch_x->update();
+        zoomXDefault();
     }
     if (_zoom_y) {
-        _sketch->setYRate(1.0);
-        _v_scroll->setPageStep(int(Sketch::Y_POINTS));
-        _v_scroll->setValue(0);
-        _v_scroll->setMaximum(0);
-        _sketch_y->setYRate(1.0);
-        _sketch_y->setYStart(0.0);
-        _sketch_y->update();
+        zoomYDefault();
     }
     _sketch->update();
 }
@@ -203,25 +154,10 @@ void CurveViewer::zoomDefault()
 void CurveViewer::zoomMinimum()
 {
     if (_zoom_x) {
-        _sketch->setXRate(_tribe->len() / (double) Sketch::X_POINTS);
-        int max = _tribe->len() - _sketch->xPoints();
-        if (_h_scroll->value() > max) {
-            _h_scroll->setValue(max);
-        }
-        _h_scroll->setMaximum(max);
-        _h_scroll->setPageStep(_sketch->xPoints());
-        _sketch_x->setPoints(_sketch->xPoints());
-        _sketch_x->update();
+        zoomXMinimum();
     }
     if (_zoom_y) {
-        _sketch->setYRate(1.0);
-        _sketch->setYStart(0.0);
-        _v_scroll->setPageStep(int(Sketch::Y_POINTS));
-        _v_scroll->setMaximum(0);
-        _v_scroll->setValue(0);
-        _sketch_y->setYRate(1.0);
-        _sketch_y->setYStart(0.0);
-        _sketch_y->update();
+        zoomYMinimum();
     }
     _sketch->update();
 }
@@ -238,39 +174,191 @@ void CurveViewer::setYZoom(bool flag)
     _sketch->setYZoom(flag);
 }
 
-void CurveViewer::zoom(double x_rate, double x_start, double y_rate, double y_start)
+void CurveViewer::zoomPlus(double x_rate, double x_start, double y_rate, double y_start)
 {
     if (_zoom_x) {
-        if (x_rate < 1e-2) {
-            x_rate = 1e-2;
-        }
-        int start_pos = _sketch->xStart() + int(_sketch->xPoints() * x_start);
-        _sketch->setXStart(start_pos);
-        double rate = x_rate * _sketch->xRate();
-        _sketch->setXRate(rate);
-        _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
-        _h_scroll->setPageStep(_sketch->xPoints());
-        _h_scroll->setValue(start_pos);
-        _sketch_x->setPoints(_sketch->xPoints());
-        _sketch_x->setXStart(start_pos);
-        _sketch_x->update();
+        zoomX(x_rate, x_start);
     }
     if (_zoom_y) {
-        if (y_rate < 1e-2) {
-            y_rate = 1e-2;
-        }
-        double last_rate = _sketch->yRate();
-        double last_start = _sketch->yStart();
-        double rate = last_rate * y_rate;
-        double start = last_start + last_rate * y_start;
-        _v_scroll->setMaximum(int(Sketch::Y_POINTS * (1 - rate)));
-        _v_scroll->setPageStep(int(Sketch::Y_POINTS * rate));
-        _sketch->setYStart(start);
-        _sketch->setYRate(rate);
-        _v_scroll->setValue(int(_v_scroll->maximum() * (1 - start / (1 - rate))));
-        _sketch_y->setYStart(start);
-        _sketch_y->setYRate(rate);
-        _sketch_y->update();
+        zoomY(y_rate, y_start);
     }
     _sketch->update();
+}
+
+void CurveViewer::zoomMinus(double x_rate, double x_start,
+                            double y_rate, double y_start, int edge)
+{
+    if (_zoom_x) {
+        if ((edge & Sketch::EdgeLeft) && (edge & Sketch::EdgeRight)) {
+            zoomXMinimum();
+        } else if (edge & Sketch::EdgeLeft) {
+            zoomXMinusEdgeLeft(x_rate);
+            emitMessage(Debug, "x轴缩小 EdgeLeft");
+        } else if (edge & Sketch::EdgeRight) {
+            zoomXMinusEdgeRight(x_rate);
+            emitMessage(Debug, "x轴缩小 EdgeRight");
+        } else {
+            zoomX(x_rate, x_start);
+            emitMessage(Debug, "x轴缩小 free");
+        }
+    }
+    if (_zoom_y) {
+        if ((edge & Sketch::EdgeTop) && (edge & Sketch::EdgeBottom)) {
+            zoomYMinimum();
+        } else if (edge & Sketch::EdgeBottom) {
+            zoomYMinusEdgeBottom(y_rate);
+            emitMessage(Debug, "y轴缩小 EdgeBottom");
+        } else if (edge & Sketch::EdgeTop) {
+            zoomYMinusEdgeTop(y_rate);
+            emitMessage(Debug, "y轴缩小 EdgeTop");
+        } else {
+            zoomY(y_rate, y_start);
+            emitMessage(Debug, "y轴缩小 free");
+        }
+    }
+    _sketch->update();
+}
+
+//void CurveViewer::zoomPlusFixed()
+//{
+//
+//}
+//
+//void CurveViewer::zoomMinusFixed()
+//{
+//
+//}
+
+void CurveViewer::zoomX(double rate, double start)
+{
+    int start_pos = _sketch->xStart() + int(_sketch->xPoints() * start);
+    _sketch->setXStart(start_pos);
+    _sketch->setXRate(rate * _sketch->xRate());
+    _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _h_scroll->setValue(start_pos);
+    _sketch_x->setPoints(_sketch->xPoints());
+    _sketch_x->setXStart(start_pos);
+    _sketch_x->update();
+}
+
+void CurveViewer::zoomY(double rate, double start)
+{
+    double last_rate = _sketch->yRate();
+    double last_start = _sketch->yStart();
+    double y_rate = last_rate * rate;
+    double y_start = last_start + last_rate * start;
+    _v_scroll->setMaximum(int(Sketch::Y_POINTS * (1 - y_rate)));
+    _v_scroll->setPageStep(int(Sketch::Y_POINTS * y_rate));
+    _sketch->setYStart(y_start);
+    _sketch->setYRate(y_rate);
+    _v_scroll->setValue(int(_v_scroll->maximum() * (1 - y_start / (1 - y_rate))));
+    _sketch_y->setYStart(y_start);
+    _sketch_y->setYRate(y_rate);
+    _sketch_y->update();
+}
+
+void CurveViewer::zoomXMinusEdgeLeft(double rate)
+{
+    int start_pos = 0;
+    _sketch->setXStart(start_pos);
+    _sketch->setXRate(rate * _sketch->xRate());
+    _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _h_scroll->setValue(start_pos);
+    _sketch_x->setPoints(_sketch->xPoints());
+    _sketch_x->setXStart(start_pos);
+    _sketch_x->update();
+}
+
+void CurveViewer::zoomXMinusEdgeRight(double rate)
+{
+    int start_pos = _tribe->len() -  qCeil(_sketch->xPoints() * rate);
+    _sketch->setXStart(start_pos);
+    _sketch->setXRate(rate * _sketch->xRate());
+    _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _h_scroll->setValue(start_pos);
+    _sketch_x->setPoints(_sketch->xPoints());
+    _sketch_x->setXStart(start_pos);
+    _sketch_x->update();
+}
+
+void CurveViewer::zoomYMinusEdgeBottom(double rate)
+{
+    double last_rate = _sketch->yRate();
+    double y_rate = last_rate * rate;
+    double y_start = 0;
+    _v_scroll->setMaximum(int(Sketch::Y_POINTS * (1 - y_rate)));
+    _v_scroll->setPageStep(int(Sketch::Y_POINTS * y_rate));
+    _sketch->setYStart(y_start);
+    _sketch->setYRate(y_rate);
+    _v_scroll->setValue(int(_v_scroll->maximum() * (1 - y_start / (1 - y_rate))));
+    _sketch_y->setYStart(y_start);
+    _sketch_y->setYRate(y_rate);
+    _sketch_y->update();
+}
+
+void CurveViewer::zoomYMinusEdgeTop(double rate)
+{
+    double last_rate = _sketch->yRate();
+    double y_rate = last_rate * rate;
+    double y_start = 1 - rate * _sketch->yRate();
+    _v_scroll->setMaximum(int(Sketch::Y_POINTS * (1 - y_rate)));
+    _v_scroll->setPageStep(int(Sketch::Y_POINTS * y_rate));
+    _sketch->setYStart(y_start);
+    _sketch->setYRate(y_rate);
+    _v_scroll->setValue(int(_v_scroll->maximum() * (1 - y_start / (1 - y_rate))));
+    _sketch_y->setYStart(y_start);
+    _sketch_y->setYRate(y_rate);
+    _sketch_y->update();
+}
+
+void CurveViewer::zoomXDefault()
+{
+    _sketch->setXRate(1);
+    int max = _tribe->len() - _sketch->xPoints();
+    if (_h_scroll->value() > max) {
+        _h_scroll->setValue(max);
+    }
+    _h_scroll->setMaximum(max);
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->setPoints(_sketch->xPoints());
+    _sketch_x->update();
+}
+
+void CurveViewer::zoomYDefault()
+{
+    _sketch->setYRate(1.0);
+    _v_scroll->setPageStep(int(Sketch::Y_POINTS));
+    _v_scroll->setValue(0);
+    _v_scroll->setMaximum(0);
+    _sketch_y->setYRate(1.0);
+    _sketch_y->setYStart(0.0);
+    _sketch_y->update();
+}
+
+void CurveViewer::zoomXMinimum()
+{
+    _sketch->setXRate(_sketch->maximumXRate());
+    int max = _tribe->len() - _sketch->xPoints();
+    if (_h_scroll->value() > max) {
+        _h_scroll->setValue(max);
+    }
+    _h_scroll->setMaximum(max);
+    _h_scroll->setPageStep(_sketch->xPoints());
+    _sketch_x->setPoints(_sketch->xPoints());
+    _sketch_x->update();
+}
+
+void CurveViewer::zoomYMinimum()
+{
+    _sketch->setYRate(1.0);
+    _sketch->setYStart(0.0);
+    _v_scroll->setPageStep(int(Sketch::Y_POINTS));
+    _v_scroll->setMaximum(0);
+    _v_scroll->setValue(0);
+    _sketch_y->setYRate(1.0);
+    _sketch_y->setYStart(0.0);
+    _sketch_y->update();
 }

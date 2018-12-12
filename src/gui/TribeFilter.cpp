@@ -90,7 +90,7 @@ void TribeFilter::paintEvent(QPaintEvent *event)
                                rect().top(),
                                rect().width(),
                                rect().height()),
-                         tr("输入内容进行搜索"),
+                         tr("←筛选，搜索"),
                          QTextOption(Qt::AlignVCenter | Qt::AlignLeft));
     }
     painter.end();

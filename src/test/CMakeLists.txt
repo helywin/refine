@@ -133,8 +133,8 @@ add_executable(refine main.cpp ${RC} ${CORE} ${GUI} ${MOD} ${DEL}
 target_link_libraries(refine
         ${LIBCAN}
         ${LIBOPENGL}
-        ${LIBOMP}
-        ${LIBFREEGLUT}
+#        ${LIBOMP}
+#        ${LIBFREEGLUT}
         Qt5Core
         Qt5Widgets
         Qt5Gui

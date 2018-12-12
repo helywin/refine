@@ -43,20 +43,31 @@ public:
     inline SketchY *sketchY() { return _sketch_y; }
 
     void resetHScroll(int len, bool reset);
-
     void resetVScroll(int len);
 
 public slots:
-    void zoomPlus();
-    void zoomMinus();
+    void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
+    void zoomMinus(double x_rate, double x_start,
+                   double y_rate, double y_start, int edge);
+//    void zoomPlusFixed();
+//    void zoomMinusFixed();
     void zoomDefault();
     void zoomMinimum();
     void setXZoom(bool flag);
     void setYZoom(bool flag);
-    void zoom(double x_rate, double x_start, double y_rate, double y_start);
 
 private:
     void setup();
+    void zoomX(double rate, double start);
+    void zoomY(double rate, double start);
+    void zoomXMinusEdgeLeft(double rate);
+    void zoomXMinusEdgeRight(double rate);
+    void zoomYMinusEdgeBottom(double rate);
+    void zoomYMinusEdgeTop(double rate);
+    void zoomXDefault();
+    void zoomYDefault();
+    void zoomXMinimum();
+    void zoomYMinimum();
 
 private slots:
     void hScrollChanged(int value);

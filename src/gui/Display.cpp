@@ -8,8 +8,8 @@
 
 Display::Display(QWidget *parent, Revolve *revolve, Message *message) :
         QSplitter(parent),
-        _viewer(new CurveViewer(this, revolve, this)),
         Message(message),
+        _viewer(new CurveViewer(this, revolve, this)),
         _presentation(false)
 {
     setup();
@@ -39,12 +39,12 @@ void Display::setup()
     _menu_zoom_xy->setCheckable(true);
     _menu_zoom_axis->setExclusive(true);
     _menu_zoom_group = new QActionGroup(_menu_zoom);
-    _menu_zoom_plus = new QAction(tr("放大"), _menu_zoom_group);
-    _menu_zoom_plus->setShortcut(QKeySequence("="));
+    _menu_zoom_plus = new QAction(tr("放大(=)"), _menu_zoom_group);
+//    _menu_zoom_plus->setShortcut(QKeySequence("="));
     _menu_zoom_plus->setCheckable(true);
     _menu_zoom_plus->setChecked(true);
-    _menu_zoom_minus = new QAction(tr("缩小"), _menu_zoom_group);
-    _menu_zoom_minus->setShortcut(QKeySequence("-"));
+    _menu_zoom_minus = new QAction(tr("缩小(-)"), _menu_zoom_group);
+//    _menu_zoom_minus->setShortcut(QKeySequence("-"));
     _menu_zoom_minus->setCheckable(true);
     _menu_zoom_group->setExclusive(true);
     _menu_zoom_origin = new QAction(tr("默认"), _menu_zoom);
@@ -85,8 +85,8 @@ void Display::setup()
                     _viewer->setYZoom(true);
                 }
             });
-    connect(_menu_zoom_plus, &QAction::triggered, _viewer, &CurveViewer::zoomPlus);
-    connect(_menu_zoom_minus, &QAction::triggered, _viewer, &CurveViewer::zoomMinus);
+//    connect(_menu_zoom_plus, &QAction::triggered, _viewer, &CurveViewer::zoomPlusFixed);
+//    connect(_menu_zoom_minus, &QAction::triggered, _viewer, &CurveViewer::zoomMinusFixed);
     connect(_menu_zoom_origin, &QAction::triggered, _viewer, &CurveViewer::zoomDefault);
     connect(_menu_zoom_minimum, &QAction::triggered, _viewer, &CurveViewer::zoomMinimum);
     connect(_menu_zoom_group, &QActionGroup::triggered,
