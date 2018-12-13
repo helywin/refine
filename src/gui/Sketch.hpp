@@ -43,7 +43,8 @@ public:
     {
         MoveNone,
         MoveVernier,
-        MoveZoomRect
+        MoveZoomRect,
+        MoveParallel
     };
 
     enum ZoomEdge
@@ -114,6 +115,8 @@ private:
     QRect _zoom_rect;
     bool _plot_zoom_rect;
     bool _zoom_finish;
+
+    Qt::KeyboardModifiers _modifiers;
 
 #ifdef VERTEX
     GLuint *_curve_buffers;
@@ -189,14 +192,14 @@ public:
         update();
     }
 
-    void zoomPlusFixed();
-
-    void zoomMinusFixed();
-
+    void zoomPlusFixed(double x_rate, double x_scale, double y_rate, double y_scale);
+    void zoomMinusFixed(double x_rate, double x_scale, double y_rate, double y_scale);
+    void zoomPlusByVernier();
+    void zoomMinusByVernier();
+    void zoomPlusByCursor();
+    void zoomMinusByCursor();
     void zoomPlusRect();
-
     bool xZoomPlusLimit() const;
-
     bool yZoomPlusLimit() const;
 
     inline double maximumXRate() const { return _tribe->len() / (double) Sketch::X_POINTS; }
@@ -244,6 +247,7 @@ private:
 protected:
     void wheelEvent(QWheelEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;

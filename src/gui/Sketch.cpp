@@ -2,6 +2,7 @@
 // Created by jiang.wenqiang on 2018/9/28.
 //
 
+#include <QtCore/QtMath>
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
 #include <QtCore/QVector>
@@ -33,7 +34,8 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _zoom_x(true),
         _zoom_y(false),
         _plot_zoom_rect(false),
-        _zoom_finish(true)
+        _zoom_finish(true),
+        _modifiers(Qt::NoModifier)
 {
     setMinimumWidth(200);
     setFocusPolicy(Qt::ClickFocus);
@@ -586,10 +588,40 @@ void Sketch::pointQtToGl(int x0, int y0, double &x1, double &y1)
     y1 = yQtToGl(y0);
 }
 
+#define WHEEL_X_ZOOM_MINUS_RATE 1.5
+#define WHEEL_X_ZOOM_PLUS_RATE (1/WHEEL_X_ZOOM_MINUS_RATE)
+#define WHEEL_Y_ZOOM_MINUS_RATE 1.5
+#define WHEEL_Y_ZOOM_PLUS_RATE (1/WHEEL_Y_ZOOM_MINUS_RATE)
+#define CTRL_X_ZOOM_RATE 0.8
+#define ALT_X_ZOOM_RATE 0.8
+#define CTRL_Y_ZOOM_RATE 0.8
+#define ALT_Y_ZOOM_RATE 0.8
+
 void Sketch::wheelEvent(QWheelEvent *event)
 {
-    //emitMessage(Debug, QString("滚轮改变量 %1").arg(event->delta()));
-    scrollMove(event->delta());
+    double x_scale = event->pos().x() / (double) rect().width();
+    double y_scale = (rect().height() - event->pos().y()) / (double) rect().height();
+    double wheel_rate = event->delta() / 120.0;
+    double x_rate = qPow(WHEEL_X_ZOOM_PLUS_RATE, qAbs(wheel_rate));
+    double y_rate = qPow(WHEEL_Y_ZOOM_PLUS_RATE, qAbs(wheel_rate));
+    /*
+    double x_rate = qAbs(wheel_rate) * (WHEEL_X_ZOOM_MINUS_RATE - 1);
+    double y_rate = qAbs(wheel_rate) * (WHEEL_Y_ZOOM_MINUS_RATE - 1);
+    if (_modifiers & Qt::ControlModifier) {
+        x_rate *= (1 + CTRL_X_ZOOM_RATE);
+        y_rate *= (1 + CTRL_Y_ZOOM_RATE);
+    } else if (_modifiers & Qt::AltModifier) {
+        x_rate *= ALT_X_ZOOM_RATE;
+        y_rate *= ALT_Y_ZOOM_RATE;
+    }
+    x_rate += 1;
+    y_rate += 1;
+*/
+    if (wheel_rate > 0) {
+        zoomPlusFixed(x_rate, x_scale, y_rate, y_scale);
+    } else {
+        zoomMinusFixed(1 / x_rate, x_scale, 1 / y_rate, y_scale);
+    }
 }
 
 void Sketch::keyPressEvent(QKeyEvent *event)
@@ -604,10 +636,10 @@ void Sketch::keyPressEvent(QKeyEvent *event)
     }
     scrollMove(120 * direction);
     if (event->key() == Qt::Key_Equal) {
-        zoomPlusFixed();
+        zoomPlusByVernier();
     }
     if (event->key() == Qt::Key_Minus) {
-        zoomMinusFixed();
+        zoomMinusByVernier();
     }
     if (event->isAutoRepeat()) {
         return;     //后面的事件不会是重复按键的
@@ -625,7 +657,13 @@ void Sketch::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_M) {
         emit zoomMinimum();
     }
+    _modifiers = event->modifiers();
     emitMessage(Debug, QString("按下 %1").arg(event->key()));
+}
+
+void Sketch::keyReleaseEvent(QKeyEvent *event)
+{
+    QWidget::keyReleaseEvent(event);
 }
 
 void Sketch::drawFocusSign()
@@ -635,6 +673,32 @@ void Sketch::drawFocusSign()
     painter.setBrush(QColor(0xffffff));
     painter.drawEllipse(5, 5, 10, 10);
     painter.end();
+}
+
+int Sketch::xGlToQt(double x) const
+{
+    double left = X_LEFT;
+    double w = X_POINTS - X_LEFT;
+    return qRound(rect().width() * (x - left) / w);
+}
+
+double Sketch::xQtToGl(int x) const
+{
+    double w = X_POINTS - X_LEFT;
+    return X_LEFT + (double) x / rect().width() * w;
+}
+
+int Sketch::yGlToQt(double y) const
+{
+    double top = Y_POINTS;
+    double h = Y_POINTS - Y_BOTTOM;
+    return qRound(rect().height() * (top - y) / h);
+}
+
+double Sketch::yQtToGl(int y) const
+{
+    double h = Y_POINTS - Y_BOTTOM;
+    return Y_BOTTOM + (double) (rect().height() - y) / rect().height() * h;
 }
 
 void Sketch::mouseMoveEvent(QMouseEvent *event)
@@ -697,6 +761,8 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
             _zoom_rect.setBottomRight(point);
             update();
         }
+    } else if (event->buttons() & Qt::MiddleButton) {
+        setCursor(Qt::ClosedHandCursor);
     } else if (event->buttons() & Qt::RightButton) {}
     else {
 //        qDebug() << "move";
@@ -706,32 +772,6 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
             setCursor(Qt::ArrowCursor);
         }
     }
-}
-
-int Sketch::xGlToQt(double x) const
-{
-    double left = X_LEFT;
-    double w = X_POINTS - X_LEFT;
-    return qRound(rect().width() * (x - left) / w);
-}
-
-double Sketch::xQtToGl(int x) const
-{
-    double w = X_POINTS - X_LEFT;
-    return X_LEFT + (double) x / rect().width() * w;
-}
-
-int Sketch::yGlToQt(double y) const
-{
-    double top = Y_POINTS;
-    double h = Y_POINTS - Y_BOTTOM;
-    return qRound(rect().height() * (top - y) / h);
-}
-
-double Sketch::yQtToGl(int y) const
-{
-    double h = Y_POINTS - Y_BOTTOM;
-    return Y_BOTTOM + (double) (rect().height() - y) / rect().height() * h;
 }
 
 #define MOUSE_DRAG_DISTANCE 5
@@ -766,7 +806,12 @@ void Sketch::mousePressEvent(QMouseEvent *event)
             setCursor(Qt::CrossCursor);
             _movement = MoveZoomRect;
         }
-    }
+    } else if (event->button() == Qt::MiddleButton) {
+        setCursor(Qt::OpenHandCursor);
+        _movement = MoveParallel;
+    } else if (event->button() == Qt::RightButton) {
+
+    } else {}
 }
 
 void Sketch::mouseReleaseEvent(QMouseEvent *event)
@@ -787,6 +832,9 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
             }
             setCursor(Qt::ArrowCursor);
         }
+    }
+    if (!(event->buttons() & Qt::MiddleButton)) { //松开鼠标左键
+        setCursor(Qt::ArrowCursor);
     }
     _movement = MoveNone;
     releaseMouse();
@@ -869,6 +917,9 @@ double Sketch::yZoomPos() const
 
 void Sketch::zoomPlusRect()
 {
+    if (_tribe->size() == 0) {
+        return;
+    }
     auto x_rate = (double) (qAbs(_zoom_rect.width())) / rect().width();
     auto x_start = (double) qMin(_zoom_rect.left(), _zoom_rect.right()) / rect().width();
     auto y_rate = (double) (qAbs(_zoom_rect.height())) / rect().height();
@@ -901,57 +952,22 @@ void Sketch::zoomPlusRect()
 #define FIX_Y_ZOOM_MINUS_RATE 1.5
 #define FIX_Y_ZOOM_PLUS_RATE (1/FIX_Y_ZOOM_MINUS_RATE)
 
-void Sketch::zoomPlusFixed()
+void Sketch::zoomPlusByVernier()
 {
-    double x_rate = 1;
-    double x_start = 0;
-    if (_zoom_x && !xZoomPlusLimit()) {
-        x_rate = FIX_X_ZOOM_PLUS_RATE;
-        x_start = _verniers[0].pos / X_POINTS * (1 - FIX_X_ZOOM_PLUS_RATE);
+    if (_tribe->size() == 0) {
+        return;
     }
-    double y_rate = 1;
-    double y_start = 0;
-    if (_zoom_y && !yZoomPlusLimit()) {
-        y_rate = FIX_Y_ZOOM_PLUS_RATE;
-        y_start = yZoomPos() * (1 - FIX_Y_ZOOM_PLUS_RATE);
-    }
-    emit zoomPlus(x_rate, x_start, y_rate, y_start);
+    zoomPlusFixed(FIX_X_ZOOM_PLUS_RATE, _verniers[0].pos / X_POINTS,
+                  FIX_Y_ZOOM_PLUS_RATE, yZoomPos());
 }
 
-void Sketch::zoomMinusFixed()
+void Sketch::zoomMinusByVernier()
 {
-    double x_rate = FIX_X_ZOOM_MINUS_RATE;
-    double x_start = 0;
-    int edge = NoEdge;
-    if (_zoom_x) {
-        if (x_rate * xRate() > maximumXRate()) {
-            edge |= EdgeX;
-        } else if (_verniers[0].pos / X_POINTS * (x_rate - 1) * xPoints()
-                   > _x_start) {
-            edge |= EdgeLeft;
-        } else if ((1 - _verniers[0].pos / X_POINTS) * (x_rate - 1) * xPoints()
-                   > _tribe->len() - _x_start - xPoints()) {
-            edge |= EdgeRight;
-        } else {
-            x_start = _verniers[0].pos / X_POINTS * (1 - x_rate);
-        }
+    if (_tribe->size() == 0) {
+        return;
     }
-    double y_rate = FIX_Y_ZOOM_MINUS_RATE;
-    double y_start = 0;
-    auto y_zoom_pos = yZoomPos();
-    if (_zoom_y) {
-        if (y_rate * yRate() > maximumYRate()) {
-            edge |= EdgeY;
-        } else if (y_zoom_pos * _y_rate * (y_rate - 1) > _y_start) {
-            edge |= EdgeBottom;
-        } else if ((1 - y_zoom_pos) * _y_rate * (y_rate - 1)
-                   > 1 - _y_start - _y_rate) {
-            edge |= EdgeTop;
-        } else {
-            y_start = y_zoom_pos * (1 - y_rate);
-        }
-    }
-    emit zoomMinus(x_rate, x_start, y_rate, y_start, edge);
+    zoomMinusFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
+                   FIX_Y_ZOOM_MINUS_RATE, yZoomPos());
 }
 
 bool Sketch::xZoomPlusLimit() const
@@ -963,6 +979,69 @@ bool Sketch::yZoomPlusLimit() const
 {
     return yPoints() < 10;
 }
+
+void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double y_scale)
+{
+    double x_start = 0;
+    if (_zoom_x && !xZoomPlusLimit()) {
+        x_start = x_scale * (1 - x_rate);
+    } else {
+        x_rate = 1;
+    }
+    double y_start = 0;
+    if (_zoom_y && !yZoomPlusLimit()) {
+        y_start = y_scale * (1 - y_rate);
+    } else {
+        y_rate = 1;
+    }
+    emit zoomPlus(x_rate, x_start, y_rate, y_start);
+}
+
+void Sketch::zoomMinusFixed(double x_rate, double x_scale, double y_rate, double y_scale)
+{
+    double x_start = 0;
+    int edge = NoEdge;
+    if (_zoom_x) {
+        if (x_rate * xRate() > maximumXRate()) {
+            edge |= EdgeX;
+        } else if (x_scale * (x_rate - 1) * xPoints()
+                   > _x_start) {
+            edge |= EdgeLeft;
+        } else if ((1 - x_scale) * (x_rate - 1) * xPoints()
+                   > _tribe->len() - _x_start - xPoints()) {
+            edge |= EdgeRight;
+        } else {
+            x_start = x_scale * (1 - x_rate);
+        }
+    }
+    double y_start = 0;
+    if (_zoom_y) {
+        if (y_rate * yRate() > maximumYRate()) {
+            edge |= EdgeY;
+        } else if (y_scale * _y_rate * (y_rate - 1) > _y_start) {
+            edge |= EdgeBottom;
+        } else if ((1 - y_scale) * _y_rate * (y_rate - 1)
+                   > 1 - _y_start - _y_rate) {
+            edge |= EdgeTop;
+        } else {
+            y_start = y_scale * (1 - y_rate);
+        }
+    }
+    emit zoomMinus(x_rate, x_start, y_rate, y_start, edge);
+}
+
+void Sketch::zoomPlusByCursor()
+{
+    zoomPlusFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
+                  FIX_Y_ZOOM_PLUS_RATE, yZoomPos());
+}
+
+void Sketch::zoomMinusByCursor()
+{
+    zoomMinusFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
+                   FIX_Y_ZOOM_MINUS_RATE, yZoomPos());
+}
+
 
 #undef FIX_X_ZOOM_PLUS_RATE
 #undef FIX_X_ZOOM_MINUS_RATE
