@@ -4,6 +4,8 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QtMath>
+#include <QtCore/QTextStream>
+#include <QtCore/QFile>
 #include "CurveViewer.hpp"
 #include "Sketch.hpp"
 #include "SketchY.hpp"
@@ -16,7 +18,7 @@ CurveViewer::CurveViewer(QWidget *parent, Revolve *revolve, Message *message) :
         QWidget(parent),
         Message(message),
         _sketch_y(new SketchY(this, revolve, this)),
-        _sketch_xtop(new SketchXTop(this, this)),
+        _sketch_xtop(new SketchXTop(this, revolve, this)),
         _sketch_x(new SketchX(this, revolve, this)),
         _sketch(new Sketch(this, revolve, this)),
         _tribe(&revolve->tribe()),
@@ -44,6 +46,15 @@ void CurveViewer::setup()
     setLayout(_layout);
     _h_scroll = new QScrollBar(Qt::Orientation::Horizontal, this);
     _v_scroll = new QScrollBar(Qt::Orientation::Vertical, this);
+    QFile file(":res/qss/scrollbar.css");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (file.isOpen()) {
+        QTextStream stream(&file);
+        QString scrollbar_css = stream.readAll();
+        qDebug() << scrollbar_css;
+        _h_scroll->setStyleSheet(scrollbar_css);
+        _v_scroll->setStyleSheet(scrollbar_css);
+    }
     _layout->addWidget(_widget_sketch, 0, 0);
     _layout->addWidget(_h_scroll, 1, 0);
     _layout->addWidget(_v_scroll, 0, 1);
@@ -273,7 +284,7 @@ void CurveViewer::zoomXMinusEdgeLeft(double rate)
 
 void CurveViewer::zoomXMinusEdgeRight(double rate)
 {
-    int start_pos = _tribe->len() -  qCeil(_sketch->xPoints() * rate);
+    int start_pos = _tribe->len() - qCeil(_sketch->xPoints() * rate);
     _sketch->setXStart(start_pos);
     _sketch->setXRate(rate * _sketch->xRate());
     _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());

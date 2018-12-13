@@ -24,6 +24,7 @@ class CurvePanel;
 class TribeView;
 class Tribe;
 class Sketch;
+class SketchXTop;
 class SketchY;
 class TribeFilter;
 
@@ -47,6 +48,7 @@ private:
     TribeFilter *_filter;
     Sketch *_sketch;
     SketchY *_sketch_y;
+    SketchXTop *_sketch_x_top;
     CompleteModel *_complete_model;
     SpinInput *_width;
     SpinInput *_precision;
@@ -61,6 +63,8 @@ public:
     void connectModelToSketch(Sketch *sketch);
 
     void connectModelToSketchY(SketchY *sketch_y);
+
+    void connectModelToSketchXTop(SketchXTop *sketch_x_top);
 
     inline QWidget *content() { return _content; }
 

@@ -61,6 +61,8 @@ public:
 
     inline SketchY *sketchY() { return _viewer->sketchY(); }
 
+    inline SketchXTop *sketchXTop() { return _viewer->sketchXTop(); }
+
     inline CurveViewer *curveViewer() { return _viewer; }
 
     inline void addDock(QDockWidget *dock)

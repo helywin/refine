@@ -27,14 +27,7 @@ private:
 public:
     explicit SketchY(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
-    inline void setCurrentIndex(int index, bool is_checked)
-    {
-        if (is_checked) {
-            _current_index = index;
-        } else {
-            _current_index = -1;
-        }
-    }
+    inline void setCurrentIndex(int index) { _current_index = index; }
 
     inline void setYStart(double start) { _y_start = start; }
 
@@ -48,6 +41,8 @@ protected:
 private:
     void setup();
     void plotYAxis();
+
+    void currentIndexOverflow();
 };
 
 

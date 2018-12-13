@@ -71,6 +71,7 @@ void Sketch::paintGL()
     _x_sec = 1 / _x_rate;
     glClear(GL_COLOR_BUFFER_BIT);
 //    plotXAxis();
+    currentIndexOverflow();
     plotYGrid();
     plotXGrid();
     plotCurves();
@@ -432,19 +433,20 @@ void Sketch::plotVerniers()
             return;
         }
         int max_name_width = 0;
+        QVector<int> name_width;
         for (int i = 0; i < _tribe->size(); ++i) {
-            if (!_tribe->style(i).display()) {
-                continue;
-            }
-            int w = metrics.boundingRect(_tribe->style(i).name()).width();
-            if (max_name_width < w) {
-                max_name_width = w;
+            name_width.append(metrics.boundingRect(_tribe->style(i).name()).width() + font_size);
+            if (_tribe->style(i).display() && max_name_width < name_width.last()) {
+                max_name_width = name_width.last();
             }
         }
         int min_value_width = font_size * 4;
         int max_cnt = rect().height() / (font_size + vernier_dist);
         int cnt = 0;
+        QColor background = _background_color;
+        background.setAlpha(150);
         for (int i = 0; i < _tribe->size(); ++i) {
+//            qDebug() << "Sketch::plotVerniers()";
             const Tribe::Style &st = _tribe->style(i);
             if (!_tribe->style(i).display()) {
                 continue;
@@ -503,13 +505,11 @@ void Sketch::plotVerniers()
             }
             int max_value_width = min_value_width + _tribe->style(i).precision() * font_size;
             //判断文字的长度来调整显示的文字位置
-            QColor background = _background_color;
-            background.setAlpha(150);
-            if (rect().width() - x > max_name_width + max_value_width + 2 * vernier_dist) {
+            if (rect().width() - x > max_name_width + max_value_width + vernier_dist) {
                 QRect rect_value(x + vernier_dist, y2 - row_height,
                                  max_value_width, row_height);
                 QRect rect_name(x + vernier_dist + max_value_width, y2 - row_height,
-                                max_name_width, row_height);
+                                name_width[i], row_height);
 //                painter.drawText(x + vernier_dist, y2, value);
                 if (_vernier_back) {
                     painter.fillRect(rect_value, background);
@@ -519,12 +519,12 @@ void Sketch::plotVerniers()
                                  QTextOption(Qt::AlignLeft | Qt::AlignVCenter));
                 painter.drawText(rect_name, name + suffix,
                                  QTextOption(Qt::AlignLeft | Qt::AlignVCenter));
-            } else if (rect().width() - x < max_name_width + max_value_width + 2 * vernier_dist &&
+            } else if (rect().width() - x < max_name_width + max_value_width + vernier_dist &&
                        rect().width() - x > max_value_width + vernier_dist) {
                 QRect rect_value(x + vernier_dist, y2 - row_height,
                                  max_value_width, row_height);
-                QRect rect_name(x - vernier_dist - max_name_width - 10, y2 - row_height,
-                                max_name_width + font_size, row_height);
+                QRect rect_name(x - vernier_dist - name_width[i], y2 - row_height,
+                                name_width[i], row_height);
                 if (_vernier_back) {
                     painter.fillRect(rect_value, background);
                     painter.fillRect(rect_name, background);
@@ -536,8 +536,8 @@ void Sketch::plotVerniers()
             } else {
                 QRect rect_value(x - vernier_dist - max_value_width, y2 - row_height,
                                  max_value_width, row_height);
-                QRect rect_name(x - 2 * vernier_dist - max_name_width - max_value_width - 10,
-                                y2 - row_height, max_name_width + 10, row_height);
+                QRect rect_name(x - vernier_dist - name_width[i] - max_value_width,
+                                y2 - row_height, name_width[i], row_height);
                 if (_vernier_back) {
                     painter.fillRect(rect_value, background);
                     painter.fillRect(rect_name, background);
@@ -837,6 +837,8 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
         setCursor(Qt::ArrowCursor);
     }
     _movement = MoveNone;
+    _plot_zoom_rect = false;        //消除对话框后不小心拖动会不能清除放大状态的bug
+    _zoom_finish = true;            //消除对话框后不小心拖动会不能清除放大状态的bug
     releaseMouse();
 }
 
@@ -1040,6 +1042,13 @@ void Sketch::zoomMinusByCursor()
 {
     zoomMinusFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
                    FIX_Y_ZOOM_MINUS_RATE, yZoomPos());
+}
+
+void Sketch::currentIndexOverflow()
+{
+    if (_current_index >= _tribe->size()) {
+        _current_index = -1;
+    }
 }
 
 

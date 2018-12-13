@@ -55,7 +55,7 @@ void SketchX::plotXAxis()
     const int font_size = 10;
     int yt = rect().top() + 5;
     int yb = yt + X_AXIS_LINES_LEN;
-    int ytx = yb + 7 + font_size;
+    int ytx = yb + 5 + font_size;
 //    QColor color(0, 96, 48);
     QColor color(255, 255, 255);
     _painter.begin(this);
@@ -63,6 +63,8 @@ void SketchX::plotXAxis()
     font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
     _painter.setFont(font);
     _painter.setPen(color);
+    QFontMetrics metrics(font, this);
+//    metrics.rect
     while (range / num > X_MAXIMUM_PIXEL) {
         num += 1;
     }
@@ -75,9 +77,18 @@ void SketchX::plotXAxis()
     for (int i = 0; i <= _x_graduate_num; ++i) {
         double y_val = _start / 1000.0 * _msec + (_points / 1000.0 * _msec) / _x_graduate_num * i;
         int x = qRound(left + (double(range) / double(_x_graduate_num) * i));
-        _painter.drawLine(x, yt, x, yb);
+        QString text = QString("%1s").arg(y_val, 0, 'f', 2);
         if (i != _x_graduate_num) {
-            _painter.drawText(x, ytx, QString("%1s").arg(y_val, 0, 'f', 2));
+            _painter.drawLine(x, yt, x, yb);
+            _painter.drawText(x, ytx, text);
+        } else {
+            QRect text_rect = metrics.boundingRect(text);
+            _painter.drawLine(x, yt, x, rect().bottom());
+            _painter.drawText(QRect(x - text_rect.width() - 4, ytx + 4,
+                                    text_rect.width() + 2, text_rect.height()),
+                              text,
+                              QTextOption(Qt::AlignRight | Qt::AlignVCenter));
+//            _painter.drawText(x - text.length() * font_size, ytx + font_size + 4, text);
         }
     }
     _painter.drawLine(left, yt, right, yt);

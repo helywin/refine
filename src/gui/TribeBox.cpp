@@ -10,12 +10,13 @@
 #include "TribeView.hpp"
 #include "Sketch.hpp"
 #include "SketchY.hpp"
+#include "SketchXTop.hpp"
 #include "TribeFilter.hpp"
 
 TribeBox::TribeBox(Tribe *tribe, Message *message, QWidget *parent) :
+        QDockWidget(parent),
         _tribe(tribe),
-        Message(message),
-        QDockWidget(parent)
+        Message(message)
 {
     setup();
 }
@@ -87,7 +88,15 @@ void TribeBox::connectModelToSketchY(SketchY *sketch_y)
 {
     _sketch_y = sketch_y;
     connect(_model, &TribeModel::tribeChanged,
-            sketch_y, static_cast<void (SketchY::*)(void)>(&Sketch::update),
+            sketch_y, static_cast<void (SketchY::*)(void)>(&SketchY::update),
+            Qt::DirectConnection);
+}
+
+void TribeBox::connectModelToSketchXTop(SketchXTop *sketch_x_top)
+{
+    _sketch_x_top = sketch_x_top;
+    connect(_model, &TribeModel::tribeChanged,
+            sketch_x_top, static_cast<void (SketchXTop::*)(void)>(&SketchXTop::update),
             Qt::DirectConnection);
 }
 
@@ -100,15 +109,12 @@ void TribeBox::selectionChanged(const QItemSelection &selected,
     }
     int index = selection.indexes().first().row();
 //    emitMessage(Debug, tr("当前行 %1").arg(index));
-    if (index < 0) {
-        _sketch->setCurrentIndex(index);
-        _sketch_y->setCurrentIndex(index, false);
-    } else {
-        _sketch->setCurrentIndex(index);
-        _sketch_y->setCurrentIndex(index, _tribe->style(index).display());
-    }
+    _sketch->setCurrentIndex(index);
+    _sketch_y->setCurrentIndex(index);
+    _sketch_x_top->setCurrentIndex(index);
     _sketch->update();
     _sketch_y->update();
+    _sketch_x_top->update();
 }
 
 void TribeBox::setDisplayItem(int state)

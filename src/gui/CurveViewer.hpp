@@ -42,6 +42,8 @@ public:
 
     inline SketchY *sketchY() { return _sketch_y; }
 
+    inline SketchXTop *sketchXTop() { return _sketch_xtop; }
+
     void resetHScroll(int len, bool reset);
     void resetVScroll(int len);
 

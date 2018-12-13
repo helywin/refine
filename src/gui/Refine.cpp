@@ -219,6 +219,7 @@ void Refine::setup()
     _revolve.setSketch(_display->sketch());
     _tribebox->connectModelToSketch(_display->sketch());
     _tribebox->connectModelToSketchY(_display->sketchY());
+    _tribebox->connectModelToSketchXTop(_display->sketchXTop());
     _layout->addWidget(_display);
     _display->setParentLayout(_layout);
     _display->addDock(_tribebox);

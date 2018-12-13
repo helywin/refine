@@ -36,7 +36,7 @@ void SketchY::paintGL()
 void SketchY::setup()
 {
     setMinimumHeight(150);
-    setFixedWidth(60);
+    setFixedWidth(50);
 }
 
 #define Y_MINIMUM_PIXEL 40
@@ -46,6 +46,7 @@ void SketchY::setup()
 
 void SketchY::plotYAxis()
 {
+    currentIndexOverflow();
     int top = 45;
     int bottom = rect().height() - 45 - 1;
     int range = bottom - top;
@@ -53,7 +54,8 @@ void SketchY::plotYAxis()
     int xr = rect().right();
     int xl = xr - Y_AXIS_LINES_LEN;
     int xt = qRound(rect().width() * 0.1);
-    if (_current_index == -1) {
+    if (_current_index == -1 ||
+        !_tribe->style(_current_index).display()) {     //前面判断符合就不会把-1传到数组下标里面
         if (_tribe->size() == 0) {
             return;
         }
@@ -65,7 +67,9 @@ void SketchY::plotYAxis()
     }
     const Tribe::Style &style = _tribe->style(_current_index);
     _painter.begin(this);
-    QFont font("Helvetica", 10);
+    const int font_size = 10;
+    QFont font("Helvetica");
+    font.setPointSize(10);
     font.setStyleHint(QFont::Helvetica, QFont::OpenGLCompatible);
     _painter.setFont(font);
     _painter.setPen(style.color());
@@ -84,18 +88,28 @@ void SketchY::plotYAxis()
     if (num != _graduate_num) {
         _graduate_num = num;
     }
-
-    _painter.drawText(xt, top / 2 + 5, style.name());
-    _painter.drawText(xt, bottom + top / 2 + 5, style.unit());
+//    QRect name_rect(1, 1, rect().width(), top);
+//    QTextOption text_option(Qt::AlignLeft | Qt::AlignTop);
+//    text_option.setWrapMode(QTextOption::WordWrap);
+//    _painter.drawText(name_rect, style.name(), text_option);
+    _painter.drawText(xt, top / 2 + 5, style.unit());
     for (int i = 0; i <= _graduate_num; ++i) {
         double y_val = style.rangeOut()[0]
-                + (style.rangeOut()[1] - style.rangeOut()[0]) * _y_start
-                + double(style.rangeOut()[1] - style.rangeOut()[0])
-                * (_y_rate) / _graduate_num * (_graduate_num - i);
+                       + (style.rangeOut()[1] - style.rangeOut()[0]) * _y_start
+                       + double(style.rangeOut()[1] - style.rangeOut()[0])
+                         * (_y_rate) / _graduate_num * (_graduate_num - i);
         int y = qRound(top + (double(range) / double(_graduate_num) * i));
         _painter.drawLine(xl, y, xr, y);
-        _painter.drawText(xt, y + 5, QString("%1").arg(y_val, 0, 'f', 1));
+        _painter.drawText(xt, y + font_size + font_size / 2,
+                          QString("%1").arg(y_val, 0, 'f', 1));
     }
     _painter.drawLine(xr, top, xr, bottom);
     _painter.end();
+}
+
+void SketchY::currentIndexOverflow()
+{
+    if (_current_index >= _tribe->size()) {
+        _current_index = -1;
+    }
 }

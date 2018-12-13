@@ -9,15 +9,22 @@
 #include <QtGui/QPainter>
 #include "Message.hpp"
 
+class Revolve;
+class Tribe;
+
 class SketchXTop : public QOpenGLWidget, public Message
 {
 Q_OBJECT
 private:
+    QPainter _painter;
+    Tribe *_tribe;
     int _vernier_pos;
     bool _vernier_visible;
     double _time;
+    int _current_index;
+
 public:
-    explicit SketchXTop(Message *message = nullptr, QWidget *parent = nullptr);
+    explicit SketchXTop(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
     inline void setVernierVisible(bool visible) { _vernier_visible = visible; }
 
@@ -30,6 +37,8 @@ public slots:
         update();
     };
 
+    inline void setCurrentIndex(int index) { _current_index = index; }
+
 protected:
     void initializeGL() override;
     void resizeGL(int w, int h) override;
@@ -37,6 +46,8 @@ protected:
 
 private:
     void setup();
+
+    void currentIndexOverflow();
 };
 
 

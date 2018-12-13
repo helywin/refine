@@ -244,6 +244,8 @@ private:
 
     bool isMouseOnDragItem(int x);
 
+    void currentIndexOverflow();
+
 protected:
     void wheelEvent(QWheelEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
