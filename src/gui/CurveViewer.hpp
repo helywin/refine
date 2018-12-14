@@ -51,6 +51,7 @@ public slots:
     void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
     void zoomMinus(double x_rate, double x_start,
                    double y_rate, double y_start, int edge);
+    void parallelMove(double delta_x, double delta_y);
 //    void zoomPlusFixed();
 //    void zoomMinusFixed();
     void zoomDefault();

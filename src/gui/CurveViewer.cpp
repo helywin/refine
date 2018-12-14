@@ -70,6 +70,7 @@ void CurveViewer::setup()
     connect(_sketch, &Sketch::zoomMinimum, this, &CurveViewer::zoomMinimum);
     connect(_sketch, &Sketch::zoomPlus, this, &CurveViewer::zoomPlus);
     connect(_sketch, &Sketch::zoomMinus, this, &CurveViewer::zoomMinus);
+    connect(_sketch, &Sketch::parallelMove, this, &CurveViewer::parallelMove);
     connect(_sketch, &Sketch::vernierMove, _sketch_xtop, &SketchXTop::vernierTextMove);
 }
 
@@ -227,6 +228,34 @@ void CurveViewer::zoomMinus(double x_rate, double x_start,
             emitMessage(Debug, "y轴缩小 free");
         }
     }
+    _sketch->update();
+}
+
+void CurveViewer::parallelMove(double delta_x, double delta_y)
+{
+    int start_pos_x = _sketch->xStart() + int(delta_x * _sketch->xPoints());
+    if (start_pos_x < 0) {
+        start_pos_x = 0;
+    } else if (start_pos_x > _tribe->len()-_sketch->xPoints()) {
+        start_pos_x = _tribe->len()-_sketch->xPoints();
+    }
+    _sketch->setXStart(start_pos_x);
+    _h_scroll->setValue(start_pos_x);
+    _sketch_x->setXStart(start_pos_x);
+    _sketch_x->update();
+
+    double y_rate = _sketch->yRate();
+    double start_pos_y = _sketch->yStart() + delta_y * y_rate;
+    if (start_pos_y < 0) {
+        start_pos_y = 0;
+    } else if (start_pos_y > 1 - y_rate) {
+        start_pos_y = 1 - y_rate;
+    }
+    _sketch->setYStart(start_pos_y);
+    _v_scroll->setValue(int(_v_scroll->maximum() * (1 - start_pos_y / (1 - y_rate))));
+    _sketch_y->setYStart(start_pos_y);
+    _sketch_y->update();
+
     _sketch->update();
 }
 

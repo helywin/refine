@@ -230,6 +230,7 @@ void Sketch::plotCurves()
             }
 #else
         {
+            bool compress = xPoints() / rect().width() > 4;
             for (int i = 0; i < _tribe->size(); ++i) {
                 const Tribe::Style &st = _tribe->style(i);
                 if (!st.display()) {
@@ -239,33 +240,57 @@ void Sketch::plotCurves()
 //                qDebug() << "Sketch::plotCurves() color: " << color;
                 glColor3d(color.redF(), color.greenF(), color.blueF());
                 glLineWidth(st.width());
-                glBegin(GL_LINE_STRIP);
-                for (int j = 0; j < xPoints(); ++j) {
-                    glVertex2f(float(j * _x_sec),
-                               yToGl((*_tribe)[i].data()[j + _x_start], st));
-                }
-                if (_x_start + xPoints() < _tribe->len()) {
-                    glVertex2f(float(xPoints() * _x_sec),
-                               yToGl((*_tribe)[i].data()[_x_start + xPoints()], st));
-                }
-                glEnd();
-                glFlush();
-                glPointSize(_tribe->style(i).width() * 2 + 2);
-                glBegin(GL_POINTS);
-                if ((double) rect().width() / xPoints() >= 15) {
-                    for (int j = 0; j < xPoints(); ++j) {
-                        if (_tribe->at(i).fillType(j + _x_start) == Tribe::Fill::Data) {
-                            glVertex2f(float(j * _x_sec),
-                                       yToGl((*_tribe)[i].data()[j + _x_start], st));
+                if (compress) { //对于大量曲线采取压缩方式绘制会提升效率同时减少内存
+                    glBegin(GL_LINE_STRIP);
+                    for (int j = 0; j < X_POINTS; ++j) {
+                        int index = qRound(j * _x_rate) + _x_start;
+                        glVertex2f(float(j * _x_sec * _x_rate),
+                                   yToGl((*_tribe)[i].data()[index], st));
+                    }
+                    glEnd();
+                    glFlush();
+                    glPointSize(_tribe->style(i).width() * 2 + 2);
+                    glBegin(GL_POINTS);
+                    if ((double) rect().width() / xPoints() >= 15) {
+                        for (int j = 0; j < X_POINTS; ++j) {
+                            int index = qRound(j * _x_rate) + _x_start;
+                            if (_tribe->at(i).fillType(index) == Tribe::Fill::Data) {
+                                glVertex2f(float(j * _x_sec),
+                                           yToGl((*_tribe)[i].data()[index], st));
+                            }
                         }
+                    }
+                    glEnd();
+                    glFlush();
+                } else {
+                    glBegin(GL_LINE_STRIP);
+                    for (int j = 0; j < xPoints(); ++j) {
+                        glVertex2f(float(j * _x_sec),
+                                   yToGl((*_tribe)[i].data()[j + _x_start], st));
                     }
                     if (_x_start + xPoints() < _tribe->len()) {
                         glVertex2f(float(xPoints() * _x_sec),
                                    yToGl((*_tribe)[i].data()[_x_start + xPoints()], st));
                     }
+                    glEnd();
+                    glFlush();
+                    glPointSize(_tribe->style(i).width() * 2 + 2);
+                    glBegin(GL_POINTS);
+                    if ((double) rect().width() / xPoints() >= 15) {
+                        for (int j = 0; j < xPoints(); ++j) {
+                            if (_tribe->at(i).fillType(j + _x_start) == Tribe::Fill::Data) {
+                                glVertex2f(float(j * _x_sec),
+                                           yToGl((*_tribe)[i].data()[j + _x_start], st));
+                            }
+                        }
+                        if (_x_start + xPoints() < _tribe->len()) {
+                            glVertex2f(float(xPoints() * _x_sec),
+                                       yToGl((*_tribe)[i].data()[_x_start + xPoints()], st));
+                        }
+                    }
+                    glEnd();
+                    glFlush();
                 }
-                glEnd();
-                glFlush();
             }
             break;
         }
@@ -737,18 +762,8 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
             update();
         } else if (_movement == MoveZoomRect) {
             QPoint point = event->pos();
-            if (point.x() < 0) {
-                point.setX(0);
-            }
-            if (point.x() >= rect().width()) {
-                point.setX(rect().width());
-            }
-            if (point.y() < 0) {
-                point.setY(0);
-            }
-            if (point.y() > rect().height()) {
-                point.setY(rect().height());
-            }
+            point.setX(limitXInRect(point.x()));
+            point.setY(limitYInRect(point.y()));
             if (!_zoom_x && !_zoom_y) {
                 return;
             }
@@ -762,7 +777,10 @@ void Sketch::mouseMoveEvent(QMouseEvent *event)
             update();
         }
     } else if (event->buttons() & Qt::MiddleButton) {
-        setCursor(Qt::ClosedHandCursor);
+        if (_movement == MoveParallel) {
+            setCursor(Qt::ClosedHandCursor);
+            parallelMoveByCursor(event->pos());
+        }
     } else if (event->buttons() & Qt::RightButton) {}
     else {
 //        qDebug() << "move";
@@ -808,6 +826,7 @@ void Sketch::mousePressEvent(QMouseEvent *event)
         }
     } else if (event->button() == Qt::MiddleButton) {
         setCursor(Qt::OpenHandCursor);
+        _move_parallel_pos = event->pos();
         _movement = MoveParallel;
     } else if (event->button() == Qt::RightButton) {
 
@@ -816,6 +835,7 @@ void Sketch::mousePressEvent(QMouseEvent *event)
 
 void Sketch::mouseReleaseEvent(QMouseEvent *event)
 {
+    /*
     emitMessage(Debug, QString("x:%1, y:%2").arg(event->pos().x()).arg(event->pos().y()));
     emitMessage(Debug, QString("rect::L:%1 R:%2 T:%3 B:%4")
             .arg(_zoom_rect.left())
@@ -823,7 +843,8 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
             .arg(_zoom_rect.top())
             .arg(_zoom_rect.bottom())
     );
-//    qDebug() << event->buttons();     //松开鼠标事件buttons只会返回还按着的
+    qDebug() << event->buttons();     //松开鼠标事件buttons只会返回还按着的
+    */
     if (!(event->buttons() & Qt::LeftButton)) { //松开鼠标左键
         if (_movement == MoveVernier) {}
         else if (_movement == MoveZoomRect) {
@@ -946,6 +967,19 @@ void Sketch::zoomPlusRect()
     update();
 }
 
+void Sketch::parallelMoveByCursor(const QPoint &pos)
+{
+    QPoint point;
+    point.setX(limitXInRect(pos.x()));
+    point.setY(limitYInRect(pos.y()));
+    double delta_x = -(point.x() - _move_parallel_pos.x())
+                     / (double) (rect().width());
+    double delta_y = (point.y() - _move_parallel_pos.y())
+                     / (double) (rect().height());
+    _move_parallel_pos = point;
+    emit parallelMove(delta_x, delta_y);
+}
+
 #undef MINIMUM_ZOOM_RECT_WIDTH
 #undef MINIMUM_ZOOM_RECT_HEIGHT
 
@@ -1049,6 +1083,26 @@ void Sketch::currentIndexOverflow()
     if (_current_index >= _tribe->size()) {
         _current_index = -1;
     }
+}
+
+int Sketch::limitXInRect(int x) const
+{
+    if (x < 0) {
+        x = 0;
+    } else if (x > rect().width()) {
+        x = rect().width() - 1;
+    }
+    return x;
+}
+
+int Sketch::limitYInRect(int y) const
+{
+    if (y < 0) {
+        y = 0;
+    } else if (y > rect().height()) {
+        y = rect().height() - 1;
+    }
+    return y;
 }
 
 

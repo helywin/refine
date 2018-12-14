@@ -118,6 +118,8 @@ private:
 
     Qt::KeyboardModifiers _modifiers;
 
+    QPoint _move_parallel_pos;
+
 #ifdef VERTEX
     GLuint *_curve_buffers;
     GLuint *_vaos;
@@ -199,6 +201,7 @@ public:
     void zoomPlusByCursor();
     void zoomMinusByCursor();
     void zoomPlusRect();
+    void parallelMoveByCursor(const QPoint &pos);
     bool xZoomPlusLimit() const;
     bool yZoomPlusLimit() const;
 
@@ -213,38 +216,26 @@ protected:
 
 private:
     void plotXGrid();
-
     void plotYGrid();
-
     void plotVerniers();
-
     void plotPatterns();
-
     void plotCurves();
-
     void plotZoomRect();
-
     void drawGlString(double x0, double y0, const QString &str,
                       const QColor &color, const QFont &font);
-
     void drawQtString(int x0, int y0, const QString &str, const QColor &color,
                       const QFont &font);
-
     void pointGlToQt(double x0, double y0, int &x1, int &y1);
-
     void pointQtToGl(int x0, int y0, double &x1, double &y1);
-
     int xGlToQt(double x) const;
     double xQtToGl(int x) const;
-
     int yGlToQt(double y) const;
     double yQtToGl(int y) const;
-
     void drawFocusSign();
-
     bool isMouseOnDragItem(int x);
-
     void currentIndexOverflow();
+    int limitXInRect(int x) const;
+    int limitYInRect(int y) const;
 
 protected:
     void wheelEvent(QWheelEvent *event) override;
@@ -256,18 +247,13 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
 signals:
     void scrollMove(int angle);
-
     void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
-
     void zoomMinus(double x_rate, double x_start,
                    double y_rate, double y_start, int edge);
-
     void zoomDefault();
-
     void zoomMinimum();
-
     void vernierMove(int pos, double time);
-
+    void parallelMove(double delta_x, double delta_y);
 };
 
 
