@@ -49,7 +49,7 @@ void SketchX::plotXAxis()
         return;
     }
     int left = 1;
-    int right = rect().width() - 1;
+    int right = rect().width();
     int range = right - left;
     int num = 10;
     const int font_size = 10;
@@ -84,7 +84,7 @@ void SketchX::plotXAxis()
         } else {
             QRect text_rect = metrics.boundingRect(text);
             _painter.drawLine(x, yt, x, rect().bottom());
-            _painter.drawText(QRect(x - text_rect.width() - 4, ytx + 4,
+            _painter.drawText(QRect(x - text_rect.width() - 4, ytx + 2,
                                     text_rect.width() + 2, text_rect.height()),
                               text,
                               QTextOption(Qt::AlignRight | Qt::AlignVCenter));
@@ -92,5 +92,12 @@ void SketchX::plotXAxis()
         }
     }
     _painter.drawLine(left, yt, right, yt);
+    QString span = QString("时间: %1s 每格: %2s")
+            .arg(_points / 1000.0 * _msec, 0, 'f', 2)
+            .arg(_points / 1000.0 * _msec / _x_graduate_num , 0, 'f', 3);
+    int span_width = metrics.boundingRect(span).width() + font_size;
+    QRect span_rect((rect().width() - span_width) / 2,
+                    ytx + 2, span_width, metrics.height());
+    _painter.drawText(span_rect, span, QTextOption(Qt::AlignLeft | Qt::AlignVCenter));
     _painter.end();
 }

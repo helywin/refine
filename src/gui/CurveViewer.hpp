@@ -5,6 +5,7 @@
 #ifndef REFINE_CURVEVIEWER_HPP
 #define REFINE_CURVEVIEWER_HPP
 
+#include <QtCore/QTimer>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
@@ -34,6 +35,8 @@ private:
     Tribe *_tribe;
     bool _zoom_x;
     bool _zoom_y;
+    int _msec;
+    QTimer _timer;
 
 public:
     explicit CurveViewer(QWidget *parent, Revolve *revolve, Message *message = nullptr);
@@ -46,6 +49,12 @@ public:
 
     void resetHScroll(int len, bool reset);
     void resetVScroll(int len);
+
+    inline void setMsec(int msec)
+    {
+        _msec = msec;
+        _timer.setInterval(_msec);
+    }
 
 public slots:
     void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);

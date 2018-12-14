@@ -6,6 +6,7 @@
 #define REFINE_SKETCH_HPP
 
 #include <QtCore/QTimer>
+#include <QtCore/QTime>
 #include <QtGui/QWheelEvent>
 #include <QtWidgets/QOpenGLWidget>
 #include <QtGui/QOpenGLExtraFunctions>
@@ -119,6 +120,9 @@ private:
     Qt::KeyboardModifiers _modifiers;
 
     QPoint _move_parallel_pos;
+    QTime _last_repaints;
+    int _fps_counter;
+    double _fps;
 
 #ifdef VERTEX
     GLuint *_curve_buffers;
@@ -139,6 +143,8 @@ public:
     inline int xStart() const { return _x_start; }
 
     inline int xPoints() const { return qRound(X_POINTS * _x_rate); }
+
+    inline double xPointsF() const { return X_POINTS * _x_rate; } //这个供后续运算使用，保持精度
 
     inline double xRate() const { return _x_rate; }
 
@@ -221,6 +227,7 @@ private:
     void plotPatterns();
     void plotCurves();
     void plotZoomRect();
+    void plotFlags();
     void drawGlString(double x0, double y0, const QString &str,
                       const QColor &color, const QFont &font);
     void drawQtString(int x0, int y0, const QString &str, const QColor &color,
@@ -236,6 +243,7 @@ private:
     void currentIndexOverflow();
     int limitXInRect(int x) const;
     int limitYInRect(int y) const;
+    bool needToCompress() const;
 
 protected:
     void wheelEvent(QWheelEvent *event) override;

@@ -62,6 +62,7 @@ void CurveViewer::setup()
     _layout->setContentsMargins(0, 0, 0, 0);
     _h_scroll->setMaximum(0);
     _v_scroll->setMaximum(0);
+    _timer.setInterval(10);
     connect(_h_scroll, &QScrollBar::valueChanged,
             this, &CurveViewer::hScrollChanged, Qt::DirectConnection);
     connect(_v_scroll, &QScrollBar::valueChanged,
@@ -233,11 +234,11 @@ void CurveViewer::zoomMinus(double x_rate, double x_start,
 
 void CurveViewer::parallelMove(double delta_x, double delta_y)
 {
-    int start_pos_x = _sketch->xStart() + int(delta_x * _sketch->xPoints());
+    int start_pos_x = _sketch->xStart() + qRound(delta_x * _sketch->xPointsF());
     if (start_pos_x < 0) {
         start_pos_x = 0;
-    } else if (start_pos_x > _tribe->len()-_sketch->xPoints()) {
-        start_pos_x = _tribe->len()-_sketch->xPoints();
+    } else if (start_pos_x > _tribe->len() - _sketch->xPointsF()) {
+        start_pos_x = _tribe->len() - _sketch->xPoints();
     }
     _sketch->setXStart(start_pos_x);
     _h_scroll->setValue(start_pos_x);
@@ -271,7 +272,7 @@ void CurveViewer::parallelMove(double delta_x, double delta_y)
 
 void CurveViewer::zoomX(double rate, double start)
 {
-    int start_pos = _sketch->xStart() + int(_sketch->xPoints() * start);
+    int start_pos = _sketch->xStart() + int(_sketch->xPointsF() * start);
     _sketch->setXStart(start_pos);
     _sketch->setXRate(rate * _sketch->xRate());
     _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
@@ -313,7 +314,7 @@ void CurveViewer::zoomXMinusEdgeLeft(double rate)
 
 void CurveViewer::zoomXMinusEdgeRight(double rate)
 {
-    int start_pos = _tribe->len() - qCeil(_sketch->xPoints() * rate);
+    int start_pos = _tribe->len() - qCeil(_sketch->xPointsF() * rate);
     _sketch->setXStart(start_pos);
     _sketch->setXRate(rate * _sketch->xRate());
     _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());

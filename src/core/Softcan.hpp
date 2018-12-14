@@ -205,6 +205,8 @@ public:
 
         QStringList str() const;
         QStringList strClean() const;
+
+        void clearData();
     };
 
 private:
@@ -275,6 +277,8 @@ public:
     QStringList tab() const;
 
     QStringList str() const;
+
+    void clearDataSpace();
 
 #define SOFTCAN_MAGIC_LEN 12
     static bool checkMagic(const char *array);

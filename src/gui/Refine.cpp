@@ -216,10 +216,10 @@ void Refine::setup()
     setCentralWidget(_central);
 
     _display = new Display(_central, &_revolve, this);
-    _revolve.setSketch(_display->sketch());
-    _tribebox->connectModelToSketch(_display->sketch());
-    _tribebox->connectModelToSketchY(_display->sketchY());
-    _tribebox->connectModelToSketchXTop(_display->sketchXTop());
+    _revolve.setSketch(_display->curveViewer()->sketch());
+    _tribebox->connectModelToSketch(_display->curveViewer()->sketch());
+    _tribebox->connectModelToSketchY(_display->curveViewer()->sketchY());
+    _tribebox->connectModelToSketchXTop(_display->curveViewer()->sketchXTop());
     _layout->addWidget(_display);
     _display->setParentLayout(_layout);
     _display->addDock(_tribebox);
@@ -373,7 +373,7 @@ void Refine::connectCan()
             }
         }
         bool closed = false;
-        if (unfinished && flag || !unfinished) {
+        if ((unfinished && flag) || !unfinished) {
             closed = _revolve.can().close();
         }
         if (closed) {      //与运算后面的语句可能不执行，看条件而定
@@ -473,7 +473,7 @@ void Refine::startTimers(QAction *action)
 
 void Refine::changeUpdateMsec(QAction *action)
 {
-//    _display->sketch().setMsec(action->data().toInt());
+    _display->curveViewer()->setMsec(action->data().toInt());
 }
 
 void Refine::displayAndHide(QAction *action)
@@ -493,7 +493,7 @@ void Refine::displayAndHide(QAction *action)
 
 void Refine::setSmooth()
 {
-    _display->sketch()->setSmooth(_menu_view_smooth->isChecked());
+    _display->curveViewer()->sketch()->setSmooth(_menu_view_smooth->isChecked());
 }
 
 void Refine::widgetsVisibilityChanged(bool visible)

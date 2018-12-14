@@ -423,7 +423,9 @@ bool Revolve::importSoftcanCurveData(const QString &name)
     if (!_softcan.load(name)) {
         return false;
     }
+    _softcan.toCurve(_curve);
     _softcan.toTribe(_tribe);
+    _softcan.clearDataSpace();
     _sketch->init();
     _sketch->update();
     _tribe_model->genData(&_tribe);

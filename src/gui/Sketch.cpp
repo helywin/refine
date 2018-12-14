@@ -35,7 +35,9 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
         _zoom_y(false),
         _plot_zoom_rect(false),
         _zoom_finish(true),
-        _modifiers(Qt::NoModifier)
+        _modifiers(Qt::NoModifier),
+        _fps_counter(-1),
+        _fps(60)
 {
     setMinimumWidth(200);
     setFocusPolicy(Qt::ClickFocus);
@@ -75,6 +77,7 @@ void Sketch::paintGL()
     plotYGrid();
     plotXGrid();
     plotCurves();
+    plotFlags();
     plotVerniers();
     plotZoomRect();
 //    drawFocusSign();
@@ -230,7 +233,6 @@ void Sketch::plotCurves()
             }
 #else
         {
-            bool compress = xPoints() / rect().width() > 4;
             for (int i = 0; i < _tribe->size(); ++i) {
                 const Tribe::Style &st = _tribe->style(i);
                 if (!st.display()) {
@@ -240,7 +242,7 @@ void Sketch::plotCurves()
 //                qDebug() << "Sketch::plotCurves() color: " << color;
                 glColor3d(color.redF(), color.greenF(), color.blueF());
                 glLineWidth(st.width());
-                if (compress) { //对于大量曲线采取压缩方式绘制会提升效率同时减少内存
+                if (needToCompress()) { //对于大量曲线采取抽样绘制会提升效率同时减少内存
                     glBegin(GL_LINE_STRIP);
                     for (int j = 0; j < X_POINTS; ++j) {
                         int index = qRound(j * _x_rate) + _x_start;
@@ -325,11 +327,11 @@ void Sketch::plotCurves()
 
 void Sketch::plotXGrid()
 {
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_BLEND);
-    if (_current_index < 0) {
+    if (_tribe->size() == 0) {
         return;
     }
+    glDisable(GL_LINE_SMOOTH);
+    glDisable(GL_BLEND);
     int num = 10;
     int range = rect().width();
     while (range / num > X_MAXIMUM_PIXEL) {
@@ -365,11 +367,11 @@ void Sketch::plotXGrid()
 
 void Sketch::plotYGrid()
 {
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_BLEND);
-    if (_current_index < 0) {
+    if (_current_index < 0 || !_tribe->style(_current_index).display()) {
         return;
     }
+    glDisable(GL_LINE_SMOOTH);
+    glDisable(GL_BLEND);
 //    qDebug() << "Sketch::plotYGrid()";
     Tribe::Style &style = _tribe->style(_current_index);
     int num = 10;
@@ -436,8 +438,8 @@ void Sketch::plotVerniers()
 //        } else {
 //            font.setFamily("微软雅黑");
 //        }
-        int row_height = font_size + font_size / 2;
         QFontMetrics metrics(font, this);
+        int row_height = metrics.height();
         painter.setPen(pen);
         painter.setBrush(brush);
         painter.setFont(font);
@@ -466,19 +468,24 @@ void Sketch::plotVerniers()
             }
         }
         int min_value_width = font_size * 4;
-        int max_cnt = rect().height() / (font_size + vernier_dist);
+        int max_cnt = rect().height() / (metrics.height());
         int cnt = 0;
         QColor background = _background_color;
         background.setAlpha(150);
         for (int i = 0; i < _tribe->size(); ++i) {
 //            qDebug() << "Sketch::plotVerniers()";
-            const Tribe::Style &st = _tribe->style(i);
             if (!_tribe->style(i).display()) {
                 continue;
             }
-            if (cnt > max_cnt) {
+            cnt += 1;
+            if (cnt == max_cnt) {
+                if (i < _current_index) {
+                    i = _current_index;     //保证最后一个能把选中的曲线数据绘制出来
+                }
+            } else if (cnt > max_cnt) {
                 break;  //多画也是看不到，反而增加重绘时间
             }
+            const Tribe::Style &st = _tribe->style(i);
             const Tribe::Cell &tr = (*_tribe).cells()[i];
             color = st.color();
             pen.setColor(color);
@@ -802,7 +809,7 @@ void Sketch::mousePressEvent(QMouseEvent *event)
         if (_vernier_visible && qAbs(vpos - event->pos().x()) < MOUSE_DRAG_DISTANCE) {
             setCursor(Qt::SizeHorCursor);
             _movement = MoveVernier;
-        } else {
+        } else if (_tribe->size() != 0) {
             if (!_zoom_finish) {
                 return;
             }
@@ -969,6 +976,10 @@ void Sketch::zoomPlusRect()
 
 void Sketch::parallelMoveByCursor(const QPoint &pos)
 {
+    if (qAbs(pos.x() - _move_parallel_pos.x())
+        < rect().width() / xPointsF() / 2) {    //防止放很大后移动速度过慢导致不移动线像
+        return;
+    }
     QPoint point;
     point.setX(limitXInRect(pos.x()));
     point.setY(limitYInRect(pos.y()));
@@ -1008,7 +1019,7 @@ void Sketch::zoomMinusByVernier()
 
 bool Sketch::xZoomPlusLimit() const
 {
-    return xPoints() < 10;
+    return xPointsF() < 10;
 }
 
 bool Sketch::yZoomPlusLimit() const
@@ -1040,11 +1051,11 @@ void Sketch::zoomMinusFixed(double x_rate, double x_scale, double y_rate, double
     if (_zoom_x) {
         if (x_rate * xRate() > maximumXRate()) {
             edge |= EdgeX;
-        } else if (x_scale * (x_rate - 1) * xPoints()
+        } else if (x_scale * (x_rate - 1) * xPointsF()
                    > _x_start) {
             edge |= EdgeLeft;
-        } else if ((1 - x_scale) * (x_rate - 1) * xPoints()
-                   > _tribe->len() - _x_start - xPoints()) {
+        } else if ((1 - x_scale) * (x_rate - 1) * xPointsF()
+                   > _tribe->len() - _x_start - xPointsF()) {
             edge |= EdgeRight;
         } else {
             x_start = x_scale * (1 - x_rate);
@@ -1103,6 +1114,51 @@ int Sketch::limitYInRect(int y) const
         y = rect().height() - 1;
     }
     return y;
+}
+
+#define FPS_TIMES 5
+
+void Sketch::plotFlags()
+{
+    if (_fps_counter == -1) {
+        _last_repaints = QTime::currentTime();
+        _fps_counter = 0;
+        return;
+    }
+    _fps_counter += 1;
+    _fps_counter %= FPS_TIMES;
+    if (_fps_counter == 0) {
+        _fps = 1000.0 / (_last_repaints.msecsTo(QTime::currentTime())) * FPS_TIMES;
+        _last_repaints = QTime::currentTime();
+    }
+    QPainter painter;
+    painter.begin(this);
+    const int font_size = 10;
+    QColor color(0xffffff);
+//    QBrush brush(color);
+    QPen pen(color);
+    QFont font;
+    font.setStyleHint(QFont::Helvetica, QFont::PreferQuality);
+    font.setFamily("Helvetica");
+    font.setPointSize(font_size);
+    painter.setFont(font);
+    painter.setPen(pen);
+//    painter.setPen(brush);
+    QFontMetrics metrics(font);
+    QString flags = QString("fps:%1").arg(_fps, 2, 'f', 1, QChar(' '));
+    if (needToCompress()) {
+        flags = QString("抽样绘制 ") + flags;
+    }
+    int str_width = metrics.boundingRect(flags).width() + font_size;
+    QRect str_rect(rect().width() - str_width,
+                   0, str_width, metrics.height());
+    painter.drawText(str_rect, flags, QTextOption(Qt::AlignRight | Qt::AlignVCenter));
+    painter.end();
+}
+
+bool Sketch::needToCompress() const
+{
+    return xPointsF() / rect().width() > 6;
 }
 
 

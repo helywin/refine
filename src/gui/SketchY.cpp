@@ -51,7 +51,7 @@ void SketchY::plotYAxis()
     int bottom = rect().height() - 45 - 1;
     int range = bottom - top;
     int num = 10;
-    int xr = rect().right();
+    int xr = rect().width();
     int xl = xr - Y_AXIS_LINES_LEN;
     int xt = qRound(rect().width() * 0.1);
     if (_current_index == -1 ||

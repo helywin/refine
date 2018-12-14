@@ -255,6 +255,15 @@ QDataStream &operator>>(QDataStream &stream, Softcan::Cell &cell)
     return stream;
 }
 
+void Softcan::Cell::clearData()
+{
+    _save_data = false;
+    _x.clear();
+    _x.shrink_to_fit();
+    _y.clear();
+    _y.shrink_to_fit();
+}
+
 QDataStream &operator>>(QDataStream &stream, Softcan &softcan)
 {
     while (!stream.atEnd()) {
@@ -319,12 +328,14 @@ void Softcan::toTribe(Tribe &tribe)
         tribe.styles().append(qMove(style));
         Tribe::Cell cell(iter.name());
 //        qDebug() << "Softcan::toTribe y.size() " << iter.y().size();
-        for (const auto &v : iter.y()) {
-            cell.push(Tribe::Data, (float) v);
+        if (iter.saveFlag()) {
+            for (const auto &v : iter.y()) {
+                cell.push(Tribe::Data, (float) v);
+            }
         }
-        tribe.setLen();
         tribe.cells().append(qMove(cell));
     }
+    tribe.setLen();
 }
 
 
@@ -358,5 +369,12 @@ bool Softcan::checkMagic(const char *array)
         }
     }
     return true;
+}
+
+void Softcan::clearDataSpace()
+{
+    for (auto &iter : _cells) {
+        iter.clearData();
+    }
 }
 
