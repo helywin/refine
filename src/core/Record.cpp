@@ -16,23 +16,23 @@ Record::Record(Message *message) :
         _record(),
         _buffer_tail(),
         _buffer_head(),
-        _status(Stop),
-        _cmd(CommandStop),
+        _status(Re::Stop),
+        _cmd(Re::CommandStop),
         _msec(10) {}
 
 void Record::run()
 {
-    while (_cmd != CommandStop) {
+    while (_cmd != Re::CommandStop) {
         msleep(_msec);
-        if (_cmd == CommandPause) {
-            if (_status == Running) {
-                _status = Pause;
+        if (_cmd == Re::CommandPause) {
+            if (_status == Re::Running) {
+                _status = Re::Pause;
             }
             continue;
         }
-        if (_cmd == CommandResume &&
-            _status == Pause) {
-            _status = Running;
+        if (_cmd == Re::CommandResume &&
+            _status == Re::Pause) {
+            _status = Re::Running;
         }
         _buffer_head = _buffer->head();
         _file.dumpFrameRecord(*_buffer, _buffer_tail, _buffer_head);
@@ -42,19 +42,19 @@ void Record::run()
 
 void Record::begin()
 {
-    _cmd = None;
+    _cmd = Re::NoCommand;
     if (_file.dumpFrameRecordBegin(_record)) {
         start();
-        _status = Running;
+        _status = Re::Running;
     }
 }
 
 void Record::stop(bool error)
 {
-    _cmd = CommandStop;
+    _cmd = Re::CommandStop;
     while (isRunning()) {}
     if (!error) {
         _file.dumpFrameRecordFinish(_record);
     }
-    _status = Stop;
+    _status = Re::Stop;
 }

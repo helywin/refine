@@ -226,7 +226,7 @@ signals:
 protected:
     void closeEvent(QCloseEvent *event) override;
 
-    inline void emitMessage(int type, const QString &msg) override
+    inline void emitMessage(MessageType type, const QString &msg) override
     {
         emit message(type, msg);
     }

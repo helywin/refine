@@ -6,18 +6,12 @@
 #define REFINE_MESSAGE_HPP
 
 #include <QtCore/QString>
+#include "Global.hpp"
+using Re::MessageType;
 
 class Message
 {
 public:
-    enum MessageType
-    {
-        Info = 0x01,
-        Warning = 0x02,
-        Critical = 0x04,
-        Fatal = 0x08,
-        Debug = 0x10
-    };
 private:
     Message *_parent;
 
@@ -25,7 +19,7 @@ public:
     explicit Message(Message *parent = nullptr);
 
 protected:
-    virtual void emitMessage(int type, const QString &msg);//parent为nullptr必须重载
+    virtual void emitMessage(MessageType type, const QString &msg);//parent为nullptr必须重载
 
 };
 

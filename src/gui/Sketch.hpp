@@ -59,6 +59,8 @@ public:
         EdgeY = EdgeTop | EdgeBottom
     };
 
+    Q_DECLARE_FLAGS(ZoomEdges, ZoomEdge)
+
     /*!
      * @brief 区间数据
      */
@@ -257,7 +259,7 @@ signals:
     void scrollMove(int angle);
     void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
     void zoomMinus(double x_rate, double x_start,
-                   double y_rate, double y_start, int edge);
+                   double y_rate, double y_start, ZoomEdges edge);
     void zoomDefault();
     void zoomMinimum();
     void vernierMove(int pos, double time);

@@ -7,7 +7,7 @@
 Message::Message(Message *parent) :
     _parent(parent) {}
 
-void Message::emitMessage(int type, const QString &msg)
+void Message::emitMessage(MessageType type, const QString &msg)
 {
     if(_parent) {
         _parent->emitMessage(type, msg);

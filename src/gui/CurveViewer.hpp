@@ -11,8 +11,7 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QScrollBar>
 #include "Message.hpp"
-
-class Sketch;
+#include "Sketch.hpp"
 class SketchXTop;
 class SketchX;
 class SketchY;
@@ -59,7 +58,7 @@ public:
 public slots:
     void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
     void zoomMinus(double x_rate, double x_start,
-                   double y_rate, double y_start, int edge);
+                   double y_rate, double y_start, Sketch::ZoomEdges edge);
     void parallelMove(double delta_x, double delta_y);
 //    void zoomPlusFixed();
 //    void zoomMinusFixed();

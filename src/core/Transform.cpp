@@ -17,8 +17,8 @@ Transform::Transform(Message *message) :
         _buffer(nullptr),
         _tribe(nullptr),
         _file(),
-        _status(Stop),
-        _cmd(None) {}
+        _status(Re::Stop),
+        _cmd(Re::NoCommand) {}
 
 void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
                           unsigned long msec)
@@ -32,18 +32,18 @@ void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
 
 void Transform::run()
 {
-    while (_cmd != CommandStop) {
+    while (_cmd != Re::CommandStop) {
         msleep(_msec);
-        if (_cmd == CommandPause) {
-            if (_status == Running) {
+        if (_cmd == Re::CommandPause) {
+            if (_status == Re::Running) {
                 _tribe->newSegment();
-                _status = Pause;
+                _status = Re::Pause;
             }
             continue;
         }
-        if (_cmd == CommandResume &&
-            _status == Pause) {
-            _status = Running;
+        if (_cmd == Re::CommandResume &&
+            _status == Re::Pause) {
+            _status = Re::Running;
         }
 //#define TEST_SEC    //测试时间消耗，发现主要开销来自线程创建和销毁
 #ifdef TEST_SEC
@@ -152,21 +152,21 @@ void Transform::run()
 
 void Transform::begin()
 {
-    _cmd = None;
+    _cmd = Re::NoCommand;
     _tribe->reset();
     start(QThread::HighestPriority);
-    _status = Running;
+    _status = Re::Running;
 }
 
 void Transform::stop(const QString &file)
 {
-    _cmd = CommandStop;
+    _cmd = Re::CommandStop;
     while (isRunning()) {}
     if (!file.isEmpty()) {
         QFile f(file);
         _file.dumpCurveRecord(f, *_tribe);
     }
-    _status = Stop;
+    _status = Re::Stop;
 }
 
 /*

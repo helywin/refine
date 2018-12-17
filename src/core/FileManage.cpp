@@ -84,7 +84,7 @@ void FileManage::move(const QFileInfo &info, const QFileInfo &cache, const QStri
                         cache.absoluteFilePath())) {
             QFile::remove(info.absoluteFilePath());
         } else {
-            emitMessage(Critical, QString("%1 %2")
+            emitMessage(Re::Critical, QString("%1 %2")
                     .arg(msg)
                     .arg(info.fileName()));
         }
@@ -96,7 +96,7 @@ void FileManage::copy(const QFileInfo &info, const QFileInfo &cache, const QStri
     if (info.exists()) {
         if (!QFile::copy(info.absoluteFilePath(),
                          cache.absoluteFilePath())) {
-            emitMessage(Critical, QString("%1 %2")
+            emitMessage(Re::Critical, QString("%1 %2")
                     .arg(msg)
                     .arg(info.fileName()));
         }

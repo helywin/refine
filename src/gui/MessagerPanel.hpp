@@ -13,31 +13,25 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QAction>
+#include "Global.hpp"
 
 class MessagerPanel : public QTextEdit
 {
 Q_OBJECT
 public:
-    enum MessageType
-    {
-        Info = 0x01,
-        Warning = 0x02,
-        Critical = 0x04,
-        Fatal = 0x08,
-        Debug = 0x10
-    };
+
     class Cell
     {
     private:
         QDateTime _time;
-        MessageType _type;
+        Re::MessageType _type;
         QString _text;
     public:
         Cell() : _time(QDateTime::currentDateTime()),
-                 _type(Info),
+                 _type(Re::Info),
                  _text() {}
 
-        Cell(MessageType type, const QString &text) :
+        Cell(Re::MessageType type, const QString &text) :
                 _time(QDateTime::currentDateTime()),
                 _type(type),
                 _text(qMove(text)) {}
@@ -69,7 +63,7 @@ private:
 public:
     explicit MessagerPanel(QWidget *parent = nullptr);
 
-    static QString typeStr(MessageType type);
+    static QString typeStr(Re::MessageType type);
 
     inline void setShowTypes(int types) { _show_types = types; }
 

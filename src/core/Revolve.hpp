@@ -13,6 +13,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QThread>
 #include <QtWidgets/QAction>
+#include "Global.hpp"
 #include "Can.hpp"
 #include "Curve.hpp"
 #include "File.hpp"
@@ -32,7 +33,6 @@
 #include "TribeModel.hpp"
 #include "Message.hpp"
 #include "FileManage.hpp"
-
 /*!
  * @brief 底层调度类
  * 外部GUI只传文件名进来
@@ -44,12 +44,6 @@ class Revolve : public QObject, public Message
 {
 Q_OBJECT
 public:
-    enum Status
-    {
-        Stop,
-        Running,
-        Pause
-    };
 
     enum Config
     {
@@ -76,7 +70,7 @@ private:
     unsigned long _msec;                    //! \brief 采样周期
     int _time;                              //! \brief 自动停止时间
     int _config;
-    Status _status;
+    Re::RunningStatus _status;
 
     Sketch *_sketch;
     TribeModel *_tribe_model;
@@ -135,7 +129,7 @@ public:
 
     inline void setSketch(Sketch *sketch) { _sketch = sketch; }
 
-    inline bool finished() const { return _status == Stop; }
+    inline bool finished() const { return _status == Re::Stop; }
 
     inline void setTribeModel(TribeModel *model) { _tribe_model = model; }
 
@@ -144,7 +138,7 @@ public:
     inline void setActionCan(QAction *action) { _menu_init_can = action; }
 
 protected:
-    inline void emitMessage(int type, const QString &msg) override
+    inline void emitMessage(MessageType type, const QString &msg) override
     {
         emit message(type, msg);
     }

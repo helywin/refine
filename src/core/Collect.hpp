@@ -15,6 +15,7 @@
 #include "Can.hpp"
 #include "File.hpp"
 #include "Message.hpp"
+#include "Global.hpp"
 
 class Collect : public QThread, public Message
 {
@@ -34,29 +35,14 @@ public:
         ErrorFile
     };
 
-    enum Status
-    {
-        Stop,
-        Running,
-        Pause
-    };
-
-    enum Command
-    {
-        None,
-        CommandStop,
-        CommandResume,
-        CommandPause
-    };
-
 private:
     Can *_can;
     Buffer *_buffer;
     Manner _manner;
     QFile _frame_file;
     File _file;
-    Status _status;
-    Command _cmd;
+    Re::RunningStatus _status;
+    Re::RunningCommand _cmd;
     unsigned long _msec;
     int _frames_loop;
 
@@ -69,9 +55,9 @@ public:
 
     void begin();
 
-    inline void pause() { _cmd = CommandPause; }
+    inline void pause() { _cmd = Re::CommandPause; }
 
-    inline void resume() { _cmd = CommandResume; }
+    inline void resume() { _cmd = Re::CommandResume; }
 
     void stop();
 

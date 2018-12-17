@@ -7,7 +7,6 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
 #include "CurveViewer.hpp"
-#include "Sketch.hpp"
 #include "SketchY.hpp"
 #include "SketchX.hpp"
 #include "SketchXTop.hpp"
@@ -51,10 +50,11 @@ void CurveViewer::setup()
     if (file.isOpen()) {
         QTextStream stream(&file);
         QString scrollbar_css = stream.readAll();
-        qDebug() << scrollbar_css;
+//        qDebug() << scrollbar_css;
         _h_scroll->setStyleSheet(scrollbar_css);
         _v_scroll->setStyleSheet(scrollbar_css);
     }
+    file.close();
     _layout->addWidget(_widget_sketch, 0, 0);
     _layout->addWidget(_h_scroll, 1, 0);
     _layout->addWidget(_v_scroll, 0, 1);
@@ -108,7 +108,7 @@ void CurveViewer::resetHScroll(int len, bool reset)
     } else {
         _h_scroll->setValue(_h_scroll->maximum());
     }
-    emitMessage(Debug, tr("重设滚动条大小: %1").arg(_h_scroll->maximum()));
+    emitMessage(Re::Debug, tr("重设滚动条大小: %1").arg(_h_scroll->maximum()));
 }
 
 void CurveViewer::resetVScroll(int len)
@@ -199,20 +199,20 @@ void CurveViewer::zoomPlus(double x_rate, double x_start, double y_rate, double 
 }
 
 void CurveViewer::zoomMinus(double x_rate, double x_start,
-                            double y_rate, double y_start, int edge)
+                            double y_rate, double y_start, Sketch::ZoomEdges edge)
 {
     if (_zoom_x) {
         if ((edge & Sketch::EdgeLeft) && (edge & Sketch::EdgeRight)) {
             zoomXMinimum();
         } else if (edge & Sketch::EdgeLeft) {
             zoomXMinusEdgeLeft(x_rate);
-            emitMessage(Debug, "x轴缩小 EdgeLeft");
+            emitMessage(Re::Debug, "x轴缩小 EdgeLeft");
         } else if (edge & Sketch::EdgeRight) {
             zoomXMinusEdgeRight(x_rate);
-            emitMessage(Debug, "x轴缩小 EdgeRight");
+            emitMessage(Re::Debug, "x轴缩小 EdgeRight");
         } else {
             zoomX(x_rate, x_start);
-            emitMessage(Debug, "x轴缩小 free");
+            emitMessage(Re::Debug, "x轴缩小 free");
         }
     }
     if (_zoom_y) {
@@ -220,13 +220,13 @@ void CurveViewer::zoomMinus(double x_rate, double x_start,
             zoomYMinimum();
         } else if (edge & Sketch::EdgeBottom) {
             zoomYMinusEdgeBottom(y_rate);
-            emitMessage(Debug, "y轴缩小 EdgeBottom");
+            emitMessage(Re::Debug, "y轴缩小 EdgeBottom");
         } else if (edge & Sketch::EdgeTop) {
             zoomYMinusEdgeTop(y_rate);
-            emitMessage(Debug, "y轴缩小 EdgeTop");
+            emitMessage(Re::Debug, "y轴缩小 EdgeTop");
         } else {
             zoomY(y_rate, y_start);
-            emitMessage(Debug, "y轴缩小 free");
+            emitMessage(Re::Debug, "y轴缩小 free");
         }
     }
     _sketch->update();

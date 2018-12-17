@@ -14,6 +14,7 @@
 #include "File.hpp"
 #include "Buffer.hpp"
 #include "Message.hpp"
+#include "Global.hpp"
 
 class Curve;
 class Buffer;
@@ -28,28 +29,6 @@ class Transform : public QThread, public Message
 {
 Q_OBJECT
 public:
-    /*union ShortByte
-    {
-        unsigned short all;
-        struct {
-            unsigned char b0;
-            unsigned char b1;
-        }bit;
-    };*/
-    enum Status
-    {
-        Stop,
-        Running,
-        Pause
-    };
-
-    enum Command
-    {
-        None,
-        CommandStop,
-        CommandResume,
-        CommandPause
-    };
 
 private:
     Curve *_curve;
@@ -57,8 +36,8 @@ private:
     Tribe *_tribe;
     File _file;
     unsigned long _msec;
-    Status _status;
-    Command _cmd;
+    Re::RunningStatus _status;
+    Re::RunningCommand _cmd;
 
 public:
     explicit Transform(Message *message = nullptr);
@@ -70,9 +49,9 @@ public:
 
     void stop(const QString &file = nullptr);
 
-    inline void pause() { _cmd = CommandPause; }
+    inline void pause() { _cmd = Re::CommandPause; }
 
-    inline void resume() { _cmd = CommandResume; }
+    inline void resume() { _cmd = Re::CommandResume; }
 
     inline int status() const { return _status; }
 

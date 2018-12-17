@@ -16,8 +16,8 @@ Collect::Collect(Message *message) :
         _manner(FromCan),
         _frame_file(nullptr),
         _file(),
-        _status(Stop),
-        _cmd(None),
+        _status(Re::Stop),
+        _cmd(Re::NoCommand),
         _msec(10),
         _frames_loop(0) {}
 
@@ -40,7 +40,7 @@ void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
 void Collect::run()
 {
     int time = 0;
-    while (_cmd != CommandStop) {
+    while (_cmd != Re::CommandStop) {
         msleep(_msec);
         if (time >= 500) {
             double kbps = (CAN_OBJ_BITS * _frames_loop) / (double)time;
@@ -50,16 +50,16 @@ void Collect::run()
             _frames_loop = 0;
         }
         time += _msec;
-        if (_cmd == CommandPause) {
-            if (_status == Running) {
-                _status = Pause;
+        if (_cmd == Re::CommandPause) {
+            if (_status == Re::Running) {
+                _status = Re::Pause;
             }
             continue;
         }
-        if (_cmd == CommandResume &&
-            _status == Pause) {
+        if (_cmd == Re::CommandResume &&
+            _status == Re::Pause) {
             _can->clear();
-            _status = Running;
+            _status = Re::Running;
         }
 
         if (_manner == FromCan) {
@@ -86,7 +86,7 @@ void Collect::run()
 
 void Collect::begin()
 {
-    _cmd = None;
+    _cmd = Re::NoCommand;
 //    if (_manner == FromFile) {
 //        if (!_file.loadFrameRecordBegin(*_frame_file, *_buffer)) {
 //            _manner = FromCan;
@@ -96,16 +96,16 @@ void Collect::begin()
     _buffer->reset();
     _can->clear();
     start();
-    _status = Running;
+    _status = Re::Running;
 }
 
 void Collect::stop()
 {
-    _cmd = CommandStop;
+    _cmd = Re::CommandStop;
     while (isRunning()) {
         qDebug() << "Collect::stop waiting";
     }
-    _status = Stop;
+    _status = Re::Stop;
 //    if (_manner == FromFile) {
 //        _file.loadFrameRecordFinish(*_frame_file);
 //    }

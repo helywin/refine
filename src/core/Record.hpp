@@ -14,6 +14,7 @@
 #include "File.hpp"
 #include "Buffer.hpp"
 #include "Message.hpp"
+#include "Global.hpp"
 
 /*!
  * @brief 用来存储报文的类
@@ -23,33 +24,15 @@ class Record : public QThread, public Message
 {
 Q_OBJECT
 public:
-    enum Info
-    {
-        WarnFile
-    };
 
-    enum Status
-    {
-        Stop,
-        Running,
-        Pause
-    };
-
-    enum Command
-    {
-        None,
-        CommandStop,
-        CommandResume,
-        CommandPause
-    };
 private:
     File _file;
     Buffer *_buffer;
     QFile _record;
     Buffer::Iter _buffer_tail;
     Buffer::Iter _buffer_head;
-    Status _status;
-    Command _cmd;
+    Re::RunningStatus _status;
+    Re::RunningCommand _cmd;
     unsigned long _msec;
 
 public:
@@ -67,9 +50,9 @@ public:
 
     void stop(bool error = false);
 
-    inline void pause() { _cmd = CommandPause; }
+    inline void pause() { _cmd = Re::CommandPause; }
 
-    inline void reusme() { _cmd = CommandResume; }
+    inline void resume() { _cmd = Re::CommandResume; }
 
     inline int status() const { return _status; }
 

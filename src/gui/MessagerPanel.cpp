@@ -57,23 +57,23 @@ QString MessagerPanel::Cell::str() const
     return str;
 }
 
-QString MessagerPanel::typeStr(MessagerPanel::MessageType type)
+QString MessagerPanel::typeStr(Re::MessageType type)
 {
     QString str;
     switch (type) {
-        case Info:
+        case Re::Info:
             str = QObject::tr("信息");
             break;
-        case Warning:
+        case Re::Warning:
             str = QObject::tr("警告");
             break;
-        case Critical:
+        case Re::Critical:
             str = QObject::tr("严重");
             break;
-        case Fatal:
+        case Re::Fatal:
             str = QObject::tr("致命");
             break;
-        case Debug:
+        case Re::Debug:
             str = QObject::tr("调试");
             break;
     }
@@ -88,23 +88,23 @@ void MessagerPanel::showMessage(int type, const QString &msg)
         cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
         setTextCursor(cursor);
     }
-    _messages.append(Cell((MessageType) type, msg));
+    _messages.append(Cell((Re::MessageType) type, msg));
     if ((unsigned int) type & (unsigned int) _show_types) {
         _logs.append(_messages.last().str());
         switch (type) {
-            case Info:
+            case Re::Info:
                 cursor.insertText(_logs.last() + "\n", _info_format);
                 break;
-            case Warning:
+            case Re::Warning:
                 cursor.insertText(_logs.last() + "\n", _warning_format);
                 break;
-            case Critical:
+            case Re::Critical:
                 cursor.insertText(_logs.last() + "\n", _critical_format);
                 break;
-            case Fatal:
+            case Re::Fatal:
                 cursor.insertText(_logs.last() + "\n", _fatal_format);
                 break;
-            case Debug:
+            case Re::Debug:
                 cursor.insertText(_logs.last() + "\n", _debug_format);
                 break;
             default:

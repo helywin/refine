@@ -631,6 +631,9 @@ void Sketch::pointQtToGl(int x0, int y0, double &x1, double &y1)
 
 void Sketch::wheelEvent(QWheelEvent *event)
 {
+    if (_tribe->size() == 0) {  //没数据不能操作
+        return;
+    }
     double x_scale = event->pos().x() / (double) rect().width();
     double y_scale = (rect().height() - event->pos().y()) / (double) rect().height();
     double wheel_rate = event->delta() / 120.0;
@@ -690,7 +693,7 @@ void Sketch::keyPressEvent(QKeyEvent *event)
         emit zoomMinimum();
     }
     _modifiers = event->modifiers();
-    emitMessage(Debug, QString("按下 %1").arg(event->key()));
+    emitMessage(Re::Debug, QString("按下 %1").arg(event->key()));
 }
 
 void Sketch::keyReleaseEvent(QKeyEvent *event)
@@ -967,7 +970,7 @@ void Sketch::zoomPlusRect()
         }
         emit zoomPlus(x_rate, x_start, y_rate, y_start);
     } else {
-        emitMessage(Warning, tr("放大选区过小"));
+        emitMessage(Re::Warning, tr("放大选区过小"));
     }
     _zoom_finish = true;
     _plot_zoom_rect = false;
@@ -1047,7 +1050,7 @@ void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double 
 void Sketch::zoomMinusFixed(double x_rate, double x_scale, double y_rate, double y_scale)
 {
     double x_start = 0;
-    int edge = NoEdge;
+    ZoomEdges edge = NoEdge;
     if (_zoom_x) {
         if (x_rate * xRate() > maximumXRate()) {
             edge |= EdgeX;

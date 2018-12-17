@@ -354,9 +354,9 @@ void Refine::connectCan()
 {
     if (_menu_init_can->isChecked()) {
         if (_revolve.can().connect()) {
-            emitMessage(Info, tr("连接成功"));
+            emitMessage(Re::Info, tr("连接成功"));
         } else {
-            emitMessage(Warning,
+            emitMessage(Re::Warning,
                         tr("连接失败，检查CAN占用或连接情况"));
         }
     } else {
@@ -377,11 +377,11 @@ void Refine::connectCan()
             closed = _revolve.can().close();
         }
         if (closed) {      //与运算后面的语句可能不执行，看条件而定
-            emitMessage(Info, tr("关闭成功"));
+            emitMessage(Re::Info, tr("关闭成功"));
         } else if (flag) {
-            emitMessage(Warning, tr("关闭失败"));
+            emitMessage(Re::Warning, tr("关闭失败"));
         } else {
-            emitMessage(Info, tr("关闭取消"));
+            emitMessage(Re::Info, tr("关闭取消"));
         }
     }
     _menu_init_can->setChecked(_revolve.can().isConnected());
@@ -390,10 +390,10 @@ void Refine::connectCan()
 void Refine::fullScreen()
 {
     if (_menu_view_full->isChecked()) {
-        emitMessage(Debug, tr("进入全屏模式"));
+        emitMessage(Re::Debug, tr("进入全屏模式"));
         this->setWindowState(Qt::WindowFullScreen);
     } else {
-        emitMessage(Debug, tr("退出全屏模式"));
+        emitMessage(Re::Debug, tr("退出全屏模式"));
         this->setWindowState(Qt::WindowMaximized);
     }
 }
@@ -439,7 +439,7 @@ void Refine::startTimers(QAction *action)
         }
     }
     if (action->isChecked()) {
-        message(MessagerPanel::Info, action->text() + tr("开始"));
+        message(Re::Info, action->text() + tr("开始"));
         _timer[i] = QTime::currentTime();
         action->setStatusTip(action->text() + tr("停止计时"));
     }
@@ -466,7 +466,7 @@ void Refine::startTimers(QAction *action)
             str += QString("%1ms").arg(ms, (h || m || s) * 2,
                                        10, QChar('0'));
         }
-        message(MessagerPanel::Info, action->text() + tr("结束 ") + str);
+        message(Re::Info, action->text() + tr("结束 ") + str);
         action->setStatusTip(action->text() + tr("开始计时"));
     }
 }
@@ -529,7 +529,7 @@ void Refine::keepWakeUp()
     keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
     keybd_event(VK_CAPITAL, 0, 0, 0);
     keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
-    emitMessage(Debug, "唤醒屏幕");
+    emitMessage(Re::Debug, "唤醒屏幕");
 #endif
 }
 
