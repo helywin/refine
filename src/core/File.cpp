@@ -10,7 +10,7 @@
 #include "Version.hpp"
 #include "Curve.hpp"
 #include "Tribe.hpp"
-#include "FramePool.hpp"
+#include "Frame.hpp"
 
 
 File::File(Message *message) :
@@ -277,7 +277,7 @@ bool File::dumpCurveConfig(QFile &file, const Curve &curve)
     return true;
 }
 
-bool File::loadFrameRecord(QFile &file, FramePool &pool)
+bool File::loadFrameRecord(QFile &file, Frame &pool)
 {
     file.open(QIODevice::ReadOnly);
     if (!file.isOpen()) {

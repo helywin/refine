@@ -2,14 +2,14 @@
 // Created by jiang.wenqiang on 2018/11/8.
 //
 
-#include "FramePool.hpp"
+#include "Frame.hpp"
 #include "Buffer.hpp"
 #include "File.hpp"
 
-FramePool::Cell::Cell() :
+Frame::Cell::Cell() :
         _index(0) {}
 
-QString FramePool::Cell::dataStr() const
+QString Frame::Cell::dataStr() const
 {
     QStringList list;
     for (const auto &d : _data.Data) {
@@ -18,7 +18,7 @@ QString FramePool::Cell::dataStr() const
     return list.join(QChar(' '));
 }
 
-QString FramePool::Cell::reservedStr() const
+QString Frame::Cell::reservedStr() const
 {
     QStringList list;
     for (const auto &d : _data.Reserved) {
@@ -27,15 +27,15 @@ QString FramePool::Cell::reservedStr() const
     return list.join(QChar(' '));
 }
 
-FramePool::Cell::Cell(int index, VCI_CAN_OBJ &&obj) :
+Frame::Cell::Cell(int index, VCI_CAN_OBJ &&obj) :
         _index(index),
         _data(obj) {}
 
 
-FramePool::FramePool(Message *message) :
+Frame::Frame(Message *message) :
         Message(message), _initialized(false) {}
 
-QDataStream &operator>>(QDataStream &stream, FramePool &pool)
+QDataStream &operator>>(QDataStream &stream, Frame &pool)
 {
     unsigned int obj_num;
     unsigned int cell_num;
@@ -48,7 +48,7 @@ QDataStream &operator>>(QDataStream &stream, FramePool &pool)
         Buffer::Cell cell;
         stream >> cell;
         for (int j = 0; j < cell.dataSize(); ++j) {
-            pool._cells.append(FramePool::Cell(i, qMove(*cell[j])));
+            pool._cells.append(Frame::Cell(i, qMove(*cell[j])));
         }
     }
     return stream;

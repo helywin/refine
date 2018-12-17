@@ -53,49 +53,49 @@ void FilePicker::showDialog()
     show();
 }
 
-QStringList FilePicker::extendNames(unsigned int type)
+QStringList FilePicker::extendNames(FileTypes type)
 {
     QStringList exts;
-    if (type & (unsigned int) Archive) {
+    if (type & Archive) {
         exts.append(extendName(Archive));
     }
-    if (type & (unsigned int) CurveConfig) {
+    if (type & CurveConfig) {
         exts.append(extendName(CurveConfig));
     }
-    if (type & (unsigned int) CurveConfigCsv) {
+    if (type & CurveConfigCsv) {
         exts.append(extendName(CurveConfigCsv));
     }
-    if (type & (unsigned int) CurveConfigSoftcan) {
+    if (type & CurveConfigSoftcan) {
         exts.append(extendName(CurveConfigSoftcan));
     }
-    if (type & (unsigned int) ModeConfig) {
+    if (type & ModeConfig) {
         exts.append(extendName(ModeConfig));
     }
-    if (type & (unsigned int) ModeConfigCsv) {
+    if (type & ModeConfigCsv) {
         exts.append(extendName(ModeConfigCsv));
     }
-    if (type & (unsigned int) FrameData) {
+    if (type & FrameData) {
         exts.append(extendName(FrameData));
     }
-    if (type & (unsigned int) FrameDataCsv) {
+    if (type & FrameDataCsv) {
         exts.append(extendName(FrameDataCsv));
     }
-    if (type & (unsigned int) CurveData) {
+    if (type & CurveData) {
         exts.append(extendName(CurveData));
     }
-    if (type & (unsigned int) CurveDataCsv) {
+    if (type & CurveDataCsv) {
         exts.append(extendName(CurveDataCsv));
     }
-    if (type & (unsigned int) ResultData) {
+    if (type & ResultData) {
         exts.append(extendName(ResultData));
     }
-    if (type & (unsigned int) ResultDataCsv) {
+    if (type & ResultDataCsv) {
         exts.append(extendName(ResultDataCsv));
     }
     return exts;
 }
 
-QString FilePicker::extendName(unsigned int type)
+QString FilePicker::extendName(FileType type)
 {
     switch (type) {
         case Archive:
@@ -125,58 +125,58 @@ QString FilePicker::extendName(unsigned int type)
     }
 }
 
-QStringList FilePicker::extendNameWithStr(unsigned int type)
+QStringList FilePicker::extendNameWithStr(FileTypes type)
 {
     QStringList exts;
-    if (type & (unsigned int) Archive) {
+    if (type & Archive) {
         exts.append(tr("打包文件") +
                     QString("(*.%1)").arg(extendName(Archive)));
     }
-    if (type & (unsigned int) CurveConfig) {
+    if (type & CurveConfig) {
         exts.append(tr("曲线配置") +
                     QString("(*.%1)").arg(extendName(CurveConfig)));
     }
-    if (type & (unsigned int) CurveConfigCsv) {
+    if (type & CurveConfigCsv) {
         exts.append(tr("曲线配置") +
                     QString("(*.%1)").arg(extendName(CurveConfigCsv)));
     }
-    if (type & (unsigned int) CurveConfigSoftcan) {
+    if (type & CurveConfigSoftcan) {
         exts.append(tr("SoftCAN曲线配置") +
                     QString("(*.%1)").arg(extendName(CurveConfigSoftcan)));
     }
-    if (type & (unsigned int) ModeConfig) {
+    if (type & ModeConfig) {
         exts.append(tr("工况配置") +
                     QString("(*.%1)").arg(extendName(ModeConfig)));
     }
-    if (type & (unsigned int) ModeConfigCsv) {
+    if (type & ModeConfigCsv) {
         exts.append(tr("工况配置") +
                     QString("(*.%1)").arg(extendName(ModeConfigCsv)));
     }
-    if (type & (unsigned int) FrameData) {
+    if (type & FrameData) {
         exts.append(tr("帧数据") +
                     QString("(*.%1)").arg(extendName(FrameData)));
     }
-    if (type & (unsigned int) FrameDataCsv) {
+    if (type & FrameDataCsv) {
         exts.append(tr("帧数据") +
                     QString("(*.%1)").arg(extendName(FrameDataCsv)));
     }
-    if (type & (unsigned int) CurveData) {
+    if (type & CurveData) {
         exts.append(tr("曲线数据") +
                     QString("(*.%1)").arg(extendName(CurveData)));
     }
-    if (type & (unsigned int) CurveDataCsv) {
+    if (type & CurveDataCsv) {
         exts.append(tr("曲线数据") +
                     QString("(*.%1)").arg(extendName(CurveDataCsv)));
     }
-    if (type & (unsigned int) CurveDataSoftcan) {
+    if (type & CurveDataSoftcan) {
         exts.append(tr("SoftCAN曲线数据") +
                     QString("(*.%1)").arg(extendName(CurveDataSoftcan)));
     }
-    if (type & (unsigned int) ResultData) {
+    if (type & ResultData) {
         exts.append(tr("结果数据") +
                     QString("(*.%1)").arg(extendName(ResultData)));
     }
-    if (type & (unsigned int) ResultDataCsv) {
+    if (type & ResultDataCsv) {
         exts.append(tr("结果数据") +
                     QString("(*.%1)").arg(extendName(ResultDataCsv)));
     }

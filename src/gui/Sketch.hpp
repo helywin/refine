@@ -40,6 +40,9 @@ public:
         Empty
     };
 
+    /*!
+     * @brief 正在移动的东西
+     */
     enum Movement
     {
         MoveNone,
@@ -48,6 +51,9 @@ public:
         MoveParallel
     };
 
+    /*!
+     * @brief 缩小时的特殊情况
+     */
     enum ZoomEdge
     {
         NoEdge = 0x00,
@@ -80,6 +86,9 @@ public:
         int start;                  //absolute pos
     };
 
+    /*!
+     * @brief 一些常量
+     */
     const static double X_LEFT;
     const static int X_POINTS;
 

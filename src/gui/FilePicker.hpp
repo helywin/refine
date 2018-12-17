@@ -67,16 +67,19 @@ public:
         ResultDataOutFile = ResultData
                             + Out,
     };
+
+    Q_DECLARE_FLAGS(FileTypes, FileType)
+
 private:
     FileType _type;
     QString _last_filter;
 public:
     explicit FilePicker(QWidget *parent = nullptr);
-    static QStringList extendNames(unsigned int type);
+    static QStringList extendNames(FileTypes type);
 
-    static QString extendName(unsigned int type);
+    static QString extendName(FileType type);
 
-    static QStringList extendNameWithStr(unsigned int type);
+    static QStringList extendNameWithStr(FileTypes type);
 
     void loadArchive();
     void loadCurveConfig();

@@ -40,7 +40,7 @@ Revolve::Revolve(Initializer *init) :
 
 Revolve::~Revolve() {}
 
-bool Revolve::begin(unsigned long msec, int config, int time)
+bool Revolve::begin(unsigned long msec, Configs config, int time)
 {
     if (!_can.isConnected()) {
         emitMessage(Re::Warning, tr("开始失败，确保CAN连接好再采集"));
@@ -52,12 +52,12 @@ bool Revolve::begin(unsigned long msec, int config, int time)
     }
     _can.clear();
     _msec = msec;
-    _config = config;
+    _config = Configs(config);
     _time = time;
     _collect.setParams(&_can, &_buffer, Collect::FromCan, msec);
     _manage.generate();
     //! @deprecated genName();
-    if ((unsigned) _config & (unsigned) Config::WithTransform) {
+    if (_config & Config::WithTransform) {
         if (!_curve.isInitialized()) {
             emitMessage(Re::Warning, tr("开始失败，没有加载曲线配置"));
             return false;
@@ -75,15 +75,15 @@ bool Revolve::begin(unsigned long msec, int config, int time)
     if (_sketch) {
 //        _sketch->start();
     }
-    if ((unsigned) _config & (unsigned) WithRecord) {
+    if (_config & WithRecord) {
         //! @deprecated genFramesDataFile();
         _record.setParams(_manage.frameData().absoluteFilePath(), &_buffer);
         _record.begin();
     }
-    if ((unsigned) _config & (unsigned) WithTiming) {
+    if (_config & WithTiming) {
         _timer_stop.start();
     }
-    if ((unsigned) _config & (unsigned) WithTrigger) {}
+    if (_config & WithTrigger) {}
     _status = Re::Running;
     emitMessage(Re::Info, tr("开始采集成功"));
     return true;
@@ -103,15 +103,15 @@ bool Revolve::stop(bool error)
         _can.close();
         disconnect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
     }
-    if ((unsigned) _config & (unsigned) WithTiming) {
+    if (_config & WithTiming) {
         _timer_stop.stop();
     }
     QStringList files;
     QStringList paths;
-    if ((unsigned) _config & (unsigned) WithTransform) {
+    if (_config & WithTransform) {
         _transform.stop(_manage.curveData().absoluteFilePath());
     }
-    if ((unsigned) _config & (unsigned) WithRecord) {
+    if (_config & WithRecord) {
         _record.stop();
     }
     if (_sketch) {
@@ -131,13 +131,13 @@ bool Revolve::exit()
     if (_sketch) {
 //        _sketch->stop();
     }
-    if ((unsigned) _config & (unsigned) WithTiming) {
+    if (_config & WithTiming) {
         _timer_stop.stop();
     }
-    if ((unsigned) _config & (unsigned) WithTransform) {
+    if (_config & WithTransform) {
         _transform.stop();
     }
-    if ((unsigned) _config & (unsigned) WithRecord) {
+    if (_config & WithRecord) {
         _record.stop(true);
     }
     _status = Re::Stop;
@@ -156,13 +156,13 @@ void Revolve::pause()
         return;
     }
     _collect.pause();
-    if ((unsigned) _config & (unsigned) WithTransform) {
+    if (_config & WithTransform) {
         _transform.pause();
     }
-    if ((unsigned) _config & (unsigned) WithRecord) {
+    if (_config & WithRecord) {
         _record.pause();
     }
-    if ((unsigned) _config & (unsigned) WithTiming) {
+    if (_config & WithTiming) {
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }
@@ -184,13 +184,13 @@ void Revolve::resume()
         return;
     }
     _collect.resume();
-    if ((unsigned) _config & (unsigned) WithTransform) {
+    if (_config & WithTransform) {
         _transform.resume();
     }
-    if ((unsigned) _config & (unsigned) WithRecord) {
+    if (_config & WithRecord) {
         _record.resume();
     }
-    if ((unsigned) _config & (unsigned) WithTiming) {
+    if (_config & WithTiming) {
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }

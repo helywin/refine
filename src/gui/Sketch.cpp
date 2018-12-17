@@ -194,6 +194,10 @@ void Sketch::plotCurves()
 }
 */
 
+/*!
+ * @brief 绘制曲线
+ */
+
 void Sketch::plotCurves()
 {
     if (_smooth) {
@@ -325,6 +329,10 @@ void Sketch::plotCurves()
 #define X_MINIMUM_PIXEL 60
 #define X_MAXIMUM_PIXEL 70
 
+/*!
+ * @brief 绘制横轴网格
+ */
+
 void Sketch::plotXGrid()
 {
     if (_tribe->size() == 0) {
@@ -364,6 +372,10 @@ void Sketch::plotXGrid()
 
 #define Y_MINIMUM_PIXEL 40
 #define Y_MAXIMUM_PIXEL 50
+
+/*!
+ * @brief 绘制纵轴网格
+ */
 
 void Sketch::plotYGrid()
 {
@@ -408,6 +420,10 @@ void Sketch::plotYGrid()
 
 #undef Y_MINIMUM_PIXEL
 #undef Y_MAXIMUM_PIXEL
+
+/*!
+ * @brief 绘制游标
+ */
 
 void Sketch::plotVerniers()
 {
@@ -583,6 +599,10 @@ void Sketch::plotVerniers()
     }
     painter.end();
 }
+
+/*!
+ * @brief 绘制区间
+ */
 
 void Sketch::plotPatterns()
 {
@@ -843,6 +863,11 @@ void Sketch::mousePressEvent(QMouseEvent *event)
     } else {}
 }
 
+/*!
+ * @brief 鼠标松开事件
+ * @param event 事件
+ */
+
 void Sketch::mouseReleaseEvent(QMouseEvent *event)
 {
     /*
@@ -875,6 +900,10 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
 
 #define MINIMUM_ZOOM_RECT_WIDTH 20
 #define MINIMUM_ZOOM_RECT_HEIGHT 20
+
+/*!
+ * @brief 绘制放大矩形
+ */
 
 void Sketch::plotZoomRect()
 {
@@ -928,6 +957,11 @@ bool Sketch::isMouseOnDragItem(int x)
     return false;
 }
 
+/*!
+ * @brief 计算当前游标上的值的比例
+ * @return 比例值
+ */
+
 double Sketch::yZoomPos() const
 {
     if (_current_index == -1 || _current_index >= _tribe->size()) {
@@ -947,6 +981,10 @@ double Sketch::yZoomPos() const
         return rate / Y_POINTS;
     }
 }
+
+/*!
+ * @brief 根据选定矩形框放大
+ */
 
 void Sketch::zoomPlusRect()
 {
@@ -977,6 +1015,11 @@ void Sketch::zoomPlusRect()
     update();
 }
 
+/*!
+ * @brief 根据鼠标位置平移
+ * @param pos 当前鼠标位置
+ */
+
 void Sketch::parallelMoveByCursor(const QPoint &pos)
 {
     if (qAbs(pos.x() - _move_parallel_pos.x())
@@ -1002,6 +1045,10 @@ void Sketch::parallelMoveByCursor(const QPoint &pos)
 #define FIX_Y_ZOOM_MINUS_RATE 1.5
 #define FIX_Y_ZOOM_PLUS_RATE (1/FIX_Y_ZOOM_MINUS_RATE)
 
+/*!
+ * @brief 根据游标位置放大
+ */
+
 void Sketch::zoomPlusByVernier()
 {
     if (_tribe->size() == 0) {
@@ -1010,6 +1057,10 @@ void Sketch::zoomPlusByVernier()
     zoomPlusFixed(FIX_X_ZOOM_PLUS_RATE, _verniers[0].pos / X_POINTS,
                   FIX_Y_ZOOM_PLUS_RATE, yZoomPos());
 }
+
+/*!
+ * @brief 根据游标位置缩小
+ */
 
 void Sketch::zoomMinusByVernier()
 {
@@ -1020,16 +1071,33 @@ void Sketch::zoomMinusByVernier()
                    FIX_Y_ZOOM_MINUS_RATE, yZoomPos());
 }
 
+/*!
+ * @brief 限制x轴的放大
+ * @return x轴是否不能再放大
+ */
+
 bool Sketch::xZoomPlusLimit() const
 {
     return xPointsF() < 10;
 }
+
+/*!
+ * @brief 限制y轴的放大
+ * @return y轴是否不能再放大
+ */
 
 bool Sketch::yZoomPlusLimit() const
 {
     return yPoints() < 10;
 }
 
+/*!
+ * @brief 固定放大
+ * @param x_rate x轴放大倍率
+ * @param x_scale x轴定点位置
+ * @param y_rate y轴放大倍率
+ * @param y_scale y轴定点位置
+ */
 void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double y_scale)
 {
     double x_start = 0;
@@ -1046,6 +1114,14 @@ void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double 
     }
     emit zoomPlus(x_rate, x_start, y_rate, y_start);
 }
+
+/*!
+ * @brief 固定缩小
+ * @param x_rate x轴放大倍率
+ * @param x_scale x轴定点位置
+ * @param y_rate y轴放大倍率
+ * @param y_scale y轴定点位置
+ */
 
 void Sketch::zoomMinusFixed(double x_rate, double x_scale, double y_rate, double y_scale)
 {
@@ -1080,11 +1156,19 @@ void Sketch::zoomMinusFixed(double x_rate, double x_scale, double y_rate, double
     emit zoomMinus(x_rate, x_start, y_rate, y_start, edge);
 }
 
+/*!
+ * @brief 根据鼠标位置放大
+ */
+
 void Sketch::zoomPlusByCursor()
 {
     zoomPlusFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
                   FIX_Y_ZOOM_PLUS_RATE, yZoomPos());
 }
+
+/*!
+ * @brief 根据鼠标位置缩小
+ */
 
 void Sketch::zoomMinusByCursor()
 {
@@ -1092,12 +1176,22 @@ void Sketch::zoomMinusByCursor()
                    FIX_Y_ZOOM_MINUS_RATE, yZoomPos());
 }
 
+/*!
+ * @brief 处理数据重新加载后序号溢出的问题
+ */
+
 void Sketch::currentIndexOverflow()
 {
     if (_current_index >= _tribe->size()) {
         _current_index = -1;
     }
 }
+
+/*!
+ * @brief 把x坐标限制在矩形内
+ * @param x x坐标
+ * @return 限制后坐标
+ */
 
 int Sketch::limitXInRect(int x) const
 {
@@ -1108,6 +1202,12 @@ int Sketch::limitXInRect(int x) const
     }
     return x;
 }
+
+/*!
+ * @brief 把y坐标限制在矩形内
+ * @param y y坐标
+ * @return 限制后坐标
+ */
 
 int Sketch::limitYInRect(int y) const
 {

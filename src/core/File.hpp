@@ -20,7 +20,7 @@
 class Curve;
 class Tribe;
 class Modes;
-class FramePool;
+class Frame;
 
 
 /*!
@@ -213,7 +213,7 @@ public:
     }
 
 public:
-    bool loadFrameRecord(QFile &file, FramePool &pool);
+    bool loadFrameRecord(QFile &file, Frame &pool);
 
     bool dumpFrameRecordBegin(QFile &file);
     void dumpFrameRecord(Buffer &buffer, Buffer::Iter tail, Buffer::Iter head);

@@ -44,7 +44,6 @@ class Revolve : public QObject, public Message
 {
 Q_OBJECT
 public:
-
     enum Config
     {
         WithTransform = 0x01,
@@ -52,6 +51,7 @@ public:
         WithTrigger = 0x4,
         WithTiming = 0x8
     };
+    Q_DECLARE_FLAGS(Configs, Config)
 
 private:
     Initializer *_init;
@@ -69,7 +69,7 @@ private:
     QTimer _timer_stop;                     //! \brief 采样时钟
     unsigned long _msec;                    //! \brief 采样周期
     int _time;                              //! \brief 自动停止时间
-    int _config;
+    Configs _config;
     Re::RunningStatus _status;
 
     Sketch *_sketch;
@@ -88,7 +88,7 @@ public:
 
 public slots:
     //采集
-    bool begin(unsigned long msec, int config, int time);
+    bool begin(unsigned long msec, Configs config, int time);
     void pause();
     void resume();
 
@@ -167,5 +167,6 @@ signals:
     void resetHScroll(int size, bool reset);
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(Revolve::Configs)
 
 #endif //REFINE_REVOLVE_HPP

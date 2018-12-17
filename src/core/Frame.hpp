@@ -9,7 +9,7 @@
 #include "ControlCan.h"
 #include "Message.hpp"
 
-class FramePool : public Message
+class Frame : public Message
 {
 public:
     class Cell
@@ -81,9 +81,9 @@ private:
     QVector<Cell> _cells;
     bool _initialized;
 public:
-    explicit FramePool(Message *message = nullptr);
+    explicit Frame(Message *message = nullptr);
 
-    friend QDataStream &operator>>(QDataStream &stream, FramePool &pool);
+    friend QDataStream &operator>>(QDataStream &stream, Frame &pool);
 
     inline bool isEmpty() const { return _initialized; }
 
@@ -95,6 +95,6 @@ public:
 
 };
 
-QDataStream &operator>>(QDataStream &stream, FramePool &pool);
+QDataStream &operator>>(QDataStream &stream, Frame &pool);
 
 #endif //REFINE_FRAMEPOOL_HPP
