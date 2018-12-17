@@ -7,3 +7,8 @@
  ******************************************************************************/
 
 #include "Transmit.hpp"
+
+Transmit::Transmit(Message *message) : Message(message)
+{
+
+}

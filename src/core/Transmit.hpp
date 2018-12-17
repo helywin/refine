@@ -9,12 +9,17 @@
 #ifndef REFINE_TRANSMIT_HPP
 #define REFINE_TRANSMIT_HPP
 
-#include <QtCore/QObject>
+#include <QtCore/QThread>
 #include "Message.hpp"
 
 
-class Transmit : public QObject, public Message
+class Transmit : public QThread, public Message
 {
+Q_OBJECT
+public:
+private:
+public:
+    explicit Transmit(Message *message = nullptr);
 
 };
 
