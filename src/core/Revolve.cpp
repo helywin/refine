@@ -29,16 +29,17 @@ Revolve::Revolve(Initializer *init) :
         _timer_stop(),
         _msec(10),
         _time(10),
-        _config(nullptr),
+        _flags(nullptr),
         _status(Re::Stop),
         _viewer(nullptr)
 {
     connect(&_timer_stop, &QTimer::timeout, this,
             static_cast<bool (Revolve::*)(void)>(&Revolve::stopCollect), Qt::DirectConnection);
     connect(&_collect, &Collect::info, this, &Revolve::collectError, Qt::AutoConnection);
+    connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
 }
 
-bool Revolve::beginCollect(unsigned long msec, Configs config, int time)
+bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
 {
     if (!_can.isConnected()) {
         emitMessage(Re::Warning, tr("开始失败，确保CAN连接好再采集"));
@@ -50,38 +51,36 @@ bool Revolve::beginCollect(unsigned long msec, Configs config, int time)
     }
     _can.clear();
     _msec = msec;
-    _config = Configs(config);
+    _flags = flags;
     _time = time;
-    _collect.setParams(&_can, &_recv_buf, Collect::FromCan, msec);
     _manage.generate();
-    //! @deprecated genName();
-    if (_config & WithTransform) {
+    _viewer->start();
+    if (_flags & Re::Communicate) {
+        _communicate.begin();
+        _transmit.setParams(&_can, &_send_buf);
+        _transmit.begin();
+    }
+    if (_flags & Re::Collect) {
+        _collect.setParams(&_can, &_recv_buf, Collect::FromCan, msec);
+        _collect.begin();
+    }
+    if (_flags & Re::TransformData) {
         if (!_curve.isInitialized()) {
-            emitMessage(Re::Warning, tr("开始失败，没有加载曲线配置"));
-            return false;
+            emitMessage(Re::Warning, tr("没有加载曲线配，你将看不到任何东西"));
         }
         _tribe.genFromCurve(_curve);
         _tribe_model->genData(&_tribe);
-        //! @deprecated genCurveDataFile();
         _transform.setParams(&_curve, &_recv_buf, &_tribe, _msec);
-        connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
-        _collect.begin();
         _transform.begin();
-    } else {
-        _collect.begin();
     }
-    if (_viewer) {
-        _viewer->start();
-    }
-    if (_config & WithRecord) {
+    if (_flags & Re::RecordFrame) {
         //! @deprecated genFramesDataFile();
         _record.setParams(_manage.frameData().absoluteFilePath(), &_recv_buf);
         _record.begin();
     }
-    if (_config & WithTiming) {
+    if (_flags & Re::TimingStop) {
         _timer_stop.start();
     }
-    if (_config & WithTrigger) {}
     _status = Re::Running;
     emitMessage(Re::Info, tr("开始采集成功"));
     return true;
@@ -93,27 +92,27 @@ bool Revolve::stopCollect(bool error)
         emitMessage(Re::Warning, tr("结束失败，采集还没开始"));
         return false;
     }
+    if (_flags & Re::Communicate) {
+        _communicate.stop();
+        _transmit.stop();
+    }
     if (!error) {
         _collect.stop();
-        disconnect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
     } else {
         _menu_init_can->setChecked(false);
         _can.close();
-        disconnect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
     }
-    if (_config & WithTiming) {
+    if (_flags & Re::TimingStop) {
         _timer_stop.stop();
     }
-    QStringList files;
-    QStringList paths;
-    if (_config & WithTransform) {
+    if (_flags & Re::TransformData) {
         _transform.stop(_manage.curveData().absoluteFilePath());
     }
-    if (_config & WithRecord) {
+    if (_flags & Re::RecordFrame) {
         _record.stop();
     }
     if (_viewer) {
-        _viewer->stop();
+        _viewer->resume();
     }
     _file.dumpCurveConfig(_manage.curveConfig().absoluteFilePath(), _curve);
     _manage.compress();
@@ -126,16 +125,20 @@ bool Revolve::stopCollect(bool error)
 bool Revolve::exitCollect()
 {
     if (_viewer) {
-        _viewer->stop();
+        _viewer->resume();
     }
-    if (_config & WithTiming) {
+    if (_flags & Re::TimingStop) {
         _timer_stop.stop();
     }
-    if (_config & WithTransform) {
+    if (_flags & Re::TransformData) {
         _transform.stop();
     }
-    if (_config & WithRecord) {
+    if (_flags & Re::RecordFrame) {
         _record.stop(true);
+    }
+    if (_flags & Re::Communicate) {
+        _communicate.stop();
+        _transmit.stop();
     }
     _status = Re::Stop;
     emitMessage(Re::Info, tr("采集异常，安全停止"));
@@ -153,13 +156,13 @@ void Revolve::pauseCollect()
         return;
     }
     _collect.pause();
-    if (_config & WithTransform) {
+    if (_flags & Re::TransformData) {
         _transform.pause();
     }
-    if (_config & WithRecord) {
+    if (_flags & Re::RecordFrame) {
         _record.pause();
     }
-    if (_config & WithTiming) {
+    if (_flags & Re::TimingStop) {
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }
@@ -181,13 +184,13 @@ void Revolve::resumeCollect()
         return;
     }
     _collect.resume();
-    if (_config & WithTransform) {
+    if (_flags & Re::TransformData) {
         _transform.resume();
     }
-    if (_config & WithRecord) {
+    if (_flags & Re::RecordFrame) {
         _record.resume();
     }
-    if (_config & WithTiming) {
+    if (_flags & Re::TimingStop) {
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }

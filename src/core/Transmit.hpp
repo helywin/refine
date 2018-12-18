@@ -12,7 +12,7 @@
 #include <QtCore/QThread>
 #include "Message.hpp"
 
-class RecvBuffer;
+class SendBuffer;
 class Can;
 
 class Transmit : public QThread, public Message
@@ -21,12 +21,15 @@ Q_OBJECT
 public:
 
 private:
-    RecvBuffer *_buffer;
+    SendBuffer *_buffer;
     Can *_can;
 
 public:
     explicit Transmit(Message *message = nullptr);
-    void setParams(Can *can, RecvBuffer *buffer);
+    void setParams(Can *can, SendBuffer *buffer);
+
+    void begin() {}
+    void stop() {}
 
 protected:
     void run() override;

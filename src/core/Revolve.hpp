@@ -46,15 +46,6 @@ class Revolve : public QObject, public Message
 {
 Q_OBJECT
 public:
-    enum Config
-    {
-        WithTransform = 0x01,
-        WithRecord = 0x02,
-        WithTrigger = 0x4,
-        WithTiming = 0x8
-    };
-    Q_DECLARE_FLAGS(Configs, Config)
-
     enum ResponseType
     {
         Send,
@@ -80,7 +71,7 @@ private:
     QTimer _timer_stop;                     //! \brief 采样时钟
     unsigned long _msec;                    //! \brief 采样周期
     int _time;                              //! \brief 自动停止时间
-    Configs _config;
+    Re::RevolveFlags _flags;
     Re::RunningStatus _status;
 
     CurveViewer *_viewer;
@@ -99,7 +90,7 @@ public:
 
 public slots:
     //采集
-    bool beginCollect(unsigned long msec, Configs config, int time);
+    bool beginCollect(unsigned long msec, Re::RevolveFlags flags, int time);
     void pauseCollect();
     void resumeCollect();
 
@@ -107,10 +98,6 @@ public slots:
 
     bool stopCollect(bool error);
     bool exitCollect();
-
-    bool sendCommand(QByteArray &&bytes);
-
-    bool burnProgram(QByteArray &&bytes);
 
 public:
     //采集配置
@@ -151,6 +138,10 @@ public:
 
     inline void setActionCan(QAction *action) { _menu_init_can = action; }
 
+    bool sendCommand(QByteArray &&bytes);
+
+    bool burnProgram(QByteArray &&bytes);
+
 protected:
     inline void emitMessage(MessageType type, const QString &msg) override
     {
@@ -181,7 +172,5 @@ signals:
     void response(ResponseType type, const QString &response);
 
 };
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(Revolve::Configs)
 
 #endif //REFINE_REVOLVE_HPP

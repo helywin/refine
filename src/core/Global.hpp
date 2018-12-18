@@ -28,6 +28,18 @@ namespace Re {
         Fatal = 0x08,
         Debug = 0x10
     };
+    enum RevolveFlag
+    {
+        NoWork = 0x00,
+        Communicate = 0x01,
+        Collect = 0x02,
+        TransformData = 0x04,
+        RecordFrame = 0x08,
+        TimingStop = 0x10
+    };
+    Q_DECLARE_FLAGS(RevolveFlags, RevolveFlag)
+    Q_DECLARE_OPERATORS_FOR_FLAGS(RevolveFlags)
+
 };
 
 #endif //REFINE_GLOBAL_HPP

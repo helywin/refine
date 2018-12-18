@@ -8,7 +8,7 @@
 
 #include "Transmit.hpp"
 #include "Can.hpp"
-#include "RecvBuffer.hpp"
+#include "SendBuffer.hpp"
 
 
 Transmit::Transmit(Message *message) :
@@ -19,7 +19,7 @@ Transmit::Transmit(Message *message) :
 
 }
 
-void Transmit::setParams(Can *can, RecvBuffer *buffer)
+void Transmit::setParams(Can *can, SendBuffer *buffer)
 {
     _can = can;
     _buffer = buffer;
