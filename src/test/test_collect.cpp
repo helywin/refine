@@ -3,7 +3,7 @@
 //
 
 #include <QtCore/QDebug>
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "Curve.hpp"
 #include "Can.hpp"
 #include "Revolve.hpp"
@@ -34,7 +34,7 @@ int main()
     Curve curve;
     curve.loadFromCsv(QString("D:/jiang.wenqiang/code/refine/config/配置.csv"));
     QFile file_frames(QString("D:/jiang.wenqiang/code/refine/data/data.fmd"));
-    Buffer buffer;
+    RecvBuffer buffer;
     Collect collect(&can, &buffer);
     Tribe tribe;
     for (const auto &iter : curve) {

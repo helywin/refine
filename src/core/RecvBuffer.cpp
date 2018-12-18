@@ -7,17 +7,17 @@
  ******************************************************************************/
 
 #include <QtCore/QDebug>
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 
-Buffer::Cell::Cell() :  _objs(nullptr),
+RecvBuffer::Cell::Cell() :  _objs(nullptr),
                        _whole_size(0), _data_size(0), _index(0) {}
 
-Buffer::Cell::~Cell()
+RecvBuffer::Cell::~Cell()
 {
     delete[] _objs;
 }
 
-void Buffer::Cell::initialize(unsigned int size)
+void RecvBuffer::Cell::initialize(unsigned int size)
 {
     Q_ASSERT(size > 0);
     _objs = new VCI_CAN_OBJ[size];
@@ -27,7 +27,7 @@ void Buffer::Cell::initialize(unsigned int size)
     }
 }
 
-QStringList Buffer::Cell::str() const
+QStringList RecvBuffer::Cell::str() const
 {
     QStringList list;
     for (unsigned int i = 0; i < _data_size; ++i) {
@@ -49,28 +49,14 @@ QStringList Buffer::Cell::str() const
     return list;
 }
 
-void Buffer::Cell::setSendType(Buffer::Cell::SendType type)
+void RecvBuffer::Cell::setSendType(Cd::SendType type)
 {
-    unsigned char send_type = 0;
-    switch (type) {
-        case SendType::Normal:
-            break;
-        case SendType::Once:
-            send_type = 1;
-            break;
-        case SendType::SelfSendReceive:
-            send_type = 2;
-            break;
-        case SendType::SelfSendReceiveOnce:
-            send_type = 3;
-            break;
-    }
     for (auto i = 0U; i < dataSize(); ++i) {
-        _objs[i].SendType = send_type;
+        _objs[i].SendType = type;
     }
 }
 
-QDataStream &operator<<(QDataStream &stream, const Buffer::Cell &cell)
+QDataStream &operator<<(QDataStream &stream, const RecvBuffer::Cell &cell)
 {
     int reserved = 0;
     stream << cell._index
@@ -83,7 +69,7 @@ QDataStream &operator<<(QDataStream &stream, const Buffer::Cell &cell)
     return stream;
 }
 
-QDataStream &operator>>(QDataStream &stream, Buffer::Cell &cell)
+QDataStream &operator>>(QDataStream &stream, RecvBuffer::Cell &cell)
 {
     int reserved;
     stream >> cell._index
@@ -96,36 +82,7 @@ QDataStream &operator>>(QDataStream &stream, Buffer::Cell &cell)
     return stream;
 }
 
-QDataStream &operator<<(QDataStream &stream, const VCI_CAN_OBJ &obj)
-{
-    stream << obj.ID
-           << obj.TimeStamp
-           << obj.TimeFlag
-           << obj.SendType
-           << obj.RemoteFlag
-           << obj.ExternFlag
-           << obj.DataLen;
-    stream.writeRawData((const char *) obj.Data, 8);
-    stream.writeRawData((const char *) obj.Reserved, 3);
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj)
-{
-    stream >> obj.ID
-           >> obj.TimeStamp
-           >> obj.TimeFlag
-           >> obj.SendType
-           >> obj.RemoteFlag
-           >> obj.ExternFlag
-           >> obj.DataLen;
-    stream.readRawData((char *) obj.Data, 8);
-    stream.readRawData((char *) obj.Reserved, 3);
-    return stream;
-}
-
-
-Buffer::Buffer(int cell_space, unsigned int cell_size) :
+RecvBuffer::RecvBuffer(int cell_space, unsigned int cell_size) :
         _cell_space(cell_space), _index(0), _cells(new Cell[cell_space]),
         _head(0), _empty(true)
 {
@@ -136,13 +93,13 @@ Buffer::Buffer(int cell_space, unsigned int cell_size) :
     }
 }
 
-Buffer::~Buffer()
+RecvBuffer::~RecvBuffer()
 {
     delete[] _cells;
 }
 
 
-void Buffer::move()
+void RecvBuffer::move()
 {
     if (_empty) { _empty = false; }
     (_head + _cells)->setIndex(_index);
@@ -151,7 +108,7 @@ void Buffer::move()
     _head %= _cell_space;
 }
 
-void Buffer::dump(QDataStream &stream, Buffer::Iter tail, Buffer::Iter head)
+void RecvBuffer::dump(QDataStream &stream, RecvBuffer::Iter tail, RecvBuffer::Iter head)
 {
     while (tail != head) {
         stream << *tail;
@@ -159,14 +116,14 @@ void Buffer::dump(QDataStream &stream, Buffer::Iter tail, Buffer::Iter head)
     }
 }
 
-void Buffer::reset()
+void RecvBuffer::reset()
 {
     _index = 0;
     _head = 0;
     _empty = true;
 }
 
-void Buffer::size(Buffer::Iter tail, Buffer::Iter head, unsigned int &packs,
+void RecvBuffer::size(RecvBuffer::Iter tail, RecvBuffer::Iter head, unsigned int &packs,
                   unsigned int &frames)
 {
     while (tail != head) {

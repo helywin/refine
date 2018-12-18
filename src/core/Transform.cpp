@@ -20,7 +20,7 @@ Transform::Transform(Message *message) :
         _status(Re::Stop),
         _cmd(Re::NoCommand) {}
 
-void Transform::setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
+void Transform::setParams(Curve *curve, RecvBuffer *buffer, Tribe *tribe,
                           unsigned long msec)
 {
     _curve = curve;
@@ -50,7 +50,7 @@ void Transform::run()
         QTime t = QTime::currentTime();
 #endif
         _tribe->setUnFilled();
-        Buffer::Cell &buf = *_buffer->last();
+        RecvBuffer::Cell &buf = *_buffer->last();
         if (_buffer->isEmpty()) {
             continue;
         }
@@ -134,13 +134,6 @@ void Transform::run()
 //                    qDebug() << tr.data().constLast();
                     tr.push(Tribe::FakeByPrevious, tr.data().constLast());
                 }
-            }
-#define RESIZE_FREQ 1
-            static int reset = 0;
-            reset += 1;
-            reset %= RESIZE_FREQ;
-            if (reset == 0) {
-                emit resetHScroll(_tribe->len(), false);
             }
         }
 #ifdef TEST_SEC

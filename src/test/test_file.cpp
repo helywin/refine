@@ -9,7 +9,7 @@
 #include "File.hpp"
 #include "Curve.hpp"
 #include "Can.hpp"
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 
 int main()
 {

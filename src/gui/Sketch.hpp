@@ -173,6 +173,8 @@ public:
 
     inline void setYRate(double rate) { _y_rate = rate; }
 
+    inline void setDisplayMode(DisplayMode mode) { _mode = mode; }
+
     inline void calculateXEnd()
     {
         _x_end = _x_start + xPoints();

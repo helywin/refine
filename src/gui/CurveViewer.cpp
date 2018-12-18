@@ -22,7 +22,10 @@ CurveViewer::CurveViewer(QWidget *parent, Revolve *revolve, Message *message) :
         _sketch(new Sketch(this, revolve, this)),
         _tribe(&revolve->tribe()),
         _zoom_x(true),
-        _zoom_y(false)
+        _zoom_y(false),
+        _msec(10),
+        _status(Re::Stop),
+        _command(Re::NoCommand)
 {
     setup();
 }
@@ -62,7 +65,7 @@ void CurveViewer::setup()
     _layout->setContentsMargins(0, 0, 0, 0);
     _h_scroll->setMaximum(0);
     _v_scroll->setMaximum(0);
-    _timer.setInterval(10);
+    _timer.setInterval(_msec);
     connect(_h_scroll, &QScrollBar::valueChanged,
             this, &CurveViewer::hScrollChanged, Qt::DirectConnection);
     connect(_v_scroll, &QScrollBar::valueChanged,
@@ -402,4 +405,66 @@ void CurveViewer::zoomYMinimum()
     _sketch_y->setYRate(1.0);
     _sketch_y->setYStart(0.0);
     _sketch_y->update();
+}
+
+void CurveViewer::start()
+{
+    _sketch->setDisplayMode(Sketch::Rolling);
+    _timer.start();
+}
+
+void CurveViewer::pause()
+{
+    _timer.stop();
+    _sketch->setDisplayMode(Sketch::Free);
+}
+
+void CurveViewer::resume()
+{
+    _sketch->setDisplayMode(Sketch::Rolling);
+    _timer.start();
+}
+
+void CurveViewer::stop()
+{
+    _timer.stop();
+    _sketch->setDisplayMode(Sketch::Free);
+}
+
+void CurveViewer::rollViewer()
+{
+    int start = _tribe->len() - _sketch->xPoints();
+    _sketch->setXStart(start);
+    _sketch_x->setXStart(start);
+    _sketch->update();
+    _sketch_x->update();
+    _sketch_xtop->update();
+}
+
+void CurveViewer::regen()
+{
+    int x_start = 0;
+    double x_rate = _tribe->len() / (double) Sketch::X_POINTS;
+    _sketch->setDisplayMode(Sketch::Free);
+    _sketch->setXStart(x_start);
+    _sketch->setXRate(x_rate);
+    _sketch_x->setXStart(x_start);
+    _sketch_x->setPoints(_tribe->len());
+    _h_scroll->setMaximum(0);
+    _h_scroll->setValue(0);
+    _h_scroll->setPageStep(_tribe->len());
+
+    double y_start = 0;
+    double y_rate = 1;
+    _sketch->setYStart(y_start);
+    _sketch_y->setYStart(y_start);
+    _sketch->setYRate(y_rate);
+    _sketch_y->setYRate(y_rate);
+    _v_scroll->setMaximum(0);
+    _v_scroll->setValue(0);
+
+    _sketch_x->update();
+    _sketch_y->update();
+    _sketch_xtop->update();
+    _sketch->update();
 }

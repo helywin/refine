@@ -4,7 +4,7 @@
 
 #include <QtWidgets/QApplication>
 #include <QtCore/QDebug>
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "Curve.hpp"
 #include "Can.hpp"
 #include "Revolve.hpp"

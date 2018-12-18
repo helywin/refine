@@ -8,7 +8,7 @@
 
 #include "Transmit.hpp"
 #include "Can.hpp"
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 
 
 Transmit::Transmit(Message *message) :
@@ -19,7 +19,7 @@ Transmit::Transmit(Message *message) :
 
 }
 
-void Transmit::setParams(Can *can, Buffer *buffer)
+void Transmit::setParams(Can *can, RecvBuffer *buffer)
 {
     _can = can;
     _buffer = buffer;
@@ -27,15 +27,4 @@ void Transmit::setParams(Can *can, Buffer *buffer)
 
 void Transmit::run()
 {
-    QThread::run();
-}
-
-void Transmit::burnProgram(QByteArray &&bytes)
-{
-    _sequence.append(Cell(Burning, bytes));
-}
-
-void Transmit::sendCommand(QByteArray &&command)
-{
-    _sequence.append(Cell(Burning, command));
 }

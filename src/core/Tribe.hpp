@@ -312,9 +312,9 @@ public:
 
         inline const Tribe *tribe() const { return _tribe; }
 
-        inline const int start() const { return _start; }
+        inline int start() const { return _start; }
 
-        inline const int end() const { return _end; }
+        inline int end() const { return _end; }
     };
 
     enum Selection

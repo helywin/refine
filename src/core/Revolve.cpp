@@ -7,7 +7,7 @@
  ******************************************************************************/
 
 #include "Revolve.hpp"
-#include "Sketch.hpp"
+#include "CurveViewer.hpp"
 #include "FilePicker.hpp"
 #include "CurveEditor.hpp"
 
@@ -17,30 +17,28 @@ Revolve::Revolve(Initializer *init) :
         _manage(init, this),
         _can(this),
         _curve(this),
-        _buffer(100),
+        _recv_buf(),
+        _send_buf(),
         _collect(this),
         _transmit(this),
         _tribe(this),
+        _communicate(this),
         _transform(this),
         _record(this),
         _softcan(this),
         _timer_stop(),
         _msec(10),
         _time(10),
-        _config(),
+        _config(nullptr),
         _status(Re::Stop),
-        _sketch(nullptr)
+        _viewer(nullptr)
 {
-    _config = 0x00;
     connect(&_timer_stop, &QTimer::timeout, this,
-            static_cast<bool (Revolve::*)(void)>(&Revolve::stop), Qt::DirectConnection);
+            static_cast<bool (Revolve::*)(void)>(&Revolve::stopCollect), Qt::DirectConnection);
     connect(&_collect, &Collect::info, this, &Revolve::collectError, Qt::AutoConnection);
-    connect(&_transform, &Transform::resetHScroll, this, &Revolve::resetHScroll);
 }
 
-Revolve::~Revolve() {}
-
-bool Revolve::begin(unsigned long msec, Configs config, int time)
+bool Revolve::beginCollect(unsigned long msec, Configs config, int time)
 {
     if (!_can.isConnected()) {
         emitMessage(Re::Warning, tr("开始失败，确保CAN连接好再采集"));
@@ -54,10 +52,10 @@ bool Revolve::begin(unsigned long msec, Configs config, int time)
     _msec = msec;
     _config = Configs(config);
     _time = time;
-    _collect.setParams(&_can, &_buffer, Collect::FromCan, msec);
+    _collect.setParams(&_can, &_recv_buf, Collect::FromCan, msec);
     _manage.generate();
     //! @deprecated genName();
-    if (_config & Config::WithTransform) {
+    if (_config & WithTransform) {
         if (!_curve.isInitialized()) {
             emitMessage(Re::Warning, tr("开始失败，没有加载曲线配置"));
             return false;
@@ -65,19 +63,19 @@ bool Revolve::begin(unsigned long msec, Configs config, int time)
         _tribe.genFromCurve(_curve);
         _tribe_model->genData(&_tribe);
         //! @deprecated genCurveDataFile();
-        _transform.setParams(&_curve, &_buffer, &_tribe, _msec);
+        _transform.setParams(&_curve, &_recv_buf, &_tribe, _msec);
         connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
         _collect.begin();
         _transform.begin();
     } else {
         _collect.begin();
     }
-    if (_sketch) {
-//        _sketch->start();
+    if (_viewer) {
+        _viewer->start();
     }
     if (_config & WithRecord) {
         //! @deprecated genFramesDataFile();
-        _record.setParams(_manage.frameData().absoluteFilePath(), &_buffer);
+        _record.setParams(_manage.frameData().absoluteFilePath(), &_recv_buf);
         _record.begin();
     }
     if (_config & WithTiming) {
@@ -89,7 +87,7 @@ bool Revolve::begin(unsigned long msec, Configs config, int time)
     return true;
 }
 
-bool Revolve::stop(bool error)
+bool Revolve::stopCollect(bool error)
 {
     if (_status == Re::Stop) {
         emitMessage(Re::Warning, tr("结束失败，采集还没开始"));
@@ -114,22 +112,21 @@ bool Revolve::stop(bool error)
     if (_config & WithRecord) {
         _record.stop();
     }
-    if (_sketch) {
-//        _sketch->stop();
+    if (_viewer) {
+        _viewer->stop();
     }
     _file.dumpCurveConfig(_manage.curveConfig().absoluteFilePath(), _curve);
     _manage.compress();
     _manage.copyToCache();
     _status = Re::Stop;
-    emit resetHScroll(_tribe.len(), true);
     emitMessage(Re::Info, tr("停止采集成功"));
     return true;
 }
 
-bool Revolve::exit()
+bool Revolve::exitCollect()
 {
-    if (_sketch) {
-//        _sketch->stop();
+    if (_viewer) {
+        _viewer->stop();
     }
     if (_config & WithTiming) {
         _timer_stop.stop();
@@ -145,7 +142,7 @@ bool Revolve::exit()
     return true;
 }
 
-void Revolve::pause()
+void Revolve::pauseCollect()
 {
     if (_status == Re::Pause) {
         emitMessage(Re::Warning, tr("暂停失败，采集已经暂停"));
@@ -166,14 +163,14 @@ void Revolve::pause()
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }
-    if (_sketch) {
-//        _sketch->pause();
+    if (_viewer) {
+        _viewer->pause();
     }
     _status = Re::Pause;
     emitMessage(Re::Info, tr("暂停采集成功"));
 }
 
-void Revolve::resume()
+void Revolve::resumeCollect()
 {
     if (_status == Re::Running) {
         emitMessage(Re::Warning, tr("继续失败，采集没有暂停"));
@@ -194,8 +191,8 @@ void Revolve::resume()
         _time = _timer_stop.remainingTime();
         _timer_stop.stop();
     }
-    if (_sketch) {
-//        _sketch->resume();
+    if (_viewer) {
+        _viewer->resume();
     }
     _status = Re::Running;
     emitMessage(Re::Info, tr("继续采集成功"));
@@ -203,7 +200,8 @@ void Revolve::resume()
 
 void Revolve::setCollectManner(Collect::Manner manner, QString &collect_frame)
 {
-    _collect.setParams(&_can, &_buffer, manner, _msec, QString());  //不从文件采集
+    Q_UNUSED(collect_frame)
+    _collect.setParams(&_can, &_recv_buf, manner, _msec, QString());  //不从文件采集
 }
 
 void Revolve::getFile(int type, const QString &file, const QString &suffix)
@@ -386,21 +384,25 @@ bool Revolve::exportCsvCurveConfig(const QString &name)
 
 bool Revolve::outputFrameData(const QString &name)
 {
+    Q_UNUSED(name);
     return false;
 }
 
 bool Revolve::exportCsvFrameData(const QString &name)
 {
+    Q_UNUSED(name);
     return false;
 }
 
 bool Revolve::inputFrameData(const QString &name)
 {
+    Q_UNUSED(name);
     return false;
 }
 
 bool Revolve::importCsvFrameData(const QString &name)
 {
+    Q_UNUSED(name);
     return false;
 }
 
@@ -411,9 +413,8 @@ bool Revolve::inputCurveData(const QString &name)
     if (!file.loadCurveRecord(f, _tribe)) {
         return false;
     }
-    _sketch->init();
+    _viewer->regen();
     _tribe_model->genData(&_tribe);
-    emit resetHScroll(_tribe.len(), true);
     emitMessage(Re::Debug, tr("导入曲线数据 %1").arg(name));
     return true;
 }
@@ -427,10 +428,8 @@ bool Revolve::importSoftcanCurveData(const QString &name)
     _softcan.toCurve(_curve);
     _softcan.toTribe(_tribe);
     _softcan.clearDataSpace();
-    _sketch->init();
-    _sketch->update();
+    _viewer->regen();
     _tribe_model->genData(&_tribe);
-    emit resetHScroll(_tribe.len(), true);
     emitMessage(Re::Debug, tr("导入SoftCAN曲线数据 %1").arg(name));
     return true;
 }
@@ -456,7 +455,7 @@ void Revolve::collectError(int code)
     if (code == Collect::ErrorConnection) {
         emitMessage(Re::Critical, tr("检测到连接已经断开，停止采集"));
 //        canLostConnection();
-        if (stop(true)) {
+        if (stopCollect(true)) {
             collectMenuEnable(false);
         }
     } else if (code == Collect::WarnNoFrame) {
@@ -466,12 +465,22 @@ void Revolve::collectError(int code)
 
 void Revolve::transformError(int code)
 {
-
+    Q_UNUSED(code);
 }
 
 void Revolve::recordError(int code)
 {
+    Q_UNUSED(code);
+}
 
+bool Revolve::sendCommand(QByteArray &&bytes)
+{
+    return false;
+}
+
+bool Revolve::burnProgram(QByteArray &&bytes)
+{
+    return false;
 }
 
 

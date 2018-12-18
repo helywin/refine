@@ -21,7 +21,7 @@
 #include "Transform.hpp"
 #include "Tribe.hpp"
 #include "Trigger.hpp"
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "Collect.hpp"
 #include "Csv.hpp"
 #include "Record.hpp"
@@ -33,11 +33,13 @@
 #include "TribeModel.hpp"
 #include "Message.hpp"
 #include "FileManage.hpp"
+#include "SendBuffer.hpp"
+#include "Communicate.hpp"
 /*!
  * @brief 底层调度类
  * 外部GUI只传文件名进来
  */
-class Sketch;
+class CurveViewer;
 class CurveEditor;
 
 class Revolve : public QObject, public Message
@@ -53,15 +55,24 @@ public:
     };
     Q_DECLARE_FLAGS(Configs, Config)
 
+    enum ResponseType
+    {
+        Send,
+        Receive
+    };
+    Q_ENUMS(ResponseType)
+
 private:
     Initializer *_init;
     FileManage _manage;
     Can _can;
     Curve _curve;
-    Buffer _buffer;
+    RecvBuffer _recv_buf;
+    SendBuffer _send_buf;
     Collect _collect;
     Transmit _transmit;
     Tribe _tribe;
+    Communicate _communicate;
     Transform _transform;
     Record _record;
     Softcan _softcan;           //! \brief softcan配置转换工具
@@ -72,7 +83,7 @@ private:
     Configs _config;
     Re::RunningStatus _status;
 
-    Sketch *_sketch;
+    CurveViewer *_viewer;
     TribeModel *_tribe_model;
     CurveEditor *_curve_editor;
     QAction *_menu_init_can;
@@ -81,21 +92,26 @@ private:
 public:
     explicit Revolve(Initializer *init);
 
-    ~Revolve() final;
+//    ~Revolve() = default;
 
     //Can配置
     inline Can::Config &canConfig() { return _can.config(); }
 
 public slots:
     //采集
-    bool begin(unsigned long msec, Configs config, int time);
-    void pause();
-    void resume();
+    bool beginCollect(unsigned long msec, Configs config, int time);
+    void pauseCollect();
+    void resumeCollect();
 
-    inline bool stop() { return stop(false); }
+    inline bool stopCollect() { return stopCollect(false); }
 
-    bool stop(bool error);
-    bool exit();
+    bool stopCollect(bool error);
+    bool exitCollect();
+
+    bool sendCommand(QByteArray &&bytes);
+
+    bool burnProgram(QByteArray &&bytes);
+
 public:
     //采集配置
     void setCollectManner(Collect::Manner manner, QString &collect_frame);
@@ -105,9 +121,7 @@ public:
     bool outputCurveConfig(const QString &name);
 
     bool importCsvCurveConfig(const QString &name);
-
     bool importSoftcanCurveConfig(const QString &name);
-
     bool exportCsvCurveConfig(const QString &name);
 
     bool outputFrameData(const QString &name);
@@ -127,7 +141,7 @@ public:
 
     inline Curve &curve() { return _curve; }
 
-    inline void setSketch(Sketch *sketch) { _sketch = sketch; }
+    inline void setCurveViewer(CurveViewer *viewer) { _viewer = viewer; }
 
     inline bool finished() const { return _status == Re::Stop; }
 
@@ -164,7 +178,8 @@ signals:
 
     void baudRate(double baud_rate);
 
-    void resetHScroll(int size, bool reset);
+    void response(ResponseType type, const QString &response);
+
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Revolve::Configs)

@@ -11,26 +11,18 @@
 
 #include <QtCore/QList>
 #include <QtCore/QDataStream>
-#include "ControlCan.h"
+#include "Can.hpp"
+#include "CanDefines.hpp"
 
 /*!
  * @brief CAN的接收和发送缓冲区
  */
 
-class Buffer
+class RecvBuffer
 {
 public:
     class Cell
     {
-    public:
-        enum SendType
-        {
-            Normal = 0,     //! \brief 正常发送
-            Once = 1,       //! \brief 单次发送
-            SelfSendReceive = 2,        //! \brief 自发自收
-            SelfSendReceiveOnce = 3     //! \brief 单次自发自收
-        };
-
     private:
         VCI_CAN_OBJ *_objs;
         unsigned int _whole_size;
@@ -68,7 +60,7 @@ public:
 
         inline bool isEmpty() const { return _data_size == 0; }
 
-        void setSendType(SendType type);
+        void setSendType(Cd::SendType type);
 
         QStringList str() const;
 
@@ -82,14 +74,14 @@ public:
     class Iter
     {
     private:
-        Buffer *_buffer;
+        RecvBuffer *_buffer;
         int _pos;
 
     public:
-        explicit Iter(Buffer *buffer = nullptr, int pos = 0) :
+        explicit Iter(RecvBuffer *buffer = nullptr, int pos = 0) :
                 _buffer(buffer), _pos(pos) {}
 
-        inline void setParams(Buffer *buffer, int pos)
+        inline void setParams(RecvBuffer *buffer, int pos)
         {
             _buffer = buffer;
             _pos = pos;
@@ -126,14 +118,14 @@ private:
     bool _empty;
 
 public:
-    inline Buffer() : Buffer(50, 100) {}
+    inline RecvBuffer() : RecvBuffer(50, 100) {}
 
-    Buffer(const Buffer &buffer) = delete;
-    explicit Buffer(int cell_space, unsigned int cell_size = 100);
+    RecvBuffer(const RecvBuffer &buffer) = delete;
+    explicit RecvBuffer(int cell_space, unsigned int cell_size = 100);
 
-    ~Buffer();
+    ~RecvBuffer();
 
-    Buffer &operator=(const Buffer &buffer) = delete;
+    RecvBuffer &operator=(const RecvBuffer &buffer) = delete;
 
 //    friend QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
     void dump(QDataStream &stream, Iter tail, Iter head);
@@ -156,12 +148,9 @@ public:
 };
 
 //QDataStream &operator<<(QDataStream &stream, const Buffer &buffer);
-QDataStream &operator>>(QDataStream &stream, Buffer &buffer);
+QDataStream &operator>>(QDataStream &stream, RecvBuffer &buffer);
 
-QDataStream &operator<<(QDataStream &stream, const Buffer::Cell &cell);
-QDataStream &operator>>(QDataStream &stream, Buffer::Cell &cell);
-
-QDataStream &operator<<(QDataStream &stream, const VCI_CAN_OBJ &obj);
-QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj);
+QDataStream &operator<<(QDataStream &stream, const RecvBuffer::Cell &cell);
+QDataStream &operator>>(QDataStream &stream, RecvBuffer::Cell &cell);
 
 #endif //REFINE_BUFFER_HPP

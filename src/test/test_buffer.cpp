@@ -3,11 +3,11 @@
 //
 
 #include <QtCore/QDebug>
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 
 int main()
 {
-    Buffer buffer;
+    RecvBuffer buffer;
     buffer.move();
     buffer.setMark();
     for (const auto &iter : buffer) {

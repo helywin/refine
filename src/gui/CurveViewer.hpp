@@ -12,6 +12,8 @@
 #include <QtWidgets/QScrollBar>
 #include "Message.hpp"
 #include "Sketch.hpp"
+#include "Global.hpp"
+
 class SketchXTop;
 class SketchX;
 class SketchY;
@@ -35,6 +37,8 @@ private:
     bool _zoom_x;
     bool _zoom_y;
     int _msec;
+    Re::RunningStatus _status;
+    Re::RunningCommand _command;
     QTimer _timer;
 
 public:
@@ -54,6 +58,13 @@ public:
         _msec = msec;
         _timer.setInterval(_msec);
     }
+
+    void start();
+    void pause();
+    void resume();
+    void stop();
+
+    void regen();
 
 public slots:
     void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
@@ -79,6 +90,7 @@ private:
     void zoomYDefault();
     void zoomXMinimum();
     void zoomYMinimum();
+    void rollViewer();
 
 private slots:
     void hScrollChanged(int value);

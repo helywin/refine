@@ -11,7 +11,7 @@
 
 #include <QtCore/QThread>
 #include <QtCore/QFile>
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "Can.hpp"
 #include "File.hpp"
 #include "Message.hpp"
@@ -37,7 +37,7 @@ public:
 
 private:
     Can *_can;
-    Buffer *_buffer;
+    RecvBuffer *_buffer;
     Manner _manner;
     QFile _frame_file;
     File _file;
@@ -49,7 +49,7 @@ private:
 public:
     explicit Collect(Message *message = nullptr);
 
-    void setParams(Can *can, Buffer *buffer,
+    void setParams(Can *can, RecvBuffer *buffer,
                    Manner manner, unsigned long msec = 10,
                    const QString &name = QString());
 

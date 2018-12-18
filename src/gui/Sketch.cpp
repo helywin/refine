@@ -942,7 +942,7 @@ void Sketch::plotZoomRect()
 
 void Sketch::mouseDoubleClickEvent(QMouseEvent *event)
 {
-
+    Q_UNUSED(event);
 }
 
 bool Sketch::isMouseOnDragItem(int x)

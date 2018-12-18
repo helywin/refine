@@ -347,7 +347,7 @@ bool File::dumpFrameRecordBegin(QFile &file)
     return true;
 }
 
-void File::dumpFrameRecord(Buffer &buffer, Buffer::Iter tail, Buffer::Iter head)
+void File::dumpFrameRecord(RecvBuffer &buffer, RecvBuffer::Iter tail, RecvBuffer::Iter head)
 {
     buffer.size(tail, head, _frame_cell_num, _frame_obj_num);
     buffer.dump(*_stream, tail, head);

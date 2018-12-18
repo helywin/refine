@@ -3,7 +3,7 @@
 //
 
 #include "Frame.hpp"
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "File.hpp"
 
 Frame::Cell::Cell() :
@@ -45,7 +45,7 @@ QDataStream &operator>>(QDataStream &stream, Frame &pool)
            >> reserved
            >> reserved;
     for (int i = 0; i < cell_num; ++i) {
-        Buffer::Cell cell;
+        RecvBuffer::Cell cell;
         stream >> cell;
         for (int j = 0; j < cell.dataSize(); ++j) {
             pool._cells.append(Frame::Cell(i, qMove(*cell[j])));

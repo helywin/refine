@@ -216,7 +216,7 @@ void Refine::setup()
     setCentralWidget(_central);
 
     _display = new Display(_central, &_revolve, this);
-    _revolve.setSketch(_display->curveViewer()->sketch());
+    _revolve.setCurveViewer(_display->curveViewer());
     _tribebox->connectModelToSketch(_display->curveViewer()->sketch());
     _tribebox->connectModelToSketchY(_display->curveViewer()->sketchY());
     _tribebox->connectModelToSketchXTop(_display->curveViewer()->sketchXTop());
@@ -282,9 +282,9 @@ void Refine::setup()
     connect(_menu_control_start, &QAction::triggered,
             this, &Refine::startRevolve, Qt::DirectConnection);
     connect(_menu_control_pause, &QAction::triggered,
-            &_revolve, &Revolve::pause, Qt::DirectConnection);
+            &_revolve, &Revolve::pauseCollect, Qt::DirectConnection);
     connect(_menu_control_resume, &QAction::triggered,
-            &_revolve, &Revolve::resume, Qt::DirectConnection);
+            &_revolve, &Revolve::resumeCollect, Qt::DirectConnection);
     connect(_menu_control_finish, &QAction::triggered,
             this, &Refine::stopRevolve, Qt::DirectConnection);
     connect(_file_picker, &FilePicker::pickFile,
@@ -325,8 +325,6 @@ void Refine::setup()
             this, &Refine::setWakeUp, Qt::DirectConnection);
     connect(&_wake_up, &QTimer::timeout,
             this, &Refine::keepWakeUp, Qt::DirectConnection);
-    connect(&_revolve, &Revolve::resetHScroll,
-            _display->curveViewer(), &CurveViewer::resetHScroll);
 }
 
 void Refine::setLanguage()
@@ -337,14 +335,14 @@ void Refine::setLanguage()
 
 void Refine::startRevolve()
 {
-    if (_revolve.begin(10, Revolve::WithTransform | Revolve::WithRecord, 0)) {
+    if (_revolve.beginCollect(10, Revolve::WithTransform | Revolve::WithRecord, 0)) {
         setCollectMenuEnable(true);
     }
 }
 
 void Refine::stopRevolve()
 {
-    if (_revolve.stop()) {
+    if (_revolve.stopCollect()) {
         setCollectMenuEnable(false);
     }
 }
@@ -369,7 +367,7 @@ void Refine::connectCan()
                                         tr("确认"));
             qDebug() << "flag: " << flag;
             if (flag) {
-                _revolve.stop();
+                _revolve.stopCollect();
             }
         }
         bool closed = false;
@@ -418,7 +416,7 @@ void Refine::closeEvent(QCloseEvent *event)
                                         tr("取消"),
                                         tr("确认"));
         if (flag) {
-            _revolve.stop();
+            _revolve.stopCollect();
             _revolve.can().close();
         } else {
             event->setAccepted(false);

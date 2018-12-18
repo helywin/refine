@@ -7,7 +7,7 @@
  ******************************************************************************/
 
 #include <QtCore/QDebug>
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "Can.hpp"
 
 /*!
@@ -15,21 +15,21 @@
  * @details 默认参数配置
  */
 Can::Config::Config() :
-        _device_type(DeviceType::USBCAN2),
+        _device_type(Cd::DeviceType::USBCAN2),
         _device_index(0),
         _device_channel(0),
-        _baud_rate(BaudRate::BR_500Kbps),
+        _baud_rate(Cd::BaudRate::BR_500Kbps),
         _config({0x00000000, 0xFFFFFFFF, 0, 0, 0x00, 0x1C, 0}) {}
 
 /*!
  * @brief 配置波特率
  * @param rate 波特率
  */
-void Can::Config::setBaudRate(BaudRate rate)
+void Can::Config::setBaudRate(Cd::BaudRate rate)
 {
     _baud_rate = rate;
-    _config.Timing0 = BaudRateTable[_baud_rate][0];
-    _config.Timing1 = BaudRateTable[_baud_rate][1];
+    _config.Timing0 = Cd::BaudRateTable[_baud_rate][0];
+    _config.Timing1 = Cd::BaudRateTable[_baud_rate][1];
 }
 
 /*!
@@ -56,7 +56,7 @@ bool Can::open()
         return true;
     } else {
         getError();
-        if (_error_info.errorCode() == Error::DeviceOpened) {
+        if (_error_info.errorCode() == Cd::Error::DeviceOpened) {
             return true;
         } else {
             reportError();
@@ -180,7 +180,7 @@ bool Can::reconnect()
  * @return 采集状态
  * @see Can::Result
  */
-int Can::collect(Buffer &buffer, const int delay)
+int Can::collect(RecvBuffer &buffer, const int delay)
 {
     unsigned long length;
     _status |= Status::Collecting;
@@ -240,7 +240,7 @@ bool Can::command(const unsigned int id, const QString &cmd)
 {
     Q_ASSERT(id < 0x800);
     _status |= Status::Command;
-/*  VCI_CAN_OBJ frame;
+/*  CanObj frame;
     frame.ID = id;
     frame.TimeStamp = 0;
     frame.TimeFlag = 1;
@@ -248,7 +248,7 @@ bool Can::command(const unsigned int id, const QString &cmd)
     frame.RemoteFlag = 0;
     frame.ExternFlag = 0;
     frame.DataLen = 0;*/
-    VCI_CAN_OBJ frame({id, 0, 1, 0, 0, 0, 0});
+    CanObj frame({id, 0, 1, 0, 0, 0, 0});
 
     for (int i = 0; i < 8; ++i) {
         if (i == cmd.size()) {
@@ -327,73 +327,73 @@ void Can::reportError()
 {
     QString str;
     switch (_error_info.errorCode()) {
-        case Error::CanOverflow :
+        case Cd::Error::CanOverflow :
             str = QString("CAN控制器内部FIFO溢出");
             break;
-        case Error::CanErrorAlarm :
+        case Cd::Error::CanErrorAlarm :
             str = QString("CAN控制器错误报警");
             break;
-        case Error::CanPassive :
+        case Cd::Error::CanPassive :
             str = QString("CAN控制器消极错误");
             break;
-        case Error::CanLose :
+        case Cd::Error::CanLose :
             str = QString("CAN控制器仲裁丢失");
             break;
-        case Error::CanBusError :
+        case Cd::Error::CanBusError :
             str = QString("CAN控制器总线错误");
             break;
-        case Error::CanBusOff :
+        case Cd::Error::CanBusOff :
             str = QString("总线关闭错误");
             break;
-        case Error::DeviceOpened :
+        case Cd::Error::DeviceOpened :
             str = QString("设备已经打开");
             break;
-        case Error::DeviceOpen :
+        case Cd::Error::DeviceOpen :
             str = QString("打开设备错误");
             break;
-        case Error::DeviceNotOpen :
+        case Cd::Error::DeviceNotOpen :
             str = QString("设备没有打开");
             break;
-        case Error::BufferOverflow :
+        case Cd::Error::BufferOverflow :
             str = QString("缓冲区溢出");
             break;
-        case Error::DeviceNotExist :
+        case Cd::Error::DeviceNotExist :
             str = QString("此设备不存在");
             break;
-        case Error::LoadKernelDll :
+        case Cd::Error::LoadKernelDll :
             str = QString("装载动态库失败");
             break;
-        case Error::CmdFailed :
+        case Cd::Error::CmdFailed :
             str = QString("执行命令失败");
             break;
-        case Error::BufferCreate :
+        case Cd::Error::BufferCreate :
             str = QString("内存不足");
             break;
-        case Error::CanetePortOpened :
+        case Cd::Error::CanetePortOpened :
             str = QString("端口已经被打开");
             break;
-        case Error::CaneteIndexUsed :
+        case Cd::Error::CaneteIndexUsed :
             str = QString("设备索引号已经被占用");
             break;
-        case Error::RefTypeId :
+        case Cd::Error::RefTypeId :
             str = QString("SetReference或GetReference是传递的RefType是不存在");
             break;
-        case Error::CreateSocket :
+        case Cd::Error::CreateSocket :
             str = QString("创建Socket时失败");
             break;
-        case Error::OpenConnect :
+        case Cd::Error::OpenConnect :
             str = QString("打开socket的连接时失败，可能设备连接已经存在");
             break;
-        case Error::NoStartup :
+        case Cd::Error::NoStartup :
             str = QString("设备没启动");
             break;
-        case Error::NoConnected :
+        case Cd::Error::NoConnected :
             str = QString("设备无连接");
             break;
-        case Error::SendPartial :
+        case Cd::Error::SendPartial :
             str = QString("只发送了部分的CAN帧");
             break;
-        case Error::SendTooFast :
+        case Cd::Error::SendTooFast :
             str = QString("数据发得太快，Socket缓冲区满了");
             break;
         default:

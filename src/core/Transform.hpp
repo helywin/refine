@@ -12,12 +12,12 @@
 #include <QtCore/QThread>
 #include <QtCore/QFile>
 #include "File.hpp"
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "Message.hpp"
 #include "Global.hpp"
 
 class Curve;
-class Buffer;
+class RecvBuffer;
 class Tribe;
 class Combine;
 
@@ -32,7 +32,7 @@ public:
 
 private:
     Curve *_curve;
-    Buffer *_buffer;
+    RecvBuffer *_buffer;
     Tribe *_tribe;
     File _file;
     unsigned long _msec;
@@ -42,7 +42,7 @@ private:
 public:
     explicit Transform(Message *message = nullptr);
 
-    void setParams(Curve *curve, Buffer *buffer, Tribe *tribe,
+    void setParams(Curve *curve, RecvBuffer *buffer, Tribe *tribe,
                    unsigned long msec = 10);
 
     void begin();
@@ -59,7 +59,6 @@ protected:
     void run() override;
 
 signals:
-    void resetHScroll(int size, bool reset);
 };
 
 

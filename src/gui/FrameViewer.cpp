@@ -3,7 +3,7 @@
 //
 
 #include "FrameViewer.hpp"
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "File.hpp"
 
 FrameViewer::FrameViewer(QWidget *parent) : QMainWindow(parent)
@@ -59,7 +59,7 @@ void FrameViewer::setup()
 void FrameViewer::readFrameData(const QString &fname)
 {
     QFile f(fname);
-    Buffer buffer;
+    RecvBuffer buffer;
     File file;
     int size;
     int frame_num;
@@ -104,7 +104,7 @@ void FrameViewer::readFrameData(const QString &fname)
         }
         QString str;
 //        file.loadFrameRecord(buffer);
-        const Buffer::Cell &cell = *buffer.last();
+        const RecvBuffer::Cell &cell = *buffer.last();
         for (int j = 0; j < cell.dataSize(); ++j) {
             if (_menu_option_frame->isChecked()) {
                 if (cell[j]->ID != 0x777) {

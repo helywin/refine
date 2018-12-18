@@ -14,7 +14,7 @@
 #include <QtCore/QFile>
 #include <windows.h>
 #include <QtCore/QDateTime>
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "Message.hpp"
 
 class Curve;
@@ -216,7 +216,7 @@ public:
     bool loadFrameRecord(QFile &file, Frame &pool);
 
     bool dumpFrameRecordBegin(QFile &file);
-    void dumpFrameRecord(Buffer &buffer, Buffer::Iter tail, Buffer::Iter head);
+    void dumpFrameRecord(RecvBuffer &buffer, RecvBuffer::Iter tail, RecvBuffer::Iter head);
     void dumpFrameRecordFinish(QFile &file);
 
 public:

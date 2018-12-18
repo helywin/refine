@@ -22,7 +22,7 @@ Collect::Collect(Message *message) :
         _frames_loop(0) {}
 
 
-void Collect::setParams(Can *can, Buffer *buffer, Collect::Manner manner,
+void Collect::setParams(Can *can, RecvBuffer *buffer, Collect::Manner manner,
                         unsigned long msec, const QString &name)
 {
     _can = can;

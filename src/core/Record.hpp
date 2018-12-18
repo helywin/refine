@@ -12,7 +12,7 @@
 #include <QtCore/QThread>
 #include <QtCore/QFile>
 #include "File.hpp"
-#include "Buffer.hpp"
+#include "RecvBuffer.hpp"
 #include "Message.hpp"
 #include "Global.hpp"
 
@@ -27,10 +27,10 @@ public:
 
 private:
     File _file;
-    Buffer *_buffer;
+    RecvBuffer *_buffer;
     QFile _record;
-    Buffer::Iter _buffer_tail;
-    Buffer::Iter _buffer_head;
+    RecvBuffer::Iter _buffer_tail;
+    RecvBuffer::Iter _buffer_head;
     Re::RunningStatus _status;
     Re::RunningCommand _cmd;
     unsigned long _msec;
@@ -38,7 +38,7 @@ private:
 public:
     explicit Record(Message *message = nullptr);
 
-    inline void setParams(const QString &file, Buffer *buffer)
+    inline void setParams(const QString &file, RecvBuffer *buffer)
     {
         _record.setFileName(file);
         _buffer = buffer;
