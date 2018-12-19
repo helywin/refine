@@ -7,6 +7,7 @@
 
 #include <QtCore/QTimer>
 #include <QtCore/QTime>
+#include <QtCore/QtMath>
 #include <QtGui/QWheelEvent>
 #include <QtWidgets/QOpenGLWidget>
 #include <QtGui/QOpenGLExtraFunctions>
@@ -227,6 +228,8 @@ public:
     inline double maximumXRate() const { return _tribe->len() / (double) Sketch::X_POINTS; }
 
     inline double maximumYRate() const { return 1; }
+
+    void updateVernier();
 
 protected:
     void initializeGL() override;

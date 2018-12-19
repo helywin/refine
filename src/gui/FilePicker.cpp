@@ -16,10 +16,12 @@ void FilePicker::setup()
 {
     setWindowTitle(tr("文件对话框"));
     setWindowIcon(QIcon(":res/ui/logo.ico"));
-//    setModal(true);
+    setModal(true);
     auto flag = windowFlags();
     flag = flag | Qt::WindowStaysOnTopHint;
     setWindowFlags(flag);
+    _last_url = QUrl::fromLocalFile(QStandardPaths::standardLocations(
+            QStandardPaths::DesktopLocation).first());
 /*
     setLabelText(QFileDialog::DialogLabel::LookIn, tr("查找范围"));
     setLabelText(QFileDialog::DialogLabel::FileType, tr("文件类型"));
@@ -34,22 +36,21 @@ void FilePicker::setup()
 
 void FilePicker::showDialog()
 {
-    QList<QUrl> urls;
-    for (int i = 0; i < 2; ++i) {
-        const auto &info = QDir::drives()[i];
-        urls << QUrl::fromLocalFile(info.filePath());
-    }
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(
-            QStandardPaths::HomeLocation).first())
-         << QUrl::fromLocalFile(QStandardPaths::standardLocations(
-                 QStandardPaths::DesktopLocation).first());
-//         << QUrl::fromLocalFile("\\\\sjnas01\\div17\\div17\\部门文件夹\\"
-//                                "电控研究部\\交换数据\\测试科\\公共文件夹"
-//                                "\\共享数据");
-    setSidebarUrls(urls);
-    setDirectoryUrl(QUrl::fromLocalFile(QStandardPaths::standardLocations(
-            QStandardPaths::DesktopLocation).first()));
-    selectUrl(QUrl());
+//    QList<QUrl> urls;
+//    for (int i = 0; i < 2; ++i) {
+//        const auto &info = QDir::drives()[i];
+//        urls << QUrl::fromLocalFile(info.filePath());
+//    }
+//    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(
+//            QStandardPaths::HomeLocation).first())
+//         << QUrl::fromLocalFile(QStandardPaths::standardLocations(
+//                 QStandardPaths::DesktopLocation).first());
+////         << QUrl::fromLocalFile("\\\\sjnas01\\div17\\div17\\部门文件夹\\"
+////                                "电控研究部\\交换数据\\测试科\\公共文件夹"
+////                                "\\共享数据");
+//    setSidebarUrls(urls);
+    setDirectoryUrl(_last_url);
+//    selectUrl(QUrl());
     show();
 }
 
@@ -298,8 +299,7 @@ void FilePicker::fileSelectedSlot(const QString &file)
 //    this->directoryUrl().toLocalFile();
     QString name = file;
     QString suffix = QFileInfo(file).suffix();
-    QFileInfo info = QFileInfo(file);
-    if ((unsigned) _type & (unsigned) Out) {
+    if (_type & Out) {
         QRegExp reg_exp("\\(\\*\\.(.*)\\)");
         int pos = selectedNameFilter().indexOf(reg_exp);
         QString suffix_temp;
@@ -313,6 +313,7 @@ void FilePicker::fileSelectedSlot(const QString &file)
             suffix = suffix_temp;
         }
     }
+    _last_url = QUrl::fromLocalFile(name);
     emit pickFile(_type, name, suffix);
 }
 

@@ -41,6 +41,8 @@ private:
     Re::RunningCommand _command;
     QTimer _timer;
 
+    bool _h_scroll_pressed;
+
 public:
     explicit CurveViewer(QWidget *parent, Revolve *revolve, Message *message = nullptr);
 
@@ -64,7 +66,7 @@ public:
     void resume();
     void stop();
 
-    void regen();
+    void regen(bool zoom = true);
 
 public slots:
     void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);

@@ -72,7 +72,6 @@ void Sketch::paintGL()
     calculateXEnd();
     _x_sec = 1 / _x_rate;
     glClear(GL_COLOR_BUFFER_BIT);
-//    plotXAxis();
     currentIndexOverflow();
     plotYGrid();
     plotXGrid();
@@ -80,7 +79,6 @@ void Sketch::paintGL()
     plotFlags();
     plotVerniers();
     plotZoomRect();
-//    drawFocusSign();
     glFlush();
 }
 
@@ -211,7 +209,6 @@ void Sketch::plotCurves()
     }
     switch (_mode) {
         case Rolling:
-            break;
         case Free:
 #ifdef VERTEX
             {
@@ -247,8 +244,14 @@ void Sketch::plotCurves()
                 glColor3d(color.redF(), color.greenF(), color.blueF());
                 glLineWidth(st.width());
                 if (needToCompress()) { //对于大量曲线采取抽样绘制会提升效率同时减少内存
+                    double end;
+                    if (_tribe->len() < xPoints()) {
+                        end = _tribe->len() / _x_rate;
+                    } else {
+                        end = X_POINTS;
+                    }
                     glBegin(GL_LINE_STRIP);
-                    for (int j = 0; j < X_POINTS; ++j) {
+                    for (int j = 0; j < end; ++j) {
                         int index = qRound(j * _x_rate) + _x_start;
                         glVertex2f(float(j * _x_sec * _x_rate),
                                    yToGl((*_tribe)[i].data()[index], st));
@@ -258,7 +261,7 @@ void Sketch::plotCurves()
                     glPointSize(_tribe->style(i).width() * 2 + 2);
                     glBegin(GL_POINTS);
                     if ((double) rect().width() / xPoints() >= 15) {
-                        for (int j = 0; j < X_POINTS; ++j) {
+                        for (int j = 0; j < end; ++j) {
                             int index = qRound(j * _x_rate) + _x_start;
                             if (_tribe->at(i).fillType(index) == Tribe::Fill::Data) {
                                 glVertex2f(float(j * _x_sec),
@@ -269,8 +272,15 @@ void Sketch::plotCurves()
                     glEnd();
                     glFlush();
                 } else {
+                    int end;
+                    if (_tribe->len() < xPoints()) {
+                        end = _tribe->len();
+                    } else {
+                        end = xPoints();
+                    }
                     glBegin(GL_LINE_STRIP);
-                    for (int j = 0; j < xPoints(); ++j) {
+                    //绘制曲线
+                    for (int j = 0; j < end; ++j) {
                         glVertex2f(float(j * _x_sec),
                                    yToGl((*_tribe)[i].data()[j + _x_start], st));
                     }
@@ -280,10 +290,11 @@ void Sketch::plotCurves()
                     }
                     glEnd();
                     glFlush();
+                    //绘制点
                     glPointSize(_tribe->style(i).width() * 2 + 2);
                     glBegin(GL_POINTS);
                     if ((double) rect().width() / xPoints() >= 15) {
-                        for (int j = 0; j < xPoints(); ++j) {
+                        for (int j = 0; j < end; ++j) {
                             if (_tribe->at(i).fillType(j + _x_start) == Tribe::Fill::Data) {
                                 glVertex2f(float(j * _x_sec),
                                            yToGl((*_tribe)[i].data()[j + _x_start], st));
@@ -991,6 +1002,12 @@ void Sketch::zoomPlusRect()
     if (_tribe->size() == 0) {
         return;
     }
+    if (_tribe->len() < xPointsF()
+        && xQtToGl(qMax(_zoom_rect.left(), _zoom_rect.right()))
+           > _tribe->len() / _x_rate) {     //采数据时数据量不多放大会崩溃
+        emitMessage(Re::Info, "在崩溃的边缘试探");
+        return;
+    }
     auto x_rate = (double) (qAbs(_zoom_rect.width())) / rect().width();
     auto x_start = (double) qMin(_zoom_rect.left(), _zoom_rect.right()) / rect().width();
     auto y_rate = (double) (qAbs(_zoom_rect.height())) / rect().height();
@@ -1111,6 +1128,10 @@ void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double 
         y_start = y_scale * (1 - y_rate);
     } else {
         y_rate = 1;
+    }
+    if (_tribe->len() < xPointsF()) {
+        x_start = 0;
+        x_rate = _tribe->len() / (double) X_POINTS;
     }
     emit zoomPlus(x_rate, x_start, y_rate, y_start);
 }
@@ -1262,6 +1283,18 @@ void Sketch::plotFlags()
 bool Sketch::needToCompress() const
 {
     return xPointsF() / rect().width() > 6;
+}
+
+void Sketch::updateVernier()
+{
+    int data_pos;
+    if (_vernier_fix) {
+        data_pos = qRound(_verniers[0].pos * _x_rate) + _verniers[0].start;
+    } else {
+        data_pos = qRound(_verniers[0].pos * _x_rate) + _x_start;
+    }
+    emit vernierMove(xGlToQt(_verniers[0].pos), data_pos / 100.0);
+    _verniers[0].start = _x_start;
 }
 
 

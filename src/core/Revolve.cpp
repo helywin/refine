@@ -54,15 +54,19 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
     _flags = flags;
     _time = time;
     _manage.generate();
-    _viewer->start();
+    if (_viewer) {
+        _viewer->start();
+    }
     if (_flags & Re::Communicate) {
         _communicate.begin();
         _transmit.setParams(&_can, &_send_buf);
         _transmit.begin();
+        emitMessage(Re::Debug, "Revolve::beginCollect::Communicate");
     }
     if (_flags & Re::Collect) {
         _collect.setParams(&_can, &_recv_buf, Collect::FromCan, msec);
         _collect.begin();
+        emitMessage(Re::Debug, "Revolve::beginCollect::Collect");
     }
     if (_flags & Re::TransformData) {
         if (!_curve.isInitialized()) {
@@ -72,14 +76,17 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
         _tribe_model->genData(&_tribe);
         _transform.setParams(&_curve, &_recv_buf, &_tribe, _msec);
         _transform.begin();
+        emitMessage(Re::Debug, "Revolve::beginCollect::TransformData");
     }
     if (_flags & Re::RecordFrame) {
         //! @deprecated genFramesDataFile();
         _record.setParams(_manage.frameData().absoluteFilePath(), &_recv_buf);
         _record.begin();
+        emitMessage(Re::Debug, "Revolve::beginCollect::TransformData");
     }
     if (_flags & Re::TimingStop) {
         _timer_stop.start();
+        emitMessage(Re::Debug, "Revolve::beginCollect::TimingStop");
     }
     _status = Re::Running;
     emitMessage(Re::Info, tr("开始采集成功"));
@@ -112,7 +119,7 @@ bool Revolve::stopCollect(bool error)
         _record.stop();
     }
     if (_viewer) {
-        _viewer->resume();
+        _viewer->stop();
     }
     _file.dumpCurveConfig(_manage.curveConfig().absoluteFilePath(), _curve);
     _manage.compress();

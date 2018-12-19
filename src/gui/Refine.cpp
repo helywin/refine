@@ -335,7 +335,7 @@ void Refine::setLanguage()
 
 void Refine::startRevolve()
 {
-    if (_revolve.beginCollect(10, Re::TransformData | Re::RecordFrame, 0)) {
+    if (_revolve.beginCollect(10, Re::Collect | Re::TransformData | Re::RecordFrame, 0)) {
         setCollectMenuEnable(true);
     }
 }

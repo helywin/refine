@@ -71,8 +71,9 @@ public:
     Q_DECLARE_FLAGS(FileTypes, FileType)
 
 private:
-    FileType _type;
+    FileTypes _type;
     QString _last_filter;
+    QUrl _last_url;
 public:
     explicit FilePicker(QWidget *parent = nullptr);
     static QStringList extendNames(FileTypes type);
