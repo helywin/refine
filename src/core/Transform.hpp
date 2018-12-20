@@ -38,6 +38,7 @@ private:
     unsigned long _msec;
     Re::RunningStatus _status;
     Re::RunningCommand _cmd;
+    QByteArray _bytes;
 
 public:
     explicit Transform(Message *message = nullptr);
@@ -59,6 +60,7 @@ protected:
     void run() override;
 
 signals:
+    void getTransformedTcuMessage(const QString &message);
 };
 
 

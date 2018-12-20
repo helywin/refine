@@ -11,6 +11,7 @@
 
 #include <QtCore/QThread>
 #include "Message.hpp"
+#include "Global.hpp"
 
 class SendBuffer;
 class Can;
@@ -23,13 +24,26 @@ public:
 private:
     SendBuffer *_buffer;
     Can *_can;
+    unsigned long _msec;
+    int _frame_num;
+    Re::RunningCommand _command;
+    Re::RunningStatus _status;
 
 public:
     explicit Transmit(Message *message = nullptr);
-    void setParams(Can *can, SendBuffer *buffer);
+    void setParams(Can *can, SendBuffer *buffer, unsigned long msec, int frame_num);
 
-    void begin() {}
-    void stop() {}
+    inline void begin()
+    {
+        _status = Re::Running;
+        start();
+    }
+
+    void stop()
+    {
+        _command = Re::CommandStop;
+        while (isRunning()) {}
+    }
 
 protected:
     void run() override;

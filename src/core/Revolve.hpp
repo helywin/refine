@@ -79,6 +79,8 @@ private:
     CurveEditor *_curve_editor;
     QAction *_menu_init_can;
 
+    QStringList _tcu_message;
+
 
 public:
     explicit Revolve(Initializer *init);
@@ -142,6 +144,8 @@ public:
 
     bool burnProgram(QByteArray &&bytes);
 
+    QStringList readTcuMessage();
+
 protected:
     inline void emitMessage(MessageType type, const QString &msg) override
     {
@@ -158,6 +162,9 @@ public slots:
 
     void recordError(int code);
 
+private slots:
+    void getTransformedTcuMessage(const QString &message);
+
 signals:
     void message(int type, const QString &msg);
 
@@ -170,6 +177,8 @@ signals:
     void baudRate(double baud_rate);
 
     void response(ResponseType type, const QString &response);
+
+    void getTcuMessage();
 
 };
 

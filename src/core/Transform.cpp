@@ -17,6 +17,7 @@ Transform::Transform(Message *message) :
         _buffer(nullptr),
         _tribe(nullptr),
         _file(),
+        _msec(10),
         _status(Re::Stop),
         _cmd(Re::NoCommand) {}
 
@@ -56,13 +57,12 @@ void Transform::run()
         }
         //可以并行计算
 //#pragma omp parallel for
-//    for (int k = 0; k < _tribe->size(); ++k) {
-//        Tribe::Cell &tr = (*_tribe)[k];
-        for (int i = 0; i < _tribe->size(); ++i) {
-            Tribe::Cell &tr = (*_tribe)[i];
+//        for (int i = 0; i < _tribe->size(); ++i) {
+//            Tribe::Cell &tr = (*_tribe)[i];
+        for (auto &tr : *_tribe) {
             const Curve::Cell &cur = (*_curve)[tr.name()];
             for (unsigned int j = 0; (j < buf.dataSize()) && !tr.fill(); ++j) {
-                if (cur.canId() == buf[j]->ID &&
+                if (static_cast<unsigned int>(cur.canId()) == buf[j]->ID &&
                     (cur.zeroByte() == -1 ||
                      cur.zeroByte() == buf[j]->Data[0])) {
 #if 0
@@ -89,10 +89,10 @@ void Transform::run()
                         }
                     }
 #endif
-                    unsigned int high_byte = 0;
                     unsigned int low_byte = 0;
                     int full = 0;
                     if (cur.highByte() != -1) {
+                        unsigned int high_byte = 0;
                         high_byte = buf[j]->Data[cur.highByte()];
                         high_byte <<= (7 - cur.highByteRange()[1]);
                         high_byte >>= (7 - cur.highByteRange()[1] + cur.highByteRange()[0]);
@@ -124,6 +124,16 @@ void Transform::run()
                         k * cur.rangeIn()[0];
                     float result = full * k + b;
                     tr.push(Tribe::Data, result);
+                } else if (buf[j]->ID == 0x613) {       //增加通信功能
+                    int last_enter = -1;
+                    for (int k = 0; k < 8; ++k) {
+                        if (buf[j]->Data[k] == '\n') {
+                            _bytes.append((char *)buf[j]->Data, k - last_enter);
+                            getTransformedTcuMessage(QString::fromLocal8Bit(_bytes));
+                            _bytes.clear();
+                            last_enter = k;
+                        }
+                    }
                 }
             }
             if (!tr.fill()) {
@@ -132,7 +142,7 @@ void Transform::run()
                     tr.push(Tribe::FakeByZero, 0);
                 } else {
 //                    qDebug() << tr.data().constLast();
-                    tr.push(Tribe::FakeByPrevious, tr.data().constLast());
+                    tr.push(Tribe::FakeByPrevious, tr.last());
                 }
             }
         }

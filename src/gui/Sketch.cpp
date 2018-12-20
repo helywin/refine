@@ -252,9 +252,15 @@ void Sketch::plotCurves()
                     }
                     glBegin(GL_LINE_STRIP);
                     for (int j = 0; j < end; ++j) {
-                        int index = qRound(j * _x_rate) + _x_start;
+                        int index = qFloor(j * _x_rate) + _x_start;
+                        /////////////////////////////////////////////////////////////////////////
+                        if (index > _tribe->len() || index < 0) {
+                            qDebug() << "line:256 tribe.len: " << _tribe->len() << "_x_start: "
+                                     << _x_start << "end: " << end << "j: " << j;
+                        }
+                        Q_ASSERT(index < _tribe->len() && index >= 0);
                         glVertex2f(float(j * _x_sec * _x_rate),
-                                   yToGl((*_tribe)[i].data()[index], st));
+                                   yToGl((*_tribe)[i].data(index), st));
                     }
                     glEnd();
                     glFlush();
@@ -263,9 +269,10 @@ void Sketch::plotCurves()
                     if ((double) rect().width() / xPoints() >= 15) {
                         for (int j = 0; j < end; ++j) {
                             int index = qRound(j * _x_rate) + _x_start;
+                            Q_ASSERT(index < _tribe->len() && index >= 0);
                             if (_tribe->at(i).fillType(index) == Tribe::Fill::Data) {
                                 glVertex2f(float(j * _x_sec),
-                                           yToGl((*_tribe)[i].data()[index], st));
+                                           yToGl((*_tribe)[i].data(index), st));
                             }
                         }
                     }
@@ -281,13 +288,21 @@ void Sketch::plotCurves()
                     glBegin(GL_LINE_STRIP);
                     //绘制曲线
                     for (int j = 0; j < end; ++j) {
+                        /////////////////////////////////////////////////////////////
+                        if (j + _x_start > _tribe->len() || j + _x_start < 0) {
+                            qDebug() << "line:292 tribe.len: " << _tribe->len() << "_x_start: "
+                                     << _x_start << "j: " << j;
+                        }
+                        Q_ASSERT(j + _x_start < _tribe->len() && j + _x_start >= 0);
                         glVertex2f(float(j * _x_sec),
-                                   yToGl((*_tribe)[i].data()[j + _x_start], st));
+                                   yToGl((*_tribe)[i].data(j + _x_start), st));
                     }
-                    if (_x_start + xPoints() < _tribe->len()) {
-                        glVertex2f(float(xPoints() * _x_sec),
-                                   yToGl((*_tribe)[i].data()[_x_start + xPoints()], st));
+                    int point_last = _tribe->len() - _x_start - xPoints();
+                    for (int k = 0; k < point_last; ++k) {
+                        glVertex2f(float((xPoints() + k) * _x_sec),
+                                   yToGl((*_tribe)[i].data(_x_start + xPoints() + k), st));
                     }
+
                     glEnd();
                     glFlush();
                     //绘制点
@@ -295,14 +310,16 @@ void Sketch::plotCurves()
                     glBegin(GL_POINTS);
                     if ((double) rect().width() / xPoints() >= 15) {
                         for (int j = 0; j < end; ++j) {
+                            Q_ASSERT(j + _x_start < _tribe->len() && j + _x_start >= 0);
                             if (_tribe->at(i).fillType(j + _x_start) == Tribe::Fill::Data) {
                                 glVertex2f(float(j * _x_sec),
-                                           yToGl((*_tribe)[i].data()[j + _x_start], st));
+                                           yToGl((*_tribe)[i].data(j + _x_start), st));
                             }
                         }
-                        if (_x_start + xPoints() < _tribe->len()) {
-                            glVertex2f(float(xPoints() * _x_sec),
-                                       yToGl((*_tribe)[i].data()[_x_start + xPoints()], st));
+                        int point_last = _tribe->len() - _x_start - xPoints();
+                        for (int k = 0; k < point_last; ++k) {
+                            glVertex2f(float((xPoints() + k) * _x_sec),
+                                       yToGl((*_tribe)[i].data(_x_start + xPoints() + k), st));
                         }
                     }
                     glEnd();
@@ -483,7 +500,8 @@ void Sketch::plotVerniers()
         int y2 = yGlToQt(Y_POINTS);
         //画竖线
         painter.drawLine(x, y1, x, y2);
-        if (_tribe->len() <= v.pos || data_pos >= _tribe->len()) {
+        if ((_vernier_fix && data_pos >= _tribe->len())
+            || (!_vernier_fix && _tribe->len() <= v.pos)) {     //防止游标越界
             return;
         }
         int max_name_width = 0;
@@ -523,7 +541,8 @@ void Sketch::plotVerniers()
             painter.setFont(font);
             if (i == _current_index) {  //画吸附在曲线上的点还是三角形
                 int d = st.width() * 2 + 4;
-                int y = yGlToQt(yToGl(tr.data()[data_pos], st));
+                Q_ASSERT(data_pos < _tribe->len() && data_pos >= 0);
+                int y = yGlToQt(yToGl(tr.data(data_pos), st));
                 if (y < 0) {
                     pen.setWidth(0);
                     painter.setPen(pen);
@@ -548,7 +567,8 @@ void Sketch::plotVerniers()
                 }
             }
             y2 += row_height;
-            QString value = QString("%1").arg(tr.data()[data_pos], 0, 'f',
+            Q_ASSERT(data_pos < _tribe->len() && data_pos >= 0);
+            QString value = QString("%1").arg(tr.data(data_pos), 0, 'f',
                                               _tribe->style(i).precision());
             QString name = _tribe->style(i).name();
             QString suffix;
@@ -987,7 +1007,8 @@ double Sketch::yZoomPos() const
         if (_tribe->len() <= _verniers[0].pos || data_pos >= _tribe->len()) {
             return 0.5;
         }
-        double rate = yToGl((*_tribe)[_current_index].data()[data_pos],
+        Q_ASSERT(data_pos < _tribe->len() && data_pos >= 0);
+        double rate = yToGl((*_tribe)[_current_index].data(data_pos),
                             _tribe->style(_current_index));
         return rate / Y_POINTS;
     }
@@ -1039,6 +1060,9 @@ void Sketch::zoomPlusRect()
 
 void Sketch::parallelMoveByCursor(const QPoint &pos)
 {
+    if (_tribe->len() < xPoints()) {
+        return;
+    }
     if (qAbs(pos.x() - _move_parallel_pos.x())
         < rect().width() / xPointsF() / 2) {    //防止放很大后移动速度过慢导致不移动线像
         return;
@@ -1131,7 +1155,7 @@ void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double 
     }
     if (_tribe->len() < xPointsF()) {
         x_start = 0;
-        x_rate = _tribe->len() / (double) X_POINTS;
+//        x_rate = _tribe->len() / (double) X_POINTS;
     }
     emit zoomPlus(x_rate, x_start, y_rate, y_start);
 }
@@ -1174,27 +1198,10 @@ void Sketch::zoomMinusFixed(double x_rate, double x_scale, double y_rate, double
             y_start = y_scale * (1 - y_rate);
         }
     }
+    if (_tribe->len() < xPointsF()) {
+        x_start = 0;
+    }
     emit zoomMinus(x_rate, x_start, y_rate, y_start, edge);
-}
-
-/*!
- * @brief 根据鼠标位置放大
- */
-
-void Sketch::zoomPlusByCursor()
-{
-    zoomPlusFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
-                  FIX_Y_ZOOM_PLUS_RATE, yZoomPos());
-}
-
-/*!
- * @brief 根据鼠标位置缩小
- */
-
-void Sketch::zoomMinusByCursor()
-{
-    zoomMinusFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
-                   FIX_Y_ZOOM_MINUS_RATE, yZoomPos());
 }
 
 /*!

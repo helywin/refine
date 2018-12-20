@@ -168,6 +168,8 @@ void Refine::setup()
              tr("反馈bug或意见"));
     initMenu(_menu_help_about, tr("关于(&A)..."), _menu_help,
              tr("关于本软件"));
+    initMenu(_menu_help_aboutqt, tr("关于Qt(&Q)..."), _menu_help,
+             tr("关于Qt"));
 
     _toolbar_file = new QToolBar(tr("文件(&F)"), this);
     this->addToolBar(_toolbar_file);
@@ -184,7 +186,7 @@ void Refine::setup()
     _toolbar_file->addAction(_menu_file_settings);
     _toolbar_file->addAction(_menu_file_exit);
 
-    _commandbox = new Commandbox(this);
+    _commandbox = new Commandbox(this, this);
     _commandbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, _commandbox);
 
@@ -233,6 +235,7 @@ void Refine::setup()
     _outputbox->connectToMessager(_file_picker);
 
     _changelog = new ChangeLog(this);
+    _feedback = new Feedback(this);
     _about = new About(this);
 
     _settings = new Settings(this);
@@ -293,6 +296,10 @@ void Refine::setup()
             this, &Refine::startTimers, Qt::DirectConnection);
     connect(_menu_help_changelog, &QAction::triggered,
             _changelog, &ChangeLog::show, Qt::DirectConnection);
+    connect(_menu_help_feedback, &QAction::triggered,
+            _feedback, &Feedback::show, Qt::DirectConnection);
+    connect(_menu_help_aboutqt, &QAction::triggered,
+            _about, [=]() { QMessageBox::aboutQt(this); }, Qt::DirectConnection);
     connect(_menu_help_about, &QAction::triggered,
             _about, &About::show, Qt::DirectConnection);
     connect(_menu_view_sketchmsec_group, &QActionGroup::triggered,

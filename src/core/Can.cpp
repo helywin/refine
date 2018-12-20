@@ -8,6 +8,7 @@
 
 #include <QtCore/QDebug>
 #include "RecvBuffer.hpp"
+#include "SendBuffer.hpp"
 #include "Can.hpp"
 
 /*!
@@ -209,47 +210,40 @@ int Can::collect(RecvBuffer &buffer, const int delay)
  * @param buffer 发送缓冲区
  * @return 是否发送成功
  */
-/*bool Can::deliver(Buffer &buffer)
+bool Can::deliver(SendBuffer &buffer, const int num)
 {
     unsigned long length;
     _status |= Status::Transmitting;
     length = VCI_Transmit(_config.deviceType(),
                           _config.deviceIndex(),
                           _config.deviceChannel(),
-                          buffer.tail().obj(),
-                          buffer.tailDataSize());
-    bool flag = length == buffer.tailDataSize();
+                          &*(buffer.begin()),
+                          static_cast<unsigned long>(num));
+    bool flag = length == static_cast<unsigned long>(num);
     if (flag) {
-        buffer.setTailDataSize(0);
-        buffer.tailForward();
+        buffer.move(num);
     } else {
         getError();
-        _error_info.report();
     }
     _status ^= Status::Transmitting;
     return flag;
-}*/
+}
 
 /*!
+ * @deprecated
  * @brief 发送字符串
  * @param id CAN总线ID
  * @param cmd 字符串
  * @return 是否发送成功
  */
-bool Can::command(const unsigned int id, const QString &cmd)
+/*
+bool Can::command(const unsigned int id, const QByteArray &cmd)
 {
     Q_ASSERT(id < 0x800);
     _status |= Status::Command;
-/*  CanObj frame;
-    frame.ID = id;
-    frame.TimeStamp = 0;
-    frame.TimeFlag = 1;
-    frame.SendType = 0;
-    frame.RemoteFlag = 0;
-    frame.ExternFlag = 0;
-    frame.DataLen = 0;*/
-    CanObj frame({id, 0, 1, 0, 0, 0, 0});
-
+    CanObj frame = canObj(id, Cd::NormalSend, cmd);
+*/
+/*
     for (int i = 0; i < 8; ++i) {
         if (i == cmd.size()) {
             frame.DataLen = (unsigned char) cmd.size();
@@ -262,6 +256,8 @@ bool Can::command(const unsigned int id, const QString &cmd)
     if (frame.DataLen == 0) {
         frame.DataLen = 8;
     }
+*//*
+
 
     unsigned length;
     length = VCI_Transmit(_config.deviceType(),
@@ -272,6 +268,7 @@ bool Can::command(const unsigned int id, const QString &cmd)
     _status ^= Status::Command;
     return length == frame.DataLen;
 }
+*/
 
 /*!
  * @brief 判断是否连接

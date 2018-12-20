@@ -14,17 +14,27 @@
 Transmit::Transmit(Message *message) :
         Message(message),
         _buffer(nullptr),
-        _can(nullptr)
+        _can(nullptr),
+        _msec(50),
+        _frame_num(100),
+        _command(Re::NoCommand),
+        _status(Re::Stop)
 {
 
 }
 
-void Transmit::setParams(Can *can, SendBuffer *buffer)
+void Transmit::setParams(Can *can, SendBuffer *buffer, unsigned long msec, int frame_num)
 {
     _can = can;
     _buffer = buffer;
+    _msec = msec;
+    _frame_num = frame_num;
 }
 
 void Transmit::run()
 {
+    while (_status == Re::Running) {
+        msleep(_msec);
+        _can->deliver(*_buffer, qMin(_frame_num, _buffer->size()));
+    }
 }

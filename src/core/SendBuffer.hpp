@@ -133,6 +133,12 @@ public:
 
     inline void operator--() { decrease(); }
 
+    inline void move(int num)
+    {
+        Q_ASSERT(num < size());
+        _begin += num;
+        _begin %= _len;
+    }
 
 
 };

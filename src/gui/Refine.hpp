@@ -31,6 +31,7 @@
 #include "About.hpp"
 #include "Message.hpp"
 #include "BaudRate.hpp"
+#include "Feedback.hpp"
 
 class OutputBox;
 class MessagerPanel;
@@ -99,6 +100,7 @@ private:
     QAction *_menu_help_license;
     QAction *_menu_help_feedback;
     QAction *_menu_help_about;
+    QAction *_menu_help_aboutqt;
     QToolBar *_toolbar_file;
 
     QWidget *_central;
@@ -109,6 +111,7 @@ private:
     MarkBox *_markbox;
     Display *_display;
     ChangeLog *_changelog;
+    Feedback *_feedback;
     About *_about;
     Settings *_settings;
     CurveEditor *_editor;

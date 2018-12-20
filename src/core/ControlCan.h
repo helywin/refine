@@ -112,6 +112,7 @@ typedef struct
     USHORT_T Reserved[4];               //! \brief reserved
 } VCI_BOARD_INFO;//, *PVCI_BOARD_INFO;
 
+#define CAN_OBJ_DATA_LEN 8
 //! \brief 2.定义CAN信息帧的数据类型。
 typedef struct
 {//_VCI_CAN_OBJ {
@@ -122,7 +123,7 @@ typedef struct
     BYTE_T RemoteFlag;                    //! \brief 是否是远程帧
     BYTE_T ExternFlag;                    //! \brief 是否是扩展帧
     BYTE_T DataLen;                       //! \brief 数据长度(<=8)，即Data的长度
-    BYTE_T Data[8];                      //! \brief 报文数据
+    BYTE_T Data[CAN_OBJ_DATA_LEN];        //! \brief 报文数据
     BYTE_T Reserved[3];                   //! \brief 保留字
 } VCI_CAN_OBJ;//, *PVCI_CAN_OBJ;
 

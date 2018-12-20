@@ -26,6 +26,7 @@ Revolve::Revolve(Initializer *init) :
         _transform(this),
         _record(this),
         _softcan(this),
+        _file(this),
         _timer_stop(),
         _msec(10),
         _time(10),
@@ -37,6 +38,8 @@ Revolve::Revolve(Initializer *init) :
             static_cast<bool (Revolve::*)(void)>(&Revolve::stopCollect), Qt::DirectConnection);
     connect(&_collect, &Collect::info, this, &Revolve::collectError, Qt::AutoConnection);
     connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
+    connect(&_transform, &Transform::getTransformedTcuMessage,
+            this, &Revolve::getTransformedTcuMessage);
 }
 
 bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
@@ -59,7 +62,7 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
     }
     if (_flags & Re::Communicate) {
         _communicate.begin();
-        _transmit.setParams(&_can, &_send_buf);
+        _transmit.setParams(&_can, &_send_buf, 50, 100);
         _transmit.begin();
         emitMessage(Re::Debug, "Revolve::beginCollect::Communicate");
     }
@@ -302,7 +305,7 @@ void Revolve::getFile(int type, const QString &file, const QString &suffix)
                                 tr("载入曲线数据成功"));
                 } else {
                     emitMessage(Re::Warning,
-                                tr("载入曲线数据失败，检查配置格式"));
+                                tr("载入曲线数据失败，检查数据格式"));
                 }
             } else if (suffix == FilePicker::extendName(
                     FilePicker::CurveDataSoftcan)) {
@@ -353,7 +356,7 @@ void Revolve::getFile(int type, const QString &file, const QString &suffix)
 
 bool Revolve::inputCurveConfig(const QString &name)
 {
-    File file;
+    File file(this);
     QFile f(name);
     bool flag = file.loadCurveConfig(f, _curve);
     emitMessage(Re::Debug, tr("导入曲线配置 %1").arg(name));
@@ -378,7 +381,7 @@ bool Revolve::importSoftcanCurveConfig(const QString &name)
 
 bool Revolve::outputCurveConfig(const QString &name)
 {
-    File file;
+    File file(this);
     QFile f(name);
     bool flag = file.dumpCurveConfig(f, _curve);
     emitMessage(Re::Debug, tr("导出曲线配置 %1").arg(name));
@@ -418,9 +421,9 @@ bool Revolve::importCsvFrameData(const QString &name)
 
 bool Revolve::inputCurveData(const QString &name)
 {
-    File file;
+    File file(this);
     QFile f(name);
-    if (!file.loadCurveRecord(f, _tribe)) {
+    if (!_file.loadCurveRecord(f, _tribe)) {
         return false;
     }
     _viewer->regen();
@@ -431,7 +434,6 @@ bool Revolve::inputCurveData(const QString &name)
 
 bool Revolve::importSoftcanCurveData(const QString &name)
 {
-
     if (!_softcan.load(name)) {
         return false;
     }
@@ -446,7 +448,7 @@ bool Revolve::importSoftcanCurveData(const QString &name)
 
 bool Revolve::outputCurveData(const QString &name)
 {
-    File file;
+    File file(this);
     QFile f(name);
     bool flag = file.dumpCurveRecord(f, _tribe);
     emitMessage(Re::Debug, tr("导出曲线数据 %1").arg(name));
@@ -491,6 +493,18 @@ bool Revolve::sendCommand(QByteArray &&bytes)
 bool Revolve::burnProgram(QByteArray &&bytes)
 {
     return false;
+}
+
+void Revolve::getTransformedTcuMessage(const QString &message)
+{
+    _tcu_message.append(message);
+}
+
+QStringList Revolve::readTcuMessage()
+{
+    QStringList list;
+    qSwap(list, _tcu_message);
+    return list;
 }
 
 

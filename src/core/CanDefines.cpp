@@ -4,7 +4,7 @@
 
 #include "CanDefines.hpp"
 
-QDataStream &operator<<(QDataStream &stream, const VCI_CAN_OBJ &obj)
+QDataStream &operator<<(QDataStream &stream, const CanObj &obj)
 {
     stream << obj.ID
            << obj.TimeStamp
@@ -18,7 +18,7 @@ QDataStream &operator<<(QDataStream &stream, const VCI_CAN_OBJ &obj)
     return stream;
 }
 
-QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj)
+QDataStream &operator>>(QDataStream &stream, CanObj &obj)
 {
     stream >> obj.ID
            >> obj.TimeStamp
@@ -32,12 +32,20 @@ QDataStream &operator>>(QDataStream &stream, VCI_CAN_OBJ &obj)
     return stream;
 }
 
-VCI_CAN_OBJ canObj(unsigned int id, Cd::SendType send_type, QByteArray &&data)
+/*CanObj canObj(unsigned int id, Cd::SendType send_type, const QByteArray &data)
 {
-    VCI_CAN_OBJ obj;
+    CanObj obj;
     obj.ID = id;
     obj.SendType = send_type;
     obj.DataLen = 8;
     memcpy(obj.Data, data.data(), 8);
     return obj;
+}*/
+
+void setCanObj(CanObj &obj, unsigned int id, Cd::SendType send_type, const QByteArray &data)
+{
+    obj.ID = id;
+    obj.SendType = send_type;
+    obj.DataLen = CAN_OBJ_DATA_LEN;
+    memcpy(obj.Data, data.data(), CAN_OBJ_DATA_LEN);
 }

@@ -28,6 +28,7 @@ class Tribe : public Message
 public:
     friend class Curve;
     friend class TribeModel;
+    friend class File;
 
     enum DataType
     {
@@ -47,6 +48,7 @@ public:
     {
     public:
         friend class TribeModel;
+        friend class File;
         enum Type
         {
             Physical = 0,
@@ -187,6 +189,7 @@ public:
     {
     private:
         friend class Tribe;
+        friend class File;
         QString _name;
         int _data_type;
         QVector<float> _data;
@@ -204,7 +207,19 @@ public:
 
 //        inline QVector<float> &data() { return _data; }
 
-        inline const QVector<float> &data() const { return _data; }
+        inline float data(int index) const
+        {
+            Q_ASSERT(index >= 0 && index < _data.size());
+            return _data[index];
+        }
+
+//        inline float &data(int index)
+//        {
+//            Q_ASSERT(index >= 0 && index < _data.size());
+//            return _data[index];
+//        }
+
+        inline float last() const { return _data.last(); }
 
         inline QString name() const { return _name; }
 
@@ -216,17 +231,17 @@ public:
 
         inline void push(FillType fill, float &&v) { push(fill, v); }
 
-        inline float &operator[](int index)
-        {
-            Q_ASSERT(index < _data.size() && index >= 0);
-            return _data[index];
-        }
-
-        inline const float &operator[](int index) const
-        {
-            Q_ASSERT(index < _data.size() && index >= 0);
-            return _data[index];
-        }
+//        inline float &operator[](int index)
+//        {
+//            Q_ASSERT(index < _data.size() && index >= 0);
+//            return _data[index];
+//        }
+//
+//        inline float operator[](int index) const
+//        {
+//            Q_ASSERT(index < _data.size() && index >= 0);
+//            return _data[index];
+//        }
 
         friend
         QDataStream &operator<<(QDataStream &stream, const Tribe::Cell &cell);
@@ -329,6 +344,7 @@ private:
     QList<Cell> _cells;         //! \brief 曲线数据
     QStringList _header;        //! \brief 曲线名字表
     QVector<int> _segment;      //! \brief 曲线分段
+    QVector<int> _marks;
     int _len;
     TribeModel *_model;
     int _msec;
@@ -466,15 +482,6 @@ public:
 
     inline int msec() const { return _msec; }
 };
-
-QDataStream &operator<<(QDataStream &stream, const Tribe &tribe);
-QDataStream &operator>>(QDataStream &stream, Tribe &tribe);
-
-QDataStream &operator<<(QDataStream &stream, const Tribe::Style &style);
-QDataStream &operator>>(QDataStream &stream, Tribe::Style &style);
-
-QDataStream &operator<<(QDataStream &stream, const Tribe::Cell &cell);
-QDataStream &operator>>(QDataStream &stream, Tribe::Cell &cell);
 
 
 #endif //REFINE_TRIBE_HPP

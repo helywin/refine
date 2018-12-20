@@ -251,7 +251,8 @@ Curve::Cell::Cell(int index) :
         _range_in({0, 100}),
         _range_out({0, 100}),
         _precision(0),
-        _remark(QString("无")) {}
+        _remark(QString("无")),
+        _reserved(){}
 
 bool Curve::Cell::check() const     //不准备用csv文件，方法也不写了
 {

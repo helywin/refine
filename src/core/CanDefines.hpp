@@ -163,6 +163,7 @@ namespace Cd {
 QDataStream &operator<<(QDataStream &stream, const CanObj &obj);
 QDataStream &operator>>(QDataStream &stream, CanObj &obj);
 
-CanObj canObj(unsigned int id, Cd::SendType send_type, QByteArray &&data);
+//CanObj canObj(unsigned int id, Cd::SendType send_type, const QByteArray &data);
+void setCanObj(CanObj &obj, unsigned int id, Cd::SendType send_type, const QByteArray &data);
 
 #endif //REFINE_CANDEFINES_HPP

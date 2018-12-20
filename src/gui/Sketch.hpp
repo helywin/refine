@@ -154,7 +154,7 @@ public:
 
     inline int xStart() const { return _x_start; }
 
-    inline int xPoints() const { return qRound(X_POINTS * _x_rate); }
+    inline int xPoints() const { return qFloor(X_POINTS * _x_rate); }
 
     inline double xPointsF() const { return X_POINTS * _x_rate; } //这个供后续运算使用，保持精度
 
@@ -218,8 +218,6 @@ public:
     void zoomMinusFixed(double x_rate, double x_scale, double y_rate, double y_scale);
     void zoomPlusByVernier();
     void zoomMinusByVernier();
-    void zoomPlusByCursor();
-    void zoomMinusByCursor();
     void zoomPlusRect();
     void parallelMoveByCursor(const QPoint &pos);
     bool xZoomPlusLimit() const;

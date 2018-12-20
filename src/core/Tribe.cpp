@@ -10,122 +10,6 @@
 #include "Tribe.hpp"
 #include "Csv.hpp"
 
-/*!
- * @brief 曲线剪切
- * @deprecated 曲线设计另外的记录方式，该函数弃用
- *//*
-void Tribe::trim()
-{
-    int size = -1;
-    for (const auto &iter : _cells) {
-        if (size == -1) {
-            size = iter.size();
-            continue;
-        }
-        if (size > iter.size()) {
-            size = iter.size();
-        }
-    }
-    for (auto &iter : _cells) {
-        iter.resize(size);
-    }
-}*/
-
-QDataStream &operator<<(QDataStream &stream, const Tribe &tribe)
-{
-    stream << tribe.size();
-    stream << tribe.len();
-    stream << tribe.msec();
-    stream << (int) 0;
-    stream << (int) 0;
-    stream << (int) 0;
-    for (const auto &iter : tribe._styles) {
-        stream << iter;
-    }
-    stream << tribe._segment.size();
-    for (const auto &iter : tribe._segment) {
-        stream << iter;
-    }
-    for (const auto &iter : tribe._cells) {
-        stream << iter;
-    }
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, Tribe &tribe)
-{
-    int size = 0;
-    int reserved = 0;
-    stream >> size;
-    stream >> tribe._len;
-    stream >> tribe._msec;
-    stream >> reserved;
-    stream >> reserved;
-    stream >> reserved;
-    if (tribe.msec() == 0) {    //兼容旧的格式 before v0.0.16
-        tribe.setMsec(10);
-    }
-    for (int i = 0; i < size; ++i) {
-        Tribe::Style style;
-        stream >> style;
-        tribe._header.append(style.name());
-        tribe._styles.append(qMove(style));
-    }
-    int segment_size;
-    stream >> segment_size;
-    for (int i = 0; i < segment_size; ++i) {
-        int seg;
-        stream >> seg;
-        tribe._segment.append(seg);
-    }
-    for (int i = 0; i < size; ++i) {
-        Tribe::Cell cell(tribe._header[i]);
-        stream >> cell;
-        tribe._cells.append(cell);
-    }
-    return stream;
-}
-
-QDataStream &operator<<(QDataStream &stream, const Tribe::Cell &cell)
-{
-    stream << cell._name;
-    stream << cell._data_type;
-    stream << cell._data.size();
-    stream << (int) 0;
-    stream << (int) 0;
-    stream << (int) 0;
-    for (const auto &iter : cell._data) {
-        stream << iter;
-    }
-    for (const auto &iter : cell._fill) {
-        stream << iter;
-    }
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, Tribe::Cell &cell)
-{
-    int size = 0;
-    int reserved = 0;
-    stream >> cell._name;
-    stream >> cell._data_type;
-    stream >> size;
-    stream >> reserved;
-    stream >> reserved;
-    stream >> reserved;
-    for (int i = 0; i < size; ++i) {
-        float buf = 0;
-        stream >> buf;
-        cell._data.append(buf);
-    }
-    for (int i = 0; i < size; ++i) {
-        unsigned char buf = 0;
-        stream >> buf;
-        cell._fill.append(buf);
-    }
-    return stream;
-}
-
 float Tribe::Cell::fakePercent() const
 {
     int cnt = 0;
@@ -177,7 +61,7 @@ bool Tribe::dumpToCsv(QFile &f) const
     for (int i = 0; i < len(); ++i) {
         list.clear();
         for (const auto &iter : _cells) {
-            list.append(QString::number(iter.data()[i]));
+            list.append(QString::number(iter.data(i)));
         }
         csv.writeLine(list);
     }
@@ -223,42 +107,6 @@ Tribe::Style &Tribe::Style::operator=(const Curve::Cell &cell)
     _precision = cell._precision;
     _remark = cell._remark;
     return *this;
-}
-
-QDataStream &operator<<(QDataStream &stream, const Tribe::Style &style)
-{
-    stream << style._index
-           << style._display
-           << style._name
-           << style._unit
-           << style._width
-           << style._color
-           << style._range_out[0]
-           << style._range_out[1]
-           << style._precision
-            << style._remark;
-    for (const auto &res : style._reserved) {
-        stream << res;
-    }
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, Tribe::Style &style)
-{
-    stream >> style._index
-           >> style._display
-           >> style._name
-           >> style._unit
-           >> style._width
-           >> style._color
-           >> style._range_out[0]
-           >> style._range_out[1]
-           >> style._precision
-           >> style._remark;
-    for (auto &res : style._reserved) {
-        stream >> res;
-    }
-    return stream;
 }
 
 void Tribe::genFromCurve(const Curve &curve)

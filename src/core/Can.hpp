@@ -14,6 +14,7 @@
 #include "Message.hpp"
 #include "CanDefines.hpp"
 class RecvBuffer;
+class SendBuffer;
 
 /*!
  * @brief 控制CAN的类
@@ -216,19 +217,20 @@ public:
     bool reset();
     bool reconnect();
     int collect(RecvBuffer &buffer, int delay = 0);
-    bool deliver(RecvBuffer &buffer);
-    bool command(unsigned int id, const QString &cmd);
+    bool deliver(SendBuffer &buffer, int num);
+//    bool command(unsigned int id, const QByteArray &cmd);
 
     /*!
+     * @deprecated
      * @brief 发送字符串
      * @param id CAN总线ID
      * @param cmd 字符串右值
      * @return 是否成功
      */
-    inline bool command(unsigned int id, QString &&cmd)
+    /*inline bool command(unsigned int id, QByteArray &&cmd)
     {
         return command(id, cmd);
-    }
+    }*/
 
     bool isConnected();
     void clear() const;

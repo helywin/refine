@@ -67,6 +67,19 @@ public:
             Result = 0x20           //.rst
         };
 
+        enum VersionIndex
+        {
+            Major = 0,
+            Micro,
+            Minor,
+            Build,
+            Year,
+            Month,
+            Day,
+            Identifier,
+            VersionSize = HEADER_VERSION_L
+        };
+
     private:
         char _magic[HEADER_MAGIC_L];                // 8 byte
         char _version[HEADER_VERSION_L];            // 8 byte
@@ -157,7 +170,7 @@ public:
         QStringList str() const;
         bool check() const;
         void clear();
-        int versionCompare(char major, char micro, char minor);
+        int versionCompare(int major, int micro, int minor);
     };
 
 private:

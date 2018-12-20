@@ -8,44 +8,21 @@
 #include <QtCore/QThread>
 #include "Message.hpp"
 
-class RecvBuffer;
+class SendBuffer;
 
 class Communicate : public QThread, public Message
 {
 Q_OBJECT
-public:
-    enum Type
-    {
-        None,
-        Command,
-        Burning
-    };
-
-    class Cell
-    {
-    private:
-        Type _type;
-        QByteArray _data;
-    public:
-        Cell(const Cell &cell) = default;
-
-        Cell(Type type, const QByteArray &bytes) : _type(type), _data(bytes) {}
-
-        Cell(Type type, QByteArray &&bytes) : _type(type), _data(bytes) {}
-
-        inline Type type() const { return _type; }
-
-        inline const QByteArray &data() const { return _data; }
-    };
 private:
-    RecvBuffer *_buffer;
-    QList<Cell> _sequence;
+    SendBuffer *_buffer;
+    QByteArray _program;
+    bool _has_program;
 
 public:
     explicit Communicate(Message *message = nullptr);
-    void setParams(RecvBuffer *buffer);
+    void setParams(SendBuffer *buffer);
     void burnProgram(QByteArray &&bytes);
-    void sendCommand(QByteArray &&command);
+    void sendCommand(const QByteArray &bytes);
 
     void begin() {}
     void stop() {}

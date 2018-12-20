@@ -379,9 +379,13 @@ bool File::loadCurveRecord(QFile &file, Tribe &tribe)
 
     loadFileHeader();
     if (!loadCheckSum()) {
-        qDebug("File::loadCurveRecord: bad checksum!");
+        emitMessage(Re::Warning, "文件校验码错误");
         return false;
     }
+    /*if (_header->versionCompare(0, 1, 0) < 0) {
+        emitMessage(Re::Warning, "文件版本低于当前要求版本");
+        return false;
+    }*/
     _stream->device()->seek(DATA_POS);
     char str[4];
     _stream->readRawData(str, 4);
@@ -390,7 +394,85 @@ bool File::loadCurveRecord(QFile &file, Tribe &tribe)
         return false;
     }
     tribe.clear();
-    (*_stream) >> tribe;
+    auto &stream = *_stream;
+    //! \brief 读取数据
+    int size = 0;
+    int reserved = 0;
+    stream >> size;
+    stream >> tribe._len;
+    stream >> tribe._msec;
+    stream >> reserved;
+    stream >> reserved;
+    stream >> reserved;
+    if (tribe.msec() == 0) {    //兼容旧的格式 before v0.0.16
+        tribe.setMsec(10);
+    }
+    for (int i = 0; i < size; ++i) {
+        Tribe::Style style;
+        stream >> style._index
+               >> style._display
+               >> style._name
+               >> style._unit
+               >> style._width
+               >> style._color
+               >> style._range_out[0]
+               >> style._range_out[1]
+               >> style._precision
+               >> style._remark;
+        for (auto &res : style._reserved) {
+            stream >> res;
+        }
+        //        stream >> style;
+        tribe._header.append(style.name());
+        tribe._styles.append(qMove(style));
+    }
+    int segment_size;
+    stream >> segment_size;
+    for (int i = 0; i < segment_size; ++i) {
+        int seg;
+        stream >> seg;
+        tribe._segment.append(seg);
+    }
+    /************************************************/
+    //! \brief v0.1.1加入
+    if (_header->versionCompare(0, 1, 1) >= 0) {
+        int mark_size;
+        stream >> mark_size;
+        for (int i = 0; i < mark_size; ++i) {
+            int mark;
+            stream >> mark;
+            tribe._marks.append(mark);
+        }
+    }
+    /************************************************/
+    //! \brief 读取cell
+    for (int i = 0; i < size; ++i) {
+        Tribe::Cell cell(tribe._header[i]);
+//        stream >> cell;
+        {
+            int data_size = 0;
+//            int reserved = 0;
+            stream >> cell._name;
+            stream >> cell._data_type;
+            stream >> data_size;
+            stream >> reserved;
+            stream >> reserved;
+            stream >> reserved;
+            for (int j = 0; j < data_size; ++j) {
+                float buf = 0;
+                stream >> buf;
+                cell._data.append(buf);
+            }
+            for (int j = 0; j < data_size; ++j) {
+                unsigned char buf = 0;
+                stream >> buf;
+                cell._fill.append(buf);
+            }
+        }
+        tribe._cells.append(cell);
+    }
+    tribe.setLen();
+//    (*_stream) >> tribe;
     return true;
 }
 
@@ -411,7 +493,58 @@ bool File::dumpCurveRecord(QFile &file, const Tribe &tribe)
 
     dumpFileHeader();
     _stream->writeRawData("CVDF", 4);
-    (*_stream) << tribe;
+    auto &stream = *_stream;
+    //! \brief 写入数据
+    stream << tribe.size();
+    stream << tribe.len();
+    stream << tribe.msec();
+    stream << (int) 0;
+    stream << (int) 0;
+    stream << (int) 0;
+    for (const auto &style : tribe._styles) {
+        stream << style._index
+               << style._display
+               << style._name
+               << style._unit
+               << style._width
+               << style._color
+               << style._range_out[0]
+               << style._range_out[1]
+               << style._precision
+               << style._remark;
+        for (const auto &res : style._reserved) {
+            stream << res;
+        }
+    }
+    stream << tribe._segment.size();
+    for (const auto &iter : tribe._segment) {
+        stream << iter;
+    }
+    /************************************************/
+    //! \brief v0.1.1加入
+    stream << tribe._marks.size();
+    for (const auto &iter : tribe._marks) {
+        stream << iter;
+    }
+    /************************************************/
+    for (const auto &cell : tribe._cells) {
+        stream << cell._name;
+        stream << cell._data_type;
+        stream << cell._data.size();
+        stream << (int) 0;
+        stream << (int) 0;
+        stream << (int) 0;
+        for (const auto &iter : cell._data) {
+            stream << iter;
+        }
+        for (const auto &iter : cell._fill) {
+            stream << iter;
+        }
+//        stream << iter;
+    }
+
+
+//    (*_stream) << tribe;
     dumpHeaderCrc32();
     _stream->unsetDevice();
     file.close();
@@ -450,14 +583,14 @@ void File::Header::setMagic()
 
 void File::Header::setVersion()
 {
-    _version[0] = Version::major();
-    _version[1] = Version::micro();
-    _version[2] = Version::minor();
-    _version[3] = Version::build();
-    _version[4] = Version::year();
-    _version[5] = Version::month();
-    _version[6] = Version::day();
-    _version[7] = Version::identifier();
+    _version[Major] = Version::major();
+    _version[Micro] = Version::micro();
+    _version[Minor] = Version::minor();
+    _version[Build] = Version::build();
+    _version[Year] = Version::year();
+    _version[Month] = Version::month();
+    _version[Day] = Version::day();
+    _version[Identifier] = Version::identifier();
 }
 
 void File::Header::setInfo(const QString &info)
@@ -515,7 +648,7 @@ QStringList File::Header::str() const
 {
     QStringList list;
     QString ver;
-    switch (_version[7]) {
+    switch (_version[Identifier]) {
         case Version::None:
             ver = QString();
             break;
@@ -539,13 +672,13 @@ QStringList File::Header::str() const
             break;
     }
     list.append(QString("%1.%2.%3.%4_%5%6%7(%8)")
-                        .arg(_version[0])
-                        .arg(_version[1])
-                        .arg(_version[2])
-                        .arg(_version[3])
-                        .arg(_version[4])
-                        .arg(_version[5])
-                        .arg(_version[6])
+                        .arg(_version[Major])
+                        .arg(_version[Micro])
+                        .arg(_version[Minor])
+                        .arg(_version[Build])
+                        .arg(_version[Year])
+                        .arg(_version[Month])
+                        .arg(_version[Day])
                         .arg(ver));
     QString type;
     switch (_type) {
@@ -602,21 +735,21 @@ void File::Header::clear()
     _reserved[HEADER_RESV_L - 1] = (char) 0xFF;
 }
 
-int File::Header::versionCompare(char major, char micro, char minor)
+int File::Header::versionCompare(int major, int micro, int minor)
 {
-    if (_version[0] < major) {
+    if (_version[Major] < major) {
         return -1;
-    } else if (_version[0] > major) {
+    } else if (_version[Major] > major) {
         return 1;
     }
-    if (_version[1] < micro) {
+    if (_version[Micro] < micro) {
         return -1;
-    } else if (_version[1] > micro) {
+    } else if (_version[Micro] > micro) {
         return 1;
     }
-    if (_version[2] < minor) {
+    if (_version[Minor] < minor) {
         return -1;
-    } else if (_version[2] > minor) {
+    } else if (_version[Minor] > minor) {
         return 1;
     }
     return 0;

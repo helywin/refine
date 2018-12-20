@@ -42,6 +42,7 @@ private:
     QTimer _timer;
 
     bool _h_scroll_pressed;
+    bool _is_rolling;
 
 public:
     explicit CurveViewer(QWidget *parent, Revolve *revolve, Message *message = nullptr);

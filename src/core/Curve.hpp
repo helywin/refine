@@ -26,6 +26,7 @@ class Curve : public Message
 {
 public:
     friend class CurveModel;
+    friend class File;
 
     class Cell
     {
