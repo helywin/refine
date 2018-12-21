@@ -339,12 +339,18 @@ public:
         SelectAll
     };
 
+    struct PositionMark
+    {
+        int type;
+        int pos;
+    };
+
 private:
     QList<Style> _styles;       //! \brief 曲线显示配置
     QList<Cell> _cells;         //! \brief 曲线数据
     QStringList _header;        //! \brief 曲线名字表
     QVector<int> _segment;      //! \brief 曲线分段
-    QVector<int> _marks;
+    QVector<PositionMark> _marks;
     int _len;
     TribeModel *_model;
     int _msec;
@@ -445,6 +451,7 @@ public:
         _cells.clear();
         _header.clear();
         _segment.clear();
+        _marks.clear();
         _len = 0;
     }
 
@@ -481,6 +488,10 @@ public:
     inline void setMsec(int msec) { _msec = msec; }
 
     inline int msec() const { return _msec; }
+
+    inline void addMark(Re::LineStipple type) { _marks.append({type, _len}); }
+
+    inline const QVector<PositionMark> &marks() { return _marks; }
 };
 
 

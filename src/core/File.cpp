@@ -439,8 +439,9 @@ bool File::loadCurveRecord(QFile &file, Tribe &tribe)
         int mark_size;
         stream >> mark_size;
         for (int i = 0; i < mark_size; ++i) {
-            int mark;
-            stream >> mark;
+            Tribe::PositionMark mark;
+            stream >> mark.type;
+            stream >> mark.pos;
             tribe._marks.append(mark);
         }
     }
@@ -524,7 +525,8 @@ bool File::dumpCurveRecord(QFile &file, const Tribe &tribe)
     //! \brief v0.1.1加入
     stream << tribe._marks.size();
     for (const auto &iter : tribe._marks) {
-        stream << iter;
+        stream << iter.type;
+        stream << iter.pos;
     }
     /************************************************/
     for (const auto &cell : tribe._cells) {

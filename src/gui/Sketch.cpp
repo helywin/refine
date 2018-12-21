@@ -43,6 +43,7 @@ Sketch::Sketch(QWidget *parent, Revolve *revolve, Message *message) :
     setFocusPolicy(Qt::ClickFocus);
     _verniers.append(Vernier({0, 0, 0}));
     setMouseTracking(true);
+    setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
 void Sketch::initializeGL()
@@ -76,6 +77,7 @@ void Sketch::paintGL()
     plotYGrid();
     plotXGrid();
     plotCurves();
+    plotMarks();
     plotFlags();
     plotVerniers();
     plotZoomRect();
@@ -316,7 +318,6 @@ void Sketch::plotCurves()
                                            yToGl((*_tribe)[i].data(j + _x_start), st));
                             }
                         }
-                        int point_last = _tribe->len() - _x_start - xPoints();
                         for (int k = 0; k < point_last; ++k) {
                             glVertex2f(float((xPoints() + k) * _x_sec),
                                        yToGl((*_tribe)[i].data(_x_start + xPoints() + k), st));
@@ -352,6 +353,51 @@ void Sketch::plotCurves()
             break;
         }
     }
+}
+
+/*!
+ * @brief 绘制标记虚线
+ */
+
+void Sketch::plotMarks()
+{
+    glDisable(GL_LINE_SMOOTH);
+    glDisable(GL_BLEND);
+
+//    glLineStipple(6, 0x5555);
+//    glLineStipple(1, 0x0fff);
+    glLineWidth(1);
+    glEnable(GL_LINE_STIPPLE);
+    for (const auto mark : _tribe->marks()) {
+        switch (mark.type) {
+            case Re::DotLine:
+                glColor3f(1, 0, 0);
+                glLineStipple(2, 0x5555);
+                break;
+            case Re::DashDotLine:
+                glColor3f(0, 1, 0);
+                glLineStipple(2, 0xfe38);
+                break;
+            case Re::DashLine:
+                glColor3f(0, 0, 1);
+                glLineStipple(1, 0x00ff);
+                break;
+            case Re::SolidLine:
+            default:
+                glColor3f(1, 1, 0);
+                glLineStipple(1, 0xffff);
+                break;
+        }
+        glBegin(GL_LINES);
+        if (mark.pos >= _x_start && mark.pos < _x_start + xPoints()) {
+            double x = (mark.pos - _x_start) * _x_sec;
+            glVertex2d(x, 0);
+            glVertex2d(x, Y_POINTS);
+        }
+        glEnd();
+    }
+    glDisable(GL_LINE_STRIP);
+    glFlush();
 }
 
 #define X_MINIMUM_PIXEL 60
@@ -743,6 +789,20 @@ void Sketch::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_M) {
         emit zoomMinimum();
     }
+    if (_mode == Rolling) {
+        if (event->key() == Qt::Key_Z) {
+            _tribe->addMark(Re::SolidLine);
+        }
+        if (event->key() == Qt::Key_X) {
+            _tribe->addMark(Re::DotLine);
+        }
+        if (event->key() == Qt::Key_C) {
+            _tribe->addMark(Re::DashDotLine);
+        }
+        if (event->key() == Qt::Key_V) {
+            _tribe->addMark(Re::DashLine);
+        }
+    }
     _modifiers = event->modifiers();
     emitMessage(Re::Debug, QString("按下 %1").arg(event->key()));
 }
@@ -909,9 +969,8 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
             .arg(_zoom_rect.top())
             .arg(_zoom_rect.bottom())
     );
-    qDebug() << event->buttons();     //松开鼠标事件buttons只会返回还按着的
     */
-    if (!(event->buttons() & Qt::LeftButton)) { //松开鼠标左键
+    if (event->button() == Qt::LeftButton) { //松开鼠标左键
         if (_movement == MoveVernier) {}
         else if (_movement == MoveZoomRect) {
             if (!_zoom_finish) {
@@ -920,13 +979,19 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
             setCursor(Qt::ArrowCursor);
         }
     }
-    if (!(event->buttons() & Qt::MiddleButton)) { //松开鼠标左键
+    if (event->button() ==  Qt::MiddleButton) { //松开鼠标左键
         setCursor(Qt::ArrowCursor);
     }
+    if (event->button() ==  Qt::RightButton) {
+        if (_menu) {
+            _menu->exec(event->globalPos());
+        }
+    }
+    event->accept();
+    releaseMouse();
     _movement = MoveNone;
     _plot_zoom_rect = false;        //消除对话框后不小心拖动会不能清除放大状态的bug
     _zoom_finish = true;            //消除对话框后不小心拖动会不能清除放大状态的bug
-    releaseMouse();
 }
 
 #define MINIMUM_ZOOM_RECT_WIDTH 20

@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/res" lang="CN">
         <file>text/changelog.html</file>
+        <file>text/readme.html</file>
+        <file>text/github.css</file>
     </qresource>
 </RCC>

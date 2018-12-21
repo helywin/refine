@@ -68,6 +68,10 @@ void CurveViewer::setup()
     _h_scroll->setMaximum(0);
     _v_scroll->setMaximum(0);
     _timer.setInterval(_msec);
+
+    _menu = new QMenu();
+
+
     connect(_h_scroll, &QScrollBar::valueChanged,
             this, &CurveViewer::hScrollChanged, Qt::DirectConnection);
     connect(_v_scroll, &QScrollBar::valueChanged,
@@ -81,6 +85,7 @@ void CurveViewer::setup()
     connect(&_timer, &QTimer::timeout, this, &CurveViewer::rollViewer);
     connect(_h_scroll, &QScrollBar::sliderPressed, this, [=]() { _h_scroll_pressed = true; });
     connect(_h_scroll, &QScrollBar::sliderReleased, this, [=]() { _h_scroll_pressed = false; });
+//    connect(_sketch, &Sketch::rightMouseBottonRelease, this, &CurveViewer::showContextMenu);
 }
 
 void CurveViewer::hScrollChanged(int value)
@@ -535,3 +540,61 @@ void CurveViewer::regen(bool zoom)
     _sketch->updateVernier();
     _sketch->update();
 }
+
+void CurveViewer::mouseReleaseEvent(QMouseEvent *event)
+{
+//    emitMessage(Re::Debug,
+//                QString("botton:%1, bottons:%2").arg(event->button()).arg(event->buttons()));
+    if (event->button() == Qt::RightButton) {
+        _menu->exec(event->globalPos());
+        event->accept();
+    }
+}
+
+void CurveViewer::finishMenuSet()
+{
+    _menu->addAction(_menu_start);
+    _menu->addAction(_menu_pause);
+    _menu->addAction(_menu_resume);
+    _menu->addAction(_menu_stop);
+//    initMenu(_menu_start, tr("开始采集"), _menu);
+//    _menu_start->setIcon(QIcon(":res/icons/start.png"));
+//    initMenu(_menu_pause, tr("暂停采集"), _menu);
+//    _menu_pause->setIcon(QIcon(":res/icons/pause.png"));
+//    initMenu(_menu_resume, tr("继续采集"), _menu);
+//    _menu_resume->setIcon(QIcon(":res/icons/resume.png"));
+//    initMenu(_menu_stop, tr("停止采集"), _menu);
+//    _menu_stop->setIcon(QIcon(":res/icons/stop.png"));
+    _menu->addSeparator();
+    _menu->addAction(_menu_load);
+    _menu->addAction(_menu_save);
+//    _menu->addAction(_menu_current);
+
+//    initMenu(_menu_load, tr("加载数据..."), _menu);
+//    _menu_load->setIcon(QIcon(":res/icons/open.png"));
+//    initMenu(_menu_save, tr("保存数据..."), _menu);
+//    _menu_save->setIcon(QIcon(":res/icons/save.png"));
+    initMenu(_menu_current, tr("保存当前显示数据..."), _menu);
+    _menu_current->setIcon(QIcon(":res/icons/export.png"));
+    _menu->addSeparator();
+    initMenu(_menu_copy_img, tr("复制图像"), _menu);
+    initMenu(_menu_save_img, tr("保存图像"), _menu);
+    initMenu(_menu_clip_img, tr("截取图像"), _menu);
+    _menu->addSeparator();
+    initMenu(_menu_vernier, tr("显示游标"), _menu);
+    _menu_vernier->setCheckable(true);
+    _menu_vernier->setChecked(true);
+    initMenu(_menu_pattern, tr("显示区间"), _menu);
+    _menu_pattern->setCheckable(true);
+    initMenu(_menu_marks, tr("显示标记"), _menu);
+    _menu_marks->setCheckable(true);
+    _menu_marks->setChecked(true);
+    _menu->addSeparator();
+    _menu->addAction(_menu_settings);
+//    initMenu(_menu_settings, tr("设置"), _menu);
+//    _menu_settings->setIcon(QIcon(":res/icons/settings.png"));
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    _sketch->setMenu(_menu);
+}
+
+

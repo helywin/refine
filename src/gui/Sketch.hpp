@@ -13,6 +13,7 @@
 #include <QtGui/QOpenGLExtraFunctions>
 #include <QtGui/QOpenGLBuffer>
 #include <QtWidgets/QScrollBar>
+#include <QtWidgets/QMenu>
 #include "Tribe.hpp"
 #include "Curve.hpp"
 #include "Message.hpp"
@@ -136,6 +137,8 @@ private:
     int _fps_counter;
     double _fps;
 
+    QMenu *_menu;
+
 #ifdef VERTEX
     GLuint *_curve_buffers;
     GLuint *_vaos;
@@ -219,6 +222,7 @@ public:
     void zoomPlusByVernier();
     void zoomMinusByVernier();
     void zoomPlusRect();
+public:
     void parallelMoveByCursor(const QPoint &pos);
     bool xZoomPlusLimit() const;
     bool yZoomPlusLimit() const;
@@ -228,6 +232,8 @@ public:
     inline double maximumYRate() const { return 1; }
 
     void updateVernier();
+
+    inline void setMenu(QMenu *menu) { _menu = menu; }
 
 protected:
     void initializeGL() override;
@@ -240,6 +246,7 @@ private:
     void plotVerniers();
     void plotPatterns();
     void plotCurves();
+    void plotMarks();
     void plotZoomRect();
     void plotFlags();
     void drawGlString(double x0, double y0, const QString &str,

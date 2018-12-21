@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="refine">Refine</h1>
+<h2 id="简介">简介</h2>
+<p>匹配工况用的软件，主要实现以下功能：</p>
+<p><strong>主要功能</strong>：</p>
+<ol type="1">
+<li>数据采集和回放</li>
+<li>根据采集的数据根据配置进行评分计算</li>
+<li>评分结果生成pdf文档</li>
+</ol>
+<p><strong>其他功能</strong>：</p>
+<ol type="1">
+<li>匹配结果汇总</li>
+</ol>
+<p>用到的框架和开发平台：</p>
+<ul>
+<li>Qt</li>
+<li>MinGW</li>
+<li>CMake</li>
+</ul>
+<p>目前还在开发阶段</p>
+<h2 id="当前进度">当前进度</h2>
+<ol type="1">
+<li>曲线查看缩放功能已基本实现</li>
+</ol>
+<figure>
+<img src="./assets/demo.gif" alt="曲线查看" /><figcaption>曲线查看</figcaption>
+</figure>
+<hr />
+<h1 id="变更列表">变更列表</h1>
+<h2 id="v0.0.6">v0.0.6</h2>
+<ol type="1">
+<li>重新设计UI和底层处理方法</li>
+<li>采数据按照固定时钟采样，对于丢失的数据补上，多出的丢弃</li>
+<li>增加定时器功能用于计时测试</li>
+<li>增加版本变更记录菜单实现</li>
+</ol>
+<p>2018/10/30</p>
+<hr />
+<h2 id="v0.0.7">v0.0.7</h2>
+<ol type="1">
+<li>改写线程重复创建销毁为线程内循环，减少开支</li>
+<li>增加曲线列表窗口</li>
+<li>增加工具栏和侧边窗口的隐藏显示</li>
+<li>增加重绘间隔设置菜单，并使用单选</li>
+</ol>
+<p>2018/10/31</p>
+<hr />
+<h2 id="v0.0.8">v0.0.8</h2>
+<ol type="1">
+<li>修复刷新时数组越界的问题</li>
+<li>修复开始采集不动的问题，return改为continue</li>
+<li>增加将数据文件打包为一个文件的功能</li>
+<li>日志窗可以查看输出文件的位置</li>
+<li>底层的曲线存储类添加曲线配置部分副本</li>
+</ol>
+<p>2018/11/02</p>
+<hr />
+<h2 id="v0.0.9">v0.0.9</h2>
+<ol type="1">
+<li>使用菜单组代替一个个触发</li>
+<li>增加曲线配置编辑功能，还未写完整</li>
+<li>右侧曲线配置表颜色块修复不能点击</li>
+<li>MVC模式设计已经可以读取自定义数据结构，代理还未设计</li>
+</ol>
+<p>2018/11/06</p>
+<hr />
+<h2 id="v0.0.10">v0.0.10</h2>
+<ol type="1">
+<li>曲线配置编辑器的代理已经设置好</li>
+<li>曲线列表窗口可以正常显示曲线了</li>
+<li>曲线显示和曲线配置没关系了，由曲线的风格设置来确定</li>
+</ol>
+<p>2018/11/08</p>
+<hr />
+<h2 id="v0.0.11">v0.0.11</h2>
+<ol type="1">
+<li>绘图区的滚动条可以使用</li>
+<li>导入导出曲线配置和数据可以使用，支持CSV导出</li>
+<li>修复绘图只画竖线的问题</li>
+<li>所有的控件和菜单全部翻译为中文</li>
+</ol>
+<p>2018/11/12</p>
+<hr />
+<h2 id="v0.0.12">v0.0.12</h2>
+<ol type="1">
+<li>将数据的纵坐标按照10格绘制出来，并且能根据表格切换坐标</li>
+<li>游标能够显示当前位置的数据，和SoftCAN一样</li>
+<li>添加菜单和工具栏的小图标，增加软件可用性</li>
+</ol>
+<p>2018/11/15</p>
+<hr />
+<h2 id="v0.0.13">v0.0.13</h2>
+<ol type="1">
+<li>修复由于QOpenGLWidget导致全屏不显示菜单的bug(鼠标放上去能操作)</li>
+<li>纵坐标范围小于10的曲线会根据范围大小绘制纵坐标，不会仍旧画10条(逻辑值)</li>
+<li>游标变得智能，碰到边缘会调整数据显示位置</li>
+<li>曲线转换发现重大bug，不能转换有符号数(已修复)</li>
+<li>增加搜索框，增加排序类</li>
+</ol>
+<p>2018/11/19</p>
+<hr />
+<h2 id="v0.0.14">v0.0.14</h2>
+<ol type="1">
+<li>搜索框添加自动补全</li>
+<li>曲线搜索框可以根据选中情况和内容大小写以及不同语法进行内容筛选</li>
+<li>曲线表格内容可以用表头进行排序，最有用的比如根据颜色列排序可以把相同颜色的曲线排列到一起</li>
+<li>修改看图的逻辑使得曲线绘制更流畅</li>
+</ol>
+<p>2018/11/20</p>
+<hr />
+<h2 id="v0.0.15">v0.0.15</h2>
+<ol type="1">
+<li>能够直接读取SoftCAN数据</li>
+<li>修复proxy和source model之间的selection映射问题</li>
+<li>改进Softcan读取类的识别机制</li>
+<li>曲线配置表格的增加和删除实现</li>
+<li>演示模式设计完毕，F12启用和关闭</li>
+<li>添加波特率显示，但暂停采集时会不计算</li>
+</ol>
+<p>2018/11/22</p>
+<hr />
+<h2 id="v0.0.16">v0.0.16</h2>
+<ol type="1">
+<li>修复SoftCAN导入曲线数据长度不一使得查看崩溃的问题</li>
+<li>分割画布，使得可以左右绘制多坐标</li>
+<li>演示模式下不显示菜单的问题待修复</li>
+<li>预先转换好曲线数据，方便设置顶点数组和缓冲区</li>
+</ol>
+<p>2018/11/30</p>
+<hr />
+<h2 id="v0.0.17">v0.0.17</h2>
+<ol type="1">
+<li>增加屏幕常亮功能</li>
+<li>放大到一定程度显示点，并且只显示采集到的数据点</li>
+<li>修复演示模式不显示菜单的问题</li>
+<li>按键缩放功能完成，横向网格完成</li>
+<li>横坐标轴完成，纵向向网格完成</li>
+</ol>
+<p>2018/12/06</p>
+<hr />
+<h2 id="v0.0.18">v0.0.18</h2>
+<ol type="1">
+<li>增加曲线精度这一配置</li>
+<li>增加Y轴缩放</li>
+<li>增加xy轴缩放锁定菜单</li>
+</ol>
+<p>2018/12/10</p>
+<hr />
+<h2 id="v0.0.19">v0.0.19</h2>
+<ol type="1">
+<li>xy轴+-号根据游标位置缩放</li>
+<li>鼠标滚轮缩放根据鼠标位置</li>
+</ol>
+<p>2018/12/13</p>
+<hr />
+<h2 id="v0.0.20">v0.0.20</h2>
+<ol type="1">
+<li>优化游标数据显示，缩小阴影面积</li>
+<li>消除对话框后不小心拖动会不能清除放大状态的bug</li>
+<li>坐标轴名称移动到上面，可以完整显示，多坐标也方便显示</li>
+<li>修复一堆下标溢出导致的崩溃</li>
+<li>调整Y轴使其更加紧凑</li>
+<li>调整X轴使最后一个刻度能显示出来</li>
+<li>设计样式让进度条更明显</li>
+<li>增加鼠标中建按住拖动平移功能</li>
+<li>绘制横坐标点数过多时采用抽样绘制方式增加绘制性能和减少内存</li>
+<li>读取SoftCAN数据也会导入配置</li>
+<li>读取完SoftCAN数据后会释放掉相应的内存</li>
+<li>优化网格显示</li>
+<li>保证游标能显示选中的曲线数据，不管勾选多少曲线</li>
+<li>修复放大率很高时鼠标中键难以移动的问题</li>
+</ol>
+<p>2018/12/14</p>
+<hr />
+<figure>
+<img src="：res/ui/logo.ico" alt="img" /><figcaption>img</figcaption>
+</figure>
+</body>
+</html>

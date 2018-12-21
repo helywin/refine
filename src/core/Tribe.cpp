@@ -78,6 +78,7 @@ void Tribe::reset()
     }
     _len = 0;
     _segment.clear();
+    _marks.clear();
 }
 
 void Tribe::setUnFilled()

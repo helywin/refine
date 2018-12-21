@@ -38,8 +38,16 @@ namespace Re {
         TimingStop = 0x10
     };
     Q_DECLARE_FLAGS(RevolveFlags, RevolveFlag)
+
     Q_DECLARE_OPERATORS_FOR_FLAGS(RevolveFlags)
 
+    enum LineStipple
+    {
+        SolidLine,
+        DotLine,
+        DashDotLine,
+        DashLine
+    };
 };
 
 #endif //REFINE_GLOBAL_HPP

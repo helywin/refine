@@ -6,8 +6,8 @@ set(CMAKE_MAJOR_VERSION 0)
 set(CMAKE_MINOR_VERSION 0)
 set(CMAKE_PATCH_VERSION 14)
 
-set(FILE_MD "README.md")
-add_custom_command(CONVERT_MD )
+#set(FILE_MD "README.md")
+#add_custom_command(CONVERT_MD )
 
 #add_subdirectory(${PROJECT_SOURCE_DIR}/src/core)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/test)

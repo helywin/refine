@@ -226,7 +226,8 @@ void Refine::setup()
     _display->setParentLayout(_layout);
     _display->addDock(_tribebox);
     _display->addDock(_markbox);
-
+    setCurveViewerActions();
+    
     _statusbar = new StatusBar(this);
     _baud_rate = new BaudRate(_statusbar);
     _statusbar->addPermanentWidget(_baud_rate);
@@ -537,4 +538,18 @@ void Refine::keepWakeUp()
     emitMessage(Re::Debug, "唤醒屏幕");
 #endif
 }
+
+void Refine::setCurveViewerActions()
+{
+    _display->curveViewer()->setMenuStart(_menu_control_start);
+    _display->curveViewer()->setMenuPause(_menu_control_pause);
+    _display->curveViewer()->setMenuResume(_menu_control_resume);
+    _display->curveViewer()->setMenuStop(_menu_control_finish);
+    _display->curveViewer()->setMenuLoad(_menu_file_import_data);
+    _display->curveViewer()->setMenuSave(_menu_file_export_data);
+//    _display->curveViewer()->setMenuCurrent(_menu_control_start);
+    _display->curveViewer()->setMenuSettings(_menu_file_settings);
+    _display->curveViewer()->finishMenuSet();
+}
+
 

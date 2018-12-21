@@ -10,6 +10,9 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QScrollBar>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QActionGroup>
 #include "Message.hpp"
 #include "Sketch.hpp"
 #include "Global.hpp"
@@ -43,6 +46,27 @@ private:
 
     bool _h_scroll_pressed;
     bool _is_rolling;
+
+    QMenu *_menu;
+    QAction *_menu_start;
+    QAction *_menu_pause;
+    QAction *_menu_resume;
+    QAction *_menu_stop;
+
+    QAction *_menu_load;
+    QAction *_menu_save;
+    QAction *_menu_current;
+
+    QAction *_menu_copy_img;
+    QAction *_menu_save_img;
+    QAction *_menu_clip_img;
+
+    QAction *_menu_vernier;
+    QAction *_menu_pattern;
+    QAction *_menu_marks;
+
+    QMenu *_menu_style;
+    QAction *_menu_settings;
 
 public:
     explicit CurveViewer(QWidget *parent, Revolve *revolve, Message *message = nullptr);
@@ -81,6 +105,16 @@ public slots:
     void setXZoom(bool flag);
     void setYZoom(bool flag);
 
+    inline void setMenuStart(QAction *action) { _menu_start = action; };
+    inline void setMenuPause(QAction *action) { _menu_pause = action; };
+    inline void setMenuResume(QAction *action) { _menu_resume = action; };
+    inline void setMenuStop(QAction *action) { _menu_stop = action; };
+    inline void setMenuLoad(QAction *action) { _menu_load = action; };
+    inline void setMenuSave(QAction *action) { _menu_save = action; };
+    inline void setMenuCurrent(QAction *action) { _menu_current = action; };
+    inline void setMenuSettings(QAction *action) { _menu_settings = action; };
+    void finishMenuSet();
+
 private:
     void setup();
     void zoomX(double rate, double start);
@@ -95,9 +129,26 @@ private:
     void zoomYMinimum();
     void rollViewer();
 
+    inline void initMenu(QMenu *&menu, QString &&title,
+                         QMenu *m)
+    {
+        menu = new QMenu(title, m);
+        m->addMenu(menu);
+    }
+
+    void initMenu(QAction *&action, QString &&title,
+                  QMenu *m)
+    {
+        action = new QAction(title, m);
+        m->addAction(action);
+        action->setStatusTip(title);
+    }
+
 private slots:
     void hScrollChanged(int value);
     void vScrollChanged(int value);
+protected:
+    void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
 

@@ -193,6 +193,8 @@ private:
         action->setShortcut(seq);
     }
 
+    void setCurveViewerActions();
+
 private slots:
 
     void fullScreen();
