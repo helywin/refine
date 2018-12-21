@@ -20,7 +20,7 @@
 #include "Initializer.hpp"
 #include "Revolve.hpp"
 #include "FilePicker.hpp"
-#include "Commandbox.hpp"
+#include "CommandBox.hpp"
 #include "CurveEditor.hpp"
 #include "MessagerPanel.hpp"
 #include "Display.hpp"
@@ -105,7 +105,7 @@ private:
 
     QWidget *_central;
     QHBoxLayout *_layout;
-    Commandbox *_commandbox;
+    CommandBox *_commandbox;
     OutputBox *_outputbox;
     TribeBox *_tribebox;
     MarkBox *_markbox;

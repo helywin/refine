@@ -3,17 +3,17 @@
 //
 
 #include <QtWidgets/QAction>
-#include "Commandbox.hpp"
+#include "CommandBox.hpp"
 #include "CommandPanel.hpp"
 
-Commandbox::Commandbox(Message *message, QWidget *parent) :
+CommandBox::CommandBox(Message *message, QWidget *parent) :
         QDockWidget(parent),
         Message(message)
 {
     setup();
 }
 
-void Commandbox::setup()
+void CommandBox::setup()
 {
     this->setWindowTitle(tr("命令"));
 //    _content = new QWidget(this);

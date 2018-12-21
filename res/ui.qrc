@@ -3,5 +3,6 @@
         <file>ui/logo.png</file>
         <file>ui/logo.ico</file>
         <file>ui/logo_48x48.png</file>
+        <file>ui/logo_33x33.png</file>
     </qresource>
 </RCC>

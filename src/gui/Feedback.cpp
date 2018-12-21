@@ -28,8 +28,10 @@ void Feedback::setup()
     _text->setText(tr("示例内容"));
     _send = new QPushButton(this);
     _send->setIcon(QIcon(":res/ui/logo_48x48.png"));
+    _send->setIconSize(QSize(48, 48));
     _send->setContentsMargins(0, 0, 0, 0);
     _send->setFixedSize(48, 48);
+    _send->setStyleSheet("");
     _layout->addWidget(_title);
     _layout->addWidget(_text);
     _layout->addWidget(_send);
@@ -39,7 +41,7 @@ void Feedback::setup()
 
 void Feedback::sendFeedback()
 {
-    QString email_address("收件人: jiang.wenqiang@byd.com");
+    QString email_address("jiang.wenqiang@byd.com");
     QString url = QString("mailto:%1?subject=%2&body=%3").
             arg(email_address).
             arg(_title->text()).

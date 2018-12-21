@@ -14,17 +14,16 @@
 
 class CommandPanel;
 
-class Commandbox : public QDockWidget, public Message
+class CommandBox : public QDockWidget, public Message
 {
 Q_OBJECT
 private:
     QWidget *_content;
     QVBoxLayout *_layout;
-    QTabWidget *_tab;
     CommandPanel *_panel;
 
 public:
-    explicit Commandbox(Message *message, QWidget *parent = nullptr);
+    explicit CommandBox(Message *message, QWidget *parent = nullptr);
 private:
     void setup();
 };

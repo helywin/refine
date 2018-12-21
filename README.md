@@ -207,4 +207,4 @@
 
 ---
 
-![img](./res/ui/logo.ico)
+![img](：res/ui/logo.ico)

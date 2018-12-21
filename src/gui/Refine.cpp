@@ -186,7 +186,7 @@ void Refine::setup()
     _toolbar_file->addAction(_menu_file_settings);
     _toolbar_file->addAction(_menu_file_exit);
 
-    _commandbox = new Commandbox(this, this);
+    _commandbox = new CommandBox(this, this);
     _commandbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, _commandbox);
 
