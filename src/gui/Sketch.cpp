@@ -778,6 +778,7 @@ void Sketch::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_L) {
         _vernier_visible ^= 1;
+        emit vernierVisibilityChanged(_vernier_visible);
         update();
     }
     if (event->key() == Qt::Key_F12) {      //防止与界面的演示模式键位冲突

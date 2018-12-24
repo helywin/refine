@@ -31,6 +31,7 @@ private:
     SketchXTop *_sketch_xtop;
     SketchX *_sketch_x;
     Sketch *_sketch;
+    QOpenGLWidget *_sketch_yright;
     QGridLayout *_layout;
     QWidget *_widget_sketch;
     QGridLayout *_layout_sketch;
@@ -143,6 +144,8 @@ private:
         m->addAction(action);
         action->setStatusTip(title);
     }
+
+    QImage piecePicture();
 
 private slots:
     void hScrollChanged(int value);

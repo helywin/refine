@@ -179,6 +179,10 @@ public:
 
     inline void setDisplayMode(DisplayMode mode) { _mode = mode; }
 
+    inline void setVernierVisible(bool visible) { _vernier_visible = visible; }
+
+    inline bool vernierVisible() const { return _vernier_visible; }
+
     inline void calculateXEnd()
     {
         _x_end = _x_start + xPoints();
@@ -283,6 +287,7 @@ signals:
     void zoomMinimum();
     void vernierMove(int pos, double time);
     void parallelMove(double delta_x, double delta_y);
+    void vernierVisibilityChanged(bool visible);
 };
 
 

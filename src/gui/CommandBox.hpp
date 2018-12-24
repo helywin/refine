@@ -13,6 +13,7 @@
 #include "Message.hpp"
 
 class CommandPanel;
+class Revolve;
 
 class CommandBox : public QDockWidget, public Message
 {
@@ -21,9 +22,10 @@ private:
     QWidget *_content;
     QVBoxLayout *_layout;
     CommandPanel *_panel;
+    Revolve *_revolve;
 
 public:
-    explicit CommandBox(Message *message, QWidget *parent = nullptr);
+    explicit CommandBox(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 private:
     void setup();
 };

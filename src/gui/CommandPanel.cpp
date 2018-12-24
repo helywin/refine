@@ -2,11 +2,17 @@
 // Created by jiang.wenqiang on 2018/12/20.
 //
 
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtCore/QStandardPaths>
+#include <QtCore/QFileInfo>
 #include "CommandPanel.hpp"
+#include "Revolve.hpp"
 
-CommandPanel::CommandPanel(Message *message, QWidget *parent) :
+CommandPanel::CommandPanel(Message *message, Revolve *revolve, QWidget *parent) :
         QWidget(parent),
-        Message(message)
+        Message(message),
+        _revolve(revolve)
 {
     setup();
 }
@@ -56,8 +62,9 @@ void CommandPanel::setup()
     auto file_layout = new QHBoxLayout(file_view);
     file_view->setLayout(file_layout);
 
-    _file_name = new QLineEdit(file_view);
+    _file_name = new QComboBox(file_view);
     _file_name->setFont(font);
+    _file_name->setEditable(true);
     _browser = new QPushButton(tr("..."), file_view);
     _browser->setFont(font);
     _browser->setFixedWidth(27);
@@ -75,4 +82,45 @@ void CommandPanel::setup()
     _layout->addWidget(_burn_frame);
     _layout->addWidget(_burn);
 
+    connect(_browser, &QPushButton::clicked, this, [=]() {
+        QString file = QFileDialog::getOpenFileName(
+                this, tr("打开程序烧录文件"),
+                QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first(),
+                tr("HEX文件(*.hex);;s19烧录文件(*.s19)")
+        );
+        if (_file_name->findText(file, Qt::MatchFixedString) == -1) { //找出返回的是index
+            _file_name->addItem(file);
+        }
+        _file_name->setCurrentText(file);
+    });
+
+    connect(_msec, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this,
+            [=](int index) {
+                _revolve->setTransmitMsec((unsigned long) _msec->itemData(index).toUInt());
+//                qDebug() << "CommandPanel::setup() msec_index: "
+//                         << _msec->itemData(index).toUInt();
+            }
+    );
+
+    connect(_frames, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this,
+            [=](int index) {
+                _revolve->setTransmitFrameNum(_frames->itemData(index).toInt());
+//                qDebug() << "CommandPanel::setup() frame_index: "
+//                         << _frames->itemData(index).toInt();
+            }
+    );
+
+    connect(_burn, &QPushButton::clicked, this, [=]() {
+        if (_file_name->currentText().isEmpty()) {
+            return;
+        }
+        QFileInfo info(_file_name->currentText());
+        if (info.exists() && info.isFile()) {
+            _revolve->burnProgram(info.absoluteFilePath());
+        } else {
+            QMessageBox::warning(this, tr("警告"), tr("烧录文件不存在，检查路径格式\n  [・ヘ・?]"));
+        }
+    });
 }

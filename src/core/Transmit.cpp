@@ -33,8 +33,14 @@ void Transmit::setParams(Can *can, SendBuffer *buffer, unsigned long msec, int f
 
 void Transmit::run()
 {
-    while (_status == Re::Running) {
+    while (1 | _status == Re::Running) {
         msleep(_msec);
-        _can->deliver(*_buffer, qMin(_frame_num, _buffer->size()));
+        if (!_buffer->size()) {
+            continue;
+        }
+        int num = qMin(_frame_num, _buffer->size());
+        _can->deliver(*_buffer, num);
+        _buffer->move(num);
+
     }
 }

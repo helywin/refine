@@ -5,10 +5,12 @@
 #include <QtWidgets/QAction>
 #include "CommandBox.hpp"
 #include "CommandPanel.hpp"
+#include "Revolve.hpp"
 
-CommandBox::CommandBox(Message *message, QWidget *parent) :
+CommandBox::CommandBox(Message *message, Revolve *revolve, QWidget *parent) :
         QDockWidget(parent),
-        Message(message)
+        Message(message),
+        _revolve(revolve)
 {
     setup();
 }
@@ -19,7 +21,7 @@ void CommandBox::setup()
 //    _content = new QWidget(this);
 //    _layout = new QVBoxLayout(_content);
 //    _content->setLayout(_layout);
-    _panel = new CommandPanel(this, this);
+    _panel = new CommandPanel(this, _revolve, this);
     setWidget(_panel);
 //    _layout->setContentsMargins(5,0,0,0);
 }

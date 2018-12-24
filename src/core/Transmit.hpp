@@ -45,6 +45,10 @@ public:
         while (isRunning()) {}
     }
 
+    inline void setMsec(unsigned long msec) { _msec = msec; }
+
+    inline void setFrames(int frame_num) { _frame_num = frame_num; }
+
 protected:
     void run() override;
 

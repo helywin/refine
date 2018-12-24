@@ -80,6 +80,8 @@ private:
     QAction *_menu_init_can;
 
     QStringList _tcu_message;
+    bool _communicate_finished;
+    bool _transmit_finished;
 
 
 public:
@@ -140,11 +142,15 @@ public:
 
     inline void setActionCan(QAction *action) { _menu_init_can = action; }
 
-    bool sendCommand(QByteArray &&bytes);
+    void sendCommand(QByteArray &&bytes);
 
-    bool burnProgram(QByteArray &&bytes);
+    bool burnProgram(const QString &file);
 
     QStringList readTcuMessage();
+
+    void setTransmitMsec(unsigned long msec);
+
+    void setTransmitFrameNum(int frame_num);
 
 protected:
     inline void emitMessage(MessageType type, const QString &msg) override

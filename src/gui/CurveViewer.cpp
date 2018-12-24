@@ -6,6 +6,10 @@
 #include <QtCore/QtMath>
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
+#include <QtCore/QStandardPaths>
+#include <QtWidgets/QFileDialog>
+#include <QtGui/QGuiApplication>
+#include <QtGui/QClipboard>
 #include "CurveViewer.hpp"
 #include "SketchY.hpp"
 #include "SketchX.hpp"
@@ -43,9 +47,9 @@ void CurveViewer::setup()
     _layout_sketch->addWidget(_sketch_xtop, 0, 1, 1, 1);
     _layout_sketch->addWidget(_sketch, 1, 1, 1, 1);
     _layout_sketch->addWidget(_sketch_x, 2, 1, 1, 1);
-    auto right_blank = new QOpenGLWidget(this);
-    right_blank->setFixedWidth(15);
-    _layout_sketch->addWidget(right_blank, 0, 2, 3, 1);
+    _sketch_yright = new QOpenGLWidget(this);
+    _sketch_yright->setFixedWidth(15);
+    _layout_sketch->addWidget(_sketch_yright, 0, 2, 3, 1);
     _layout_sketch->setSpacing(0);
     setLayout(_layout);
     _h_scroll = new QScrollBar(Qt::Orientation::Horizontal, this);
@@ -86,6 +90,24 @@ void CurveViewer::setup()
     connect(_h_scroll, &QScrollBar::sliderPressed, this, [=]() { _h_scroll_pressed = true; });
     connect(_h_scroll, &QScrollBar::sliderReleased, this, [=]() { _h_scroll_pressed = false; });
 //    connect(_sketch, &Sketch::rightMouseBottonRelease, this, &CurveViewer::showContextMenu);
+}
+
+QImage CurveViewer::piecePicture()
+{
+    QImage central = _sketch->grabFramebuffer();
+    QImage west = _sketch_y->grabFramebuffer();
+    QImage north = _sketch_xtop->grabFramebuffer();
+    QImage south = _sketch_x->grabFramebuffer();
+    QImage east = _sketch_yright->grabFramebuffer();
+    QImage image(west.width() + north.width() + east.width(),
+                 west.height(), QImage::Format_RGB32);
+    QPainter painter(&image);
+    painter.drawImage(QPoint(0, 0), west);
+    painter.drawImage(QPoint(west.width(), 0), north);
+    painter.drawImage(QPoint(west.width(), north.height()), central);
+    painter.drawImage(QPoint(west.width(), north.height() + central.height()), south);
+    painter.drawImage(QPoint(west.width() + north.width(), 0), east);
+    return image;
 }
 
 void CurveViewer::hScrollChanged(int value)
@@ -577,9 +599,9 @@ void CurveViewer::finishMenuSet()
     initMenu(_menu_current, tr("保存当前显示数据..."), _menu);
     _menu_current->setIcon(QIcon(":res/icons/export.png"));
     _menu->addSeparator();
-    initMenu(_menu_copy_img, tr("复制图像"), _menu);
-    initMenu(_menu_save_img, tr("保存图像"), _menu);
-    initMenu(_menu_clip_img, tr("截取图像"), _menu);
+    initMenu(_menu_copy_img, tr("复制到剪贴板"), _menu);
+    initMenu(_menu_save_img, tr("保存图像..."), _menu);
+    initMenu(_menu_clip_img, tr("截取到桌面"), _menu);
     _menu->addSeparator();
     initMenu(_menu_vernier, tr("显示游标"), _menu);
     _menu_vernier->setCheckable(true);
@@ -595,6 +617,44 @@ void CurveViewer::finishMenuSet()
 //    _menu_settings->setIcon(QIcon(":res/icons/settings.png"));
     setContextMenuPolicy(Qt::CustomContextMenu);
     _sketch->setMenu(_menu);
+    connect(_menu_clip_img, &QAction::triggered, this, [=]() {
+        QTime time = QTime::currentTime();
+        QString name = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first()
+                       + QString("/")
+                       + QDate::currentDate().toString("yy-MM-dd")
+                       + QString("_%1").arg(time.msecsSinceStartOfDay() / 1000)
+                       + QString(".png");
+        emitMessage(Re::Info, tr("图像已保存到桌面"));
+        piecePicture().save(name, "png");
+    });
+
+    connect(_menu_save_img, &QAction::triggered, this, [=]() {
+        QString name = QFileDialog::
+        getSaveFileName(this, tr("选择保存截图文件"),
+                        QStandardPaths::standardLocations(
+                                QStandardPaths::DesktopLocation).first(),
+                        tr("PNG图片(*.png);;JPEG图像(*.jpeg *.jpg);;BMP图像(*.bmp)"));
+        if (name.isEmpty()) {
+            return;
+        }
+        QString suffix = name.split('.').last();
+        piecePicture().save(name, suffix.toLocal8Bit());
+        emitMessage(Re::Info, tr("图像已保存: %1").arg(name));
+    });
+
+    connect(_menu_copy_img, &QAction::triggered, this, [=]() {
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->setImage(piecePicture());
+        emitMessage(Re::Info, tr("图像已复制到剪贴板"));
+    });
+
+    connect(_menu_vernier, &QAction::triggered, this, [=]() {
+        _sketch->setVernierVisible(_menu_vernier->isChecked());
+    });
+
+    connect(_sketch, &Sketch::vernierVisibilityChanged, this, [=](bool visible) {
+        _menu_vernier->setChecked(visible);
+    });
 }
 
 

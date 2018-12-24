@@ -32,7 +32,9 @@ Revolve::Revolve(Initializer *init) :
         _time(10),
         _flags(nullptr),
         _status(Re::Stop),
-        _viewer(nullptr)
+        _viewer(nullptr),
+        _communicate_finished(true),
+        _transmit_finished(true)
 {
     connect(&_timer_stop, &QTimer::timeout, this,
             static_cast<bool (Revolve::*)(void)>(&Revolve::stopCollect), Qt::DirectConnection);
@@ -40,6 +42,7 @@ Revolve::Revolve(Initializer *init) :
     connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
     connect(&_transform, &Transform::getTransformedTcuMessage,
             this, &Revolve::getTransformedTcuMessage);
+    _communicate.setParams(&_send_buf);
 }
 
 bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
@@ -485,14 +488,31 @@ void Revolve::recordError(int code)
     Q_UNUSED(code);
 }
 
-bool Revolve::sendCommand(QByteArray &&bytes)
+void Revolve::sendCommand(QByteArray &&bytes)
 {
-    return false;
+    _communicate.sendCommand(bytes);
+    _transmit.start();
 }
 
-bool Revolve::burnProgram(QByteArray &&bytes)
+bool Revolve::burnProgram(const QString &file)
 {
-    return false;
+    QFile f(file);
+    f.open(QIODevice::ReadOnly);
+    if (!f.isOpen()) {
+        emitMessage(Re::Warning, tr("打不开程序文件"));
+        return false;
+    }
+    emitMessage(Re::Warning, tr("Revolve::burnProgram"));
+    QByteArray bytes = f.readAll();
+//    if (_communicate.isRunning() && _transmit.isRunning()) {
+//        emitMessage(Re::Debug, tr("Communicate::burnProgram 程序尚在烧录"));
+//    }
+    _transmit.setParams(&_can, &_send_buf, 50, 500);
+    _communicate.burnProgram(qMove(bytes));
+    if (!_transmit.isRunning()) {
+        _transmit.start();
+    }
+    return true;
 }
 
 void Revolve::getTransformedTcuMessage(const QString &message)
@@ -505,6 +525,16 @@ QStringList Revolve::readTcuMessage()
     QStringList list;
     qSwap(list, _tcu_message);
     return list;
+}
+
+void Revolve::setTransmitMsec(unsigned long msec)
+{
+    _transmit.setMsec(msec);
+}
+
+void Revolve::setTransmitFrameNum(int frame_num)
+{
+    _transmit.setFrames(frame_num);
 }
 
 

@@ -117,6 +117,8 @@ public:
 
     inline bool isEmpty() const { return _begin == _end; }
 
+    inline bool isFull() const { return (_begin - _end + _len) % _len == 1;  }
+
     inline int size() const { return (_end - _begin + _len) % _len; }
 
     inline void reset()
@@ -135,7 +137,7 @@ public:
 
     inline void move(int num)
     {
-        Q_ASSERT(num < size());
+        Q_ASSERT(num <= size());
         _begin += num;
         _begin %= _len;
     }

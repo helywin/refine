@@ -15,6 +15,8 @@
 #include <QtWidgets/QPushButton>
 #include "Message.hpp"
 
+class Revolve;
+
 class CommandPanel : public QWidget, public Message
 {
 Q_OBJECT
@@ -26,11 +28,13 @@ private:
     QVBoxLayout *_burn_layout;
     QComboBox *_msec;
     QComboBox *_frames;
-    QLineEdit *_file_name;
+    QComboBox *_file_name;
     QPushButton *_browser;
     QPushButton *_burn;
+    Revolve *_revolve;
+
 public:
-    explicit CommandPanel(Message *message, QWidget *parent = nullptr);
+    CommandPanel(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
 private:
     void setup();

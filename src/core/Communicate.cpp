@@ -20,7 +20,6 @@ void Communicate::setParams(SendBuffer *buffer)
 void Communicate::burnProgram(QByteArray &&bytes)
 {
     if (_has_program) {
-        emitMessage(Re::Debug, tr("Communicate::burnProgram 程序尚在烧录"));
         return;
     }
     _program = bytes;
@@ -41,8 +40,12 @@ void Communicate::run()
     }
     QByteArray::iterator start = _program.begin();
     while (start < _program.end()
-//    - CAN_OBJ_DATA_LEN
+                   - CAN_OBJ_DATA_LEN
             ) {
+        if (_buffer->isFull()) {
+            msleep(10);
+            continue;
+        }
         setCanObj(*_buffer->end(), 0x611, Cd::SendType::NormalSend, start);
         _buffer->increase();
         start += CAN_OBJ_DATA_LEN;
