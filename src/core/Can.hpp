@@ -217,7 +217,7 @@ public:
     bool reset();
     bool reconnect();
     int collect(RecvBuffer &buffer, int delay = 0);
-    bool deliver(SendBuffer &buffer, int num);
+    bool deliver(SendBuffer &buffer, unsigned long num);
 //    bool command(unsigned int id, const QByteArray &cmd);
 
     /*!

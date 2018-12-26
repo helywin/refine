@@ -42,10 +42,11 @@ QDataStream &operator>>(QDataStream &stream, CanObj &obj)
     return obj;
 }*/
 
-void setCanObj(CanObj &obj, unsigned int id, Cd::SendType send_type, const QByteArray &data)
+void setCanObj(CanObj &obj, unsigned int id,
+               Cd::SendType send_type, const QByteArray &data, int data_len)
 {
     obj.ID = id;
     obj.SendType = send_type;
-    obj.DataLen = CAN_OBJ_DATA_LEN;
-    memcpy(obj.Data, data.data(), CAN_OBJ_DATA_LEN);
+    obj.DataLen = data_len;
+    memcpy(obj.Data, data.data(), data_len);
 }

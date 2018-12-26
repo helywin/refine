@@ -19,7 +19,9 @@ Transform::Transform(Message *message) :
         _file(),
         _msec(10),
         _status(Re::Stop),
-        _cmd(Re::NoCommand) {}
+        _cmd(Re::NoCommand),
+        _transform_curve(false)
+{}
 
 void Transform::setParams(Curve *curve, RecvBuffer *buffer, Tribe *tribe,
                           unsigned long msec)
@@ -59,14 +61,15 @@ void Transform::run()
 //#pragma omp parallel for
 //        for (int i = 0; i < _tribe->size(); ++i) {
 //            Tribe::Cell &tr = (*_tribe)[i];
-        for (auto &tr : *_tribe) {
-            const Curve::Cell &cur = (*_curve)[tr.name()];
-            for (unsigned int j = 0; (j < buf.dataSize()) && !tr.fill(); ++j) {
-                if (static_cast<unsigned int>(cur.canId()) == buf[j]->ID &&
-                    (cur.zeroByte() == -1 ||
-                     cur.zeroByte() == buf[j]->Data[0])) {
+        if (_transform_curve) {
+            for (auto &tr : *_tribe) {
+                const Curve::Cell &cur = (*_curve)[tr.name()];
+                for (unsigned int j = 0; (j < buf.dataSize()) && !tr.fill(); ++j) {
+                    if (static_cast<unsigned int>(cur.canId()) == buf[j]->ID &&
+                        (cur.zeroByte() == -1 ||
+                         cur.zeroByte() == buf[j]->Data[0])) {
 #if 0
-                    int value = 0;
+                        int value = 0;
                     if (cur.highByte() != -1) {
                         unsigned char h = buf[i]->Data[cur.highByte()];
                         unsigned char l = buf[i]->Data[cur.lowByte()];
@@ -89,63 +92,70 @@ void Transform::run()
                         }
                     }
 #endif
-                    unsigned int low_byte = 0;
-                    int full = 0;
-                    if (cur.highByte() != -1) {
-                        unsigned int high_byte = 0;
-                        high_byte = buf[j]->Data[cur.highByte()];
-                        high_byte <<= (7 - cur.highByteRange()[1]);
-                        high_byte >>= (7 - cur.highByteRange()[1] + cur.highByteRange()[0]);
-                        high_byte <<= (cur.lowByteRange()[1] - cur.lowByteRange()[0] + 1);
+                        unsigned int low_byte = 0;
+                        int full = 0;
+                        if (cur.highByte() != -1) {
+                            unsigned int high_byte = 0;
+                            high_byte = buf[j]->Data[cur.highByte()];
+                            high_byte <<= (7 - cur.highByteRange()[1]);
+                            high_byte >>= (7 - cur.highByteRange()[1] + cur.highByteRange()[0]);
+                            high_byte <<= (cur.lowByteRange()[1] - cur.lowByteRange()[0] + 1);
 
-                        low_byte = buf[j]->Data[cur.lowByte()];
-                        low_byte <<= (7 - cur.lowByteRange()[1]);
-                        low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
+                            low_byte = buf[j]->Data[cur.lowByte()];
+                            low_byte <<= (7 - cur.lowByteRange()[1]);
+                            low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
 
-                        full = high_byte + low_byte;
-                        if (cur.rangeIn()[0] < 0) {
-                            full = (signed short) (full);
+                            full = high_byte + low_byte;
+                            if (cur.rangeIn()[0] < 0) {
+                                full = (signed short) (full);
+                            }
+                        } else {
+                            low_byte = buf[j]->Data[cur.lowByte()];
+                            low_byte <<= (7 - cur.lowByteRange()[1]);
+                            low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
+                            full = low_byte;
+                            if (cur.rangeIn()[0] < 0) {
+                                full = (signed char) (full);
+                            }
                         }
-                    } else {
-                        low_byte = buf[j]->Data[cur.lowByte()];
-                        low_byte <<= (7 - cur.lowByteRange()[1]);
-                        low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
-                        full = low_byte;
-                        if (cur.rangeIn()[0] < 0) {
-                            full = (signed char) (full);
-                        }
-                    }
-                    float k;
-                    float b;
-                    k = (float) (cur.rangeOut()[1] -
-                                 cur.rangeOut()[0]) /
-                        (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
-                    b = (float) cur.rangeOut()[0] -
-                        k * cur.rangeIn()[0];
-                    float result = full * k + b;
-                    tr.push(Tribe::Data, result);
-                } else if (buf[j]->ID == 0x613) {       //增加通信功能
-                    int last_enter = -1;
-                    for (int k = 0; k < 8; ++k) {
-                        if (buf[j]->Data[k] == '\n') {
-                            _bytes.append((char *)buf[j]->Data, k - last_enter);
-                            getTransformedTcuMessage(QString::fromLocal8Bit(_bytes));
-                            _bytes.clear();
-                            last_enter = k;
-                        }
+                        float k;
+                        float b;
+                        k = (float) (cur.rangeOut()[1] -
+                                     cur.rangeOut()[0]) /
+                            (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
+                        b = (float) cur.rangeOut()[0] -
+                            k * cur.rangeIn()[0];
+                        float result = full * k + b;
+                        tr.push(Tribe::Data, result);
                     }
                 }
-            }
-            if (!tr.fill()) {
-                if (tr.empty()) {
+                if (!tr.fill()) {
+                    if (tr.empty()) {
 //                    qDebug() << "Transform::run fake 0";
-                    tr.push(Tribe::FakeByZero, 0);
-                } else {
+                        tr.push(Tribe::FakeByZero, 0);
+                    } else {
 //                    qDebug() << tr.data().constLast();
-                    tr.push(Tribe::FakeByPrevious, tr.last());
+                        tr.push(Tribe::FakeByPrevious, tr.last());
+                    }
                 }
             }
         }
+
+        //增加通信功能
+        for (auto i = 0u; i < buf.dataSize(); ++i) {
+            if (buf[i]->ID == 0x613) {
+                int last_enter = -1;
+                for (int j = 0; j < 8; ++j) {
+                    if (buf[i]->Data[j] == '\n') {
+                        _bytes.append((char *) buf[i]->Data, j - last_enter);
+                        getTransformedCanMessage(QString::fromLocal8Bit(_bytes));
+                        _bytes.clear();
+                        last_enter = j;
+                    }
+                }
+            }
+        }
+
 #ifdef TEST_SEC
         qDebug() << t.msecsTo(QTime::currentTime());
 #endif

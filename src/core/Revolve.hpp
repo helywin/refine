@@ -35,6 +35,7 @@
 #include "FileManage.hpp"
 #include "SendBuffer.hpp"
 #include "Communicate.hpp"
+
 /*!
  * @brief 底层调度类
  * 外部GUI只传文件名进来
@@ -72,14 +73,15 @@ private:
     unsigned long _msec;                    //! \brief 采样周期
     int _time;                              //! \brief 自动停止时间
     Re::RevolveFlags _flags;
-    Re::RunningStatus _status;
+    Re::RunningStatus _collect_status;      //互斥的任务
+    Re::RunningStatus _burning_status;      //互斥的任务
 
     CurveViewer *_viewer;
     TribeModel *_tribe_model;
     CurveEditor *_curve_editor;
     QAction *_menu_init_can;
 
-    QStringList _tcu_message;
+    QStringList _can_message;
     bool _communicate_finished;
     bool _transmit_finished;
 
@@ -90,18 +92,25 @@ public:
 //    ~Revolve() = default;
 
     //Can配置
-    inline Can::Config &canConfig() { return _can.config(); }
+    inline Can::Config &canConfig()
+    { return _can.config(); }
 
 public slots:
     //采集
     bool beginCollect(unsigned long msec, Re::RevolveFlags flags, int time);
     void pauseCollect();
     void resumeCollect();
-
-    inline bool stopCollect() { return stopCollect(false); }
-
     bool stopCollect(bool error);
+
+    inline bool stopCollect()
+    { return stopCollect(false); }
+
     bool exitCollect();
+
+    bool beginBurning(const QString &file, unsigned long msec = 50, int frames = 100);
+    void pauseBurning();
+    void resumeBurning();
+    bool abortBurning();
 
 public:
     //采集配置
@@ -126,66 +135,65 @@ public:
     bool outputCurveData(const QString &name);
     bool exportCsvCurveData(const QString &name);
 
-    inline Can &can() { return _can; }
+    inline Can &can()
+    { return _can; }
 
-    inline Tribe &tribe() { return _tribe; }
+    inline Tribe &tribe()
+    { return _tribe; }
 
-    inline Curve &curve() { return _curve; }
+    inline Curve &curve()
+    { return _curve; }
 
-    inline void setCurveViewer(CurveViewer *viewer) { _viewer = viewer; }
+    inline void setCurveViewer(CurveViewer *viewer)
+    { _viewer = viewer; }
 
-    inline bool finished() const { return _status == Re::Stop; }
+    inline bool finished() const
+    { return _collect_status == Re::Stop; }
 
-    inline void setTribeModel(TribeModel *model) { _tribe_model = model; }
+    inline void setTribeModel(TribeModel *model)
+    { _tribe_model = model; }
 
-    inline void setCurveEditor(CurveEditor *editor) { _curve_editor = editor; }
+    inline void setCurveEditor(CurveEditor *editor)
+    { _curve_editor = editor; }
 
-    inline void setActionCan(QAction *action) { _menu_init_can = action; }
+    inline void setActionCan(QAction *action)
+    { _menu_init_can = action; }
 
     void sendCommand(QByteArray &&bytes);
-
     bool burnProgram(const QString &file);
 
-    QStringList readTcuMessage();
+    inline const QStringList &canMessage() const
+    { return _can_message; }
+
+    inline void clearCanMessage()
+    {}
 
     void setTransmitMsec(unsigned long msec);
-
     void setTransmitFrameNum(int frame_num);
 
 protected:
     inline void emitMessage(MessageType type, const QString &msg) override
-    {
-        emit message(type, msg);
-    }
+    { emit message(type, msg); }
 
 public slots:
 
     void getFile(int type, const QString &file, const QString &suffix);
 
-    void collectError(int code);
-
-    void transformError(int code);
-
-    void recordError(int code);
-
 private slots:
-    void getTransformedTcuMessage(const QString &message);
+    void collectError(int code);
+    void transformError(int code);
+    void recordError(int code);
+    void getTransformedCanMessage(const QString &message);
 
 signals:
     void message(int type, const QString &msg);
-
     void curveLoaded();
-
     void canLostConnection();
-
     void collectMenuEnable(bool isCollecting);
-
     void baudRate(double baud_rate);
-
     void response(ResponseType type, const QString &response);
-
-    void getTcuMessage();
-
+    void burningProcess(double process);
+    void finishBurning();
 };
 
 #endif //REFINE_REVOLVE_HPP

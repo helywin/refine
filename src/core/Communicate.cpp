@@ -38,6 +38,7 @@ void Communicate::run()
     if (!_has_program) {
         return;
     }
+    emitMessage(Re::Debug, tr("Communicate::run() 开始"));
     QByteArray::iterator start = _program.begin();
     while (start < _program.end()
                    - CAN_OBJ_DATA_LEN
@@ -50,5 +51,11 @@ void Communicate::run()
         _buffer->increase();
         start += CAN_OBJ_DATA_LEN;
     }
+    if (_program.end() - start > 0) {
+        setCanObj(*_buffer->end(), 0x611, Cd::SendType::NormalSend, start,
+                  (int) (_program.end() - start));  //char本来就是一个字节，所以不用除以sizeof
+        _buffer->increase();
+    }
+    emitMessage(Re::Debug, tr("Communicate::run() 完成"));
     _has_program = false;
 }

@@ -352,6 +352,18 @@ void Sketch::plotCurves()
             painter.end();
             break;
         }
+        case Frames: {
+            QPainter painter;
+            painter.begin(this);
+            int size = 40;
+            QFont font("微软雅黑", size);
+            painter.setFont(font);
+            painter.setPen(Qt::white);
+            painter.drawText(rect().width() / 2 - size, rect().height() / 2 + size / 2,
+                             tr("没有曲线配置，正在采集报文，曲线不会显示"));
+            painter.end();
+            break;
+        }
     }
 }
 

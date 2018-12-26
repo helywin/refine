@@ -23,24 +23,36 @@ Transmit::Transmit(Message *message) :
 
 }
 
-void Transmit::setParams(Can *can, SendBuffer *buffer, unsigned long msec, int frame_num)
+void Transmit::setParams(Can *can, SendBuffer *buffer)
 {
     _can = can;
     _buffer = buffer;
-    _msec = msec;
-    _frame_num = frame_num;
 }
+
+#define OVER_TIME 2000
 
 void Transmit::run()
 {
-    while (1 | _status == Re::Running) {
+    emitMessage(Re::Debug, "Transmit::run()");
+    int over_time = 0;
+    while (_status == Re::Running) {
         msleep(_msec);
-        if (!_buffer->size()) {
+        if (_command == Re::CommandStop) {
+            _status = Re::Stop;
+            break;
+        }
+        if (over_time > OVER_TIME) {
+            emit overTime();
+            _status = Re::Stop;
+            break;
+        }
+        if (_buffer->size() <= 0) {
+            over_time += _msec;
             continue;
         }
-        int num = qMin(_frame_num, _buffer->size());
+        unsigned long num = (unsigned long) qMin(_frame_num, _buffer->size());
         _can->deliver(*_buffer, num);
-        _buffer->move(num);
-
+        emitMessage(Re::Debug, tr("发送了: %1").arg(num));
     }
+    emitMessage(Re::Debug, "Transmit::run() exit");
 }

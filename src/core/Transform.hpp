@@ -39,6 +39,7 @@ private:
     Re::RunningStatus _status;
     Re::RunningCommand _cmd;
     QByteArray _bytes;
+    bool _transform_curve;
 
 public:
     explicit Transform(Message *message = nullptr);
@@ -56,11 +57,14 @@ public:
 
     inline int status() const { return _status; }
 
+    inline void setTransformCurve(bool transform_curve)
+    { _transform_curve = transform_curve; }
+
 protected:
     void run() override;
 
 signals:
-    void getTransformedTcuMessage(const QString &message);
+    void getTransformedCanMessage(const QString &message);
 };
 
 

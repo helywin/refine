@@ -31,7 +31,7 @@ private:
 
 public:
     explicit Transmit(Message *message = nullptr);
-    void setParams(Can *can, SendBuffer *buffer, unsigned long msec, int frame_num);
+    void setParams(Can *can, SendBuffer *buffer);
 
     inline void begin()
     {
@@ -53,7 +53,7 @@ protected:
     void run() override;
 
 signals:
-    void progress(double value);
+    void overTime();
 
 };
 

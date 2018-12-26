@@ -24,7 +24,8 @@ public:
 
     public:
         explicit Iter(SendBuffer *buffer = nullptr, int pos = 0) :
-                _buffer(buffer), _pos(pos) {}
+                _buffer(buffer), _pos(pos)
+        {}
 
         inline void setParams(SendBuffer *buffer, int pos)
         {
@@ -37,7 +38,8 @@ public:
             return _pos != other._pos;
         }
 
-        inline CanObj &operator*() const { return *(_buffer->_cells + _pos); }
+        inline CanObj &operator*() const
+        { return *(_buffer->_cells + _pos); }
 
         inline const Iter &operator++()
         {
@@ -66,7 +68,8 @@ public:
 
     public:
         explicit ConstIter(SendBuffer *buffer = nullptr, int pos = 0) :
-                _buffer(buffer), _pos(pos) {}
+                _buffer(buffer), _pos(pos)
+        {}
 
         inline void setParams(SendBuffer *buffer, int pos)
         {
@@ -79,7 +82,8 @@ public:
             return _pos != other._pos;
         }
 
-        inline const CanObj &operator*() const { return *(_buffer->_cells + _pos); }
+        inline const CanObj &operator*() const
+        { return *(_buffer->_cells + _pos); }
 
         inline const ConstIter &operator++()
         {
@@ -102,24 +106,31 @@ private:
     int _begin;
     int _end;
 public:
-    explicit SendBuffer(int len = 50000);
+    explicit SendBuffer(int len = 10000);
     SendBuffer(const SendBuffer &buffer) = delete;
     SendBuffer &operator=(const SendBuffer &buffer) = delete;
     ~SendBuffer();
 
-    inline Iter begin() { return Iter(this, _begin); }
+    inline Iter begin()
+    { return Iter(this, _begin); }
 
-    inline Iter end() { return Iter(this, _end); }
+    inline Iter end()
+    { return Iter(this, _end); }
 
-    inline ConstIter constBegin() { return ConstIter(this, _begin); }
+    inline ConstIter constBegin()
+    { return ConstIter(this, _begin); }
 
-    inline ConstIter constEnd() { return ConstIter(this, _end); }
+    inline ConstIter constEnd()
+    { return ConstIter(this, _end); }
 
-    inline bool isEmpty() const { return _begin == _end; }
+    inline bool isEmpty() const
+    { return size() == 0; }
 
-    inline bool isFull() const { return (_begin - _end + _len) % _len == 1;  }
+    inline bool isFull() const
+    { return size() == _len - 1; }
 
-    inline int size() const { return (_end - _begin + _len) % _len; }
+    inline int size() const
+    { return (_end - _begin + _len) % _len; }
 
     inline void reset()
     {
@@ -127,19 +138,30 @@ public:
         _end = 0;
     }
 
-    inline void increase() { _end += 1; }
+    inline void increase()
+    {
+        _end += 1;
+        _end %= _len;
+    }
 
-    inline void decrease() { _begin += 1; }
+    inline void decrease()
+    {
+        _begin += 1;
+        _begin %= _len;
+    }
 
-    inline void operator++() { increase(); }
+    inline void operator++()
+    { increase(); }
 
-    inline void operator--() { decrease(); }
+    inline void operator--()
+    { decrease(); }
 
     inline void move(int num)
     {
         Q_ASSERT(num <= size());
         _begin += num;
         _begin %= _len;
+        Q_ASSERT(_begin >= 0 && _begin < _len);
     }
 
 

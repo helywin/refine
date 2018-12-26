@@ -31,7 +31,7 @@ Revolve::Revolve(Initializer *init) :
         _msec(10),
         _time(10),
         _flags(nullptr),
-        _status(Re::Stop),
+        _collect_status(Re::Stop),
         _viewer(nullptr),
         _communicate_finished(true),
         _transmit_finished(true)
@@ -40,8 +40,8 @@ Revolve::Revolve(Initializer *init) :
             static_cast<bool (Revolve::*)(void)>(&Revolve::stopCollect), Qt::DirectConnection);
     connect(&_collect, &Collect::info, this, &Revolve::collectError, Qt::AutoConnection);
     connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
-    connect(&_transform, &Transform::getTransformedTcuMessage,
-            this, &Revolve::getTransformedTcuMessage);
+    connect(&_transform, &Transform::getTransformedCanMessage,
+            this, &Revolve::getTransformedCanMessage);
     _communicate.setParams(&_send_buf);
 }
 
@@ -51,7 +51,7 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
         emitMessage(Re::Warning, tr("开始失败，确保CAN连接好再采集"));
         return false;
     }
-    if (_status != Re::Stop) {
+    if (_collect_status != Re::Stop) {
         emitMessage(Re::Warning, tr("开始失败，已经在采集了"));
         return false;
     }
@@ -63,12 +63,12 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
     if (_viewer) {
         _viewer->start();
     }
-    if (_flags & Re::Communicate) {
-        _communicate.begin();
-        _transmit.setParams(&_can, &_send_buf, 50, 100);
-        _transmit.begin();
-        emitMessage(Re::Debug, "Revolve::beginCollect::Communicate");
-    }
+//    if (_flags & Re::Communicate) {
+//        _communicate.begin();
+//        _transmit.setParams(&_can, &_send_buf);
+//        _transmit.begin();
+//        emitMessage(Re::Debug, "Revolve::beginCollect::Communicate");
+//    }
     if (_flags & Re::Collect) {
         _collect.setParams(&_can, &_recv_buf, Collect::FromCan, msec);
         _collect.begin();
@@ -94,14 +94,14 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
         _timer_stop.start();
         emitMessage(Re::Debug, "Revolve::beginCollect::TimingStop");
     }
-    _status = Re::Running;
+    _collect_status = Re::Running;
     emitMessage(Re::Info, tr("开始采集成功"));
     return true;
 }
 
 bool Revolve::stopCollect(bool error)
 {
-    if (_status == Re::Stop) {
+    if (_collect_status == Re::Stop) {
         emitMessage(Re::Warning, tr("结束失败，采集还没开始"));
         return false;
     }
@@ -130,7 +130,7 @@ bool Revolve::stopCollect(bool error)
     _file.dumpCurveConfig(_manage.curveConfig().absoluteFilePath(), _curve);
     _manage.compress();
     _manage.copyToCache();
-    _status = Re::Stop;
+    _collect_status = Re::Stop;
     emitMessage(Re::Info, tr("停止采集成功"));
     return true;
 }
@@ -153,18 +153,18 @@ bool Revolve::exitCollect()
         _communicate.stop();
         _transmit.stop();
     }
-    _status = Re::Stop;
+    _collect_status = Re::Stop;
     emitMessage(Re::Info, tr("采集异常，安全停止"));
     return true;
 }
 
 void Revolve::pauseCollect()
 {
-    if (_status == Re::Pause) {
+    if (_collect_status == Re::Pause) {
         emitMessage(Re::Warning, tr("暂停失败，采集已经暂停"));
         return;
     }
-    if (_status == Re::Stop) {
+    if (_collect_status == Re::Stop) {
         emitMessage(Re::Warning, tr("暂停失败，采集已经停止了"));
         return;
     }
@@ -182,17 +182,17 @@ void Revolve::pauseCollect()
     if (_viewer) {
         _viewer->pause();
     }
-    _status = Re::Pause;
+    _collect_status = Re::Pause;
     emitMessage(Re::Info, tr("暂停采集成功"));
 }
 
 void Revolve::resumeCollect()
 {
-    if (_status == Re::Running) {
+    if (_collect_status == Re::Running) {
         emitMessage(Re::Warning, tr("继续失败，采集没有暂停"));
         return;
     }
-    if (_status == Re::Stop) {
+    if (_collect_status == Re::Stop) {
         emitMessage(Re::Warning, tr("继续失败，采集已经停止了"));
         return;
     }
@@ -210,7 +210,7 @@ void Revolve::resumeCollect()
     if (_viewer) {
         _viewer->resume();
     }
-    _status = Re::Running;
+    _collect_status = Re::Running;
     emitMessage(Re::Info, tr("继续采集成功"));
 }
 
@@ -502,29 +502,28 @@ bool Revolve::burnProgram(const QString &file)
         emitMessage(Re::Warning, tr("打不开程序文件"));
         return false;
     }
+    if (!_can.isConnected()) {
+        emitMessage(Re::Warning, tr("没有连接CAN"));
+        return false;
+    }
     emitMessage(Re::Warning, tr("Revolve::burnProgram"));
     QByteArray bytes = f.readAll();
 //    if (_communicate.isRunning() && _transmit.isRunning()) {
 //        emitMessage(Re::Debug, tr("Communicate::burnProgram 程序尚在烧录"));
 //    }
-    _transmit.setParams(&_can, &_send_buf, 50, 500);
+    _collect.begin();
+    _transform.begin();
+    _transmit.setParams(&_can, &_send_buf);
     _communicate.burnProgram(qMove(bytes));
     if (!_transmit.isRunning()) {
-        _transmit.start();
+        _transmit.begin();
     }
     return true;
 }
 
-void Revolve::getTransformedTcuMessage(const QString &message)
+void Revolve::getTransformedCanMessage(const QString &message)
 {
-    _tcu_message.append(message);
-}
-
-QStringList Revolve::readTcuMessage()
-{
-    QStringList list;
-    qSwap(list, _tcu_message);
-    return list;
+    _can_message.append(message);
 }
 
 void Revolve::setTransmitMsec(unsigned long msec)
@@ -535,6 +534,26 @@ void Revolve::setTransmitMsec(unsigned long msec)
 void Revolve::setTransmitFrameNum(int frame_num)
 {
     _transmit.setFrames(frame_num);
+}
+
+bool Revolve::beginBurning(const QString &file, unsigned long msec, int frames)
+{
+    return false;
+}
+
+void Revolve::pauseBurning()
+{
+
+}
+
+void Revolve::resumeBurning()
+{
+
+}
+
+bool Revolve::abortBurning()
+{
+    return false;
 }
 
 

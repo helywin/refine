@@ -210,7 +210,7 @@ int Can::collect(RecvBuffer &buffer, const int delay)
  * @param buffer 发送缓冲区
  * @return 是否发送成功
  */
-bool Can::deliver(SendBuffer &buffer, const int num)
+bool Can::deliver(SendBuffer &buffer, unsigned long num)
 {
     unsigned long length;
     _status |= Status::Transmitting;
@@ -218,10 +218,10 @@ bool Can::deliver(SendBuffer &buffer, const int num)
                           _config.deviceIndex(),
                           _config.deviceChannel(),
                           &*(buffer.begin()),
-                          static_cast<unsigned long>(num));
-    bool flag = length == static_cast<unsigned long>(num);
+                          num);
+    bool flag = length == num;
     if (flag) {
-        buffer.move(num);
+        buffer.move((int) num);
     } else {
         getError();
     }

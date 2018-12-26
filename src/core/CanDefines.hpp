@@ -164,6 +164,7 @@ QDataStream &operator<<(QDataStream &stream, const CanObj &obj);
 QDataStream &operator>>(QDataStream &stream, CanObj &obj);
 
 //CanObj canObj(unsigned int id, Cd::SendType send_type, const QByteArray &data);
-void setCanObj(CanObj &obj, unsigned int id, Cd::SendType send_type, const QByteArray &data);
+void setCanObj(CanObj &obj, unsigned int id,
+               Cd::SendType send_type, const QByteArray &data, int data_len = CAN_OBJ_DATA_LEN);
 
 #endif //REFINE_CANDEFINES_HPP

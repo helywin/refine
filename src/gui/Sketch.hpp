@@ -39,7 +39,8 @@ public:
         Waiting,
         Rolling,
         Free,
-        Empty
+        Empty,
+        Frames,
     };
 
     /*!
