@@ -1231,7 +1231,7 @@ void Sketch::zoomInFixed(double x_rate, double x_scale, double y_rate, double y_
     } else {
         y_rate = 1;
     }
-    if (_tribe->len() < xPointsF()) {
+    if (_tribe->len() < xPoints()) {    //不能用xPointF，不然一开始就会触发
         x_start = 0;
 //        x_rate = _tribe->len() / (double) X_POINTS;
     }

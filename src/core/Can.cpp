@@ -37,10 +37,8 @@ void Can::Config::setBaudRate(Cd::BaudRate rate)
  * @brief 构造函数
  */
 Can::Can(Message *message) :
-        Message(message),
-        _status(Status::Closed),
-        _config(),
-        _error_info() {}
+        Message(message)
+{}
 
 /*!
  * @brief 打开CAN

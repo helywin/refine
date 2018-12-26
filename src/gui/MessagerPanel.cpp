@@ -86,26 +86,7 @@ QString MessagerPanel::typeStr(Re::MessageTypes type)
 
 void MessagerPanel::showMessage(Re::MessageTypes type, const QString &msg)
 {
-    if (type & Re::Popout) {
-        switch (type & Re::InfoTypes) {
-            case Re::Info:
-                QMessageBox::information(this, tr("信息"), msg);
-                break;
-            case Re::Warning:
-                QMessageBox::warning(this, tr("警告"), msg);
-                break;
-            case Re::Critical:
-                QMessageBox::critical(this, tr("严重"), msg);
-                break;
-            case Re::Fatal:
-                QMessageBox::critical(this, tr("致命"), msg);
-                break;
-            case Re::Debug:
-                QMessageBox::information(this, tr("调试"), msg);
-            default:
-                break;
-        }
-    }
+    showMessageBox(type, msg);
     QTextCursor cursor = this->textCursor();
     cursor.clearSelection();
     if (!cursor.atEnd()) {
@@ -164,6 +145,30 @@ void MessagerPanel::openFile()
         qDebug() << file;
         QProcess::startDetached("explorer.exe /select, " + file);
 #endif
+    }
+}
+
+void MessagerPanel::showMessageBox(Re::MessageTypes type, const QString &msg)
+{
+    if (type & Re::Popout) {
+        switch (type & Re::InfoTypes) {
+            case Re::Info:
+                QMessageBox::information(this, tr("信息"), msg);
+                break;
+            case Re::Warning:
+                QMessageBox::warning(this, tr("警告"), msg);
+                break;
+            case Re::Critical:
+                QMessageBox::critical(this, tr("严重"), msg);
+                break;
+            case Re::Fatal:
+                QMessageBox::critical(this, tr("致命"), msg);
+                break;
+            case Re::Debug:
+                QMessageBox::information(this, tr("调试"), msg);
+            default:
+                break;
+        }
     }
 }
 

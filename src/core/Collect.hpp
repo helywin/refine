@@ -36,15 +36,15 @@ public:
     };
 
 private:
-    Can *_can;
-    RecvBuffer *_buffer;
-    Manner _manner;
+    Can *_can = nullptr;
+    RecvBuffer *_buffer = nullptr;
+    Manner _manner = FromCan;
     QFile _frame_file;
     File _file;
-    Re::RunningStatus _status;
-    Re::RunningCommand _cmd;
-    unsigned long _msec;
-    int _frames_loop;
+    Re::RunningStatus _status = Re::Stop;
+    Re::RunningCommand _cmd = Re::NoCommand;
+    unsigned long _msec = 10;
+    int _frames_loop = 0;
 
 public:
     explicit Collect(Message *message = nullptr);
@@ -55,15 +55,19 @@ public:
 
     void begin();
 
-    inline void pause() { _cmd = Re::CommandPause; }
+    inline void pause()
+    { _cmd = Re::CommandPause; }
 
-    inline void resume() { _cmd = Re::CommandResume; }
+    inline void resume()
+    { _cmd = Re::CommandResume; }
 
     void stop();
 
-    inline Manner manner() const { return _manner; }
+    inline Manner manner() const
+    { return _manner; }
 
-    inline int status() const { return _status; }
+    inline int status() const
+    { return _status; }
 
 protected:
     void run() override;

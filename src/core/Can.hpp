@@ -190,7 +190,7 @@ public:
     };
 
 private:
-    int _status;            //! \brief CAN状态
+    int _status = Status::Closed;            //! \brief CAN状态
     Config _config;         //! \brief 配置
     ErrorInfo _error_info;  //! \brief 错误
 

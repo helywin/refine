@@ -22,8 +22,8 @@ class Csv
 {
 private:
     QFile *_file;
-    QTextStream *_stream;
-    QChar _separator;
+    QTextStream *_stream = nullptr;
+    QChar _separator = ',';
 public:
     explicit Csv(QFile *f = nullptr);
     ~Csv();

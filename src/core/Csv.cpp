@@ -8,7 +8,8 @@
 
 #include "Csv.hpp"
 
-Csv::Csv(QFile *f) : _file(f), _stream(nullptr), _separator(QChar(',')) {}
+Csv::Csv(QFile *f) : _file(f)
+{}
 
 Csv::~Csv()
 {

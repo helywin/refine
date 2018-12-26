@@ -10,16 +10,8 @@
 #include "Collect.hpp"
 
 Collect::Collect(Message *message) :
-        Message(message),
-        _can(nullptr),
-        _buffer(nullptr),
-        _manner(FromCan),
-        _frame_file(nullptr),
-        _file(),
-        _status(Re::Stop),
-        _cmd(Re::NoCommand),
-        _msec(10),
-        _frames_loop(0) {}
+        Message(message)
+{}
 
 
 void Collect::setParams(Can *can, RecvBuffer *buffer, Collect::Manner manner,

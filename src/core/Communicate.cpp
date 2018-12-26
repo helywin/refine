@@ -7,10 +7,8 @@
 #include "SendBuffer.hpp"
 
 Communicate::Communicate(Message *message) :
-        Message(message),
-        _buffer(nullptr),
-        _program(),
-        _has_program(false) {}
+        Message(message)
+{}
 
 void Communicate::setParams(SendBuffer *buffer)
 {

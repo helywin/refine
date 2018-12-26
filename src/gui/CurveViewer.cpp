@@ -157,42 +157,6 @@ void CurveViewer::resetVScroll(int len)
     _v_scroll->setMaximum(int(Sketch::Y_POINTS));
 }
 
-//void CurveViewer::zoomPlus()
-//{
-//    if (_zoom_x) {
-//        double rate = _sketch->xRate() / 1.5;
-//        if (rate < 1e-2) {
-//            rate = 1e-2;
-//        }
-//        _sketch->setXRate(rate);
-//        _h_scroll->setMaximum(_tribe->len() - _sketch->xPoints());
-//        _h_scroll->setPageStep(_sketch->xPoints());
-//        _sketch_x->setPoints(_sketch->xPoints());
-//        _sketch_x->update();
-//    }
-//    if (_zoom_y) {
-//        double rate = _sketch->yRate() / 1.5;
-//        if (rate < 1e-2) {
-//            rate = 1e-2;
-//        }
-////        bool first = _sketch->yRate() == 1.0;
-////        int last_v;
-////        if (first) {
-////            last_v = int(Sketch::Y_POINTS * (1 - rate));
-////        } else {
-////        }
-//        int last_v = _v_scroll->maximum() - _v_scroll->value();
-//        _v_scroll->setMaximum(int(Sketch::Y_POINTS * (1 - rate)));
-//        _v_scroll->setPageStep(int(Sketch::Y_POINTS * rate));
-//        _sketch->setYRate(rate);
-//        _v_scroll->setValue(int(_v_scroll->maximum() - last_v));
-//        _sketch_y->setYStart(_sketch->yStart());
-//        _sketch_y->setYRate(_sketch->yRate());
-//        _sketch_y->update();
-//    }
-//    _sketch->update();
-//}
-
 void CurveViewer::zoomDefault()
 {
     if (_zoom_x) {
@@ -320,10 +284,10 @@ void CurveViewer::zoomXIn(double rate, double start)
     _sketch->setXRate(rate * _sketch->xRate());
     int max = _tribe->len() - _sketch->xPoints();
     if (max < 0) {
-        qDebug() << "CurveViewer::zoomX max: " << max
-                 << "_tribe->len(): " << _tribe->len()
-                 << "_sketch->xPoints(): " << _sketch->xPoints()
-                 << "_sketch->xRate()" << _sketch->xRate();
+//        qDebug() << "CurveViewer::zoomX max: " << max
+//                 << "_tribe->len(): " << _tribe->len()
+//                 << "_sketch->xPoints(): " << _sketch->xPoints()
+//                 << "_sketch->xRate()" << _sketch->xRate();
         max = 0;
     }
     _h_scroll->setMaximum(max);

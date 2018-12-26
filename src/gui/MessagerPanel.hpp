@@ -73,6 +73,8 @@ protected:
     void contextMenuEvent(QContextMenuEvent *e) override;
 private:
     void setup();
+    void showMessageBox(Re::MessageTypes type, const QString &msg);
+
 private slots:
     void openFile();
 };

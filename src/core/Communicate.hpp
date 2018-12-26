@@ -14,9 +14,9 @@ class Communicate : public QThread, public Message
 {
 Q_OBJECT
 private:
-    SendBuffer *_buffer;
+    SendBuffer *_buffer = nullptr;
     QByteArray _program;
-    bool _has_program;
+    bool _has_program = false;
 
 public:
     explicit Communicate(Message *message = nullptr);
