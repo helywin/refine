@@ -226,12 +226,12 @@ private slots:
     void keepWakeUp();
 
 signals:
-    void message(int type, const QString &msg);
+    void message(Re::MessageTypes type, const QString &msg);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
 
-    inline void emitMessage(MessageType type, const QString &msg) override
+    inline void emitMessage(Re::MessageTypes type, const QString &msg) override
     {
         emit message(type, msg);
     }

@@ -95,9 +95,9 @@ public:
     void regen(bool zoom = true);
 
 public slots:
-    void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
-    void zoomMinus(double x_rate, double x_start,
-                   double y_rate, double y_start, Sketch::ZoomEdges edge);
+    void zoomIn(double x_rate, double x_start, double y_rate, double y_start);
+    void zoomOut(double x_rate, double x_start,
+                 double y_rate, double y_start, Sketch::ZoomEdges edge);
     void parallelMove(double delta_x, double delta_y);
 //    void zoomPlusFixed();
 //    void zoomMinusFixed();
@@ -118,12 +118,12 @@ public slots:
 
 private:
     void setup();
-    void zoomX(double rate, double start);
-    void zoomY(double rate, double start);
-    void zoomXMinusEdgeLeft(double rate);
-    void zoomXMinusEdgeRight(double rate);
-    void zoomYMinusEdgeBottom(double rate);
-    void zoomYMinusEdgeTop(double rate);
+    void zoomXIn(double rate, double start);
+    void zoomYIn(double rate, double start);
+    void zoomXOutEdgeLeft(double rate);
+    void zoomXOutEdgeRight(double rate);
+    void zoomYOutEdgeBottom(double rate);
+    void zoomYOutEdgeTop(double rate);
     void zoomXDefault();
     void zoomYDefault();
     void zoomXMinimum();

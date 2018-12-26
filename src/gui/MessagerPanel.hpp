@@ -24,14 +24,14 @@ public:
     {
     private:
         QDateTime _time;
-        Re::MessageType _type;
+        Re::MessageTypes _type;
         QString _text;
     public:
         Cell() : _time(QDateTime::currentDateTime()),
                  _type(Re::Info),
                  _text() {}
 
-        Cell(Re::MessageType type, const QString &text) :
+        Cell(Re::MessageTypes type, const QString &text) :
                 _time(QDateTime::currentDateTime()),
                 _type(type),
                 _text(qMove(text)) {}
@@ -63,12 +63,12 @@ private:
 public:
     explicit MessagerPanel(QWidget *parent = nullptr);
 
-    static QString typeStr(Re::MessageType type);
+    static QString typeStr(Re::MessageTypes type);
 
     inline void setShowTypes(int types) { _show_types = types; }
 
 public slots:
-    void showMessage(int type, const QString &msg);
+    void showMessage(Re::MessageTypes type, const QString &msg);
 protected:
     void contextMenuEvent(QContextMenuEvent *e) override;
 private:

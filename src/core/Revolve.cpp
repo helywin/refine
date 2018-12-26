@@ -48,11 +48,15 @@ Revolve::Revolve(Initializer *init) :
 bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
 {
     if (!_can.isConnected()) {
-        emitMessage(Re::Warning, tr("开始失败，确保CAN连接好再采集"));
+        emitMessage(Re::Warning | Re::Popout, tr("开始采集失败，确保CAN连接好再采集"));
+        return false;
+    }
+    if (_burning_status != Re::Stop) {
+        emitMessage(Re::Warning | Re::Popout, tr("正在烧录，不能采集数据"));
         return false;
     }
     if (_collect_status != Re::Stop) {
-        emitMessage(Re::Warning, tr("开始失败，已经在采集了"));
+        emitMessage(Re::Warning, tr("开始采集失败，已经在采集了"));
         return false;
     }
     _can.clear();
@@ -102,7 +106,7 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
 bool Revolve::stopCollect(bool error)
 {
     if (_collect_status == Re::Stop) {
-        emitMessage(Re::Warning, tr("结束失败，采集还没开始"));
+        emitMessage(Re::Warning, tr("结束采集失败，采集还没开始"));
         return false;
     }
     if (_flags & Re::Communicate) {
@@ -161,11 +165,11 @@ bool Revolve::exitCollect()
 void Revolve::pauseCollect()
 {
     if (_collect_status == Re::Pause) {
-        emitMessage(Re::Warning, tr("暂停失败，采集已经暂停"));
+        emitMessage(Re::Warning, tr("暂停采集失败，采集已经暂停"));
         return;
     }
     if (_collect_status == Re::Stop) {
-        emitMessage(Re::Warning, tr("暂停失败，采集已经停止了"));
+        emitMessage(Re::Warning, tr("暂停采集失败，采集已经停止了"));
         return;
     }
     _collect.pause();
@@ -189,11 +193,11 @@ void Revolve::pauseCollect()
 void Revolve::resumeCollect()
 {
     if (_collect_status == Re::Running) {
-        emitMessage(Re::Warning, tr("继续失败，采集没有暂停"));
+        emitMessage(Re::Warning, tr("继续采集失败，采集没有暂停"));
         return;
     }
     if (_collect_status == Re::Stop) {
-        emitMessage(Re::Warning, tr("继续失败，采集已经停止了"));
+        emitMessage(Re::Warning, tr("继续采集失败，采集已经停止了"));
         return;
     }
     _collect.resume();
@@ -538,7 +542,28 @@ void Revolve::setTransmitFrameNum(int frame_num)
 
 bool Revolve::beginBurning(const QString &file, unsigned long msec, int frames)
 {
-    return false;
+    if (file.isEmpty()) {
+        emitMessage(Re::Warning, tr("程序文件路径为空"));
+        return false;
+    }
+    QFileInfo info(file);
+    if (!(info.exists() && info.isFile())) {
+        emitMessage(Re::Warning | Re::Popout, tr("烧录文件不存在，检查路径格式\n  [・ヘ・?]"));
+        return false;
+    }
+    if (!_can.isConnected()) {
+        emitMessage(Re::Warning | Re::Popout, tr("开始烧录失败，确认CAN已经连接好"));
+        return false;
+    }
+    if (_collect_status != Re::Stop) {
+        emitMessage(Re::Warning, tr("开始烧录失败，已经在采集数据了"));
+        return false;
+    }
+    if (_burning_status != Re::Stop) {
+        emitMessage(Re::Warning, tr("开始烧录失败，已经在烧录程序"));
+        return false;
+    }
+    return true;
 }
 
 void Revolve::pauseBurning()

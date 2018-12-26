@@ -172,7 +172,7 @@ public:
     void setTransmitFrameNum(int frame_num);
 
 protected:
-    inline void emitMessage(MessageType type, const QString &msg) override
+    inline void emitMessage(MessageTypes type, const QString &msg) override
     { emit message(type, msg); }
 
 public slots:
@@ -186,7 +186,7 @@ private slots:
     void getTransformedCanMessage(const QString &message);
 
 signals:
-    void message(int type, const QString &msg);
+    void message(Re::MessageTypes type, const QString &msg);
     void curveLoaded();
     void canLostConnection();
     void collectMenuEnable(bool isCollecting);

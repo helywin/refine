@@ -20,14 +20,21 @@ namespace Re {
         CommandResume,
         CommandPause
     };
+
     enum MessageType
     {
         Info = 0x01,
         Warning = 0x02,
         Critical = 0x04,
         Fatal = 0x08,
-        Debug = 0x10
+        Debug = 0x10,
+        InfoTypes = (Info | Warning | Critical | Fatal | Debug),
+        Popout = 0x1000     //把messagebox也加入进来
     };
+    Q_DECLARE_FLAGS(MessageTypes, MessageType)
+
+    Q_DECLARE_OPERATORS_FOR_FLAGS(MessageTypes)
+
     enum RevolveFlag
     {
         NoWork = 0x00,
@@ -38,7 +45,6 @@ namespace Re {
         TimingStop = 0x10
     };
     Q_DECLARE_FLAGS(RevolveFlags, RevolveFlag)
-
     Q_DECLARE_OPERATORS_FOR_FLAGS(RevolveFlags)
 
     enum LineStipple

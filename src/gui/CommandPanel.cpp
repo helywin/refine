@@ -113,14 +113,9 @@ void CommandPanel::setup()
     );
 
     connect(_burn, &QPushButton::clicked, this, [=]() {
-        if (_file_name->currentText().isEmpty()) {
-            return;
-        }
         QFileInfo info(_file_name->currentText());
-        if (info.exists() && info.isFile()) {
-            _revolve->burnProgram(info.absoluteFilePath());
-        } else {
-            QMessageBox::warning(this, tr("警告"), tr("烧录文件不存在，检查路径格式\n  [・ヘ・?]"));
-        }
+        _revolve->beginBurning(info.absoluteFilePath(),
+                               _msec->currentData().toUInt(),
+                               _frames->currentData().toInt());
     });
 }

@@ -6,10 +6,12 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 #include <QtWidgets/QScrollBar>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QTextCursor>
 #include <QtGui/QContextMenuEvent>
 #include "MessagerPanel.hpp"
 #include "OutputBox.hpp"
+#include "Global.hpp"
 
 MessagerPanel::MessagerPanel(QWidget *parent) :
         QTextEdit(parent)
@@ -57,10 +59,10 @@ QString MessagerPanel::Cell::str() const
     return str;
 }
 
-QString MessagerPanel::typeStr(Re::MessageType type)
+QString MessagerPanel::typeStr(Re::MessageTypes type)
 {
     QString str;
-    switch (type) {
+    switch (type & Re::InfoTypes) {
         case Re::Info:
             str = QObject::tr("信息");
             break;
@@ -76,22 +78,46 @@ QString MessagerPanel::typeStr(Re::MessageType type)
         case Re::Debug:
             str = QObject::tr("调试");
             break;
+        default:
+            break;
     }
     return str;
 }
 
-void MessagerPanel::showMessage(int type, const QString &msg)
+void MessagerPanel::showMessage(Re::MessageTypes type, const QString &msg)
 {
+    if (type & Re::Popout) {
+        switch (type & Re::InfoTypes) {
+            case Re::Info:
+                QMessageBox::information(this, tr("信息"), msg);
+                break;
+            case Re::Warning:
+                QMessageBox::warning(this, tr("警告"), msg);
+                break;
+            case Re::Critical:
+                QMessageBox::critical(this, tr("严重"), msg);
+                break;
+            case Re::Fatal:
+                QMessageBox::critical(this, tr("致命"), msg);
+                break;
+            case Re::Debug:
+                QMessageBox::information(this, tr("调试"), msg);
+            default:
+                break;
+        }
+    }
     QTextCursor cursor = this->textCursor();
     cursor.clearSelection();
     if (!cursor.atEnd()) {
         cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
         setTextCursor(cursor);
     }
-    _messages.append(Cell((Re::MessageType) type, msg));
+    QString str = msg;
+    str = str.replace(QString("\n"), QString("\\n"));
+    _messages.append(Cell(type, str));
     if ((unsigned int) type & (unsigned int) _show_types) {
         _logs.append(_messages.last().str());
-        switch (type) {
+        switch (type & Re::InfoTypes) {
             case Re::Info:
                 cursor.insertText(_logs.last() + "\n", _info_format);
                 break;

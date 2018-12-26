@@ -7,7 +7,8 @@
 
 #include <QtCore/QString>
 #include "Global.hpp"
-using Re::MessageType;
+
+using Re::MessageTypes;
 
 class Message
 {
@@ -19,7 +20,7 @@ public:
     explicit Message(Message *parent = nullptr);
 
 protected:
-    virtual void emitMessage(MessageType type, const QString &msg);//parent为nullptr必须重载
+    virtual void emitMessage(MessageTypes type, const QString &msg);//parent为nullptr必须重载
 
 };
 

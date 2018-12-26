@@ -154,35 +154,50 @@ public:
 
     void init();
 
-    inline void setCurrentIndex(int index) { _current_index = index; }
+    inline void setCurrentIndex(int index)
+    { _current_index = index; }
 
-    inline int xStart() const { return _x_start; }
+    inline int xStart() const
+    { return _x_start; }
 
-    inline int xPoints() const { return qFloor(X_POINTS * _x_rate); }
+    inline int xPoints() const
+    { return qFloor(X_POINTS * _x_rate); }
 
-    inline double xPointsF() const { return X_POINTS * _x_rate; } //这个供后续运算使用，保持精度
+    inline double xPointsF() const
+    { return X_POINTS * _x_rate; } //这个供后续运算使用，保持精度
 
-    inline double xRate() const { return _x_rate; }
+    inline double xRate() const
+    { return _x_rate; }
 
-    inline void setXRate(double rate) { _x_rate = rate; }
+    inline void setXRate(double rate)
+    { _x_rate = rate; }
 
-    inline void setXStart(int start) { _x_start = start; }
+    inline void setXStart(int start)
+    { _x_start = start; }
 
-    inline double yStart() const { return _y_start; }
+    inline double yStart() const
+    { return _y_start; }
 
-    inline double yPoints() const { return Y_POINTS * _y_rate; }
+    inline double yPoints() const
+    { return Y_POINTS * _y_rate; }
 
-    inline void setYStart(double start) { _y_start = start; }
+    inline void setYStart(double start)
+    { _y_start = start; }
 
-    inline double yRate() const { return _y_rate; }
+    inline double yRate() const
+    { return _y_rate; }
 
-    inline void setYRate(double rate) { _y_rate = rate; }
+    inline void setYRate(double rate)
+    { _y_rate = rate; }
 
-    inline void setDisplayMode(DisplayMode mode) { _mode = mode; }
+    inline void setDisplayMode(DisplayMode mode)
+    { _mode = mode; }
 
-    inline void setVernierVisible(bool visible) { _vernier_visible = visible; }
+    inline void setVernierVisible(bool visible)
+    { _vernier_visible = visible; }
 
-    inline bool vernierVisible() const { return _vernier_visible; }
+    inline bool vernierVisible() const
+    { return _vernier_visible; }
 
     inline void calculateXEnd()
     {
@@ -200,11 +215,14 @@ public:
         return float((y0 - Y_POINTS * _y_start) / _y_rate);
     }
 
-    inline void setXZoom(bool flag) { _zoom_x = flag; }
+    inline void setXZoom(bool flag)
+    { _zoom_x = flag; }
 
-    inline void setYZoom(bool flag) { _zoom_y = flag; }
+    inline void setYZoom(bool flag)
+    { _zoom_y = flag; }
 
-    inline double xZoomPos() const { return _verniers[0].pos / X_POINTS; }
+    inline double xZoomPos() const
+    { return _verniers[0].pos / X_POINTS; }
 
     double yZoomPos() const;
 
@@ -222,23 +240,26 @@ public:
         update();
     }
 
-    void zoomPlusFixed(double x_rate, double x_scale, double y_rate, double y_scale);
-    void zoomMinusFixed(double x_rate, double x_scale, double y_rate, double y_scale);
-    void zoomPlusByVernier();
-    void zoomMinusByVernier();
-    void zoomPlusRect();
+    void zoomInFixed(double x_rate, double x_scale, double y_rate, double y_scale);
+    void zoomOutFixed(double x_rate, double x_scale, double y_rate, double y_scale);
+    void zoomInByVernier();
+    void zoomOutByVernier();
+    void zoomInByRect();
 public:
     void parallelMoveByCursor(const QPoint &pos);
-    bool xZoomPlusLimit() const;
-    bool yZoomPlusLimit() const;
+    bool xZoomInLimit() const;
+    bool yZoomInLimit() const;
 
-    inline double maximumXRate() const { return _tribe->len() / (double) Sketch::X_POINTS; }
+    inline double maximumXRate() const
+    { return _tribe->len() / (double) Sketch::X_POINTS; }
 
-    inline double maximumYRate() const { return 1; }
+    inline double maximumYRate() const
+    { return 1; }
 
     void updateVernier();
 
-    inline void setMenu(QMenu *menu) { _menu = menu; }
+    inline void setMenu(QMenu *menu)
+    { _menu = menu; }
 
 protected:
     void initializeGL() override;
@@ -281,9 +302,9 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
 signals:
     void scrollMove(int angle);
-    void zoomPlus(double x_rate, double x_start, double y_rate, double y_start);
-    void zoomMinus(double x_rate, double x_start,
-                   double y_rate, double y_start, ZoomEdges edge);
+    void zoomIn(double x_rate, double x_start, double y_rate, double y_start);
+    void zoomOut(double x_rate, double x_start,
+                 double y_rate, double y_start, ZoomEdges edge);
     void zoomDefault();
     void zoomMinimum();
     void vernierMove(int pos, double time);

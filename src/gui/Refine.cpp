@@ -362,7 +362,7 @@ void Refine::connectCan()
         if (_revolve.can().connect()) {
             emitMessage(Re::Info, tr("连接成功"));
         } else {
-            emitMessage(Re::Warning,
+            emitMessage(Re::Warning | Re::Popout,
                         tr("连接失败，检查CAN占用或连接情况"));
         }
     } else {

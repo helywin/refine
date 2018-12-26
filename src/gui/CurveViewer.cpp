@@ -82,8 +82,8 @@ void CurveViewer::setup()
             this, &CurveViewer::vScrollChanged, Qt::DirectConnection);
     connect(_sketch, &Sketch::zoomDefault, this, &CurveViewer::zoomDefault);
     connect(_sketch, &Sketch::zoomMinimum, this, &CurveViewer::zoomMinimum);
-    connect(_sketch, &Sketch::zoomPlus, this, &CurveViewer::zoomPlus);
-    connect(_sketch, &Sketch::zoomMinus, this, &CurveViewer::zoomMinus);
+    connect(_sketch, &Sketch::zoomIn, this, &CurveViewer::zoomIn);
+    connect(_sketch, &Sketch::zoomOut, this, &CurveViewer::zoomOut);
     connect(_sketch, &Sketch::parallelMove, this, &CurveViewer::parallelMove);
     connect(_sketch, &Sketch::vernierMove, _sketch_xtop, &SketchXTop::vernierTextMove);
     connect(&_timer, &QTimer::timeout, this, &CurveViewer::rollViewer);
@@ -227,19 +227,19 @@ void CurveViewer::setYZoom(bool flag)
     _sketch->setYZoom(flag);
 }
 
-void CurveViewer::zoomPlus(double x_rate, double x_start, double y_rate, double y_start)
+void CurveViewer::zoomIn(double x_rate, double x_start, double y_rate, double y_start)
 {
     if (_zoom_x) {
-        zoomX(x_rate, x_start);
+        zoomXIn(x_rate, x_start);
     }
     if (_zoom_y) {
-        zoomY(y_rate, y_start);
+        zoomYIn(y_rate, y_start);
     }
     _sketch->update();
 }
 
-void CurveViewer::zoomMinus(double x_rate, double x_start,
-                            double y_rate, double y_start, Sketch::ZoomEdges edge)
+void CurveViewer::zoomOut(double x_rate, double x_start,
+                          double y_rate, double y_start, Sketch::ZoomEdges edge)
 {
     if (_zoom_x) {
         if ((edge & Sketch::EdgeLeft) && (edge & Sketch::EdgeRight)) {
@@ -247,26 +247,26 @@ void CurveViewer::zoomMinus(double x_rate, double x_start,
             zoomXMinimum();
         } else if (edge & Sketch::EdgeLeft) {
             emitMessage(Re::Debug, "x轴缩小 EdgeLeft");
-            zoomXMinusEdgeLeft(x_rate);
+            zoomXOutEdgeLeft(x_rate);
         } else if (edge & Sketch::EdgeRight) {
             emitMessage(Re::Debug, "x轴缩小 EdgeRight");
-            zoomXMinusEdgeRight(x_rate);
+            zoomXOutEdgeRight(x_rate);
         } else {
             emitMessage(Re::Debug, "x轴缩小 free");
-            zoomX(x_rate, x_start);
+            zoomXIn(x_rate, x_start);
         }
     }
     if (_zoom_y) {
         if ((edge & Sketch::EdgeTop) && (edge & Sketch::EdgeBottom)) {
             zoomYMinimum();
         } else if (edge & Sketch::EdgeBottom) {
-            zoomYMinusEdgeBottom(y_rate);
+            zoomYOutEdgeBottom(y_rate);
             emitMessage(Re::Debug, "y轴缩小 EdgeBottom");
         } else if (edge & Sketch::EdgeTop) {
-            zoomYMinusEdgeTop(y_rate);
+            zoomYOutEdgeTop(y_rate);
             emitMessage(Re::Debug, "y轴缩小 EdgeTop");
         } else {
-            zoomY(y_rate, y_start);
+            zoomYIn(y_rate, y_start);
             emitMessage(Re::Debug, "y轴缩小 free");
         }
     }
@@ -312,7 +312,7 @@ void CurveViewer::parallelMove(double delta_x, double delta_y)
 //
 //}
 
-void CurveViewer::zoomX(double rate, double start)
+void CurveViewer::zoomXIn(double rate, double start)
 {
     int start_pos = _sketch->xStart() + qFloor(_sketch->xPointsF() * start);
     Q_ASSERT(start_pos >= 0);
@@ -334,7 +334,7 @@ void CurveViewer::zoomX(double rate, double start)
     _sketch_x->update();
 }
 
-void CurveViewer::zoomY(double rate, double start)
+void CurveViewer::zoomYIn(double rate, double start)
 {
     double last_rate = _sketch->yRate();
     double last_start = _sketch->yStart();
@@ -350,7 +350,7 @@ void CurveViewer::zoomY(double rate, double start)
     _sketch_y->update();
 }
 
-void CurveViewer::zoomXMinusEdgeLeft(double rate)
+void CurveViewer::zoomXOutEdgeLeft(double rate)
 {
     int start_pos = 0;
     Q_ASSERT(start_pos >= 0);
@@ -364,7 +364,7 @@ void CurveViewer::zoomXMinusEdgeLeft(double rate)
     _sketch_x->update();
 }
 
-void CurveViewer::zoomXMinusEdgeRight(double rate)
+void CurveViewer::zoomXOutEdgeRight(double rate)
 {
     int start_pos = qFloor(_tribe->len() - _sketch->xPointsF() * rate);
     Q_ASSERT(start_pos >= 0);
@@ -378,7 +378,7 @@ void CurveViewer::zoomXMinusEdgeRight(double rate)
     _sketch_x->update();
 }
 
-void CurveViewer::zoomYMinusEdgeBottom(double rate)
+void CurveViewer::zoomYOutEdgeBottom(double rate)
 {
     double last_rate = _sketch->yRate();
     double y_rate = last_rate * rate;
@@ -393,7 +393,7 @@ void CurveViewer::zoomYMinusEdgeBottom(double rate)
     _sketch_y->update();
 }
 
-void CurveViewer::zoomYMinusEdgeTop(double rate)
+void CurveViewer::zoomYOutEdgeTop(double rate)
 {
     double last_rate = _sketch->yRate();
     double y_rate = last_rate * rate;

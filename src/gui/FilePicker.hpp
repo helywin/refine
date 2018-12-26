@@ -100,7 +100,7 @@ private slots:
 
     void fileSelectedSlot(const QString &file);
 signals:
-    void message(Re::MessageType type, const QString &msg);
+    void message(Re::MessageTypes type, const QString &msg);
     void pickFile(int type, const QString &file, const QString &suffix);
 };
 

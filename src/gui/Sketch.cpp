@@ -762,9 +762,9 @@ void Sketch::wheelEvent(QWheelEvent *event)
     y_rate += 1;
 */
     if (wheel_rate > 0) {
-        zoomPlusFixed(x_rate, x_scale, y_rate, y_scale);
+        zoomInFixed(x_rate, x_scale, y_rate, y_scale);
     } else {
-        zoomMinusFixed(1 / x_rate, x_scale, 1 / y_rate, y_scale);
+        zoomOutFixed(1 / x_rate, x_scale, 1 / y_rate, y_scale);
     }
 }
 
@@ -780,10 +780,10 @@ void Sketch::keyPressEvent(QKeyEvent *event)
     }
     scrollMove(120 * direction);
     if (event->key() == Qt::Key_Equal) {
-        zoomPlusByVernier();
+        zoomInByVernier();
     }
     if (event->key() == Qt::Key_Minus) {
-        zoomMinusByVernier();
+        zoomOutByVernier();
     }
     if (event->isAutoRepeat()) {
         return;     //后面的事件不会是重复按键的
@@ -987,7 +987,7 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
         if (_movement == MoveVernier) {}
         else if (_movement == MoveZoomRect) {
             if (!_zoom_finish) {
-                zoomPlusRect();
+                zoomInByRect();
             }
             setCursor(Qt::ArrowCursor);
         }
@@ -1096,7 +1096,7 @@ double Sketch::yZoomPos() const
  * @brief 根据选定矩形框放大
  */
 
-void Sketch::zoomPlusRect()
+void Sketch::zoomInByRect()
 {
     if (_tribe->size() == 0) {
         return;
@@ -1114,15 +1114,15 @@ void Sketch::zoomPlusRect()
                    / rect().height();
     if (qAbs(_zoom_rect.width()) >= MINIMUM_ZOOM_RECT_WIDTH
         && qAbs(_zoom_rect.height()) >= MINIMUM_ZOOM_RECT_HEIGHT) {
-        if (xZoomPlusLimit()) {
+        if (xZoomInLimit()) {
             x_rate = 1;
             x_start = 0;
         }
-        if (yZoomPlusLimit()) {
+        if (yZoomInLimit()) {
             y_rate = 1;
             y_start = 0;
         }
-        emit zoomPlus(x_rate, x_start, y_rate, y_start);
+        emit zoomIn(x_rate, x_start, y_rate, y_start);
     } else {
         emitMessage(Re::Warning, tr("放大选区过小"));
     }
@@ -1168,26 +1168,26 @@ void Sketch::parallelMoveByCursor(const QPoint &pos)
  * @brief 根据游标位置放大
  */
 
-void Sketch::zoomPlusByVernier()
+void Sketch::zoomInByVernier()
 {
     if (_tribe->size() == 0) {
         return;
     }
-    zoomPlusFixed(FIX_X_ZOOM_PLUS_RATE, _verniers[0].pos / X_POINTS,
-                  FIX_Y_ZOOM_PLUS_RATE, yZoomPos());
+    zoomInFixed(FIX_X_ZOOM_PLUS_RATE, _verniers[0].pos / X_POINTS,
+                FIX_Y_ZOOM_PLUS_RATE, yZoomPos());
 }
 
 /*!
  * @brief 根据游标位置缩小
  */
 
-void Sketch::zoomMinusByVernier()
+void Sketch::zoomOutByVernier()
 {
     if (_tribe->size() == 0) {
         return;
     }
-    zoomMinusFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
-                   FIX_Y_ZOOM_MINUS_RATE, yZoomPos());
+    zoomOutFixed(FIX_X_ZOOM_MINUS_RATE, _verniers[0].pos / X_POINTS,
+                 FIX_Y_ZOOM_MINUS_RATE, yZoomPos());
 }
 
 /*!
@@ -1195,7 +1195,7 @@ void Sketch::zoomMinusByVernier()
  * @return x轴是否不能再放大
  */
 
-bool Sketch::xZoomPlusLimit() const
+bool Sketch::xZoomInLimit() const
 {
     return xPointsF() < 10;
 }
@@ -1205,7 +1205,7 @@ bool Sketch::xZoomPlusLimit() const
  * @return y轴是否不能再放大
  */
 
-bool Sketch::yZoomPlusLimit() const
+bool Sketch::yZoomInLimit() const
 {
     return yPoints() < 10;
 }
@@ -1217,16 +1217,16 @@ bool Sketch::yZoomPlusLimit() const
  * @param y_rate y轴放大倍率
  * @param y_scale y轴定点位置
  */
-void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double y_scale)
+void Sketch::zoomInFixed(double x_rate, double x_scale, double y_rate, double y_scale)
 {
     double x_start = 0;
-    if (_zoom_x && !xZoomPlusLimit()) {
+    if (_zoom_x && !xZoomInLimit()) {
         x_start = x_scale * (1 - x_rate);
     } else {
         x_rate = 1;
     }
     double y_start = 0;
-    if (_zoom_y && !yZoomPlusLimit()) {
+    if (_zoom_y && !yZoomInLimit()) {
         y_start = y_scale * (1 - y_rate);
     } else {
         y_rate = 1;
@@ -1235,7 +1235,7 @@ void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double 
         x_start = 0;
 //        x_rate = _tribe->len() / (double) X_POINTS;
     }
-    emit zoomPlus(x_rate, x_start, y_rate, y_start);
+    emit zoomIn(x_rate, x_start, y_rate, y_start);
 }
 
 /*!
@@ -1246,7 +1246,7 @@ void Sketch::zoomPlusFixed(double x_rate, double x_scale, double y_rate, double 
  * @param y_scale y轴定点位置
  */
 
-void Sketch::zoomMinusFixed(double x_rate, double x_scale, double y_rate, double y_scale)
+void Sketch::zoomOutFixed(double x_rate, double x_scale, double y_rate, double y_scale)
 {
     double x_start = 0;
     ZoomEdges edge = NoEdge;
@@ -1279,7 +1279,7 @@ void Sketch::zoomMinusFixed(double x_rate, double x_scale, double y_rate, double
     if (_tribe->len() < xPointsF()) {
         x_start = 0;
     }
-    emit zoomMinus(x_rate, x_start, y_rate, y_start, edge);
+    emit zoomOut(x_rate, x_start, y_rate, y_start, edge);
 }
 
 /*!
