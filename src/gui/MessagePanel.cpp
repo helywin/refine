@@ -1,35 +1,33 @@
 //
-// Created by jiang.wenqiang on 2018/10/23.
+// Created by jiang.wenqiang on 2018/12/27.
 //
 
+#include "Informations.hpp"
 #include <QtWidgets/QLabel>
-#include "OutputBox.hpp"
-#include "MessagerPanel.hpp"
+#include "Information.hpp"
 #include "Refine.hpp"
 
-const QColor OutputBox::INFO = QColor(0x2e9950);
-const QColor OutputBox::WARNING = QColor(0xfb7a02);
-const QColor OutputBox::CRITICAL = QColor(0xbf180f);
-const QColor OutputBox::FATAL = QColor(0x252525);
-const QColor OutputBox::DEBUG = QColor(0x65728c);
+const QColor Informations::INFO = QColor(0x2e9950);
+const QColor Informations::WARNING = QColor(0xfb7a02);
+const QColor Informations::CRITICAL = QColor(0xbf180f);
+const QColor Informations::FATAL = QColor(0x252525);
+const QColor Informations::DEBUG = QColor(0x65728c);
 
-OutputBox::OutputBox(QWidget *parent) :
-        QDockWidget(parent)
+Informations::Informations(QWidget *parent) : 
+    QWidget(parent)
 {
     setup();
 }
 
-void OutputBox::setup()
+void Informations::setup()
 {
     setWindowTitle(tr("信息"));
-    _messager = new MessagerPanel(this);
-    _content = new QWidget();
-    _content->resize(200, 100);
-    _layout = new QVBoxLayout(_content);
-    _content->setLayout(_layout);
+    _messager = new Information(this);
+    resize(200, 100);
+    _layout = new QVBoxLayout(this);
+    setLayout(_layout);
     _layout->setContentsMargins(5, 0, 0, 0);
-    setWidget(_content);
-    _labels = new QWidget(_content);
+    _labels = new QWidget(this);
     _layout_labels = new QHBoxLayout(_labels);
     _labels->setLayout(_layout_labels);
     _label_info = new QLabel(_labels);
@@ -82,20 +80,20 @@ void OutputBox::setup()
     _layout->addWidget(_messager);
 }
 
-void OutputBox::connectToMessager(Refine *emitter)
+void Informations::connectToMessager(Refine *emitter)
 {
     connect(emitter, &Refine::message, _messager,
-            &MessagerPanel::showMessage);        //多个连接一个不能直接连接
+            &Information::showMessage);        //多个连接一个不能直接连接
 }
 
-void OutputBox::connectToMessager(Revolve *emitter)
+void Informations::connectToMessager(Revolve *emitter)
 {
     connect(emitter, &Revolve::message, _messager,
-            &MessagerPanel::showMessage);
+            &Information::showMessage);
 }
 
-void OutputBox::connectToMessager(FilePicker *emitter)
+void Informations::connectToMessager(FilePicker *emitter)
 {
     connect(emitter, &FilePicker::message, _messager,
-            &MessagerPanel::showMessage);
+            &Information::showMessage);
 }

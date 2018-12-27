@@ -4,7 +4,7 @@
 
 #include <QtWidgets/QAction>
 #include "CommandBox.hpp"
-#include "CommandPanel.hpp"
+#include "ExtraPanel.hpp"
 #include "Revolve.hpp"
 
 CommandBox::CommandBox(Message *message, Revolve *revolve, QWidget *parent) :
@@ -17,11 +17,11 @@ CommandBox::CommandBox(Message *message, Revolve *revolve, QWidget *parent) :
 
 void CommandBox::setup()
 {
-    this->setWindowTitle(tr("命令"));
+    this->setWindowTitle(tr("命令 & 信息"));
 //    _content = new QWidget(this);
 //    _layout = new QVBoxLayout(_content);
 //    _content->setLayout(_layout);
-    _panel = new CommandPanel(this, _revolve, this);
+    _panel = new ExtraPanel(this, _revolve, this);
     setWidget(_panel);
 //    _layout->setContentsMargins(5,0,0,0);
 }

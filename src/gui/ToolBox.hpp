@@ -12,7 +12,8 @@
 #include "BaudRate.hpp"
 #include "Message.hpp"
 
-class CommandPanel;
+class ExtraPanel;
+class MessagePanel;
 class Revolve;
 
 class CommandBox : public QDockWidget, public Message
@@ -21,7 +22,7 @@ Q_OBJECT
 private:
     QWidget *_content;
     QVBoxLayout *_layout;
-    CommandPanel *_panel;
+    ExtraPanel *_panel;
     Revolve *_revolve;
 
 public:
