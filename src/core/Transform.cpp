@@ -44,8 +44,8 @@ void Transform::run()
             }
             continue;
         }
-        if (_cmd == Re::CommandResume &&
-            _status == Re::Pause) {
+        if (_cmd == Re::CommandResume
+            && _status == Re::Pause) {
             _status = Re::Running;
         }
 //#define TEST_SEC    //测试时间消耗，发现主要开销来自线程创建和销毁
@@ -57,101 +57,109 @@ void Transform::run()
         if (_buffer->isEmpty()) {
             continue;
         }
-        //可以并行计算
-//#pragma omp parallel for
-//        for (int i = 0; i < _tribe->size(); ++i) {
-//            Tribe::Cell &tr = (*_tribe)[i];
-        if (_transform_curve) {
-            for (auto &tr : *_tribe) {
-                const Curve::Cell &cur = (*_curve)[tr.name()];
-                for (unsigned int j = 0; (j < buf.dataSize()) && !tr.fill(); ++j) {
-                    if (static_cast<unsigned int>(cur.canId()) == buf[j]->ID &&
-                        (cur.zeroByte() == -1 ||
-                         cur.zeroByte() == buf[j]->Data[0])) {
-#if 0
-                        int value = 0;
-                    if (cur.highByte() != -1) {
-                        unsigned char h = buf[i]->Data[cur.highByte()];
-                        unsigned char l = buf[i]->Data[cur.lowByte()];
-                        auto high_pos0 = (unsigned char) cur.highByteRange()[0];
-                        auto f = (unsigned char) cur.highByteRange()[1];
-                        auto s = (unsigned char) cur.lowByteRange()[0];
-                        auto t = (unsigned char) cur.lowByteRange()[1];
-                        value = ((((unsigned char) (h << (7 - f))) >> (7 - f)) << (t - s + 1)) +
-                                (((unsigned char) (l << (7 - t))) >> (7 - t + s));
-                        if (cur.rangeIn()[0] < 0) {
-                            value = (signed short)(value);
-                        }
-                    } else {
-                        unsigned char l = buf[i]->Data[cur.lowByte()];
-                        auto s = (unsigned char) cur.lowByteRange()[0];
-                        auto t = (unsigned char) cur.lowByteRange()[1];
-                        value = ((unsigned char) (l << (7 - t))) >> (7 - t + s);
-                        if (cur.rangeIn()[0] < 0) {
-                            value = (signed char)(value);
-                        }
-                    }
-#endif
-                        unsigned int low_byte = 0;
-                        int full = 0;
-                        if (cur.highByte() != -1) {
-                            unsigned int high_byte = 0;
-                            high_byte = buf[j]->Data[cur.highByte()];
-                            high_byte <<= (7 - cur.highByteRange()[1]);
-                            high_byte >>= (7 - cur.highByteRange()[1] + cur.highByteRange()[0]);
-                            high_byte <<= (cur.lowByteRange()[1] - cur.lowByteRange()[0] + 1);
-
-                            low_byte = buf[j]->Data[cur.lowByte()];
-                            low_byte <<= (7 - cur.lowByteRange()[1]);
-                            low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
-
-                            full = high_byte + low_byte;
-                            if (cur.rangeIn()[0] < 0) {
-                                full = (signed short) (full);
-                            }
-                        } else {
-                            low_byte = buf[j]->Data[cur.lowByte()];
-                            low_byte <<= (7 - cur.lowByteRange()[1]);
-                            low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
-                            full = low_byte;
-                            if (cur.rangeIn()[0] < 0) {
-                                full = (signed char) (full);
-                            }
-                        }
-                        float k;
-                        float b;
-                        k = (float) (cur.rangeOut()[1] -
-                                     cur.rangeOut()[0]) /
-                            (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
-                        b = (float) cur.rangeOut()[0] -
-                            k * cur.rangeIn()[0];
-                        float result = full * k + b;
-                        tr.push(Tribe::Data, result);
-                    }
-                }
-                if (!tr.fill()) {
-                    if (tr.empty()) {
-//                    qDebug() << "Transform::run fake 0";
-                        tr.push(Tribe::FakeByZero, 0);
-                    } else {
-//                    qDebug() << tr.data().constLast();
-                        tr.push(Tribe::FakeByPrevious, tr.last());
-                    }
-                }
-            }
-        }
 
         //增加通信功能
         for (auto i = 0u; i < buf.dataSize(); ++i) {
             if (buf[i]->ID == 0x613) {
-                int last_enter = -1;
-                for (int j = 0; j < 8; ++j) {
-                    if (buf[i]->Data[j] == '\n') {
-                        _bytes.append((char *) buf[i]->Data, j - last_enter);
+                QByteArray bytes((char *) buf[i]->Data, buf[i]->DataLen);
+                bytes = bytes.replace("\r\n", "\n");
+                auto list = bytes.split('\n');
+                Q_ASSERT(!list.isEmpty());
+                if (list.size() == 1) {
+                    _bytes.append(bytes);
+                } else if (list.size() > 1) {
+                    for (int j = 0; j < list.size() - 1; ++j) {
+                        _bytes.append(list[j]);
                         getTransformedCanMessage(QString::fromLocal8Bit(_bytes));
                         _bytes.clear();
-                        last_enter = j;
                     }
+                    _bytes = list.last();
+                }
+            }
+        }
+
+        if (_status == Re::Pause || !_transform_curve) {
+            continue;
+        }
+
+        //可以并行计算
+//#pragma omp parallel for
+//        for (int i = 0; i < _tribe->size(); ++i) {
+//            Tribe::Cell &tr = (*_tribe)[i];
+        for (auto &tr : *_tribe) {
+            const Curve::Cell &cur = (*_curve)[tr.name()];
+            for (unsigned int j = 0; (j < buf.dataSize()) && !tr.fill(); ++j) {
+                if (static_cast<unsigned int>(cur.canId()) == buf[j]->ID &&
+                    (cur.zeroByte() == -1 ||
+                     cur.zeroByte() == buf[j]->Data[0])) {
+#if 0
+                    int value = 0;
+                if (cur.highByte() != -1) {
+                    unsigned char h = buf[i]->Data[cur.highByte()];
+                    unsigned char l = buf[i]->Data[cur.lowByte()];
+                    auto high_pos0 = (unsigned char) cur.highByteRange()[0];
+                    auto f = (unsigned char) cur.highByteRange()[1];
+                    auto s = (unsigned char) cur.lowByteRange()[0];
+                    auto t = (unsigned char) cur.lowByteRange()[1];
+                    value = ((((unsigned char) (h << (7 - f))) >> (7 - f)) << (t - s + 1)) +
+                            (((unsigned char) (l << (7 - t))) >> (7 - t + s));
+                    if (cur.rangeIn()[0] < 0) {
+                        value = (signed short)(value);
+                    }
+                } else {
+                    unsigned char l = buf[i]->Data[cur.lowByte()];
+                    auto s = (unsigned char) cur.lowByteRange()[0];
+                    auto t = (unsigned char) cur.lowByteRange()[1];
+                    value = ((unsigned char) (l << (7 - t))) >> (7 - t + s);
+                    if (cur.rangeIn()[0] < 0) {
+                        value = (signed char)(value);
+                    }
+                }
+#endif
+                    unsigned int low_byte = 0;
+                    int full = 0;
+                    if (cur.highByte() != -1) {
+                        unsigned int high_byte = 0;
+                        high_byte = buf[j]->Data[cur.highByte()];
+                        high_byte <<= (7 - cur.highByteRange()[1]);
+                        high_byte >>= (7 - cur.highByteRange()[1] + cur.highByteRange()[0]);
+                        high_byte <<= (cur.lowByteRange()[1] - cur.lowByteRange()[0] + 1);
+
+                        low_byte = buf[j]->Data[cur.lowByte()];
+                        low_byte <<= (7 - cur.lowByteRange()[1]);
+                        low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
+
+                        full = high_byte + low_byte;
+                        if (cur.rangeIn()[0] < 0) {
+                            full = (signed short) (full);
+                        }
+                    } else {
+                        low_byte = buf[j]->Data[cur.lowByte()];
+                        low_byte <<= (7 - cur.lowByteRange()[1]);
+                        low_byte >>= (7 - cur.lowByteRange()[1] + cur.lowByteRange()[0]);
+                        full = low_byte;
+                        if (cur.rangeIn()[0] < 0) {
+                            full = (signed char) (full);
+                        }
+                    }
+                    float k;
+                    float b;
+                    k = (float) (cur.rangeOut()[1] -
+                                 cur.rangeOut()[0]) /
+                        (float) (cur.rangeIn()[1] - cur.rangeIn()[0]);
+                    b = (float) cur.rangeOut()[0] -
+                        k * cur.rangeIn()[0];
+                    float result = full * k + b;
+                    tr.push(Tribe::Data, result);
+                }
+            }
+            if (!tr.fill()) {
+                if (tr.empty()) {
+//                    qDebug() << "Transform::run fake 0";
+                    tr.push(Tribe::FakeByZero, 0);
+                } else {
+//                    qDebug() << tr.data().constLast();
+                    tr.push(Tribe::FakeByPrevious, tr.last());
                 }
             }
         }

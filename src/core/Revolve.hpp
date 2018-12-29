@@ -28,7 +28,7 @@
 #include "Initializer.hpp"
 #include "Transmit.hpp"
 #include "Initializer.hpp"
-#include "MessagerPanel.hpp"
+#include "Information.hpp"
 #include "CurvePanel.hpp"
 #include "TribeModel.hpp"
 #include "Message.hpp"
@@ -194,6 +194,7 @@ signals:
     void response(ResponseType type, const QString &response);
     void burningProcess(double process);
     void finishBurning();
+    void getCanMessage(const QString &msg);
 };
 
 #endif //REFINE_REVOLVE_HPP

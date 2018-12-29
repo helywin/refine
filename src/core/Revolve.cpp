@@ -42,7 +42,10 @@ Revolve::Revolve(Initializer *init) :
     connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
     connect(&_transform, &Transform::getTransformedCanMessage,
             this, &Revolve::getTransformedCanMessage);
+    _collect.setParams(&_can, &_recv_buf, Collect::FromCan, _msec);
+    _transform.setParams(&_curve, &_recv_buf, &_tribe, _msec);
     _communicate.setParams(&_send_buf);
+    _transmit.setParams(&_can, &_send_buf);
 }
 
 bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
@@ -64,9 +67,6 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
     _flags = flags;
     _time = time;
     _manage.generate();
-    if (_viewer) {
-        _viewer->start();
-    }
 //    if (_flags & Re::Communicate) {
 //        _communicate.begin();
 //        _transmit.setParams(&_can, &_send_buf);
@@ -74,19 +74,28 @@ bool Revolve::beginCollect(unsigned long msec, Re::RevolveFlags flags, int time)
 //        emitMessage(Re::Debug, "Revolve::beginCollect::Communicate");
 //    }
     if (_flags & Re::Collect) {
-        _collect.setParams(&_can, &_recv_buf, Collect::FromCan, msec);
-        _collect.begin();
+        if (!_collect.isRunning()) {
+            _collect.begin();
+        }
         emitMessage(Re::Debug, "Revolve::beginCollect::Collect");
     }
     if (_flags & Re::TransformData) {
         if (!_curve.isInitialized()) {
             emitMessage(Re::Warning, tr("没有加载曲线配，你将看不到任何东西"));
+            _viewer->sketch()->setDisplayMode(Sketch::Frames);
+        } else {
+            _viewer->sketch()->setDisplayMode(Sketch::Rolling);
         }
         _tribe.genFromCurve(_curve);
         _tribe_model->genData(&_tribe);
-        _transform.setParams(&_curve, &_recv_buf, &_tribe, _msec);
-        _transform.begin();
+        _transform.setTransformCurve(true);
+        if (!_transform.isRunning()) {
+            _transform.begin();
+        }
         emitMessage(Re::Debug, "Revolve::beginCollect::TransformData");
+    }
+    if (_viewer) {
+        _viewer->start();
     }
     if (_flags & Re::RecordFrame) {
         //! @deprecated genFramesDataFile();
@@ -124,6 +133,7 @@ bool Revolve::stopCollect(bool error)
     }
     if (_flags & Re::TransformData) {
         _transform.stop(_manage.curveData().absoluteFilePath());
+        _transform.setTransformCurve(false);
     }
     if (_flags & Re::RecordFrame) {
         _record.stop();
@@ -149,6 +159,7 @@ bool Revolve::exitCollect()
     }
     if (_flags & Re::TransformData) {
         _transform.stop();
+        _transform.setTransformCurve(false);
     }
     if (_flags & Re::RecordFrame) {
         _record.stop(true);
@@ -494,6 +505,12 @@ void Revolve::recordError(int code)
 
 void Revolve::sendCommand(QByteArray &&bytes)
 {
+    if (!_collect.isRunning()) {
+        _collect.begin();
+    }
+    if (!_transform.isRunning()) {
+        _transform.begin();
+    }
     _communicate.sendCommand(bytes);
     _transmit.start();
 }
@@ -517,7 +534,6 @@ bool Revolve::burnProgram(const QString &file)
 //    }
     _collect.begin();
     _transform.begin();
-    _transmit.setParams(&_can, &_send_buf);
     _communicate.burnProgram(qMove(bytes));
     if (!_transmit.isRunning()) {
         _transmit.begin();
@@ -528,6 +544,7 @@ bool Revolve::burnProgram(const QString &file)
 void Revolve::getTransformedCanMessage(const QString &message)
 {
     _can_message.append(message);
+    emit getCanMessage(message);
 }
 
 void Revolve::setTransmitMsec(unsigned long msec)

@@ -20,9 +20,9 @@
 #include "Initializer.hpp"
 #include "Revolve.hpp"
 #include "FilePicker.hpp"
-#include "CommandBox.hpp"
+#include "ToolBox.hpp"
 #include "CurveEditor.hpp"
-#include "MessagerPanel.hpp"
+#include "Information.hpp"
 #include "Display.hpp"
 #include "StatusBar.hpp"
 #include "TribeBox.hpp"
@@ -33,8 +33,8 @@
 #include "BaudRate.hpp"
 #include "Feedback.hpp"
 
-class OutputBox;
-class MessagerPanel;
+//class OutputBox;
+class Information;
 class ChangeLog;
 class Settings;
 
@@ -105,8 +105,8 @@ private:
 
     QWidget *_central;
     QHBoxLayout *_layout;
-    CommandBox *_commandbox;
-    OutputBox *_outputbox;
+    ToolBox *_toolbox;
+//    OutputBox *_outputbox;
     TribeBox *_tribebox;
     MarkBox *_markbox;
     Display *_display;

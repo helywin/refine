@@ -5,9 +5,10 @@
 #include <QtWidgets/QApplication>
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
 #include "Refine.hpp"
-#include "OutputBox.hpp"
 #include "ChangeLog.hpp"
 #include "Sketch.hpp"
+#include "ToolBox.hpp"
+#include "MessagePanel.hpp"
 
 #ifdef Q_OS_WIN
 
@@ -186,16 +187,18 @@ void Refine::setup()
     _toolbar_file->addAction(_menu_file_settings);
     _toolbar_file->addAction(_menu_file_exit);
 
-    _commandbox = new CommandBox(this, &_revolve, this);
-    _commandbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::LeftDockWidgetArea, _commandbox);
+    _toolbox = new ToolBox(this, &_revolve, this);
+    _toolbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::LeftDockWidgetArea, _toolbox);
 
-    _outputbox = new OutputBox(this);
-    _outputbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::LeftDockWidgetArea, _outputbox);
-    _outputbox->connectToMessager(this);
-    _outputbox->connectToMessager(&_revolve);
-    tabifyDockWidget(_commandbox, _outputbox);
+//    _outputbox = new OutputBox(this);
+//    _outputbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+//    addDockWidget(Qt::LeftDockWidgetArea, _outputbox);
+    _toolbox->messagePanel()->connectToMessager(this);
+    _toolbox->messagePanel()->connectToMessager(&_revolve);
+//    _outputbox->connectToMessager(this);
+//    _outputbox->connectToMessager(&_revolve);
+//    tabifyDockWidget(_commandbox, _outputbox);
 //    _toolbox->raise();
 
     _tribebox = new TribeBox(&_revolve.tribe(), this, this);
@@ -233,7 +236,8 @@ void Refine::setup()
     _statusbar->addPermanentWidget(_baud_rate);
     this->setStatusBar(_statusbar);
     _file_picker = new FilePicker(this);
-    _outputbox->connectToMessager(_file_picker);
+//    _outputbox->connectToMessager(_file_picker);
+    _toolbox->messagePanel()->connectToMessager(_file_picker);
 
     _changelog = new ChangeLog(this);
     _feedback = new Feedback(this);
@@ -313,10 +317,10 @@ void Refine::setup()
             this, &Refine::setSmooth, Qt::DirectConnection);
     connect(_toolbar_file, &QToolBar::visibilityChanged,
             this, &Refine::widgetsVisibilityChanged);
-    connect(_commandbox, &QDockWidget::visibilityChanged,
+    connect(_toolbox, &QDockWidget::visibilityChanged,
             this, &Refine::widgetsVisibilityChanged);
-    connect(_outputbox, &QDockWidget::visibilityChanged,
-            this, &Refine::widgetsVisibilityChanged);
+//    connect(_outputbox, &QDockWidget::visibilityChanged,
+//            this, &Refine::widgetsVisibilityChanged);
     connect(_tribebox, &QDockWidget::visibilityChanged,
             this, &Refine::widgetsVisibilityChanged);
     connect(_markbox, &QDockWidget::visibilityChanged,
@@ -333,6 +337,8 @@ void Refine::setup()
             this, &Refine::setWakeUp, Qt::DirectConnection);
     connect(&_wake_up, &QTimer::timeout,
             this, &Refine::keepWakeUp, Qt::DirectConnection);
+    connect(&_revolve, &Revolve::getCanMessage,
+            _toolbox, &ToolBox::getCanMessage);
 }
 
 void Refine::setLanguage()
@@ -487,10 +493,12 @@ void Refine::displayAndHide(QAction *action)
     if (action == _menu_view_display_file) {
         _toolbar_file->setVisible(_menu_view_display_file->isChecked());
     } else if (action == _menu_view_display_command) {
-        _commandbox->setVisible(_menu_view_display_command->isChecked());
-    } else if (action == _menu_view_display_output) {
-        _outputbox->setVisible(_menu_view_display_output->isChecked());
-    } else if (action == _menu_view_display_curve) {
+        _toolbox->setVisible(_menu_view_display_command->isChecked());
+    }
+//    else if (action == _menu_view_display_output) {
+//        _outputbox->setVisible(_menu_view_display_output->isChecked());
+//    }
+    else if (action == _menu_view_display_curve) {
         _tribebox->setVisible(_menu_view_display_curve->isChecked());
     } else if (action == _menu_view_display_mark) {
         _markbox->setVisible(_menu_view_display_mark->isChecked());
@@ -505,8 +513,8 @@ void Refine::setSmooth()
 void Refine::widgetsVisibilityChanged(bool visible)
 {
     _menu_view_display_file->setChecked(_toolbar_file->isVisible());
-    _menu_view_display_command->setChecked(_commandbox->isVisible());
-    _menu_view_display_output->setChecked(_outputbox->isVisible());
+    _menu_view_display_command->setChecked(_toolbox->isVisible());
+//    _menu_view_display_output->setChecked(_outputbox->isVisible());
     _menu_view_display_curve->setChecked(_tribebox->isVisible());
     _menu_view_display_mark->setChecked(_markbox->isVisible());
 }

@@ -359,8 +359,10 @@ void Sketch::plotCurves()
             QFont font("微软雅黑", size);
             painter.setFont(font);
             painter.setPen(Qt::white);
-            painter.drawText(rect().width() / 2 - size, rect().height() / 2 + size / 2,
-                             tr("没有曲线配置，正在采集报文，曲线不会显示"));
+            painter.drawText(rect().width() / 2 - size * 7, rect().height() / 2 + size / 2,
+                             tr("已采集%1s报文数据")
+                                     .arg(_tribe->len() * _tribe->msec() / 1000.0,
+                                          0, 'f', 2));
             painter.end();
             break;
         }
@@ -992,10 +994,10 @@ void Sketch::mouseReleaseEvent(QMouseEvent *event)
             setCursor(Qt::ArrowCursor);
         }
     }
-    if (event->button() ==  Qt::MiddleButton) { //松开鼠标左键
+    if (event->button() == Qt::MiddleButton) { //松开鼠标左键
         setCursor(Qt::ArrowCursor);
     }
-    if (event->button() ==  Qt::RightButton) {
+    if (event->button() == Qt::RightButton) {
         if (_menu) {
             _menu->exec(event->globalPos());
         }

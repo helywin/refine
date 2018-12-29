@@ -7,7 +7,7 @@
 
 #include <QtWidgets/QFileDialog>
 #include <QtGui/QIcon>
-#include "MessagerPanel.hpp"
+#include "Information.hpp"
 
 class FilePicker : public QFileDialog
 {

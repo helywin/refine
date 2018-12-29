@@ -2,31 +2,31 @@
 // Created by jiang.wenqiang on 2018/12/27.
 //
 
-#include "Informations.hpp"
+#include "MessagePanel.hpp"
 #include <QtWidgets/QLabel>
 #include "Information.hpp"
 #include "Refine.hpp"
 
-const QColor Informations::INFO = QColor(0x2e9950);
-const QColor Informations::WARNING = QColor(0xfb7a02);
-const QColor Informations::CRITICAL = QColor(0xbf180f);
-const QColor Informations::FATAL = QColor(0x252525);
-const QColor Informations::DEBUG = QColor(0x65728c);
+const QColor MessagePanel::INFO = QColor(0x2e9950);
+const QColor MessagePanel::WARNING = QColor(0xfb7a02);
+const QColor MessagePanel::CRITICAL = QColor(0xbf180f);
+const QColor MessagePanel::FATAL = QColor(0x252525);
+const QColor MessagePanel::DEBUG = QColor(0x65728c);
 
-Informations::Informations(QWidget *parent) : 
+MessagePanel::MessagePanel(QWidget *parent) :
     QWidget(parent)
 {
     setup();
 }
 
-void Informations::setup()
+void MessagePanel::setup()
 {
     setWindowTitle(tr("信息"));
     _messager = new Information(this);
     resize(200, 100);
     _layout = new QVBoxLayout(this);
     setLayout(_layout);
-    _layout->setContentsMargins(5, 0, 0, 0);
+    _layout->setContentsMargins(0, 0, 0, 0);
     _labels = new QWidget(this);
     _layout_labels = new QHBoxLayout(_labels);
     _labels->setLayout(_layout_labels);
@@ -50,11 +50,11 @@ void Informations::setup()
     QPalette palette_critical = _label_critical->palette();
     QPalette palette_fatal = _label_fatal->palette();
     QPalette palette_debug = _label_debug->palette();
-    palette_info.setColor(QPalette::ColorRole::Window, OutputBox::INFO);
-    palette_warning.setColor(QPalette::ColorRole::Window, OutputBox::WARNING);
-    palette_critical.setColor(QPalette::ColorRole::Window, OutputBox::CRITICAL);
-    palette_fatal.setColor(QPalette::ColorRole::Window, OutputBox::FATAL);
-    palette_debug.setColor(QPalette::ColorRole::Window, OutputBox::DEBUG);
+    palette_info.setColor(QPalette::ColorRole::Window, MessagePanel::INFO);
+    palette_warning.setColor(QPalette::ColorRole::Window, MessagePanel::WARNING);
+    palette_critical.setColor(QPalette::ColorRole::Window, MessagePanel::CRITICAL);
+    palette_fatal.setColor(QPalette::ColorRole::Window, MessagePanel::FATAL);
+    palette_debug.setColor(QPalette::ColorRole::Window, MessagePanel::DEBUG);
     _label_info->setPalette(palette_info);
     _label_warning->setPalette(palette_warning);
     _label_critical->setPalette(palette_critical);
@@ -80,19 +80,19 @@ void Informations::setup()
     _layout->addWidget(_messager);
 }
 
-void Informations::connectToMessager(Refine *emitter)
+void MessagePanel::connectToMessager(Refine *emitter)
 {
     connect(emitter, &Refine::message, _messager,
             &Information::showMessage);        //多个连接一个不能直接连接
 }
 
-void Informations::connectToMessager(Revolve *emitter)
+void MessagePanel::connectToMessager(Revolve *emitter)
 {
     connect(emitter, &Revolve::message, _messager,
             &Information::showMessage);
 }
 
-void Informations::connectToMessager(FilePicker *emitter)
+void MessagePanel::connectToMessager(FilePicker *emitter)
 {
     connect(emitter, &FilePicker::message, _messager,
             &Information::showMessage);

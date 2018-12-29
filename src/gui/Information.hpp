@@ -15,7 +15,7 @@
 #include <QtWidgets/QAction>
 #include "Global.hpp"
 
-class MessagerPanel : public QTextEdit
+class Information : public QTextEdit
 {
 Q_OBJECT
 public:
@@ -49,7 +49,7 @@ private:
     //data
     QVector<Cell> _messages;
     QStringList _logs;
-    int _show_types;
+    Re::MessageTypes _show_types;
     QTextCharFormat _info_format;
     QTextCharFormat _warning_format;
     QTextCharFormat _critical_format;
@@ -61,11 +61,12 @@ private:
     QAction *_menu_clear;
     QAction *_menu_open;
 public:
-    explicit MessagerPanel(QWidget *parent = nullptr);
+    explicit Information(QWidget *parent = nullptr);
 
     static QString typeStr(Re::MessageTypes type);
 
-    inline void setShowTypes(int types) { _show_types = types; }
+    inline void setShowTypes(Re::MessageTypes types)
+    { _show_types = types; }
 
 public slots:
     void showMessage(Re::MessageTypes type, const QString &msg);

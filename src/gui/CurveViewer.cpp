@@ -427,7 +427,6 @@ void CurveViewer::zoomYMinimum()
 
 void CurveViewer::start()
 {
-    _sketch->setDisplayMode(Sketch::Rolling);
     _timer.start();
 }
 

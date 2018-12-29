@@ -9,28 +9,28 @@
 #include <QtWidgets/QMessageBox>
 #include <QtGui/QTextCursor>
 #include <QtGui/QContextMenuEvent>
-#include "MessagerPanel.hpp"
-#include "OutputBox.hpp"
+#include "Information.hpp"
+#include "MessagePanel.hpp"
 #include "Global.hpp"
 
-MessagerPanel::MessagerPanel(QWidget *parent) :
+Information::Information(QWidget *parent) :
         QTextEdit(parent)
 {
     setup();
 }
 
-void MessagerPanel::setup()
+void Information::setup()
 {
-    _show_types = 0xff;
+    _show_types = Re::InfoTypes;
     setFont(QFont("微软雅黑", 10));
     setLineWrapMode(QTextEdit::NoWrap);
     setReadOnly(true);
     setMinimumWidth(200);
-    _info_format.setForeground(QBrush(OutputBox::INFO));
-    _warning_format.setForeground(QBrush(OutputBox::WARNING));
-    _critical_format.setForeground(QBrush(OutputBox::CRITICAL));
-    _fatal_format.setForeground(QBrush(OutputBox::FATAL));
-    _debug_format.setForeground(QBrush(OutputBox::DEBUG));
+    _info_format.setForeground(QBrush(MessagePanel::INFO));
+    _warning_format.setForeground(QBrush(MessagePanel::WARNING));
+    _critical_format.setForeground(QBrush(MessagePanel::CRITICAL));
+    _fatal_format.setForeground(QBrush(MessagePanel::FATAL));
+    _debug_format.setForeground(QBrush(MessagePanel::DEBUG));
 //    setContextMenuPolicy(Qt::CustomContextMenu);
     _menu = new QMenu();
     _menu_copy = new QAction(tr("复制(&C)"), this);
@@ -42,24 +42,24 @@ void MessagerPanel::setup()
     _menu->addAction(_menu_clear);
     _menu->addAction(_menu_open);
     connect(_menu_copy, &QAction::triggered,
-            this, &MessagerPanel::copy, Qt::DirectConnection);
+            this, &Information::copy, Qt::DirectConnection);
     connect(_menu_all, &QAction::triggered,
-            this, &MessagerPanel::selectAll, Qt::DirectConnection);
+            this, &Information::selectAll, Qt::DirectConnection);
     connect(_menu_clear, &QAction::triggered,
-            this, &MessagerPanel::clear, Qt::DirectConnection);
+            this, &Information::clear, Qt::DirectConnection);
     connect(_menu_open, &QAction::triggered,
-            this, &MessagerPanel::openFile, Qt::DirectConnection);
+            this, &Information::openFile, Qt::DirectConnection);
 }
 
 
-QString MessagerPanel::Cell::str() const
+QString Information::Cell::str() const
 {
     QString str = _time.toString("hh:mm:ss") + " - ";
     str += _text;
     return str;
 }
 
-QString MessagerPanel::typeStr(Re::MessageTypes type)
+QString Information::typeStr(Re::MessageTypes type)
 {
     QString str;
     switch (type & Re::InfoTypes) {
@@ -84,7 +84,7 @@ QString MessagerPanel::typeStr(Re::MessageTypes type)
     return str;
 }
 
-void MessagerPanel::showMessage(Re::MessageTypes type, const QString &msg)
+void Information::showMessage(Re::MessageTypes type, const QString &msg)
 {
     showMessageBox(type, msg);
     QTextCursor cursor = this->textCursor();
@@ -96,7 +96,7 @@ void MessagerPanel::showMessage(Re::MessageTypes type, const QString &msg)
     QString str = msg;
     str = str.replace(QString("\n"), QString("\\n"));
     _messages.append(Cell(type, str));
-    if ((unsigned int) type & (unsigned int) _show_types) {
+    if (type & _show_types) {
         _logs.append(_messages.last().str());
         switch (type & Re::InfoTypes) {
             case Re::Info:
@@ -128,13 +128,13 @@ void MessagerPanel::showMessage(Re::MessageTypes type, const QString &msg)
     }
 }
 
-void MessagerPanel::contextMenuEvent(QContextMenuEvent *e)
+void Information::contextMenuEvent(QContextMenuEvent *e)
 {
     _menu->exec(QCursor::pos());
     e->accept();
 }
 
-void MessagerPanel::openFile()
+void Information::openFile()
 {
     QTextCursor cursor = textCursor();
     QString file = cursor.selectedText();
@@ -148,7 +148,7 @@ void MessagerPanel::openFile()
     }
 }
 
-void MessagerPanel::showMessageBox(Re::MessageTypes type, const QString &msg)
+void Information::showMessageBox(Re::MessageTypes type, const QString &msg)
 {
     if (type & Re::Popout) {
         switch (type & Re::InfoTypes) {
