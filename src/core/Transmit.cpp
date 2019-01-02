@@ -6,6 +6,7 @@
  * @details 模拟采集时接收的报文，发送到CAN总线上
  ******************************************************************************/
 
+#include <QtCore/QDebug>
 #include "Transmit.hpp"
 #include "Can.hpp"
 #include "SendBuffer.hpp"
@@ -29,30 +30,35 @@ void Transmit::setParams(Can *can, SendBuffer *buffer)
     _buffer = buffer;
 }
 
-#define OVER_TIME 2000
+//#define OVER_TIME 2000
 
 void Transmit::run()
 {
     emitMessage(Re::Debug, "Transmit::run()");
-    int over_time = 0;
-    while (_status == Re::Running) {
+    qDebug() << "Transmit::run()";
+//    int over_time = 0;
+    while (_status != Re::Stop) {
         msleep(_msec);
         if (_command == Re::CommandStop) {
             _status = Re::Stop;
             break;
         }
+#ifdef OVER_TIME
         if (over_time > OVER_TIME) {
             emit overTime();
             _status = Re::Stop;
             break;
         }
+#endif
         if (_buffer->size() <= 0) {
-            over_time += _msec;
+//            over_time += _msec;
             continue;
         }
         unsigned long num = (unsigned long) qMin(_frame_num, _buffer->size());
         _can->deliver(*_buffer, num);
         emitMessage(Re::Debug, tr("发送了: %1").arg(num));
+        qDebug() << tr("发送了: %1").arg(num);
     }
     emitMessage(Re::Debug, "Transmit::run() exit");
+    qDebug() << "Transmit::run() exit";
 }

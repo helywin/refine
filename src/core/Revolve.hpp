@@ -159,7 +159,7 @@ public:
     inline void setActionCan(QAction *action)
     { _menu_init_can = action; }
 
-    void sendCommand(QByteArray &&bytes);
+    void sendCommand(const QString &cmd);
     bool burnProgram(const QString &file);
 
     inline const QStringList &canMessage() const
@@ -171,8 +171,11 @@ public:
     void setTransmitMsec(unsigned long msec);
     void setTransmitFrameNum(int frame_num);
 
+    bool connectCan();
+    bool disConnectCan();
+
 protected:
-    inline void emitMessage(MessageTypes type, const QString &msg) override
+    inline void emitMessage(Re::MessageTypes type, const QString &msg) override
     { emit message(type, msg); }
 
 public slots:

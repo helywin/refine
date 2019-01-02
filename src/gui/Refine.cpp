@@ -365,35 +365,18 @@ void Refine::stopRevolve()
 void Refine::connectCan()
 {
     if (_menu_init_can->isChecked()) {
-        if (_revolve.can().connect()) {
+        if (_revolve.connectCan()) {
             emitMessage(Re::Info, tr("连接成功"));
         } else {
             emitMessage(Re::Warning | Re::Popout,
                         tr("连接失败，检查CAN占用或连接情况"));
         }
     } else {
-        int flag = 0;
-        bool unfinished = !_revolve.finished();
-        if (unfinished) {
-            flag = QMessageBox::warning(this, tr("警告"),
-                                        tr("采集尚未结束，是否关闭CAN"),
-                                        tr("取消"),
-                                        tr("确认"));
-            qDebug() << "flag: " << flag;
-            if (flag) {
-                _revolve.stopCollect();
-            }
-        }
-        bool closed = false;
-        if ((unfinished && flag) || !unfinished) {
-            closed = _revolve.can().close();
-        }
-        if (closed) {      //与运算后面的语句可能不执行，看条件而定
-            emitMessage(Re::Info, tr("关闭成功"));
-        } else if (flag) {
-            emitMessage(Re::Warning, tr("关闭失败"));
+        if (_revolve.disConnectCan()) {
+            emitMessage(Re::Info, tr("断开成功"));
         } else {
-            emitMessage(Re::Info, tr("关闭取消"));
+            emitMessage(Re::Warning | Re::Popout,
+                        tr("断开失败，检查CAN占用或连接情况"));
         }
     }
     _menu_init_can->setChecked(_revolve.can().isConnected());

@@ -1,6 +1,7 @@
 //
 // Created by jiang.wenqiang on 2018/12/17.
 //
+#include <QtCore/QMetaType>
 
 #ifndef REFINE_GLOBAL_HPP
 #define REFINE_GLOBAL_HPP
@@ -36,7 +37,6 @@ namespace Re {
         Popout = 0x1000     //把messagebox也加入进来
     };
     Q_DECLARE_FLAGS(MessageTypes, MessageType)
-
     Q_DECLARE_OPERATORS_FOR_FLAGS(MessageTypes)
 
     enum RevolveFlag
@@ -59,5 +59,7 @@ namespace Re {
         DashLine
     };
 };
+
+Q_DECLARE_METATYPE(Re::MessageTypes)
 
 #endif //REFINE_GLOBAL_HPP

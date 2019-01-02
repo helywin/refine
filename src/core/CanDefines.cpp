@@ -47,6 +47,6 @@ void setCanObj(CanObj &obj, unsigned int id,
 {
     obj.ID = id;
     obj.SendType = send_type;
-    obj.DataLen = data_len;
-    memcpy(obj.Data, data.data(), data_len);
+    obj.DataLen = (BYTE_T) data_len;
+    memcpy(obj.Data, data.data(), (size_t) data_len);
 }

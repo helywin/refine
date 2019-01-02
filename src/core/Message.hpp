@@ -20,7 +20,7 @@ public:
     explicit Message(Message *parent = nullptr);
 
 protected:
-    virtual void emitMessage(MessageTypes type, const QString &msg);//parent为nullptr必须重载
+    virtual void emitMessage(Re::MessageTypes type, const QString &msg);//parent为nullptr必须重载
 
 };
 

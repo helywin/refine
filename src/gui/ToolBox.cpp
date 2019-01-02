@@ -6,6 +6,7 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtCore/QStandardPaths>
+#include <QtGui/QTextCursor>
 #include "ToolBox.hpp"
 #include "Revolve.hpp"
 #include "MessagePanel.hpp"
@@ -32,12 +33,12 @@ void ToolBox::setup()
     _layout->setContentsMargins(5, 5, 0, 5);
     _panel->setLayout(_layout);
     _messages = new QTabWidget(_panel);
-    _text = new QTextEdit(_messages);
+    _text = new CanMessage(_messages);
     _text->setFont(font);
     _message_panel = new MessagePanel(_messages);
     _messages->addTab(_text, tr("CAN信息"));
     _messages->addTab(_message_panel, "软件信息");
-    _command = new QLineEdit(_panel);
+    _command = new Command(_panel);
     _command->setFont(font);
     _burn_frame = new QGroupBox(tr("烧录"), _panel);
     _burn_layout = new QVBoxLayout(_burn_frame);
@@ -130,10 +131,29 @@ void ToolBox::setup()
                                _msec->currentData().toUInt(),
                                _frames->currentData().toInt());
     });
+
+    connect(_command, &Command::commandConfirmed,
+            this, &ToolBox::sendCanMessage);
 }
 
 void ToolBox::getCanMessage(const QString &msg)
 {
-    _text->append(msg);
+    QTextCursor cursor = _text->textCursor();
+    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+    _text->setTextCursor(cursor);
+    _text->appendHtml(
+            QString("<font color=\"#000000\">&nbsp;&nbsp;%1</font>").arg(msg.toHtmlEscaped()));
+//    _text->append(msg);
+}
+
+void ToolBox::sendCanMessage(const QString &msg)
+{
+//    qRegisterMetaType()
+    QTextCursor cursor = _text->textCursor();
+    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+    _text->setTextCursor(cursor);
+    _revolve->sendCommand(msg);
+    _text->appendHtml(QString("<font color=\"#ff0000\"># %1</font>").arg(msg.toHtmlEscaped()));
+//    _text->appendPlainText();
 }
 

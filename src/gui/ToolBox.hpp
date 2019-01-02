@@ -9,6 +9,7 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QHBoxLayout>
@@ -17,6 +18,8 @@
 #include <QtWidgets/QPushButton>
 #include "BaudRate.hpp"
 #include "Message.hpp"
+#include "Command.hpp"
+#include "CanMessage.hpp"
 
 class ExtraPanel;
 class MessagePanel;
@@ -29,9 +32,9 @@ private:
     QWidget *_panel;
     QVBoxLayout *_layout;
     QTabWidget *_messages;
-    QTextEdit *_text;
+    CanMessage *_text;
     MessagePanel *_message_panel;
-    QLineEdit *_command;
+    Command *_command;
     QGroupBox *_burn_frame;
     QVBoxLayout *_burn_layout;
     QComboBox *_msec;
@@ -54,6 +57,9 @@ public slots:
 
 private:
     void setup();
+
+private slots:
+    void sendCanMessage(const QString &msg);
 };
 
 

@@ -503,7 +503,7 @@ void Revolve::recordError(int code)
     Q_UNUSED(code);
 }
 
-void Revolve::sendCommand(QByteArray &&bytes)
+void Revolve::sendCommand(const QString &cmd)
 {
     if (!_collect.isRunning()) {
         _collect.begin();
@@ -511,8 +511,10 @@ void Revolve::sendCommand(QByteArray &&bytes)
     if (!_transform.isRunning()) {
         _transform.begin();
     }
-    _communicate.sendCommand(bytes);
-    _transmit.start();
+    QByteArray array = cmd.toLocal8Bit().append("\n");
+//    QByteArray array = cmd.toLocal8Bit();
+    _communicate.sendCommand(array);
+    qDebug() << "cmd: " << array;
 }
 
 bool Revolve::burnProgram(const QString &file)
@@ -580,6 +582,30 @@ bool Revolve::beginBurning(const QString &file, unsigned long msec, int frames)
         emitMessage(Re::Warning, tr("开始烧录失败，已经在烧录程序"));
         return false;
     }
+
+    QFile f(file);
+    f.open(QIODevice::ReadOnly);
+    if (!f.isOpen()) {
+        emitMessage(Re::Warning, tr("打不开程序文件"));
+        return false;
+    }
+    if (!_can.isConnected()) {
+        emitMessage(Re::Warning, tr("没有连接CAN"));
+        return false;
+    }
+    emitMessage(Re::Warning, tr("Revolve::burnProgram"));
+    QByteArray bytes = f.readAll();
+//    if (_communicate.isRunning() && _transmit.isRunning()) {
+//        emitMessage(Re::Debug, tr("Communicate::burnProgram 程序尚在烧录"));
+//    }
+//    _collect.begin();
+//    _transform.begin();
+    _transmit.setMsec(msec);
+    _transmit.setFrames(frames);
+    _communicate.burnProgram(qMove(bytes));
+    if (!_transmit.isRunning()) {
+        _transmit.begin();
+    }
     return true;
 }
 
@@ -596,6 +622,31 @@ void Revolve::resumeBurning()
 bool Revolve::abortBurning()
 {
     return false;
+}
+
+bool Revolve::connectCan()
+{
+    if (_can.isConnected()) {
+        _can.close();
+    }
+    if (!_can.connect()) {
+        return false;
+    }
+    _collect.begin();
+    _transform.begin();
+    _transmit.begin();
+    return true;
+}
+
+bool Revolve::disConnectCan()
+{
+    if (!_can.close()) {
+        return false;
+    }
+    _collect.stop();
+    _transform.stop();
+    _transmit.stop();
+    return true;
 }
 
 

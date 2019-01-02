@@ -27,7 +27,11 @@ void Communicate::burnProgram(QByteArray &&bytes)
 
 void Communicate::sendCommand(const QByteArray &bytes)
 {
-    setCanObj(*_buffer->end(), 0x611, Cd::SendType::NormalSend, bytes);
+    int len = bytes.length();
+    if (len > 8) {
+        len = 8;
+    }
+    setCanObj(*_buffer->end(), 0x611, Cd::SendType::NormalSend, bytes, len);
     _buffer->increase();
 }
 
@@ -49,7 +53,7 @@ void Communicate::run()
         _buffer->increase();
         start += CAN_OBJ_DATA_LEN;
     }
-    if (_program.end() - start > 0) {
+    if (_program.end() - start > 0) {   //烧录最后的几个字节
         setCanObj(*_buffer->end(), 0x611, Cd::SendType::NormalSend, start,
                   (int) (_program.end() - start));  //char本来就是一个字节，所以不用除以sizeof
         _buffer->increase();
