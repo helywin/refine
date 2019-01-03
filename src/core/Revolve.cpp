@@ -511,7 +511,7 @@ void Revolve::sendCommand(const QString &cmd)
     if (!_transform.isRunning()) {
         _transform.begin();
     }
-    QByteArray array = cmd.toLocal8Bit().append("\n");
+    QByteArray array = cmd.toLocal8Bit().append("\r");
 //    QByteArray array = cmd.toLocal8Bit();
     _communicate.sendCommand(array);
     qDebug() << "cmd: " << array;

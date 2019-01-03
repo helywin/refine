@@ -158,12 +158,21 @@ namespace Cd {
             {0x00, 0x16},    //!< 800Kbps
             {0x00, 0x14}     //!< 1000Kbps
     };
+
+    enum RemoteFlag {
+        RemoteFlag_False = 0,
+        RemoteFlag_True = 1
+    };
+
+    enum ExternFlag {
+        ExternFlag_False = 0,
+        ExternFlag_True = 1
+    };
 };
 
 QDataStream &operator<<(QDataStream &stream, const CanObj &obj);
 QDataStream &operator>>(QDataStream &stream, CanObj &obj);
 
-//CanObj canObj(unsigned int id, Cd::SendType send_type, const QByteArray &data);
 void setCanObj(CanObj &obj, unsigned int id,
                Cd::SendType send_type, const QByteArray &data, int data_len = CAN_OBJ_DATA_LEN);
 

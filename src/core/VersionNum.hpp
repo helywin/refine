@@ -9,7 +9,7 @@
 #define PRODUCT_VERSION_NUM 0,1,2,1
 #define COMMENTS "Vehicles Software"
 #define COMPANY_NAME "No Name"
-#define FILE_DESCRIPTION "Vehicles Software"
+#define FILE_DESCRIPTION "数据采集 & 工况匹配"
 #define FILE_VERSION "0,1,2,1"
 #define INTERNAL_NAME "refine.exe"
 #define LEGAL_COPYRIGHT "Copyright (C) 2018"

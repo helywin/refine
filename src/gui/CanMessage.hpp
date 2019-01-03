@@ -10,9 +10,21 @@
 class CanMessage : public QPlainTextEdit
 {
 Q_OBJECT
-private:
 public:
-    CanMessage(QWidget *parent = nullptr);
+    enum MessageType
+    {
+        Send,
+        Receive
+    };
+
+private:
+    QTextCharFormat _send_format;
+    QTextCharFormat _recv_format;
+public:
+    explicit CanMessage(QWidget *parent = nullptr);
+
+public slots:
+    void insertMessage(const QString &msg, MessageType type);
 
 private:
     void setup();

@@ -138,22 +138,12 @@ void ToolBox::setup()
 
 void ToolBox::getCanMessage(const QString &msg)
 {
-    QTextCursor cursor = _text->textCursor();
-    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-    _text->setTextCursor(cursor);
-    _text->appendHtml(
-            QString("<font color=\"#000000\">&nbsp;&nbsp;%1</font>").arg(msg.toHtmlEscaped()));
-//    _text->append(msg);
+    _text->insertMessage(msg, CanMessage::Receive);
 }
 
 void ToolBox::sendCanMessage(const QString &msg)
 {
-//    qRegisterMetaType()
-    QTextCursor cursor = _text->textCursor();
-    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-    _text->setTextCursor(cursor);
     _revolve->sendCommand(msg);
-    _text->appendHtml(QString("<font color=\"#ff0000\"># %1</font>").arg(msg.toHtmlEscaped()));
-//    _text->appendPlainText();
+    _text->insertMessage(msg + "\n", CanMessage::Send);
 }
 

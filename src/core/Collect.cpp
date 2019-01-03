@@ -15,7 +15,7 @@ Collect::Collect(Message *message) :
 
 
 void Collect::setParams(Can *can, RecvBuffer *buffer, Collect::Manner manner,
-                        unsigned long msec, const QString &name)
+                        int msec, const QString &name)
 {
     _can = can;
     _buffer = buffer;
@@ -31,46 +31,47 @@ void Collect::setParams(Can *can, RecvBuffer *buffer, Collect::Manner manner,
 
 void Collect::run()
 {
-    int time = 0;
+    int time_baudrate = 0;
+    QTime last = QTime::currentTime();
     while (_cmd != Re::CommandStop) {
-        msleep(_msec);
-        if (time >= 500) {
-            double kbps = (CAN_OBJ_BITS * _frames_loop) / (double)time;
+        int time = last.msecsTo(QTime::currentTime());
+        last = QTime::currentTime();
+//        qDebug() << "Collect::run() time0:" << time;
+        time = _msec - time;
+        if (time > _msec) {
+            time = _msec;
+        } else if (time < 0) {
+            time = 0;
+        }
+//        qDebug() << "Collect::run() time1:" << time;
+        msleep((unsigned long)_msec);
+        if (time_baudrate >= 500) {
+            double kbps = (CAN_OBJ_BITS * _frames_loop) / (double) time_baudrate;
 //            emitMessage(Debug, QString("波特率: %1").arg(kbps));
             emit baudRate(kbps);
-            time = 0;
+            time_baudrate = 0;
             _frames_loop = 0;
         }
-        time += _msec;
+        time_baudrate += _msec;
         if (_cmd == Re::CommandPause) {
             if (_status == Re::Running) {
                 _status = Re::Pause;
             }
             continue;
         }
-        if (_cmd == Re::CommandResume &&
-            _status == Re::Pause) {
+        if (_cmd == Re::CommandResume &&_status == Re::Pause) {
             _can->clear();
             _status = Re::Running;
         }
 
         if (_manner == FromCan) {
-            static int cnt = 0;
-            int flag = _can->collect(*_buffer);
+            auto flag = _can->collect(*_buffer);;
             if (flag == Can::Empty) {
                 if (!_can->isConnected()) {
                     info(ErrorConnection);
-                    return;
-                } else {
-                    if (cnt == NO_FRAME_TIMES - 1) {
-                        info(WarnNoFrame);
-                    }
-                    cnt += 1;
-                    cnt %= NO_FRAME_TIMES;
                 }
             } else {
                 _frames_loop += (*_buffer->last()).dataSize();
-                cnt = 0;
             }
         }
     }

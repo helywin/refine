@@ -5,6 +5,7 @@
 #include <QtCore/QByteArray>
 #include "Communicate.hpp"
 #include "SendBuffer.hpp"
+#include <QtCore/QDebug>
 
 Communicate::Communicate(Message *message) :
         Message(message)
@@ -22,6 +23,7 @@ void Communicate::burnProgram(QByteArray &&bytes)
     }
     _program = bytes;
     _has_program = true;
+//    qDebug() << "program: " << bytes;
     start();
 }
 
@@ -42,9 +44,7 @@ void Communicate::run()
     }
     emitMessage(Re::Debug, tr("Communicate::run() 开始"));
     QByteArray::iterator start = _program.begin();
-    while (start < _program.end()
-                   - CAN_OBJ_DATA_LEN
-            ) {
+    while (start < _program.end() - CAN_OBJ_DATA_LEN) {
         if (_buffer->isFull()) {
             msleep(10);
             continue;

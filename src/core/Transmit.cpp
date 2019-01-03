@@ -7,6 +7,7 @@
  ******************************************************************************/
 
 #include <QtCore/QDebug>
+#include <QtCore/QTime>
 #include "Transmit.hpp"
 #include "Can.hpp"
 #include "SendBuffer.hpp"
@@ -34,12 +35,20 @@ void Transmit::setParams(Can *can, SendBuffer *buffer)
 
 void Transmit::run()
 {
-    emitMessage(Re::Debug, "Transmit::run()");
-    qDebug() << "Transmit::run()";
+//    emitMessage(Re::Debug, "Transmit::run()");
+//    qDebug() << "Transmit::run()";
 //    int over_time = 0;
+    QTime last = QTime::currentTime();
     while (_status != Re::Stop) {
-        msleep(_msec);
+        unsigned long time = 0;
+        time = (unsigned long)last.msecsTo(QTime::currentTime());
+        last = QTime::currentTime();
+        if (time > _msec) {
+            time = _msec;
+        }
+        msleep(_msec - time);
         if (_command == Re::CommandStop) {
+            _command = Re::NoCommand;
             _status = Re::Stop;
             break;
         }
@@ -50,15 +59,17 @@ void Transmit::run()
             break;
         }
 #endif
-        if (_buffer->size() <= 0) {
+        if (_buffer->isEmpty()) {
 //            over_time += _msec;
             continue;
         }
-        unsigned long num = (unsigned long) qMin(_frame_num, _buffer->size());
-        _can->deliver(*_buffer, num);
-        emitMessage(Re::Debug, tr("发送了: %1").arg(num));
-        qDebug() << tr("发送了: %1").arg(num);
+        int num = qMin(_frame_num, _buffer->size());
+        for (int i = 0; i < num; ++i) {
+            _can->deliver(*_buffer, 1);
+        }
+//        emitMessage(Re::Debug, tr("发送了: %1").arg(num));
+//        qDebug() << tr("发送了: %1").arg(num);
     }
-    emitMessage(Re::Debug, "Transmit::run() exit");
-    qDebug() << "Transmit::run() exit";
+//    emitMessage(Re::Debug, "Transmit::run() exit");
+//    qDebug() << "Transmit::run() exit";
 }

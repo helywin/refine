@@ -397,3 +397,10 @@ void Can::reportError()
     }
     emitMessage(Re::Warning, str);
 }
+
+int Can::receivedNumber()
+{
+    return static_cast<int>(VCI_GetReceiveNum(_config.deviceType(),
+                             _config.deviceIndex(),
+                             _config.deviceChannel()));
+}

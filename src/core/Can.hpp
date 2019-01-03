@@ -237,6 +237,7 @@ public:
     int status() const;
     int getError();
     void reportError();
+    int receivedNumber();
 
 };
 

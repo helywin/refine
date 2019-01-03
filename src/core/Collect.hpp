@@ -43,14 +43,14 @@ private:
     File _file;
     Re::RunningStatus _status = Re::Stop;
     Re::RunningCommand _cmd = Re::NoCommand;
-    unsigned long _msec = 10;
+    int _msec = 10;
     int _frames_loop = 0;
 
 public:
     explicit Collect(Message *message = nullptr);
 
     void setParams(Can *can, RecvBuffer *buffer,
-                   Manner manner, unsigned long msec = 10,
+                   Manner manner, int msec = 10,
                    const QString &name = QString());
 
     void begin();

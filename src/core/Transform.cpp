@@ -62,19 +62,19 @@ void Transform::run()
         for (auto i = 0u; i < buf.dataSize(); ++i) {
             if (buf[i]->ID == 0x613) {
                 QByteArray bytes((char *) buf[i]->Data, buf[i]->DataLen);
+                getTransformedCanMessage(QString::fromLocal8Bit(bytes));
                 bytes = bytes.replace("\r\n", "\n");
-                auto list = bytes.split('\n');
-                Q_ASSERT(!list.isEmpty());
-                if (list.size() == 1) {
-                    _bytes.append(bytes);
-                } else if (list.size() > 1) {
-                    for (int j = 0; j < list.size() - 1; ++j) {
-                        _bytes.append(list[j]);
-                        getTransformedCanMessage(QString::fromLocal8Bit(_bytes));
-                        _bytes.clear();
-                    }
-                    _bytes = list.last();
-                }
+//                auto list = bytes.split('\n');
+//                Q_ASSERT(!list.isEmpty());
+//                if (list.size() == 1) {
+//                    _bytes.append(bytes);
+//                } else if (list.size() > 1) {
+//                    for (int j = 0; j < list.size() - 1; ++j) {
+//                        _bytes.append(list[j]);
+//                        _bytes.clear();
+//                    }
+//                    _bytes = list.last();
+//                }
             }
         }
 
