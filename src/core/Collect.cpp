@@ -45,7 +45,7 @@ void Collect::run()
         }
 //        qDebug() << "Collect::run() time1:" << time;
         msleep((unsigned long)_msec);
-        if (time_baudrate >= 500) {
+        if (time_baudrate >= 100) {
             double kbps = (CAN_OBJ_BITS * _frames_loop) / (double) time_baudrate;
 //            emitMessage(Debug, QString("波特率: %1").arg(kbps));
             emit baudRate(kbps);

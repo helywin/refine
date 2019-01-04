@@ -17,6 +17,7 @@ find_package(Qt5Gui CONFIG REQUIRED)
 find_package(Qt5OpenGL CONFIG REQUIRED)
 find_package(Qt5PrintSupport CONFIG REQUIRED)
 find_package(Qt5TextToSpeech CONFIG REQUIRED)
+
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_C_COMPILER gcc)
 set(DEFINES "-DUNICODE -D_UNICODE -DWIN32 -DQT_DEPRECATED_WARNINGS")

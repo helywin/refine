@@ -35,11 +35,11 @@ public:
 private:
     const static char _major = 0;   //! \brief 主要版本号
     const static char _micro = 1;   //! \brief 次要版本号
-    const static char _minor = 2;   //! \brief 最小版本号
+    const static char _minor = 3;   //! \brief 最小版本号
     const static char _build = 1;   //! \brief 构建版本
-    const static char _year = 18;   //! \brief 构建时间，年
-    const static char _month = 12;  //! \brief 构建时间，月
-    const static char _day = 24;    //! \brief 构建时间，日
+    const static char _year = 19;   //! \brief 构建时间，年
+    const static char _month = 1;  //! \brief 构建时间，月
+    const static char _day = 4;    //! \brief 构建时间，日
     const static enum Identifier _identifier = Identifier::Alpha; //! \brief 版本标识
 
 public:

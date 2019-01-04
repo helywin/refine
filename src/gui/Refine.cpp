@@ -121,11 +121,11 @@ void Refine::setup()
              tr("开启/关闭反走样"), true, true);
 
     initMenu(_menu_init, tr("初始化(&I)"), _menubar);
-    initMenu(_menu_init_option, tr("采集选项(&S)..."), _menu_init,
-             tr("设置CAN、曲线配置和工况"));
-    _menu_init_option->setIcon(QIcon(":res/icons/config.png"));
+    initMenu(_menu_init_canconfig, tr("CAN配置(&C)..."), _menu_init,
+             tr("设置CAN连接配置"));
+    _menu_init_canconfig->setIcon(QIcon(":res/icons/config.png"));
     _menu_init->addSeparator();
-    initMenu(_menu_init_can, tr("连接CAN(&C)"), _menu_init,
+    initMenu(_menu_init_connect, tr("连接CAN(&C)"), _menu_init,
              tr("连接/断开CAN"), true);
     initMenu(_menu_control, tr("控制(&C)"), _menubar);
     initMenu(_menu_control_start, tr("开始(&S)"), _menu_control,
@@ -159,7 +159,7 @@ void Refine::setup()
     initMenu(_menu_tools_wakeup, tr("屏幕常亮(&S)"), _menu_tools,
              tr("保持屏幕常亮不黑屏开/关"), true);
     initMenu(_menu_help, tr("帮助(&H)"), _menubar);
-    initMenu(_menu_help_tutorial, tr("手册(&T)..."), _menu_help,
+    initMenu(_menu_help_manual, tr("手册(&M)..."), _menu_help,
              tr("软件手册和工况"));
     initMenu(_menu_help_changelog, tr("变更(&C)..."), _menu_help,
              tr("软件版本变更信息"));
@@ -244,10 +244,12 @@ void Refine::setup()
     _about = new About(this);
 
     _settings = new Settings(this);
+    _manual = new Manual(this);
+    _canconfig = new CanConfig(this, this);
 
     _editor = new CurveEditor(&_revolve.curve(), this);
     _revolve.setCurveEditor(_editor);
-    _revolve.setActionCan(_menu_init_can);
+    _revolve.setActionCan(_menu_init_connect);
 
     _timer_start[0] = false;
     _timer_start[1] = false;
@@ -283,7 +285,7 @@ void Refine::setup()
             this, &Refine::fullScreen, Qt::DirectConnection);
     connect(_menu_file_exit, &QAction::triggered,
             this, &Refine::close, Qt::DirectConnection);
-    connect(_menu_init_can, &QAction::triggered,
+    connect(_menu_init_connect, &QAction::triggered,
             this, &Refine::connectCan, Qt::DirectConnection);
     connect(_menu_tool_editcurve, &QAction::triggered,
             _editor, &CurveEditor::show, Qt::DirectConnection);
@@ -339,6 +341,10 @@ void Refine::setup()
             this, &Refine::keepWakeUp, Qt::DirectConnection);
     connect(&_revolve, &Revolve::getCanMessage,
             _toolbox, &ToolBox::getCanMessage);
+    connect(_menu_help_manual, &QAction::triggered,
+            _manual, &Manual::show);
+    connect(_menu_init_canconfig, &QAction::triggered,
+            _canconfig, &CanConfig::show);
 }
 
 void Refine::setLanguage()
@@ -364,7 +370,7 @@ void Refine::stopRevolve()
 
 void Refine::connectCan()
 {
-    if (_menu_init_can->isChecked()) {
+    if (_menu_init_connect->isChecked()) {
         if (_revolve.connectCan()) {
             emitMessage(Re::Info, tr("连接成功"));
         } else {
@@ -379,7 +385,7 @@ void Refine::connectCan()
                         tr("断开失败，检查CAN占用或连接情况"));
         }
     }
-    _menu_init_can->setChecked(_revolve.can().isConnected());
+    _menu_init_connect->setChecked(_revolve.can().isConnected());
 }
 
 void Refine::fullScreen()

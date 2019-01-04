@@ -101,6 +101,9 @@ void ToolBox::setup()
                 QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first(),
                 tr("HEX文件(*.hex);;s19烧录文件(*.s19)")
         );
+        if (file.isEmpty()) {
+            return;
+        }
         if (_file_name->findText(file, Qt::MatchFixedString) == -1) { //找出返回的是index
             _file_name->addItem(file);
         }

@@ -32,6 +32,8 @@
 #include "Message.hpp"
 #include "BaudRate.hpp"
 #include "Feedback.hpp"
+#include "Manual.hpp"
+#include "CanConfig.hpp"
 
 //class OutputBox;
 class Information;
@@ -81,8 +83,8 @@ private:
     QAction *_menu_view_sketchmsec_100;
     QAction *_menu_view_smooth;
     QMenu *_menu_init;
-    QAction *_menu_init_option;
-    QAction *_menu_init_can;
+    QAction *_menu_init_canconfig;
+    QAction *_menu_init_connect;
     QMenu *_menu_control;
     QAction *_menu_control_start;
     QAction *_menu_control_pause;
@@ -95,7 +97,7 @@ private:
     QAction *_menu_tools_timers[3];
     QAction *_menu_tools_wakeup;
     QMenu *_menu_help;
-    QAction *_menu_help_tutorial;
+    QAction *_menu_help_manual;
     QAction *_menu_help_changelog;
     QAction *_menu_help_license;
     QAction *_menu_help_feedback;
@@ -115,6 +117,8 @@ private:
     About *_about;
     Settings *_settings;
     CurveEditor *_editor;
+    Manual *_manual;
+    CanConfig *_canconfig;
 
     StatusBar *_statusbar;
     BaudRate *_baud_rate;
