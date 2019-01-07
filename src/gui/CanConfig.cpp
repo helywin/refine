@@ -3,6 +3,7 @@
 //
 
 #include <QtWidgets/QHeaderView>
+#include <QtCore/QDebug>
 #include "CanConfig.hpp"
 #include "CanDefines.hpp"
 
@@ -17,8 +18,7 @@ void CanConfig::setup()
 {
     QFont font("微软雅黑", 9);
     QFont font_combo("微软雅黑", 10);
-    setFixedWidth(650);
-//    resize(600, 450);
+    setMinimumWidth(750);
     setWindowTitle(tr("配置CAN"));
     _layout = new QHBoxLayout(this);
     setLayout(_layout);
@@ -147,49 +147,123 @@ void CanConfig::setup()
     _layout->addWidget(_id);
     _id_layout = new QGridLayout(_id);
     _id->setLayout(_id_layout);
-    _send_id_list = new QTableWidget(_id);
-    _recv_id_list = new QTableWidget(_id);
-    _send_id = new QLineEdit(_id);
-    _recv_id = new QLineEdit(_id);
+
+    _send_id = new HexInput(3, _id);
+    _recv_id = new HexInput(3, _id);
     _add_send = new QPushButton(tr("添加发送ID"), this);
     _add_recv = new QPushButton(tr("添加接收ID"), this);
-    _send_id_list->setMinimumSize(150, 300);
-    _recv_id_list->setMinimumSize(150, 300);
-    _send_id_list->setColumnCount(2);
-    _recv_id_list->setColumnCount(2);
-    _send_id_list->setHorizontalHeaderLabels({tr("发送ID"), tr("备注")});
-    _recv_id_list->setHorizontalHeaderLabels({tr("接收ID"), tr("备注")});
-    _send_id_list->setColumnWidth(0, 60);
-    _send_id_list->setColumnWidth(1, 85);
-    _recv_id_list->setColumnWidth(0, 60);
-    _recv_id_list->setColumnWidth(1, 85);
-    _send_id_list->resize(150, 300);
-    _recv_id_list->resize(150, 300);
-    _send_id_list->setFont(font_combo);
-    _recv_id_list->setFont(font_combo);
-    _send_id_list->verticalHeader()->hide();
-    _recv_id_list->verticalHeader()->hide();
-    _send_id_list->setSelectionMode(QAbstractItemView::SingleSelection);
-    _recv_id_list->setSelectionMode(QAbstractItemView::SingleSelection);
-    _send_id_list->setSelectionBehavior(QAbstractItemView::SelectRows);
-    _recv_id_list->setSelectionBehavior(QAbstractItemView::SelectRows);
-    _send_id_list->setRowCount(2);
-    _send_id_list->setItem(0, 0, new QTableWidgetItem("0x611"));
-    _send_id_list->setItem(0, 1, new QTableWidgetItem("引导程序"));
+    _send_panel = new QScrollArea(_id);
+    _recv_panel = new QScrollArea(_id);
+    _send_list = new QFrame(_send_panel);
+    _recv_list = new QFrame(_recv_panel);
+    _send_list->setContentsMargins(0,0,0,0);
+    _recv_list->setContentsMargins(0,0,0,0);
+    _send_panel->setWidget(_send_list);
+    _recv_panel->setWidget(_recv_list);
+    _send_layout = new QVBoxLayout(_send_list);
+    _recv_layout = new QVBoxLayout(_recv_list);
+    _send_layout->setSpacing(0);
+    _recv_layout->setSpacing(0);
+    _send_layout->setContentsMargins(5,5,5,5);
+    _recv_layout->setContentsMargins(5,5,5,5);
+    _send_list->setLayout(_send_layout);
+    _recv_list->setLayout(_recv_layout);
+    _send_list->setFont(font_combo);
+    _recv_list->setFont(font_combo);
+    _send_list_data.append(Id(0x611, tr("引导程序"), true));
+    _send_list_data.append(Id(0x333, tr("引导程序"), false));
+    _send_list_data.append(Id(0x333, tr("引导程序"), false));
+    _send_list_data.append(Id(0x333, tr("引导程序"), false));
+    _send_list_data.append(Id(0x333, tr("引导程序"), false));
+    _send_list_data.append(Id(0x333, tr("引导程序"), false));
+    _send_list_data.append(Id(0x333, tr("引导程序"), false));
+    _send_list->setFixedSize(180, 400);
+    _recv_list->setFixedSize(180, 400);
 
+    _send_spacer = new QWidget(_send_list);
+    _recv_spacer = new QWidget(_recv_list);
+    placeSpacer();
     _send_id->setFont(font_combo);
     _recv_id->setFont(font_combo);
     _add_send->setFont(font_combo);
     _add_recv->setFont(font_combo);
-    _id_layout->addWidget(_send_id_list, 0, 0);//, Qt::AlignVCenter | Qt::AlignHCenter);
-    _id_layout->addWidget(_recv_id_list, 0, 1);//, Qt::AlignVCenter | Qt::AlignHCenter);
-    _id_layout->addWidget(_send_id, 1, 0);//, Qt::AlignVCenter | Qt::AlignHCenter);
-    _id_layout->addWidget(_recv_id, 1, 1);//, Qt::AlignVCenter | Qt::AlignHCenter);
-    _id_layout->addWidget(_add_send, 2, 0, Qt::AlignHCenter);
-    _id_layout->addWidget(_add_recv, 2, 1, Qt::AlignHCenter);
-    _id_layout->setRowStretch(0, 1);
-    _id_layout->setRowStretch(1, 0);
+    _send_label = new QLabel(tr("发送ID"), _id);
+    _recv_label = new QLabel(tr("接收ID"), _id);
+    _id_layout->addWidget(_send_label, 0, 0, Qt::AlignHCenter);
+    _id_layout->addWidget(_recv_label, 0, 1, Qt::AlignHCenter);
+    _id_layout->addWidget(_send_panel, 1, 0);
+    _id_layout->addWidget(_recv_panel, 1, 1);
+    _id_layout->addWidget(_send_id, 2, 0);//, Qt::AlignVCenter | Qt::AlignHCenter);
+    _id_layout->addWidget(_recv_id, 2, 1);//, Qt::AlignVCenter | Qt::AlignHCenter);
+    _id_layout->addWidget(_add_send, 3, 0, Qt::AlignHCenter);
+    _id_layout->addWidget(_add_recv, 3, 1, Qt::AlignHCenter);
+    _id_layout->setRowStretch(0, 0);
+    _id_layout->setRowStretch(1, 1);
     _id_layout->setRowStretch(2, 0);
+    _id_layout->setRowStretch(3, 0);
 //    _id_layout->setHorizontalSpacing(5);
+    updateId();
 
 }
+
+void CanConfig::updateId()
+{
+    removeSpacer();
+    for (auto p : _send_widget_list) {
+        delete p;
+    }
+    _send_widget_list.clear();
+    int h = 0;
+    for (const auto &iter : _send_list_data) {
+        auto p = new QCheckBox(iter.title(), _send_list);
+        p->setChecked(iter.isChecked());
+        _send_layout->addWidget(p, 0);
+        _send_widget_list.append(p);
+        h = p->height();
+        qDebug() << "CanConfig::updateId()";
+    }
+    _send_list->setFixedHeight(10 + h * _send_list_data.size());
+    placeSpacer();
+//    _send_layout.widget
+}
+
+void CanConfig::placeSpacer()
+{
+    _send_layout->addWidget(_send_spacer, 1, Qt::AlignVCenter);
+    _recv_layout->addWidget(_recv_spacer, 1, Qt::AlignVCenter);
+}
+
+void CanConfig::removeSpacer()
+{
+    _send_layout->removeWidget(_send_spacer);
+    _recv_layout->removeWidget(_recv_spacer);
+}
+/*
+_send_id_list = new QTableWidget(_id);
+_recv_id_list = new QTableWidget(_id);
+_send_id_list->setMinimumSize(150, 300);
+_recv_id_list->setMinimumSize(150, 300);
+_send_id_list->setColumnCount(2);
+_recv_id_list->setColumnCount(2);
+_send_id_list->setHorizontalHeaderLabels({tr("发送ID"), tr("备注")});
+_recv_id_list->setHorizontalHeaderLabels({tr("接收ID"), tr("备注")});
+_send_id_list->setColumnWidth(0, 60);
+_send_id_list->setColumnWidth(1, 85);
+_recv_id_list->setColumnWidth(0, 60);
+_recv_id_list->setColumnWidth(1, 85);
+_send_id_list->resize(150, 300);
+_recv_id_list->resize(150, 300);
+_send_id_list->setFont(font_combo);
+_recv_id_list->setFont(font_combo);
+_send_id_list->verticalHeader()->hide();
+_recv_id_list->verticalHeader()->hide();
+_send_id_list->setSelectionMode(QAbstractItemView::SingleSelection);
+_recv_id_list->setSelectionMode(QAbstractItemView::SingleSelection);
+_send_id_list->setSelectionBehavior(QAbstractItemView::SelectRows);
+_recv_id_list->setSelectionBehavior(QAbstractItemView::SelectRows);
+_send_id_list->setRowCount(2);
+_send_id_list->setItem(0, 0, new QTableWidgetItem("0x611"));
+_send_id_list->setItem(0, 1, new QTableWidgetItem("引导程序"));
+_id_layout->addWidget(_send_id_list, 0, 0);//, Qt::AlignVCenter | Qt::AlignHCenter);
+_id_layout->addWidget(_recv_id_list, 0, 1);//, Qt::AlignVCenter | Qt::AlignHCenter);
+*/
