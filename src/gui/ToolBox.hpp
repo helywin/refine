@@ -45,7 +45,7 @@ private:
     QWidget *_content;
 
     Revolve *_revolve;
-
+    bool _command_clear = true;
 public:
     explicit ToolBox(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
@@ -54,6 +54,7 @@ public:
 
 public slots:
     void getCanMessage(const QString &msg);
+    void setCommandPrefix(const QStringList &prefix);
 
 private:
     void setup();

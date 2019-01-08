@@ -11,18 +11,21 @@ class Command : public QLineEdit
 {
 Q_OBJECT
 private:
+    QStringList _prefixs = QStringList({"611"});
     bool _upper_cased = true;
-    bool _clear_flag = true;
     QList<QString> _sequence;
     int _index = -1;
+    QFont _font = QFont("微软雅黑", 10);
 public:
     explicit Command(QWidget *parent = nullptr);
 
+public slots:
+    void setPrefix(const QStringList &prefix);
 private:
     void setup();
 protected:
     void keyPressEvent(QKeyEvent *event) override;
-
+    void paintEvent(QPaintEvent *event) override;
 private slots:
     void commandChange(const QString &string);
 

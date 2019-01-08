@@ -545,7 +545,6 @@ bool Revolve::burnProgram(const QString &file)
 
 void Revolve::getTransformedCanMessage(const QString &message)
 {
-    _can_message.append(message);
     emit getCanMessage(message);
 }
 
@@ -624,6 +623,28 @@ bool Revolve::abortBurning()
     return false;
 }
 
+bool Revolve::startCan()
+{
+    if(!_can.start()) {
+        return false;
+    }
+    _collect.begin();
+    _transform.begin();
+    _transmit.begin();
+    return true;
+}
+
+bool Revolve::resetCan()
+{
+    if (!_can.reset()) {
+        return false;
+    }
+    _collect.stop();
+    _transform.stop();
+    _transmit.stop();
+    return true;
+}
+
 bool Revolve::connectCan()
 {
     if (_can.isConnected()) {
@@ -640,13 +661,10 @@ bool Revolve::connectCan()
 
 bool Revolve::disConnectCan()
 {
-    if (!_can.close()) {
-        return false;
-    }
     _collect.stop();
     _transform.stop();
     _transmit.stop();
-    return true;
+    return _can.close();
 }
 
 

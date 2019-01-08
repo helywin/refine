@@ -20,8 +20,12 @@
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QFrame>
+#include <QtWidgets/QAction>
+#include <QtGui/QRegExpValidator>
 #include "Message.hpp"
 #include "HexInput.hpp"
+
+class Revolve;
 
 class CanConfig : public QDialog, public Message
 {
@@ -30,31 +34,46 @@ public:
     class Id
     {
     private:
-        int _data;
+        unsigned int _data;
         QString _remark;
         bool _is_checked;
+        QCheckBox *_widget = nullptr;
     public:
-        explicit Id(int data, const QString &remark = QString(), bool is_checked = false) :
+        explicit Id(unsigned int data, const QString &remark = QString(), bool is_checked = false) :
                 _data(data), _remark(remark), _is_checked(is_checked)
         {}
 
-        inline int data() const { return _data;}
+        inline unsigned int data() const
+        { return _data; }
 
-        inline QString remark() const { return _remark; }
+        inline QString dataStr() const
+        { return QString("0x%1").arg(_data, 3, 16, QChar('0')); }
 
-        inline bool isChecked() const { return _is_checked;}
+        inline QString remark() const
+        { return _remark; }
 
-        inline void setData(int data) { _data = data; }
+        inline bool isChecked() const
+        { return _is_checked; }
 
-        inline void setRemark(const QString &remark) { _remark = remark; }
+        inline void setData(unsigned int data)
+        { _data = data; }
 
-        inline void setChecked(bool checked) { _is_checked = checked; }
+        inline void setRemark(const QString &remark)
+        { _remark = remark; }
 
-        QString title() const {
-            return QString("0x%1(%2)").arg(_data, 3, 16, QChar('0')).arg(_remark);
+        inline void setChecked(bool checked)
+        { _is_checked = checked; }
+
+        QString title() const
+        {
+            return QString("0x%1 - %2").arg(_data, 3, 16, QChar('0')).arg(_remark);
         }
+
+        inline QCheckBox *&widget()
+        { return _widget; }
     };
 private:
+    Revolve *_revolve;
     QHBoxLayout *_layout;
     QGroupBox *_param;
     QVBoxLayout *_param_layout;
@@ -72,6 +91,7 @@ private:
     QComboBox *_device_index;
     QComboBox *_device_channel;
     QComboBox *_baudrate;
+    QRegExpValidator *_acc_validator;
     QComboBox *_acc_code;
     QComboBox *_acc_mask;
     QComboBox *_filter;
@@ -84,36 +104,62 @@ private:
     QPushButton *_connect;
     QPushButton *_reset;
     QPushButton *_close;
+    QPushButton *_code;
 
     QGroupBox *_id;
     QGridLayout *_id_layout;
     QLabel *_send_label;
     QLabel *_recv_label;
+    QLabel *_burn_label;
     QScrollArea *_send_panel;
     QFrame *_send_list;
     QVBoxLayout *_send_layout;
-    QWidget *_send_spacer;
-    QList<QCheckBox *> _send_widget_list;
     QList<Id> _send_list_data;
     QScrollArea *_recv_panel;
     QFrame *_recv_list;
     QVBoxLayout *_recv_layout;
-    QWidget *_recv_spacer;
-    QList<QCheckBox *> _recv_widget_list;
     QList<Id> _recv_list_data;
+    QScrollArea *_burn_panel;
+    QFrame *_burn_list;
+    QVBoxLayout *_burn_layout;
+    QList<Id> _burn_list_data;
     HexInput *_send_id;
     HexInput *_recv_id;
+    HexInput *_burn_id;
     QPushButton *_add_send;
     QPushButton *_add_recv;
+    QPushButton *_add_burn;
+
+    QAction *_connect_can;
 
 public:
-    explicit CanConfig(Message *message = nullptr, QWidget *parent = nullptr);
+    explicit CanConfig(Revolve *revolve, Message *message = nullptr, QWidget *parent = nullptr);
 
+    inline QAction *connectCanAction() { return _connect_can; }
+
+public slots:
+    void openCan();
+    void initCan();
+    void startCan();
+    void connectCan();
+    void connectCanByMenu();
+    void resetCan();
+    void closeCan();
+    void reportCan();
 private:
     void setup();
-    void updateId();
-    void placeSpacer();
-    void removeSpacer();
+    void addSendId(unsigned int id, const QString &remark, bool checked);
+    void addRecvId(unsigned int id, const QString &remark, bool checked);
+    void addBurnId(unsigned int id, const QString &remark, bool checked);
+private slots:
+    void sendListChanged(int state);
+    void recvListChanged(int state);
+    void burnListChanged(int state);
+    void addSendIdPushed();
+    void addRecvIdPushed();
+    void addBurnIdPushed();
+signals:
+    void sendIdChanged(const QStringList &id);
 };
 
 

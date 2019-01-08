@@ -39,7 +39,6 @@ void ToolBox::setup()
     _messages->addTab(_text, tr("CAN信息"));
     _messages->addTab(_message_panel, "软件信息");
     _command = new Command(_panel);
-    _command->setFont(font);
     _burn_frame = new QGroupBox(tr("烧录"), _panel);
     _burn_layout = new QVBoxLayout(_burn_frame);
     _burn_layout->setContentsMargins(0, 0, 0, 0);
@@ -114,8 +113,6 @@ void ToolBox::setup()
             this,
             [=](int index) {
                 _revolve->setTransmitMsec((unsigned long) _msec->itemData(index).toUInt());
-//                qDebug() << "CommandPanel::setup() msec_index: "
-//                         << _msec->itemData(index).toUInt();
             }
     );
 
@@ -123,8 +120,6 @@ void ToolBox::setup()
             this,
             [=](int index) {
                 _revolve->setTransmitFrameNum(_frames->itemData(index).toInt());
-//                qDebug() << "CommandPanel::setup() frame_index: "
-//                         << _frames->itemData(index).toInt();
             }
     );
 
@@ -146,7 +141,17 @@ void ToolBox::getCanMessage(const QString &msg)
 
 void ToolBox::sendCanMessage(const QString &msg)
 {
-    _revolve->sendCommand(msg);
-    _text->insertMessage(msg + "\n", CanMessage::Send);
+    if (_revolve->can().status() & Can::Started) {
+        _revolve->sendCommand(msg);
+        _text->insertMessage(msg + "\n", CanMessage::Send);
+        if (_command_clear) {
+            _command->setText(QString());
+        }
+    }
+}
+
+void ToolBox::setCommandPrefix(const QStringList &prefix)
+{
+    _command->setPrefix(prefix);
 }
 

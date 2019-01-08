@@ -39,7 +39,7 @@ private:
     const static char _build = 1;   //! \brief 构建版本
     const static char _year = 19;   //! \brief 构建时间，年
     const static char _month = 1;  //! \brief 构建时间，月
-    const static char _day = 4;    //! \brief 构建时间，日
+    const static char _day = 8;    //! \brief 构建时间，日
     const static enum Identifier _identifier = Identifier::Alpha; //! \brief 版本标识
 
 public:

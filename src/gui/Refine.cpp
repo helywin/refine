@@ -125,8 +125,8 @@ void Refine::setup()
              tr("设置CAN连接配置"));
     _menu_init_canconfig->setIcon(QIcon(":res/icons/config.png"));
     _menu_init->addSeparator();
-    initMenu(_menu_init_connect, tr("连接CAN(&C)"), _menu_init,
-             tr("连接/断开CAN"), true);
+//    initMenu(_menu_init_connect, tr("连接CAN(&C)"), _menu_init,
+//             tr("连接/断开CAN"), true);
     initMenu(_menu_control, tr("控制(&C)"), _menubar);
     initMenu(_menu_control_start, tr("开始(&S)"), _menu_control,
              tr("开始采集曲线"));
@@ -230,7 +230,7 @@ void Refine::setup()
     _display->addDock(_tribebox);
     _display->addDock(_markbox);
     setCurveViewerActions();
-    
+
     _statusbar = new StatusBar(this);
     _baud_rate = new BaudRate(_statusbar);
     _statusbar->addPermanentWidget(_baud_rate);
@@ -245,7 +245,8 @@ void Refine::setup()
 
     _settings = new Settings(this);
     _manual = new Manual(this);
-    _canconfig = new CanConfig(this, this);
+    _canconfig = new CanConfig(&_revolve, this, this);
+    _menu_init->addAction(_canconfig->connectCanAction());
 
     _editor = new CurveEditor(&_revolve.curve(), this);
     _revolve.setCurveEditor(_editor);
@@ -285,8 +286,8 @@ void Refine::setup()
             this, &Refine::fullScreen, Qt::DirectConnection);
     connect(_menu_file_exit, &QAction::triggered,
             this, &Refine::close, Qt::DirectConnection);
-    connect(_menu_init_connect, &QAction::triggered,
-            this, &Refine::connectCan, Qt::DirectConnection);
+//    connect(_menu_init_connect, &QAction::triggered,
+//            this, &Refine::connectCan, Qt::DirectConnection);
     connect(_menu_tool_editcurve, &QAction::triggered,
             _editor, &CurveEditor::show, Qt::DirectConnection);
     connect(_menu_control_start, &QAction::triggered,
@@ -345,6 +346,8 @@ void Refine::setup()
             _manual, &Manual::show);
     connect(_menu_init_canconfig, &QAction::triggered,
             _canconfig, &CanConfig::show);
+    connect(_canconfig, &CanConfig::sendIdChanged,
+            _toolbox, &ToolBox::setCommandPrefix);
 }
 
 void Refine::setLanguage()

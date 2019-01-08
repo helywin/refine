@@ -81,7 +81,6 @@ private:
     CurveEditor *_curve_editor;
     QAction *_menu_init_can;
 
-    QStringList _can_message;
     bool _communicate_finished;
     bool _transmit_finished;
 
@@ -162,8 +161,11 @@ public:
     void sendCommand(const QString &cmd);
     bool burnProgram(const QString &file);
 
-    inline const QStringList &canMessage() const
-    { return _can_message; }
+    inline void setSendId(const QVector<unsigned int> &ids)
+    { _communicate.setSendId(ids); }
+
+    inline void setBurnId(unsigned int id)
+    { _communicate.setBurnId(id); }
 
     inline void clearCanMessage()
     {}
@@ -171,6 +173,8 @@ public:
     void setTransmitMsec(unsigned long msec);
     void setTransmitFrameNum(int frame_num);
 
+    bool startCan();
+    bool resetCan();
     bool connectCan();
     bool disConnectCan();
 

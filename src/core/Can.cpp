@@ -11,16 +11,6 @@
 #include "SendBuffer.hpp"
 #include "Can.hpp"
 
-/*!
- * @brief 构造函数
- * @details 默认参数配置
- */
-Can::Config::Config() :
-        _device_type(Cd::DeviceType::USBCAN2),
-        _device_index(0),
-        _device_channel(0),
-        _baud_rate(Cd::BaudRate::BR_500Kbps),
-        _config({0x00000000, 0xFFFFFFFF, 0, 0, 0x00, 0x1C, 0}) {}
 
 /*!
  * @brief 配置波特率
@@ -54,13 +44,7 @@ bool Can::open()
         _status = Status::Opened;
         return true;
     } else {
-        getError();
-        if (_error_info.errorCode() == Cd::Error::DeviceOpened) {
-            return true;
-        } else {
-            reportError();
-            return false;
-        }
+        return false;
     }
 }
 
@@ -79,8 +63,6 @@ bool Can::init()
         _status = Status::Initialized;
         return true;
     } else {
-        getError();
-        reportError();
         return false;
     }
 }
@@ -99,8 +81,6 @@ bool Can::start()
         _status = Status::Started;
         return true;
     } else {
-        getError();
-        reportError();
         return false;
     }
 }
@@ -130,16 +110,15 @@ bool Can::connect()
  */
 bool Can::close()
 {
-    unsigned long flag = 0;
+    unsigned long flag;
     flag = VCI_CloseDevice(_config.deviceType(),
                            _config.deviceIndex());
-    _status = Status::Closed;
-    if (!flag) {
-        getError();
-        reportError();
+    if (flag) {
+        _status = Status::Closed;
+        return true;
+    } else {
         return false;
     }
-    return true;
 }
 
 /*!
@@ -148,17 +127,15 @@ bool Can::close()
  */
 bool Can::reset()
 {
-    unsigned long flag = 0;
+    unsigned long flag;
     flag = VCI_ResetCAN(_config.deviceType(),
                         _config.deviceIndex(),
                         _config.deviceChannel());
-    if (!flag) {
-        getError();
-        reportError();
-        return false;
-    } else {
+    if (flag) {
         _status = Status::Initialized;
         return true;
+    } else {
+        return false;
     }
 }
 
@@ -283,7 +260,7 @@ bool Can::isConnected()
         getError();
 //        reportError();
     }
-    return (bool)flag;
+    return (bool) flag;
 }
 
 /*!
@@ -392,7 +369,7 @@ void Can::reportError()
             str = QString("数据发得太快，Socket缓冲区满了");
             break;
         default:
-            str = QString("读取不到错误码，确认连接好CAN盒");
+            str = QString("没有错误码，也可能没启动CAN");
             break;
     }
     emitMessage(Re::Warning, str);
@@ -401,6 +378,16 @@ void Can::reportError()
 int Can::receivedNumber()
 {
     return static_cast<int>(VCI_GetReceiveNum(_config.deviceType(),
-                             _config.deviceIndex(),
-                             _config.deviceChannel()));
+                                              _config.deviceIndex(),
+                                              _config.deviceChannel()));
+}
+
+bool Can::updateConfig()
+{
+    if (isConnected()) {
+        return false;
+    } else {
+        _config = _config_latest;
+        return true;
+    }
 }

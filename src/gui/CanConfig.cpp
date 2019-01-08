@@ -6,10 +6,12 @@
 #include <QtCore/QDebug>
 #include "CanConfig.hpp"
 #include "CanDefines.hpp"
+#include "Revolve.hpp"
 
-CanConfig::CanConfig(Message *message, QWidget *parent) :
+CanConfig::CanConfig(Revolve *revolve, Message *message, QWidget *parent) :
         QDialog(parent),
-        Message(message)
+        Message(message),
+        _revolve(revolve)
 {
     setup();
 }
@@ -79,6 +81,7 @@ void CanConfig::setup()
     _device_type->addItem(tr("PCI9820"), Cd::PCI9820);
     _device_type->addItem(tr("CAN232"), Cd::CAN232);
     _device_type->addItem(tr("PCI5110"), Cd::PCI5110);
+//    _device_type.item
     _device_type->setCurrentIndex(3);
     _device_index->addItem(tr("0"), 0);
     _device_index->addItem(tr("1"), 1);
@@ -108,9 +111,14 @@ void CanConfig::setup()
     _baudrate->setCurrentIndex(11);
     _acc_code->addItem(tr("0xFFFFFFFF"), 0xFFFFFFFF);
     _acc_code->addItem(tr("0x00000000"), 0x00000000);
+    _acc_code->setEditable(true);
+    _acc_validator = new QRegExpValidator(QRegExp("0x[0-9a-fA-F]{0,8}"));
+    _acc_code->setValidator(_acc_validator);
     _acc_code->setCurrentIndex(0);
     _acc_mask->addItem(tr("0xFFFFFFFF"), 0xFFFFFFFF);
     _acc_mask->addItem(tr("0x00000000"), 0x00000000);
+    _acc_mask->setEditable(true);
+    _acc_mask->setValidator(_acc_validator);
     _acc_mask->setCurrentIndex(1);
     _filter->addItem(tr("单滤波"), Cd::Single);
     _filter->addItem(tr("双滤波"), Cd::Double);
@@ -128,18 +136,21 @@ void CanConfig::setup()
     _connect = new QPushButton(tr("快速启动"), _control);
     _reset = new QPushButton(tr("复位"), _control);
     _close = new QPushButton(tr("关闭"), _control);
+    _code = new QPushButton(tr("错误码"), _control);
     _open->setFont(font_combo);
     _init->setFont(font_combo);
     _start->setFont(font_combo);
     _connect->setFont(font_combo);
     _reset->setFont(font_combo);
     _close->setFont(font_combo);
+    _code->setFont(font_combo);
     _control_layout->addWidget(_open, 0, 0, Qt::AlignVCenter | Qt::AlignHCenter);
     _control_layout->addWidget(_init, 0, 1, Qt::AlignVCenter | Qt::AlignHCenter);
     _control_layout->addWidget(_start, 0, 2, Qt::AlignVCenter | Qt::AlignHCenter);
     _control_layout->addWidget(_connect, 1, 0, Qt::AlignVCenter | Qt::AlignHCenter);
     _control_layout->addWidget(_reset, 1, 1, Qt::AlignVCenter | Qt::AlignHCenter);
     _control_layout->addWidget(_close, 1, 2, Qt::AlignVCenter | Qt::AlignHCenter);
+    _control_layout->addWidget(_code, 2, 0, Qt::AlignVCenter | Qt::AlignHCenter);
     _param_layout->addWidget(new QWidget(_param), 1);
 
     _id = new QGroupBox(tr("ID选择"), this);
@@ -150,120 +161,325 @@ void CanConfig::setup()
 
     _send_id = new HexInput(3, _id);
     _recv_id = new HexInput(3, _id);
+    _burn_id = new HexInput(3, _id);
     _add_send = new QPushButton(tr("添加发送ID"), this);
     _add_recv = new QPushButton(tr("添加接收ID"), this);
+    _add_burn = new QPushButton(tr("添加烧录ID"), this);
     _send_panel = new QScrollArea(_id);
     _recv_panel = new QScrollArea(_id);
+    _burn_panel = new QScrollArea(_id);
     _send_list = new QFrame(_send_panel);
     _recv_list = new QFrame(_recv_panel);
-    _send_list->setContentsMargins(0,0,0,0);
-    _recv_list->setContentsMargins(0,0,0,0);
+    _burn_list = new QFrame(_burn_panel);
+    _send_list->setContentsMargins(0, 0, 0, 0);
+    _recv_list->setContentsMargins(0, 0, 0, 0);
+    _burn_list->setContentsMargins(0, 0, 0, 0);
     _send_panel->setWidget(_send_list);
     _recv_panel->setWidget(_recv_list);
+    _burn_panel->setWidget(_burn_list);
     _send_layout = new QVBoxLayout(_send_list);
     _recv_layout = new QVBoxLayout(_recv_list);
+    _burn_layout = new QVBoxLayout(_burn_list);
     _send_layout->setSpacing(0);
     _recv_layout->setSpacing(0);
-    _send_layout->setContentsMargins(5,5,5,5);
-    _recv_layout->setContentsMargins(5,5,5,5);
+    _burn_layout->setSpacing(0);
+    _send_layout->setContentsMargins(5, 0, 5, 0);
+    _recv_layout->setContentsMargins(5, 0, 5, 0);
+    _burn_layout->setContentsMargins(5, 0, 5, 0);
     _send_list->setLayout(_send_layout);
     _recv_list->setLayout(_recv_layout);
+    _burn_list->setLayout(_burn_layout);
     _send_list->setFont(font_combo);
     _recv_list->setFont(font_combo);
-    _send_list_data.append(Id(0x611, tr("引导程序"), true));
-    _send_list_data.append(Id(0x333, tr("引导程序"), false));
-    _send_list_data.append(Id(0x333, tr("引导程序"), false));
-    _send_list_data.append(Id(0x333, tr("引导程序"), false));
-    _send_list_data.append(Id(0x333, tr("引导程序"), false));
-    _send_list_data.append(Id(0x333, tr("引导程序"), false));
-    _send_list_data.append(Id(0x333, tr("引导程序"), false));
-    _send_list->setFixedSize(180, 400);
-    _recv_list->setFixedSize(180, 400);
+    _burn_list->setFont(font_combo);
+    _send_list->setFixedWidth(150);
+    _recv_list->setFixedWidth(150);
+    _burn_list->setFixedWidth(150);
 
-    _send_spacer = new QWidget(_send_list);
-    _recv_spacer = new QWidget(_recv_list);
-    placeSpacer();
     _send_id->setFont(font_combo);
     _recv_id->setFont(font_combo);
+    _burn_id->setFont(font_combo);
     _add_send->setFont(font_combo);
     _add_recv->setFont(font_combo);
+    _add_burn->setFont(font_combo);
     _send_label = new QLabel(tr("发送ID"), _id);
     _recv_label = new QLabel(tr("接收ID"), _id);
+    _burn_label = new QLabel(tr("烧录ID"), _id);
     _id_layout->addWidget(_send_label, 0, 0, Qt::AlignHCenter);
     _id_layout->addWidget(_recv_label, 0, 1, Qt::AlignHCenter);
+    _id_layout->addWidget(_burn_label, 0, 2, Qt::AlignHCenter);
     _id_layout->addWidget(_send_panel, 1, 0);
     _id_layout->addWidget(_recv_panel, 1, 1);
+    _id_layout->addWidget(_burn_panel, 1, 2);
     _id_layout->addWidget(_send_id, 2, 0);//, Qt::AlignVCenter | Qt::AlignHCenter);
     _id_layout->addWidget(_recv_id, 2, 1);//, Qt::AlignVCenter | Qt::AlignHCenter);
+    _id_layout->addWidget(_burn_id, 2, 2);//, Qt::AlignVCenter | Qt::AlignHCenter);
     _id_layout->addWidget(_add_send, 3, 0, Qt::AlignHCenter);
     _id_layout->addWidget(_add_recv, 3, 1, Qt::AlignHCenter);
+    _id_layout->addWidget(_add_burn, 3, 2, Qt::AlignHCenter);
     _id_layout->setRowStretch(0, 0);
     _id_layout->setRowStretch(1, 1);
     _id_layout->setRowStretch(2, 0);
     _id_layout->setRowStretch(3, 0);
-//    _id_layout->setHorizontalSpacing(5);
-    updateId();
 
+    addSendId(0x611, tr("引导程序"), true);
+    addSendId(0x333, tr("引导程序"), false);
+    addRecvId(0x613, tr("引导程序"), true);
+    addRecvId(0x335, tr("引导程序"), true);
+    addBurnId(0x611, tr("引导程序"), true);
+    addBurnId(0x333, tr("引导程序"), false);
+
+    _connect_can = new QAction(tr("连接CAN(&C)"), this);
+    _connect_can->setCheckable(true);
+    _connect_can->setStatusTip(tr("连接/断开CAN"));
+
+    connect(_add_send, &QPushButton::clicked,
+            this, &CanConfig::addSendIdPushed);
+    connect(_add_recv, &QPushButton::clicked,
+            this, &CanConfig::addRecvIdPushed);
+    connect(_add_burn, &QPushButton::clicked,
+            this, &CanConfig::addBurnIdPushed);
+    connect(_open, &QPushButton::clicked, this, &CanConfig::openCan);
+    connect(_init, &QPushButton::clicked, this, &CanConfig::initCan);
+    connect(_start, &QPushButton::clicked, this, &CanConfig::startCan);
+    connect(_connect, &QPushButton::clicked, this, &CanConfig::connectCan);
+    connect(_reset, &QPushButton::clicked, this, &CanConfig::resetCan);
+    connect(_close, &QPushButton::clicked, this, &CanConfig::closeCan);
+    connect(_code, &QPushButton::clicked, this, &CanConfig::reportCan);
+    connect(_connect_can, &QAction::triggered, this, &CanConfig::connectCanByMenu);
 }
 
-void CanConfig::updateId()
+void CanConfig::sendListChanged(int state)
 {
-    removeSpacer();
-    for (auto p : _send_widget_list) {
-        delete p;
+    Q_UNUSED(state);
+    QStringList prefixs;
+    QVector<unsigned int> ids;
+    for (auto &iter : _send_list_data) {
+        iter.setChecked(iter.widget()->isChecked());
+        if (iter.widget()->isChecked()) {
+            prefixs.append(QString("%1").arg(iter.data(), 3, 16, QChar('0')));
+            ids.append(iter.data());
+        }
     }
-    _send_widget_list.clear();
-    int h = 0;
+    _revolve->setSendId(ids);
+    emit sendIdChanged(prefixs);
+}
+
+void CanConfig::recvListChanged(int state)
+{
+    Q_UNUSED(state);
+}
+
+void CanConfig::addSendId(unsigned int id, const QString &remark, bool checked)
+{
+    _send_list_data.append(Id(id, remark, checked));
+    Id &e = _send_list_data.last();
+    e.widget() = new QCheckBox(e.title(), _send_list);
+    connect(e.widget(), &QCheckBox::stateChanged,
+            this, &CanConfig::sendListChanged);
+    _send_list->setFixedHeight(e.widget()->height() * _send_list_data.size());
+    _send_layout->insertWidget(_send_list_data.size(), e.widget(), Qt::AlignVCenter);
+    e.setChecked(true);
+    if (checked) {
+        e.setChecked(true);
+        e.widget()->setCheckState(Qt::Checked);
+    } else {
+        e.setChecked(false);
+        e.widget()->setCheckState(Qt::Unchecked);
+    }
+}
+
+void CanConfig::addRecvId(unsigned int id, const QString &remark, bool checked)
+{
+    _recv_list_data.append(Id(id, remark, checked));
+    Id &e = _recv_list_data.last();
+    e.widget() = new QCheckBox(e.title(), _recv_list);
+    connect(e.widget(), &QCheckBox::stateChanged,
+            this, &CanConfig::recvListChanged);
+    _recv_list->setFixedHeight(e.widget()->height() * _recv_list_data.size());
+    _recv_layout->insertWidget(_recv_list_data.size(), e.widget(), Qt::AlignVCenter);
+    if (checked) {
+        e.setChecked(true);
+        e.widget()->setCheckState(Qt::Checked);
+    } else {
+        e.setChecked(false);
+        e.widget()->setCheckState(Qt::Unchecked);
+    }
+}
+
+void CanConfig::addSendIdPushed()
+{
+    if (_send_id->text().isEmpty()) {
+        return;
+    }
+    unsigned int id = _send_id->text().toUInt(nullptr, 16);
     for (const auto &iter : _send_list_data) {
-        auto p = new QCheckBox(iter.title(), _send_list);
-        p->setChecked(iter.isChecked());
-        _send_layout->addWidget(p, 0);
-        _send_widget_list.append(p);
-        h = p->height();
-        qDebug() << "CanConfig::updateId()";
+        if (iter.data() == id) {
+            return;
+        }
     }
-    _send_list->setFixedHeight(10 + h * _send_list_data.size());
-    placeSpacer();
-//    _send_layout.widget
+    addSendId(id, tr("用户添加"), false);
 }
 
-void CanConfig::placeSpacer()
+void CanConfig::addRecvIdPushed()
 {
-    _send_layout->addWidget(_send_spacer, 1, Qt::AlignVCenter);
-    _recv_layout->addWidget(_recv_spacer, 1, Qt::AlignVCenter);
+    if (_recv_id->text().isEmpty()) {
+        return;
+    }
+    unsigned int id = _recv_id->text().toUInt(nullptr, 16);
+    for (const auto &iter : _recv_list_data) {
+        if (iter.data() == id) {
+            return;
+        }
+    }
+    addRecvId(id, tr("用户添加"), true);
 }
 
-void CanConfig::removeSpacer()
+void CanConfig::addBurnId(unsigned int id, const QString &remark, bool checked)
 {
-    _send_layout->removeWidget(_send_spacer);
-    _recv_layout->removeWidget(_recv_spacer);
+    _burn_list_data.append(Id(id, remark, checked));
+    Id &e = _burn_list_data.last();
+    e.widget() = new QCheckBox(e.title(), _burn_list);
+    connect(e.widget(), &QCheckBox::stateChanged,
+            this, &CanConfig::burnListChanged);
+//    qDebug() << "CanConfig::addSendId before height" << e.widget()->height();
+    _burn_list->setFixedHeight(e.widget()->height() * _burn_list_data.size());
+    _burn_layout->insertWidget(_burn_list_data.size(), e.widget(), Qt::AlignVCenter);
+//    qDebug() << "CanConfig::addSendId after height" << e.widget()->height();
+    if (checked) {
+        for (int i = 0; i < _burn_list_data.size() - 1; ++i) {
+            _burn_list_data[i].setChecked(false);
+            _burn_list_data[i].widget()->setCheckState(Qt::Unchecked);
+        }
+        e.setChecked(true);
+        e.widget()->setCheckState(Qt::Checked);
+    }
+//    qDebug() << "CanConfig::addSendId rect height" << _send_list->rect().height();
 }
-/*
-_send_id_list = new QTableWidget(_id);
-_recv_id_list = new QTableWidget(_id);
-_send_id_list->setMinimumSize(150, 300);
-_recv_id_list->setMinimumSize(150, 300);
-_send_id_list->setColumnCount(2);
-_recv_id_list->setColumnCount(2);
-_send_id_list->setHorizontalHeaderLabels({tr("发送ID"), tr("备注")});
-_recv_id_list->setHorizontalHeaderLabels({tr("接收ID"), tr("备注")});
-_send_id_list->setColumnWidth(0, 60);
-_send_id_list->setColumnWidth(1, 85);
-_recv_id_list->setColumnWidth(0, 60);
-_recv_id_list->setColumnWidth(1, 85);
-_send_id_list->resize(150, 300);
-_recv_id_list->resize(150, 300);
-_send_id_list->setFont(font_combo);
-_recv_id_list->setFont(font_combo);
-_send_id_list->verticalHeader()->hide();
-_recv_id_list->verticalHeader()->hide();
-_send_id_list->setSelectionMode(QAbstractItemView::SingleSelection);
-_recv_id_list->setSelectionMode(QAbstractItemView::SingleSelection);
-_send_id_list->setSelectionBehavior(QAbstractItemView::SelectRows);
-_recv_id_list->setSelectionBehavior(QAbstractItemView::SelectRows);
-_send_id_list->setRowCount(2);
-_send_id_list->setItem(0, 0, new QTableWidgetItem("0x611"));
-_send_id_list->setItem(0, 1, new QTableWidgetItem("引导程序"));
-_id_layout->addWidget(_send_id_list, 0, 0);//, Qt::AlignVCenter | Qt::AlignHCenter);
-_id_layout->addWidget(_recv_id_list, 0, 1);//, Qt::AlignVCenter | Qt::AlignHCenter);
-*/
+
+void CanConfig::burnListChanged(int state)
+{
+//    qDebug() << "CanConfig::sendListChanged";
+    Q_UNUSED(state);
+    int index = -1;
+    for (int i = 0; i < _burn_list_data.size(); ++i) {
+        if (_burn_list_data[i].isChecked() != _burn_list_data[i].widget()->isChecked()) {
+            index = i;
+            break;
+        }
+    }
+    if (index == -1) {
+        return;
+    }
+    if (_burn_list_data[index].isChecked()) {
+        _burn_list_data[index].widget()->setCheckState(Qt::Checked);
+    } else {
+        for (int i = 0; i < _burn_list_data.size(); ++i) {
+            if (i == index) {
+                _burn_list_data[index].setChecked(true);
+                _burn_list_data[index].widget()->setCheckState(Qt::Checked);
+            } else {
+                _burn_list_data[i].setChecked(false);
+                _burn_list_data[i].widget()->setCheckState(Qt::Unchecked);
+            }
+        }
+        _revolve->setBurnId(_burn_list_data[index].data());
+    }
+}
+
+void CanConfig::addBurnIdPushed()
+{
+    if (_burn_id->text().isEmpty()) {
+        return;
+    }
+    unsigned int id = _burn_id->text().toUInt(nullptr, 16);
+    for (const auto &iter : _burn_list_data) {
+        if (iter.data() == id) {
+            return;
+        }
+    }
+    addBurnId(id, tr("用户添加"), false);
+}
+
+void CanConfig::openCan()
+{
+    if(_revolve->can().open()) {
+        emitMessage(Re::Info, tr("CAN打开成功"));
+    } else {
+        emitMessage(Re::Warning, tr("CAN已经打开或连接出现问题"));
+    }
+}
+
+void CanConfig::initCan()
+{
+    if (_revolve->can().init()) {
+        emitMessage(Re::Info, tr("CAN初始化成功"));
+    } else {
+        emitMessage(Re::Warning, tr("CAN已经初始化或连接出现问题"));
+    }
+}
+
+void CanConfig::startCan()
+{
+    if (_revolve->startCan()) {
+        emitMessage(Re::Info, tr("CAN启动成功"));
+        _connect_can->setChecked(true);
+    } else {
+        emitMessage(Re::Warning, tr("CAN已经启动或连接出现问题"));
+    }
+}
+
+void CanConfig::connectCan()
+{
+    if (_revolve->connectCan()) {
+        emitMessage(Re::Info, tr("CAN连接成功"));
+        _connect_can->setChecked(true);
+    } else {
+        emitMessage(Re::Warning, tr("CAN已经连接或连接出现问题"));
+    }
+}
+
+void CanConfig::resetCan()
+{
+    if (_revolve->resetCan()) {
+        emitMessage(Re::Info, tr("CAN复位成功"));
+        _connect_can->setChecked(false);
+    } else {
+        emitMessage(Re::Warning, tr("CAN连接出现问题"));
+    }
+}
+
+void CanConfig::closeCan()
+{
+    if (_revolve->disConnectCan()) {
+        emitMessage(Re::Info, tr("CAN关闭成功"));
+        _connect_can->setChecked(false);
+    } else {
+        emitMessage(Re::Warning, tr("CAN连接出现问题"));
+    }
+}
+
+void CanConfig::reportCan()
+{
+    _revolve->can().reportError();
+}
+
+void CanConfig::connectCanByMenu()
+{
+    if (_connect_can->isChecked()) {
+        if (_revolve->connectCan()) {
+            emitMessage(Re::Info, tr("连接成功"));
+        } else {
+            emitMessage(Re::Warning | Re::Popout,
+                        tr("连接失败，检查CAN占用或连接情况"));
+        }
+    } else {
+        if (_revolve->disConnectCan()) {
+            emitMessage(Re::Info, tr("断开成功"));
+        } else {
+            emitMessage(Re::Warning | Re::Popout,
+                        tr("断开失败，检查CAN占用或连接情况"));
+        }
+    }
+    _connect_can->setChecked(_revolve->can().isConnected());
+}
