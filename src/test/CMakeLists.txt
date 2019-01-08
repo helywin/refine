@@ -60,10 +60,12 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/src/core CORE)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/gui GUI)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/mod MOD)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/del DEL)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/pdf PDF)
 include_directories(${PROJECT_SOURCE_DIR}/src/core)
 include_directories(${PROJECT_SOURCE_DIR}/src/gui)
 include_directories(${PROJECT_SOURCE_DIR}/src/mod)
 include_directories(${PROJECT_SOURCE_DIR}/src/del)
+include_directories(${PROJECT_SOURCE_DIR}/src/pdf)
 #include_directories("C:/Program Files/Microsoft SDKs/Speech/v11.0/Include")
 
 set(UI ${PROJECT_SOURCE_DIR}/res/ui.qrc)
@@ -75,6 +77,7 @@ set(RC ${PROJECT_SOURCE_DIR}/res/main.rc)
 
 
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
+set(LIBPDF ${PROJECT_SOURCE_DIR}/lib/pdflib.lib)
 set(LIBGSL D:/msys32/mingw32/lib/libgsl.a)
 set(LIBOPENGL D:/msys32/mingw32/i686-w64-mingw32/lib/libopengl32.a)
 set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.dll.a)
@@ -139,6 +142,9 @@ target_link_libraries(refine
         Qt5Widgets
         Qt5Gui
         Qt5OpenGL)
+
+add_executable(test_pdf test_pdf.cpp ${PDF})
+target_link_libraries(test_pdf ${LIBPDF})
 
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
