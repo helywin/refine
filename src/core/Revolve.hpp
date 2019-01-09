@@ -79,7 +79,7 @@ private:
     CurveViewer *_viewer;
     TribeModel *_tribe_model;
     CurveEditor *_curve_editor;
-    QAction *_menu_init_can;
+//    QAction *_menu_init_can;
 
     bool _communicate_finished;
     bool _transmit_finished;
@@ -90,9 +90,9 @@ public:
 
 //    ~Revolve() = default;
 
-    //Can配置
-    inline Can::Config &canConfig()
-    { return _can.config(); }
+//    //Can配置
+//    inline Can::Config &canConfig()
+//    { return _can.config(); }
 
 public slots:
     //采集
@@ -155,14 +155,17 @@ public:
     inline void setCurveEditor(CurveEditor *editor)
     { _curve_editor = editor; }
 
-    inline void setActionCan(QAction *action)
-    { _menu_init_can = action; }
+//    inline void setActionCan(QAction *action)
+//    { _menu_init_can = action; }
 
     void sendCommand(const QString &cmd);
     bool burnProgram(const QString &file);
 
     inline void setSendId(const QVector<unsigned int> &ids)
     { _communicate.setSendId(ids); }
+
+    inline void setRecvId(const QMap<unsigned int, bool> &ids)
+    { _transform.setRecvId(ids); }
 
     inline void setBurnId(unsigned int id)
     { _communicate.setBurnId(id); }
@@ -190,7 +193,6 @@ private slots:
     void collectError(int code);
     void transformError(int code);
     void recordError(int code);
-    void getTransformedCanMessage(const QString &message);
 
 signals:
     void message(Re::MessageTypes type, const QString &msg);
@@ -201,7 +203,8 @@ signals:
     void response(ResponseType type, const QString &response);
     void burningProcess(double process);
     void finishBurning();
-    void getCanMessage(const QString &msg);
+    void getCanMessage(const QByteArray &msg, unsigned int id);
+    void getNewRecvId(unsigned int id);
 };
 
 #endif //REFINE_REVOLVE_HPP

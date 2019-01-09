@@ -36,6 +36,10 @@ Can::Can(Message *message) :
  */
 bool Can::open()
 {
+    if (_status == Closed && _config_changed) {
+        _config = _config_latest;
+        _config_changed = false;
+    }
     unsigned long flag;
     flag = VCI_OpenDevice(_config.deviceType(),
                           _config.deviceIndex(),
@@ -285,15 +289,6 @@ void Can::clear() const
                     _config.deviceChannel());
 }
 
-/*!
- * @brief 返回当前CAN状态
- * @return 状态
- * @deprecated
- */
-int Can::status() const
-{
-    return _status;
-}
 
 void Can::reportError()
 {
@@ -384,7 +379,7 @@ int Can::receivedNumber()
 
 bool Can::updateConfig()
 {
-    if (isConnected()) {
+    if (_status != Closed) {
         return false;
     } else {
         _config = _config_latest;

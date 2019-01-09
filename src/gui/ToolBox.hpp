@@ -45,15 +45,18 @@ private:
     QWidget *_content;
 
     Revolve *_revolve;
-    bool _command_clear = true;
+
 public:
     explicit ToolBox(Message *message, Revolve *revolve, QWidget *parent = nullptr);
 
     MessagePanel *messagePanel()
     { return _message_panel; }
 
+    inline void addCommandActions(QList<QAction *> actions)
+    { _command->addCommandActions(qMove(actions)); }
+
 public slots:
-    void getCanMessage(const QString &msg);
+    void getCanMessage(const QByteArray &msg, unsigned int id);
     void setCommandPrefix(const QStringList &prefix);
 
 private:

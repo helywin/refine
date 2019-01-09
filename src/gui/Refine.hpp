@@ -83,8 +83,8 @@ private:
     QAction *_menu_view_sketchmsec_100;
     QAction *_menu_view_smooth;
     QMenu *_menu_init;
-    QAction *_menu_init_canconfig;
-    QAction *_menu_init_connect;
+//    QAction *_menu_init_canconfig;
+//    QAction *_menu_init_connect;
     QMenu *_menu_control;
     QAction *_menu_control_start;
     QAction *_menu_control_pause;
@@ -211,7 +211,7 @@ private slots:
 
     void stopRevolve();
 
-    void connectCan();
+//    void connectCan();
 
     void startTimers(QAction *action);
 

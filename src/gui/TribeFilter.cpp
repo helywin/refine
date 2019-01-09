@@ -5,6 +5,7 @@
 #include <QtWidgets/QWidgetAction>
 #include <QtGui/QPainter>
 #include "TribeFilter.hpp"
+#include "Style.hpp"
 
 TribeFilter::TribeFilter(TribeModel *model, QWidget *parent) :
         QLineEdit(parent),
@@ -17,18 +18,21 @@ TribeFilter::TribeFilter(TribeModel *model, QWidget *parent) :
 void TribeFilter::setup()
 {
     setClearButtonEnabled(true);
-    _font = QFont("微软雅黑", 10);
-    setFont(_font);
+    setFont(St::font_regular);
     _menu = new QMenu(this);
     _case_sensitive = new QAction(tr("区分大小写(&C)"), _menu);
     _case_sensitive->setCheckable(true);
+    _case_sensitive->setStatusTip(tr("查找是否区分输入大小写"));
     _curve_selection = new QActionGroup(this);
     _checked_items = new QAction(tr("选中(&S)"), _curve_selection);
     _checked_items->setData(QVariant(int(Tribe::Selection::SelectChecked)));
+    _checked_items->setStatusTip(tr("只在打钩的项目中查找"));
     _unchecked_items = new QAction(tr("未选中(&U)"), _curve_selection);
     _unchecked_items->setData(QVariant(int(Tribe::Selection::SelectUnchecked)));
+    _unchecked_items->setStatusTip(tr("只在未打钩的项目中查找"));
     _all_items = new QAction(tr("所有(&A)"), _curve_selection);
     _all_items->setData(QVariant(int(Tribe::Selection::SelectAll)));
+    _all_items->setStatusTip(tr("在所有项目中查找"));
     _checked_items->setCheckable(true);
     _unchecked_items->setCheckable(true);
     _all_items->setCheckable(true);
@@ -36,10 +40,13 @@ void TribeFilter::setup()
     _pattern = new QActionGroup(this);
     _fix_string = new QAction(tr("固定字符串(&F)"), _pattern);
     _fix_string->setData(QVariant(int(QRegExp::FixedString)));
+    _fix_string->setStatusTip(tr("根据固定字符串匹配"));
     _regexp = new QAction(tr("正则表达式(&R)"), _pattern);
     _regexp->setData(QVariant(int(QRegExp::RegExp2)));
+    _regexp->setStatusTip(tr("根据正则表达式匹配"));
     _wildcard = new QAction(tr("通配符(&W)"), _pattern);
     _wildcard->setData(QVariant(int(QRegExp::Wildcard)));
+    _wildcard->setStatusTip(tr("根据通配符匹配"));
     _fix_string->setCheckable(true);
     _regexp->setCheckable(true);
     _wildcard->setCheckable(true);
@@ -58,6 +65,7 @@ void TribeFilter::setup()
     _filter_btn->setStyleSheet("QToolButton {border: none;} "
                                "QToolButton::menu-indicator {image: none;}");
     _filter_btn->setPopupMode(QToolButton::InstantPopup);
+    _filter_btn->setStatusTip(tr("弹出搜索配置菜单"));
     auto *options_action = new QWidgetAction(this);
     options_action->setDefaultWidget(_filter_btn);
     addAction(options_action, QLineEdit::LeadingPosition);
@@ -84,8 +92,8 @@ void TribeFilter::paintEvent(QPaintEvent *event)
     QPainter painter;
     painter.begin(this);
     if (!hasFocus() && text().isEmpty()) {
-        QPen pen(QColor(149, 149, 149));
-        painter.setFont(_font);
+        painter.setFont(St::font_regular);
+        painter.setPen(St::color_hint);
         painter.drawText(QRect(rect().left() + rect().height(),
                                rect().top(),
                                rect().width(),
@@ -100,10 +108,10 @@ void TribeFilter::paintEvent(QPaintEvent *event)
 
 void TribeFilter::setFound(bool is_found)
 {
-    _is_found = is_found;
-    _font.setStrikeOut(!_is_found);
-    setFont(_font);
-    update();
+//    _is_found = is_found;
+//    _font.setStrikeOut(!_is_found);
+//    setFont(_font);
+//    update();
 }
 
 Qt::CaseSensitivity TribeFilter::caseSensitivity() const

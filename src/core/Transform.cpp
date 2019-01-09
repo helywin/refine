@@ -12,15 +12,7 @@
 #include "Sketch.hpp"
 
 Transform::Transform(Message *message) :
-        Message(message),
-        _curve(nullptr),
-        _buffer(nullptr),
-        _tribe(nullptr),
-        _file(),
-        _msec(10),
-        _status(Re::Stop),
-        _cmd(Re::NoCommand),
-        _transform_curve(false)
+        Message(message)
 {}
 
 void Transform::setParams(Curve *curve, RecvBuffer *buffer, Tribe *tribe,
@@ -60,21 +52,15 @@ void Transform::run()
 
         //增加通信功能
         for (auto i = 0u; i < buf.dataSize(); ++i) {
-            if (buf[i]->ID == 0x613) {
-                QByteArray bytes((char *) buf[i]->Data, buf[i]->DataLen);
-                getTransformedCanMessage(QString::fromLocal8Bit(bytes));
-                bytes = bytes.replace("\r\n", "\n");
-//                auto list = bytes.split('\n');
-//                Q_ASSERT(!list.isEmpty());
-//                if (list.size() == 1) {
-//                    _bytes.append(bytes);
-//                } else if (list.size() > 1) {
-//                    for (int j = 0; j < list.size() - 1; ++j) {
-//                        _bytes.append(list[j]);
-//                        _bytes.clear();
-//                    }
-//                    _bytes = list.last();
-//                }
+//            if (_recv_id.contains(buf[i]->ID)) {
+            if (_recv_id.contains(buf[i]->ID)) {
+                if (_recv_id[buf[i]->ID]) {
+                    QByteArray bytes((char *) buf[i]->Data, buf[i]->DataLen);
+                    getTransformedCanMessage(bytes, buf[i]->ID);
+                }
+            } else {
+                _recv_id[buf[i]->ID] = false;
+                emit getNewRecvId(buf[i]->ID);
             }
         }
 

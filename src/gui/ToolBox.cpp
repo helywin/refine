@@ -72,6 +72,7 @@ void ToolBox::setup()
     speed_layout->addWidget(_frames);
     auto file_view = new QWidget(_burn_frame);
     auto file_layout = new QHBoxLayout(file_view);
+    file_layout->setSpacing(0);
     file_view->setLayout(file_layout);
 
     _file_name = new QComboBox(file_view);
@@ -80,8 +81,10 @@ void ToolBox::setup()
     _browser = new QPushButton(tr("..."), file_view);
     _browser->setFont(font);
     _browser->setFixedWidth(27);
+    _browser->setStatusTip(tr("打开对话框查找烧录程序文件"));
     _burn = new QPushButton(tr("烧录"), file_view);
     _burn->setFont(font);
+    _burn->setStatusTip(tr("开始烧录程序"));
     file_layout->addWidget(_file_name, 1);
     file_layout->addWidget(_browser);
 //    file_layout->addWidget(_burn);
@@ -134,9 +137,13 @@ void ToolBox::setup()
             this, &ToolBox::sendCanMessage);
 }
 
-void ToolBox::getCanMessage(const QString &msg)
+void ToolBox::getCanMessage(const QByteArray &msg, unsigned int id)
 {
-    _text->insertMessage(msg, CanMessage::Receive);
+    if (id == 0x613 || id == 0x335) {
+        _text->insertMessage(QString::fromLocal8Bit(msg), CanMessage::Ascii);
+    } else {
+        _text->insertMessage(QString::fromLocal8Bit(msg.toHex()).toUpper() + " ", CanMessage::Hex);
+    }
 }
 
 void ToolBox::sendCanMessage(const QString &msg)
@@ -144,9 +151,7 @@ void ToolBox::sendCanMessage(const QString &msg)
     if (_revolve->can().status() & Can::Started) {
         _revolve->sendCommand(msg);
         _text->insertMessage(msg + "\n", CanMessage::Send);
-        if (_command_clear) {
-            _command->setText(QString());
-        }
+        _command->clearCommand();
     }
 }
 

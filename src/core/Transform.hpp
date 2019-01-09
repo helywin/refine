@@ -9,6 +9,7 @@
 #ifndef REFINE_TRANSFORM_HPP
 #define REFINE_TRANSFORM_HPP
 
+#include <QtCore/QDebug>
 #include <QtCore/QThread>
 #include <QtCore/QFile>
 #include "File.hpp"
@@ -31,15 +32,17 @@ Q_OBJECT
 public:
 
 private:
-    Curve *_curve;
-    RecvBuffer *_buffer;
-    Tribe *_tribe;
+    Curve *_curve = nullptr;
+    RecvBuffer *_buffer = nullptr;
+    Tribe *_tribe = nullptr;
     File _file;
-    unsigned long _msec;
-    Re::RunningStatus _status;
-    Re::RunningCommand _cmd;
+    unsigned long _msec = 10;
+    Re::RunningStatus _status = Re::Stop;
+    Re::RunningCommand _cmd = Re::NoCommand;
     QByteArray _bytes;
-    bool _transform_curve;
+    bool _transform_curve = false;
+    QMap<unsigned int, bool> _recv_id = {{0x613, true},
+                                         {0x335, true}};
 
 public:
     explicit Transform(Message *message = nullptr);
@@ -51,20 +54,29 @@ public:
 
     void stop(const QString &file = nullptr);
 
-    inline void pause() { _cmd = Re::CommandPause; }
+    inline void pause()
+    { _cmd = Re::CommandPause; }
 
-    inline void resume() { _cmd = Re::CommandResume; }
+    inline void resume()
+    { _cmd = Re::CommandResume; }
 
-    inline int status() const { return _status; }
+    inline int status() const
+    { return _status; }
 
     inline void setTransformCurve(bool transform_curve)
     { _transform_curve = transform_curve; }
+
+public slots:
+
+    inline void setRecvId(const QMap<unsigned int, bool> &ids)
+    { _recv_id = ids; }
 
 protected:
     void run() override;
 
 signals:
-    void getTransformedCanMessage(const QString &message);
+    void getTransformedCanMessage(const QByteArray &message, unsigned int id);
+    void getNewRecvId(unsigned int id);
 };
 
 

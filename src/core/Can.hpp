@@ -36,6 +36,7 @@ public:
         Command = 0x20              //!< 命令
     };
 
+    Q_DECLARE_FLAGS(StatusFlags, Can::Status)
     /*!
      * @brief 采集结果
      * @see collect
@@ -217,8 +218,9 @@ public:
     };
 
 private:
-    int _status = Status::Closed;            //! \brief CAN状态
+    StatusFlags _status = Status::Closed;            //! \brief CAN状态
     Config _config_latest;  //! \brief 用来修改的配置
+    bool _config_changed = false;
     Config _config;         //! \brief 配置
     ErrorInfo _error_info;  //! \brief 错误
 
@@ -242,6 +244,15 @@ public:
     inline const Config &config() const
     { return _config; }
 
+    inline void setChanged(bool changed)
+    { _config_changed = changed; }
+
+    inline void lostConnection()
+    { _status = Closed; }
+
+    inline StatusFlags status() const
+    { return _status; }
+
     bool open();
     bool init();
     bool start();
@@ -253,12 +264,12 @@ public:
     bool deliver(SendBuffer &buffer, unsigned long num);
     bool isConnected();
     void clear() const;
-    int status() const;
     int getError();
     void reportError();
     int receivedNumber();
     bool updateConfig();
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(Can::StatusFlags)
 
 #endif //REFINE_CAN_HPP

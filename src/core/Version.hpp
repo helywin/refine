@@ -35,7 +35,7 @@ public:
 private:
     const static char _major = 0;   //! \brief 主要版本号
     const static char _micro = 1;   //! \brief 次要版本号
-    const static char _minor = 3;   //! \brief 最小版本号
+    const static char _minor = 4;   //! \brief 最小版本号
     const static char _build = 1;   //! \brief 构建版本
     const static char _year = 19;   //! \brief 构建时间，年
     const static char _month = 1;  //! \brief 构建时间，月

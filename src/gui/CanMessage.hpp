@@ -13,13 +13,15 @@ Q_OBJECT
 public:
     enum MessageType
     {
-        Send,
-        Receive
+        Send = 0x01,
+        Ascii = 0x02,
+        Hex = 0x04,
     };
 
 private:
     QTextCharFormat _send_format;
-    QTextCharFormat _recv_format;
+    QTextCharFormat _ascii_format;
+    QTextCharFormat _hex_format;
 public:
     explicit CanMessage(QWidget *parent = nullptr);
 

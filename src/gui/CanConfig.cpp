@@ -7,6 +7,7 @@
 #include "CanConfig.hpp"
 #include "CanDefines.hpp"
 #include "Revolve.hpp"
+#include "Style.hpp"
 
 CanConfig::CanConfig(Revolve *revolve, Message *message, QWidget *parent) :
         QDialog(parent),
@@ -18,15 +19,13 @@ CanConfig::CanConfig(Revolve *revolve, Message *message, QWidget *parent) :
 
 void CanConfig::setup()
 {
-    QFont font("微软雅黑", 9);
-    QFont font_combo("微软雅黑", 10);
     setMinimumWidth(750);
     setWindowTitle(tr("配置CAN"));
     _layout = new QHBoxLayout(this);
     setLayout(_layout);
     _param = new QGroupBox(tr("CAN参数"), this);
     _layout->addWidget(_param);
-    _param->setFont(font);
+    _param->setFont(St::font_title);
     _param_layout = new QVBoxLayout(_param);
     _param->setLayout(_param_layout);
     _selection = new QWidget(_param);
@@ -41,30 +40,28 @@ void CanConfig::setup()
     _acc_mask_label = new QLabel(tr("屏蔽码："), _selection);
     _filter_label = new QLabel(tr("滤波方式："), _selection);
     _mode_label = new QLabel(tr("工作模式："), _selection);
-    _device_type_label->setFont(font_combo);
-    _device_index_label->setFont(font_combo);
-    _device_channel_label->setFont(font_combo);
-    _baudrate_label->setFont(font_combo);
-    _acc_code_label->setFont(font_combo);
-    _acc_mask_label->setFont(font_combo);
-    _filter_label->setFont(font_combo);
-    _mode_label->setFont(font_combo);
+    _device_type_label->setFont(St::font_regular);
+    _device_index_label->setFont(St::font_regular);
+    _device_channel_label->setFont(St::font_regular);
+    _baudrate_label->setFont(St::font_regular);
+    _acc_code_label->setFont(St::font_regular);
+    _acc_mask_label->setFont(St::font_regular);
+    _filter_label->setFont(St::font_regular);
+    _mode_label->setFont(St::font_regular);
     _device_type = new QComboBox(_selection);
     _device_index = new QComboBox(_selection);
     _device_channel = new QComboBox(_selection);
     _baudrate = new QComboBox(_selection);
-    _acc_code = new QComboBox(_selection);
-    _acc_mask = new QComboBox(_selection);
+    _acc_code = new AccInput(_selection);
+    _acc_mask = new AccInput(_selection);
     _filter = new QComboBox(_selection);
     _mode = new QComboBox(_selection);
-    _device_type->setFont(font_combo);
-    _device_index->setFont(font_combo);
-    _device_channel->setFont(font_combo);
-    _baudrate->setFont(font_combo);
-    _acc_code->setFont(font_combo);
-    _acc_mask->setFont(font_combo);
-    _filter->setFont(font_combo);
-    _mode->setFont(font_combo);
+    _device_type->setFont(St::font_regular);
+    _device_index->setFont(St::font_regular);
+    _device_channel->setFont(St::font_regular);
+    _baudrate->setFont(St::font_regular);
+    _filter->setFont(St::font_regular);
+    _mode->setFont(St::font_regular);
     _selection_layout->addRow(_device_type_label, _device_type);
     _selection_layout->addRow(_device_index_label, _device_index);
     _selection_layout->addRow(_device_channel_label, _device_channel);
@@ -88,37 +85,32 @@ void CanConfig::setup()
     _device_index->addItem(tr("2"), 2);
     _device_index->addItem(tr("3"), 3);
     _device_index->setCurrentIndex(0);
-    _device_channel->addItem(tr("1"), 1);
-    _device_channel->addItem(tr("2"), 2);
-    _device_channel->addItem(tr("3"), 3);
-    _device_channel->addItem(tr("4"), 4);
+    _device_channel->addItem(tr("1"), 0);
+    _device_channel->addItem(tr("2"), 1);
+    _device_channel->addItem(tr("3"), 2);
+    _device_channel->addItem(tr("4"), 3);
     _device_channel->setCurrentIndex(0);
-    _baudrate->addItem(tr("5Kbps"), Cd::BR_5Kbps);
-    _baudrate->addItem(tr("10Kbps"), Cd::BR_10Kbps);
-    _baudrate->addItem(tr("20Kbps"), Cd::BR_20Kbps);
-    _baudrate->addItem(tr("40Kbps"), Cd::BR_40Kbps);
-    _baudrate->addItem(tr("50Kbps"), Cd::BR_50Kbps);
-    _baudrate->addItem(tr("80Kbps"), Cd::BR_80Kbps);
-    _baudrate->addItem(tr("100Kbps"), Cd::BR_100Kbps);
-    _baudrate->addItem(tr("125Kbps"), Cd::BR_125Kbps);
-    _baudrate->addItem(tr("200Kbps"), Cd::BR_200Kbps);
-    _baudrate->addItem(tr("250Kbps"), Cd::BR_250Kbps);
-    _baudrate->addItem(tr("400Kbps"), Cd::BR_400Kbps);
-    _baudrate->addItem(tr("500Kbps"), Cd::BR_500Kbps);
-    _baudrate->addItem(tr("666Kbps"), Cd::BR_666Kbps);
-    _baudrate->addItem(tr("800Kbps"), Cd::BR_800Kbps);
-    _baudrate->addItem(tr("1000Kbps"), Cd::BR_1000Kbps);
+    _baudrate->addItem(tr("   5 Kbps"), Cd::BR_5Kbps);
+    _baudrate->addItem(tr("  10 Kbps"), Cd::BR_10Kbps);
+    _baudrate->addItem(tr("  20 Kbps"), Cd::BR_20Kbps);
+    _baudrate->addItem(tr("  40 Kbps"), Cd::BR_40Kbps);
+    _baudrate->addItem(tr("  50 Kbps"), Cd::BR_50Kbps);
+    _baudrate->addItem(tr("  80 Kbps"), Cd::BR_80Kbps);
+    _baudrate->addItem(tr(" 100 Kbps"), Cd::BR_100Kbps);
+    _baudrate->addItem(tr(" 125 Kbps"), Cd::BR_125Kbps);
+    _baudrate->addItem(tr(" 200 Kbps"), Cd::BR_200Kbps);
+    _baudrate->addItem(tr(" 250 Kbps"), Cd::BR_250Kbps);
+    _baudrate->addItem(tr(" 400 Kbps"), Cd::BR_400Kbps);
+    _baudrate->addItem(tr(" 500 Kbps"), Cd::BR_500Kbps);
+    _baudrate->addItem(tr(" 666 Kbps"), Cd::BR_666Kbps);
+    _baudrate->addItem(tr(" 800 Kbps"), Cd::BR_800Kbps);
+    _baudrate->addItem(tr("1000 Kbps"), Cd::BR_1000Kbps);
     _baudrate->setCurrentIndex(11);
-    _acc_code->addItem(tr("0xFFFFFFFF"), 0xFFFFFFFF);
-    _acc_code->addItem(tr("0x00000000"), 0x00000000);
-    _acc_code->setEditable(true);
-    _acc_validator = new QRegExpValidator(QRegExp("0x[0-9a-fA-F]{0,8}"));
-    _acc_code->setValidator(_acc_validator);
+    _acc_code->addAcc(0xFFFFFFFF);
+    _acc_code->addAcc(0x00000000);
     _acc_code->setCurrentIndex(0);
-    _acc_mask->addItem(tr("0xFFFFFFFF"), 0xFFFFFFFF);
-    _acc_mask->addItem(tr("0x00000000"), 0x00000000);
-    _acc_mask->setEditable(true);
-    _acc_mask->setValidator(_acc_validator);
+    _acc_mask->addAcc(0xFFFFFFFF);
+    _acc_mask->addAcc(0x00000000);
     _acc_mask->setCurrentIndex(1);
     _filter->addItem(tr("单滤波"), Cd::Single);
     _filter->addItem(tr("双滤波"), Cd::Double);
@@ -137,13 +129,13 @@ void CanConfig::setup()
     _reset = new QPushButton(tr("复位"), _control);
     _close = new QPushButton(tr("关闭"), _control);
     _code = new QPushButton(tr("错误码"), _control);
-    _open->setFont(font_combo);
-    _init->setFont(font_combo);
-    _start->setFont(font_combo);
-    _connect->setFont(font_combo);
-    _reset->setFont(font_combo);
-    _close->setFont(font_combo);
-    _code->setFont(font_combo);
+    _open->setFont(St::font_regular);
+    _init->setFont(St::font_regular);
+    _start->setFont(St::font_regular);
+    _connect->setFont(St::font_regular);
+    _reset->setFont(St::font_regular);
+    _close->setFont(St::font_regular);
+    _code->setFont(St::font_regular);
     _control_layout->addWidget(_open, 0, 0, Qt::AlignVCenter | Qt::AlignHCenter);
     _control_layout->addWidget(_init, 0, 1, Qt::AlignVCenter | Qt::AlignHCenter);
     _control_layout->addWidget(_start, 0, 2, Qt::AlignVCenter | Qt::AlignHCenter);
@@ -154,7 +146,7 @@ void CanConfig::setup()
     _param_layout->addWidget(new QWidget(_param), 1);
 
     _id = new QGroupBox(tr("ID选择"), this);
-    _id->setFont(font);
+    _id->setFont(St::font_title);
     _layout->addWidget(_id);
     _id_layout = new QGridLayout(_id);
     _id->setLayout(_id_layout);
@@ -189,19 +181,19 @@ void CanConfig::setup()
     _send_list->setLayout(_send_layout);
     _recv_list->setLayout(_recv_layout);
     _burn_list->setLayout(_burn_layout);
-    _send_list->setFont(font_combo);
-    _recv_list->setFont(font_combo);
-    _burn_list->setFont(font_combo);
+    _send_list->setFont(St::font_regular);
+    _recv_list->setFont(St::font_regular);
+    _burn_list->setFont(St::font_regular);
     _send_list->setFixedWidth(150);
     _recv_list->setFixedWidth(150);
     _burn_list->setFixedWidth(150);
 
-    _send_id->setFont(font_combo);
-    _recv_id->setFont(font_combo);
-    _burn_id->setFont(font_combo);
-    _add_send->setFont(font_combo);
-    _add_recv->setFont(font_combo);
-    _add_burn->setFont(font_combo);
+    _send_id->setFont(St::font_regular);
+    _recv_id->setFont(St::font_regular);
+    _burn_id->setFont(St::font_regular);
+    _add_send->setFont(St::font_regular);
+    _add_recv->setFont(St::font_regular);
+    _add_burn->setFont(St::font_regular);
     _send_label = new QLabel(tr("发送ID"), _id);
     _recv_label = new QLabel(tr("接收ID"), _id);
     _burn_label = new QLabel(tr("烧录ID"), _id);
@@ -233,6 +225,40 @@ void CanConfig::setup()
     _connect_can->setCheckable(true);
     _connect_can->setStatusTip(tr("连接/断开CAN"));
 
+    _menu = new QMenu(tr("CAN"), this);
+    _menu_show = new QAction(tr("配置CAN...(&C)"), _menu);
+    _menu_open = new QAction(tr("打开(&O)"), _menu);
+    _menu_init = new QAction(tr("初始化(&I)"), _menu);
+    _menu_start = new QAction(tr("启动(&S)"), _menu);
+    _menu_connect = new QAction(tr("快速启动(&N)"), _menu);
+    _menu_reset = new QAction(tr("复位(&R)"), _menu);
+    _menu_close = new QAction(tr("关闭(&D)"), _menu);
+    _menu_code = new QAction(tr("错误码(&E)"), _menu);
+    _menu_show->setIcon(QIcon(":res/icons/can.png"));
+    _menu_connect->setIcon(QIcon(":res/icons/connect.png"));
+    _menu_close->setIcon(QIcon(":res/icons/disconnect.png"));
+
+    _menu_show->setStatusTip(tr("配置CAN的连接属性和报文收发烧录ID"));
+    _menu_open->setStatusTip(tr("一键连接CAN"));
+    _menu_init->setStatusTip(tr("初始化CAN"));
+    _menu_start->setStatusTip(tr("启动CAN并启动采集"));
+    _menu_connect->setStatusTip(tr("一键启动CAN并启动采集"));
+    _menu_reset->setStatusTip(tr("复位CAN回到初始化后状态"));
+    _menu_close->setStatusTip(tr("关闭CAN并结束采集"));
+    _menu_code->setStatusTip(tr("获取CAN的错误代码并输出"));
+
+    _menu->addAction(_menu_show);
+    _menu->addAction(_menu_open);
+    _menu->addAction(_menu_init);
+    _menu->addAction(_menu_start);
+    _menu->addAction(_menu_connect);
+    _menu->addAction(_menu_reset);
+    _menu->addAction(_menu_close);
+    _menu->addAction(_menu_code);
+    _menu_simple.append(_menu_show);
+    _menu_simple.append(_menu_connect);
+    _menu_simple.append(_menu_close);
+
     connect(_add_send, &QPushButton::clicked,
             this, &CanConfig::addSendIdPushed);
     connect(_add_recv, &QPushButton::clicked,
@@ -247,6 +273,74 @@ void CanConfig::setup()
     connect(_close, &QPushButton::clicked, this, &CanConfig::closeCan);
     connect(_code, &QPushButton::clicked, this, &CanConfig::reportCan);
     connect(_connect_can, &QAction::triggered, this, &CanConfig::connectCanByMenu);
+    connect(_revolve, &Revolve::getNewRecvId, this, &CanConfig::addRecvIdByTransform);
+
+    connect(_menu_show, &QAction::triggered, this, [this]() { show(); });
+    connect(_menu_open, &QAction::triggered, this, &CanConfig::openCan);
+    connect(_menu_init, &QAction::triggered, this, &CanConfig::initCan);
+    connect(_menu_start, &QAction::triggered, this, &CanConfig::startCan);
+    connect(_menu_connect, &QAction::triggered, this, &CanConfig::connectCan);
+    connect(_menu_reset, &QAction::triggered, this, &CanConfig::resetCan);
+    connect(_menu_close, &QAction::triggered, this, &CanConfig::closeCan);
+    connect(_menu_code, &QAction::triggered, this, &CanConfig::reportCan);
+
+    connect(_device_type, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, [this](int index) {
+                Q_UNUSED(index);
+                _revolve->can().configLatest().setDeviceType(
+                        (unsigned long) _device_type->currentData().toUInt());
+                _revolve->can().setChanged(true);
+            });
+
+    connect(_device_index, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, [this](int index) {
+                Q_UNUSED(index);
+                _revolve->can().configLatest().setDeviceIndex(
+                        (unsigned long) _device_index->currentData().toUInt());
+                _revolve->can().setChanged(true);
+            });
+
+    connect(_device_channel, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, [this](int index) {
+                Q_UNUSED(index);
+                qDebug() << "选择第几路CAN: " << _device_channel->currentData().toUInt();
+                _revolve->can().configLatest().setDeviceChannel(
+                        (unsigned long) _device_channel->currentData().toUInt());
+                _revolve->can().setChanged(true);
+            });
+
+    connect(_baudrate, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, [this](int index) {
+                Q_UNUSED(index);
+                _revolve->can().configLatest().setBaudRate(
+                        (Cd::BaudRate) _baudrate->currentData().toInt());
+                _revolve->can().setChanged(true);
+            });
+
+    connect(_filter, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, [this](int index) {
+                Q_UNUSED(index);
+                _revolve->can().configLatest().setFilter(
+                        (unsigned char) _filter->currentData().toChar().toLatin1());
+                _revolve->can().setChanged(true);
+            });
+    connect(_mode, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, [this](int index) {
+                Q_UNUSED(index);
+                _revolve->can().configLatest().setMode(
+                        (unsigned char) _mode->currentData().toChar().toLatin1());
+                _revolve->can().setChanged(true);
+            });
+
+    connect(_acc_code, &AccInput::valueChanged, this, [this](unsigned int v) {
+        _revolve->can().configLatest().setAccCode((unsigned long) v);
+        _revolve->can().setChanged(true);
+    });
+
+    connect(_acc_mask, &AccInput::valueChanged, this, [this](unsigned int v) {
+        _revolve->can().configLatest().setAccMask((unsigned long) v);
+        _revolve->can().setChanged(true);
+    });
 }
 
 void CanConfig::sendListChanged(int state)
@@ -268,6 +362,13 @@ void CanConfig::sendListChanged(int state)
 void CanConfig::recvListChanged(int state)
 {
     Q_UNUSED(state);
+    QMap<unsigned int, bool> ids;
+    for (auto &iter : _recv_list_data) {
+        iter.setChecked(iter.widget()->isChecked());
+        ids[iter.data()] = iter.isChecked();
+    }
+//    qDebug() << "CanConfig::recvListChanged: " << ids.keys() << ids.values();
+    _revolve->setRecvId(ids);
 }
 
 void CanConfig::addSendId(unsigned int id, const QString &remark, bool checked)
@@ -305,6 +406,11 @@ void CanConfig::addRecvId(unsigned int id, const QString &remark, bool checked)
         e.setChecked(false);
         e.widget()->setCheckState(Qt::Unchecked);
     }
+}
+
+void CanConfig::addRecvIdByTransform(unsigned int id)
+{
+    addRecvId(id, tr("自动添加"), false);
 }
 
 void CanConfig::addSendIdPushed()
@@ -403,7 +509,7 @@ void CanConfig::addBurnIdPushed()
 
 void CanConfig::openCan()
 {
-    if(_revolve->can().open()) {
+    if (_revolve->can().open()) {
         emitMessage(Re::Info, tr("CAN打开成功"));
     } else {
         emitMessage(Re::Warning, tr("CAN已经打开或连接出现问题"));

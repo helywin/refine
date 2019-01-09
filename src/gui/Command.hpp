@@ -6,18 +6,27 @@
 #define REFINE_COMMAND_HPP
 
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
 
 class Command : public QLineEdit
 {
 Q_OBJECT
 private:
     QStringList _prefixs = QStringList({"611"});
-    bool _upper_cased = true;
     QList<QString> _sequence;
     int _index = -1;
-    QFont _font = QFont("微软雅黑", 10);
+    QMargins _text_margins;
+    QMenu *_menu;
+    QAction *_menu_uppercased;
+    QAction *_menu_clear;
+    QToolButton *_settings;
+
 public:
     explicit Command(QWidget *parent = nullptr);
+    void clearCommand();
+    void addCommandActions(QList<QAction *> actions);
 
 public slots:
     void setPrefix(const QStringList &prefix);

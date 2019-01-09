@@ -16,7 +16,8 @@ CanMessage::CanMessage(QWidget *parent) :
 void CanMessage::setup()
 {
     _send_format.setForeground(QBrush(Qt::red));
-    _recv_format.setForeground(QBrush(Qt::black));
+    _ascii_format.setForeground(QBrush(Qt::black));
+    _hex_format.setForeground(QBrush(QColor(66, 52, 80)));
     setReadOnly(true);
 }
 
@@ -47,8 +48,11 @@ void CanMessage::insertMessage(const QString &msg, CanMessage::MessageType type)
         case Send:
             cursor.insertText(msg, _send_format);
             break;
-        case Receive:
-            cursor.insertText(msg, _recv_format);
+        case Ascii:
+            cursor.insertText(msg, _ascii_format);
+            break;
+        case Hex:
+            cursor.insertText(msg, _hex_format);
             break;
     }
     QScrollBar *scroll_v = verticalScrollBar();

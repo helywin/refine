@@ -42,7 +42,6 @@ private:
     QAction *_regexp;
     QAction *_wildcard;
     QToolButton *_filter_btn;
-    QFont _font;
     QCompleter _completer;
     bool _is_found;
     TribeModel *_model;

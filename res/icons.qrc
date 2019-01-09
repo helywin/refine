@@ -8,6 +8,7 @@
         <file>icons/exit.png</file>
         <file>icons/display.png</file>
         <file>icons/config.png</file>
+        <file>icons/can.png</file>
         <file>icons/start.png</file>
         <file>icons/pause.png</file>
         <file>icons/resume.png</file>
@@ -16,5 +17,7 @@
         <file>icons/zoom+.png</file>
         <file>icons/zoom-.png</file>
         <file>icons/search.png</file>
+        <file>icons/connect.png</file>
+        <file>icons/disconnect.png</file>
     </qresource>
 </RCC>

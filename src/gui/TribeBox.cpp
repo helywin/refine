@@ -15,8 +15,8 @@
 
 TribeBox::TribeBox(Tribe *tribe, Message *message, QWidget *parent) :
         QDockWidget(parent),
-        _tribe(tribe),
-        Message(message)
+        Message(message),
+        _tribe(tribe)
 {
     setup();
 }
@@ -30,6 +30,7 @@ void TribeBox::setup()
     _layout_search = new QHBoxLayout(_search);
     _check = new QCheckBox(_search);
     _check->setCheckState(Qt::CheckState::Unchecked);
+    _check->setStatusTip(tr("曲线全部打钩或不打钩"));
     _search->setLayout(_layout_search);
     _filter = new TribeFilter(_model, _search);
     _layout_search->addWidget(_check);
@@ -103,6 +104,7 @@ void TribeBox::connectModelToSketchXTop(SketchXTop *sketch_x_top)
 void TribeBox::selectionChanged(const QItemSelection &selected,
                                 const QItemSelection &deselected)
 {
+    Q_UNUSED(deselected);
     QItemSelection selection = _proxy->mapSelectionToSource(selected);  //很重要，不然就是当前的行
     if (selection.indexes().isEmpty()) {
         return;

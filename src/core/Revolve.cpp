@@ -40,8 +40,8 @@ Revolve::Revolve(Initializer *init) :
             static_cast<bool (Revolve::*)(void)>(&Revolve::stopCollect), Qt::DirectConnection);
     connect(&_collect, &Collect::info, this, &Revolve::collectError, Qt::AutoConnection);
     connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
-    connect(&_transform, &Transform::getTransformedCanMessage,
-            this, &Revolve::getTransformedCanMessage);
+    connect(&_transform, &Transform::getTransformedCanMessage,this, &Revolve::getCanMessage);
+    connect(&_transform, &Transform::getNewRecvId, this, &Revolve::getNewRecvId);
     _collect.setParams(&_can, &_recv_buf, Collect::FromCan, _msec);
     _transform.setParams(&_curve, &_recv_buf, &_tribe, _msec);
     _communicate.setParams(&_send_buf);
@@ -125,7 +125,7 @@ bool Revolve::stopCollect(bool error)
     if (!error) {
         _collect.stop();
     } else {
-        _menu_init_can->setChecked(false);
+//        _menu_init_can->setChecked(false);
         _can.close();
     }
     if (_flags & Re::TimingStop) {
@@ -541,11 +541,6 @@ bool Revolve::burnProgram(const QString &file)
         _transmit.begin();
     }
     return true;
-}
-
-void Revolve::getTransformedCanMessage(const QString &message)
-{
-    emit getCanMessage(message);
 }
 
 void Revolve::setTransmitMsec(unsigned long msec)

@@ -21,9 +21,11 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QAction>
+#include <QtWidgets/QMenu>
 #include <QtGui/QRegExpValidator>
 #include "Message.hpp"
 #include "HexInput.hpp"
+#include "AccInput.hpp"
 
 class Revolve;
 
@@ -91,9 +93,8 @@ private:
     QComboBox *_device_index;
     QComboBox *_device_channel;
     QComboBox *_baudrate;
-    QRegExpValidator *_acc_validator;
-    QComboBox *_acc_code;
-    QComboBox *_acc_mask;
+    AccInput *_acc_code;
+    AccInput *_acc_mask;
     QComboBox *_filter;
     QComboBox *_mode;
     QWidget *_control;
@@ -130,12 +131,24 @@ private:
     QPushButton *_add_recv;
     QPushButton *_add_burn;
 
+    QMenu *_menu;
+    QAction *_menu_show;
+    QAction *_menu_open;
+    QAction *_menu_init;
+    QAction *_menu_start;
+    QAction *_menu_connect;
+    QAction *_menu_reset;
+    QAction *_menu_close;
+    QAction *_menu_code;
+    QList<QAction *> _menu_simple;
+
     QAction *_connect_can;
 
 public:
     explicit CanConfig(Revolve *revolve, Message *message = nullptr, QWidget *parent = nullptr);
-
-    inline QAction *connectCanAction() { return _connect_can; }
+//    inline QAction *connectCanAction() { return _connect_can; }
+    inline QList<QAction *> simpleControlActions() { return _menu_simple; }
+    inline QMenu *fullMenu() { return _menu; }
 
 public slots:
     void openCan();
@@ -146,11 +159,14 @@ public slots:
     void resetCan();
     void closeCan();
     void reportCan();
+    void addRecvIdByTransform(unsigned int id);
+
 private:
     void setup();
     void addSendId(unsigned int id, const QString &remark, bool checked);
     void addRecvId(unsigned int id, const QString &remark, bool checked);
     void addBurnId(unsigned int id, const QString &remark, bool checked);
+
 private slots:
     void sendListChanged(int state);
     void recvListChanged(int state);
@@ -158,6 +174,8 @@ private slots:
     void addSendIdPushed();
     void addRecvIdPushed();
     void addBurnIdPushed();
+
+
 signals:
     void sendIdChanged(const QStringList &id);
 };
