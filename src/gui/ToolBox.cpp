@@ -78,9 +78,10 @@ void ToolBox::setup()
     _file_name = new QComboBox(file_view);
     _file_name->setFont(font);
     _file_name->setEditable(true);
-    _browser = new QPushButton(tr("..."), file_view);
+    _browser = new QPushButton(tr(""), file_view);
     _browser->setFont(font);
     _browser->setFixedWidth(27);
+    _browser->setIcon(QIcon(":res/icons/open.ico"));
     _browser->setStatusTip(tr("打开对话框查找烧录程序文件"));
     _burn = new QPushButton(tr("烧录"), file_view);
     _burn->setFont(font);

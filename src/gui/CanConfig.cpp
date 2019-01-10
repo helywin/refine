@@ -234,9 +234,9 @@ void CanConfig::setup()
     _menu_reset = new QAction(tr("复位(&R)"), _menu);
     _menu_close = new QAction(tr("关闭(&D)"), _menu);
     _menu_code = new QAction(tr("错误码(&E)"), _menu);
-    _menu_show->setIcon(QIcon(":res/icons/can.png"));
-    _menu_connect->setIcon(QIcon(":res/icons/connect.png"));
-    _menu_close->setIcon(QIcon(":res/icons/disconnect.png"));
+    _menu_show->setIcon(QIcon(":res/icons/config.ico"));
+    _menu_connect->setIcon(QIcon(":res/icons/connect.ico"));
+    _menu_close->setIcon(QIcon(":res/icons/disconnect.ico"));
 
     _menu_show->setStatusTip(tr("配置CAN的连接属性和报文收发烧录ID"));
     _menu_open->setStatusTip(tr("一键连接CAN"));

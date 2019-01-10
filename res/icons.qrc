@@ -1,23 +1,40 @@
 <RCC>
     <qresource prefix="/res" lang="CN">
-        <file>icons/open.png</file>
-        <file>icons/save.png</file>
-        <file>icons/import.png</file>
-        <file>icons/export.png</file>
-        <file>icons/settings.png</file>
-        <file>icons/exit.png</file>
-        <file>icons/display.png</file>
+        <file>icons/open.ico</file>
+        <file>icons/save.ico</file>
+        <file>icons/import.ico</file>
+        <file>icons/export.ico</file>
+        <file>icons/settings.ico</file>
+        <file>icons/exit.ico</file>
+        <file>icons/display.ico</file>
         <file>icons/config.png</file>
         <file>icons/can.png</file>
         <file>icons/start.png</file>
         <file>icons/pause.png</file>
         <file>icons/resume.png</file>
         <file>icons/stop.png</file>
-        <file>icons/timer.png</file>
+        <file>icons/timer.ico</file>
         <file>icons/zoom+.png</file>
         <file>icons/zoom-.png</file>
-        <file>icons/search.png</file>
-        <file>icons/connect.png</file>
-        <file>icons/disconnect.png</file>
+        <file>icons/search.ico</file>
+        <file>icons/connect.ico</file>
+        <file>icons/disconnect.ico</file>
+        <file>icons/sketch.ico</file>
+        <file>icons/manual.ico</file>
+        <file>icons/change.ico</file>
+        <file>icons/update.ico</file>
+        <file>icons/email.ico</file>
+        <file>icons/qt.ico</file>
+        <file>icons/info.ico</file>
+        <file>icons/license.ico</file>
+        <file>icons/config.ico</file>
+        <file>icons/fullscreen.ico</file>
+        <file>icons/sun.ico</file>
+        <file>icons/star.ico</file>
+        <file>icons/web.ico</file>
+        <file>icons/updater.ico</file>
+        <file>icons/sword.ico</file>
+        <file>icons/busy.ico</file>
+        <file>icons/smooth.ico</file>
     </qresource>
 </RCC>

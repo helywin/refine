@@ -3,6 +3,7 @@
 //
 
 #include <QtWidgets/QApplication>
+#include <QtGui/QDesktopServices>
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
 #include "Refine.hpp"
 #include "ChangeLog.hpp"
@@ -40,13 +41,13 @@ void Refine::setup()
     initMenu(_menu_file, tr("文件(&F)"), _menubar);
     initMenu(_menu_file_open, tr("打开(&O)..."), _menu_file,
              tr("打开数据包文件"), QKeySequence("Ctrl+O"));
-    _menu_file_open->setIcon(QIcon(":res/icons/open.png"));
+    _menu_file_open->setIcon(QIcon(":res/icons/open.ico"));
     initMenu(_menu_file_save, tr("保存(&S)..."), _menu_file,
              tr("保存数据包文件"), QKeySequence("Ctrl+S"));
-    _menu_file_save->setIcon(QIcon(":res/icons/save.png"));
+    _menu_file_save->setIcon(QIcon(":res/icons/save.ico"));
     _menu_file->addSeparator();
     initMenu(_menu_file_import, tr("导入(&I)"), _menu_file);
-    _menu_file_import->setIcon(QIcon(":res/icons/import.png"));
+    _menu_file_import->setIcon(QIcon(":res/icons/import.ico"));
     initMenu(_menu_file_import_config, tr("曲线配置(&C)..."),
              _menu_file_import, tr("导入曲线配置"));
     initMenu(_menu_file_import_data, tr("曲线数据(&D)..."),
@@ -56,7 +57,7 @@ void Refine::setup()
     initMenu(_menu_file_import_mode, tr("工况配置(&M)..."),
              _menu_file_import, tr("导入工况配置"));
     initMenu(_menu_file_export, tr("导出(&E)"), _menu_file);
-    _menu_file_export->setIcon(QIcon(":res/icons/export.png"));
+    _menu_file_export->setIcon(QIcon(":res/icons/export.ico"));
     initMenu(_menu_file_export_config, tr("曲线配置(&C)..."),
              _menu_file_export, tr("导出曲线配置"));
     initMenu(_menu_file_export_data, tr("曲线数据(&D)..."),
@@ -68,14 +69,14 @@ void Refine::setup()
     _menu_file->addSeparator();
     initMenu(_menu_file_settings, tr("设置(&S)..."), _menu_file,
              tr("配置软件设置"), QKeySequence("Ctrl+`"));
-    _menu_file_settings->setIcon(QIcon(":res/icons/settings.png"));
+    _menu_file_settings->setIcon(QIcon(":res/icons/settings.ico"));
     _menu_file->addSeparator();
     initMenu(_menu_file_exit, tr("退出(&E)"), _menu_file,
              tr("退出该软件"), QKeySequence("Alt+F4"));
-    _menu_file_exit->setIcon(QIcon(":res/icons/exit.png"));
+    _menu_file_exit->setIcon(QIcon(":res/icons/exit.ico"));
     initMenu(_menu_view, tr("视图(&I)"), _menubar);
     initMenu(_menu_view_display, tr("显示(&D)"), _menu_view);
-    _menu_view_display->setIcon(QIcon(":res/icons/display.png"));
+    _menu_view_display->setIcon(QIcon(":res/icons/display.ico"));
     _menu_view_display_group = new QActionGroup(_menu_view_display);
     _menu_view_display_group->setExclusive(false);
     initMenu(_menu_view_display_file, tr("文件工具栏(&F)"),
@@ -96,10 +97,13 @@ void Refine::setup()
              tr("标注窗口显示/隐藏"), true, true);
     initMenu(_menu_view_full, tr("全屏(&F)"), _menu_view,
              tr("全屏/取消全屏"), QKeySequence("F11"), true);
+    _menu_view_full->setIcon(QIcon(":res/icons/fullscreen.ico"));
     initMenu(_menu_view_presentation, tr("演示(&P)"), _menu_view,
              tr("演示/取消演示"), QKeySequence("F12"), true);
+    _menu_view_presentation->setIcon(QIcon(":res/icons/star.ico"));
     initMenu(_menu_view_sketchmsec, tr("重绘间隔(&R)"), _menu_view);
     _menu_view_sketchmsec_group = new QActionGroup(_menu_view_sketchmsec);
+    _menu_view_sketchmsec->setIcon(QIcon(":res/icons/busy.ico"));
     initMenu(_menu_view_sketchmsec_10, tr("10 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("10ms刷新间隔"), true, true);
     _menu_view_sketchmsec_10->setData(10);
@@ -119,7 +123,7 @@ void Refine::setup()
     _menu_view_sketchmsec_group->setExclusive(true);
     initMenu(_menu_view_smooth, tr("反走样(&A)"), _menu_view,
              tr("开启/关闭反走样"), true, true);
-
+    _menu_view_smooth->setIcon(QIcon(":res/icons/smooth.ico"));
     initMenu(_menu_init, tr("初始化(&I)"), _menubar);
 //    initMenu(_menu_init_canconfig, tr("CAN配置(&C)..."), _menu_init,
 //             tr("设置CAN连接配置"));
@@ -143,8 +147,9 @@ void Refine::setup()
     initMenu(_menu_tools, tr("工具(&T)"), _menubar);
     initMenu(_menu_tool_editcurve, tr("编辑曲线配置(&E)..."), _menu_tools,
              tr("编辑曲线配置"));
+    _menu_tool_editcurve->setIcon(QIcon(":res/icons/sketch.ico"));
     initMenu(_menu_tools_timer, tr("计时器(&T)"), _menu_tools);
-    _menu_tools_timer->setIcon(QIcon(":res/icons/timer.png"));
+    _menu_tools_timer->setIcon(QIcon(":res/icons/timer.ico"));
     _menu_tools_timer_group = new QActionGroup(_menu_tools_timer);
     _menu_tools_timer_group->setExclusive(false);
     initMenu(_menu_tools_timers[0], tr("计时器1"),
@@ -158,19 +163,34 @@ void Refine::setup()
              QKeySequence("Ctrl+3"), true);
     initMenu(_menu_tools_wakeup, tr("屏幕常亮(&S)"), _menu_tools,
              tr("保持屏幕常亮不黑屏开/关"), true, true);
+    _menu_tools_wakeup->setIcon(QIcon(":res/icons/sun.ico"));
     initMenu(_menu_help, tr("帮助(&H)"), _menubar);
     initMenu(_menu_help_manual, tr("手册(&M)..."), _menu_help,
              tr("软件手册和工况"));
+    _menu_help_manual->setIcon(QIcon(":res/icons/manual.ico"));
     initMenu(_menu_help_changelog, tr("变更(&C)..."), _menu_help,
              tr("软件版本变更信息"));
+    _menu_help_changelog->setIcon(QIcon(":res/icons/change.ico"));
     initMenu(_menu_help_license, tr("声明(&D)..."), _menu_help,
              tr("开源声明"));
+    _menu_help_license->setIcon(QIcon(":res/icons/license.ico"));
+    initMenu(_menu_help_update, tr("更新(&U)"), _menu_help);
+    _menu_help_update->setIcon(QIcon(":res/icons/update.ico"));
+    initMenu(_menu_help_update_url, tr("网页下载...(&W)"), _menu_help_update,
+             tr("打开网页自行下载最新版本"));
+    _menu_help_update_url->setIcon(QIcon(":res/icons/web.ico"));
+    initMenu(_menu_help_update_tool, tr("更新器...(&T)"), _menu_help_update,
+             tr("打开更新器更新软件"));
+    _menu_help_update_tool->setIcon(QIcon(":res/icons/updater.ico"));
     initMenu(_menu_help_feedback, tr("反馈(&F)..."), _menu_help,
              tr("反馈bug或意见"));
+    _menu_help_feedback->setIcon(QIcon(":res/icons/email.ico"));
     initMenu(_menu_help_about, tr("关于(&A)..."), _menu_help,
              tr("关于本软件"));
+    _menu_help_about->setIcon(QIcon(":res/icons/info.ico"));
     initMenu(_menu_help_aboutqt, tr("关于Qt(&Q)..."), _menu_help,
              tr("关于Qt"));
+    _menu_help_aboutqt->setIcon(QIcon(":res/icons/qt.ico"));
 
     _toolbar_file = new QToolBar(tr("文件(&F)"), this);
     this->addToolBar(_toolbar_file);
@@ -306,6 +326,8 @@ void Refine::setup()
             this, &Refine::startTimers, Qt::DirectConnection);
     connect(_menu_help_changelog, &QAction::triggered,
             _changelog, &ChangeLog::show, Qt::DirectConnection);
+    connect(_menu_help_update_url, &QAction::triggered,
+            this, &Refine::openUpdateUrl, Qt::DirectConnection);
     connect(_menu_help_feedback, &QAction::triggered,
             _feedback, &Feedback::show, Qt::DirectConnection);
     connect(_menu_help_aboutqt, &QAction::triggered,
@@ -506,6 +528,7 @@ void Refine::setSmooth()
 
 void Refine::widgetsVisibilityChanged(bool visible)
 {
+    Q_UNUSED(visible);
     _menu_view_display_file->setChecked(_toolbar_file->isVisible());
     _menu_view_display_command->setChecked(_toolbox->isVisible());
 //    _menu_view_display_output->setChecked(_outputbox->isVisible());
@@ -552,6 +575,16 @@ void Refine::setCurveViewerActions()
 //    _display->curveViewer()->setMenuCurrent(_menu_control_start);
     _display->curveViewer()->setMenuSettings(_menu_file_settings);
     _display->curveViewer()->finishMenuSet();
+}
+
+void Refine::openUpdateUrl()
+{
+    QDesktopServices::openUrl(QUrl(QString("ftp://refine:refine@10.27.113.35")));
+}
+
+void Refine::openUpdateTool()
+{
+
 }
 
 

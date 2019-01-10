@@ -100,6 +100,9 @@ private:
     QAction *_menu_help_manual;
     QAction *_menu_help_changelog;
     QAction *_menu_help_license;
+    QMenu *_menu_help_update;
+    QAction *_menu_help_update_url;
+    QAction *_menu_help_update_tool;
     QAction *_menu_help_feedback;
     QAction *_menu_help_about;
     QAction *_menu_help_aboutqt;
@@ -228,6 +231,10 @@ private slots:
     void setWakeUp();
 
     void keepWakeUp();
+
+    void openUpdateUrl();
+
+    void openUpdateTool();
 
 signals:
     void message(Re::MessageTypes type, const QString &msg);

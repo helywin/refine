@@ -59,7 +59,7 @@ void TribeFilter::setup()
     _filter_btn = new QToolButton(this);
     _filter_btn->setCursor(Qt::ArrowCursor);
     _filter_btn->setMenu(_menu);
-    _filter_btn->setIcon(QIcon(":res/icons/search.png"));
+    _filter_btn->setIcon(QIcon(":res/icons/search.ico"));
     _filter_btn->setFocusPolicy(Qt::NoFocus);
 //    _filter_btn->setStyleSheet("* { border: none; }, menu-indicator {image: none;}");
     _filter_btn->setStyleSheet("QToolButton {border: none;} "
@@ -108,6 +108,7 @@ void TribeFilter::paintEvent(QPaintEvent *event)
 
 void TribeFilter::setFound(bool is_found)
 {
+    Q_UNUSED(is_found);
 //    _is_found = is_found;
 //    _font.setStrikeOut(!_is_found);
 //    setFont(_font);
