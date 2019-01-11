@@ -14,10 +14,10 @@ AccInput::AccInput(QWidget *parent) :
 
 void AccInput::setup()
 {
+    setEditable(true);
     _validator = new QRegExpValidator(QRegExp("0x[0-9a-fA-F]{0,8}"), this);
     setValidator(_validator);
     setFont(St::font_mono);
-    setEditable(true);
 }
 
 void AccInput::keyPressEvent(QKeyEvent *e)

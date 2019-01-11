@@ -199,7 +199,8 @@ signals:
     void curveLoaded();
     void canLostConnection();
     void collectMenuEnable(bool isCollecting);
-    void baudRate(double baud_rate);
+    void recvBaudRate(double baud_rate);
+    void sendBaudRate(double baud_rate);
     void response(ResponseType type, const QString &response);
     void burningProcess(double process);
     void finishBurning();

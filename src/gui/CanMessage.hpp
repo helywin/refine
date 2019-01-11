@@ -24,6 +24,7 @@ private:
     QTextCharFormat _hex_format;
 public:
     explicit CanMessage(QWidget *parent = nullptr);
+    bool hasEraseFinishFlag();
 
 public slots:
     void insertMessage(const QString &msg, MessageType type);

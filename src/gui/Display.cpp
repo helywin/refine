@@ -57,7 +57,7 @@ void Display::setup()
     _menu_zoom->addSeparator();
     _menu_zoom->addAction(_menu_zoom_origin);
     _menu_zoom->addAction(_menu_zoom_minimum);
-    _btn_zoom = new QPushButton(QIcon(":res/icons/zoom+.png"), tr(""), _left_panel);
+    _btn_zoom = new QPushButton(QIcon(":res/icons/zoom+.ico"), tr(""), _left_panel);
     _btn_zoom->setIconSize(QSize(32, 32));
 //    _btn_zoom->setMenu(_menu_zoom);
     _btn_zoom->setContentsMargins(0, 0, 0, 0);
@@ -151,8 +151,8 @@ void Display::changeZoomMode(QAction *action)
 {
     _menu_zoom->setTitle(action->text());
     if (action == _menu_zoom_plus) {
-        _btn_zoom->setIcon(QIcon(":res/icons/zoom+.png"));
+        _btn_zoom->setIcon(QIcon(":res/icons/zoom+.ico"));
     } else {
-        _btn_zoom->setIcon(QIcon(":res/icons/zoom-.png"));
+        _btn_zoom->setIcon(QIcon(":res/icons/zoom-.ico"));
     }
 }

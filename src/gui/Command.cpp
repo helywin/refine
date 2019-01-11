@@ -43,7 +43,7 @@ void Command::setup()
     _settings = new QToolButton(this);
     _settings->setCursor(Qt::ArrowCursor);
     _settings->setMenu(_menu);
-    _settings->setIcon(QIcon(":res/icons/config.png"));
+    _settings->setIcon(QIcon(":res/icons/can.ico"));
     _settings->setFocusPolicy(Qt::NoFocus);
     _settings->setStyleSheet("QToolButton {border: none;} "
                              "QToolButton::menu-indicator {image: none;}");

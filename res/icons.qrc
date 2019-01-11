@@ -7,15 +7,13 @@
         <file>icons/settings.ico</file>
         <file>icons/exit.ico</file>
         <file>icons/display.ico</file>
-        <file>icons/config.png</file>
-        <file>icons/can.png</file>
-        <file>icons/start.png</file>
-        <file>icons/pause.png</file>
-        <file>icons/resume.png</file>
-        <file>icons/stop.png</file>
+        <file>icons/start.ico</file>
+        <file>icons/pause.ico</file>
+        <file>icons/resume.ico</file>
+        <file>icons/stop.ico</file>
         <file>icons/timer.ico</file>
-        <file>icons/zoom+.png</file>
-        <file>icons/zoom-.png</file>
+        <file>icons/zoom+.ico</file>
+        <file>icons/zoom-.ico</file>
         <file>icons/search.ico</file>
         <file>icons/connect.ico</file>
         <file>icons/disconnect.ico</file>
@@ -28,6 +26,7 @@
         <file>icons/info.ico</file>
         <file>icons/license.ico</file>
         <file>icons/config.ico</file>
+        <file>icons/can.ico</file>
         <file>icons/fullscreen.ico</file>
         <file>icons/sun.ico</file>
         <file>icons/star.ico</file>
@@ -36,5 +35,8 @@
         <file>icons/sword.ico</file>
         <file>icons/busy.ico</file>
         <file>icons/smooth.ico</file>
+        <file>icons/send.ico</file>
+        <file>icons/receive.ico</file>
+        <file>icons/popout.ico</file>
     </qresource>
 </RCC>

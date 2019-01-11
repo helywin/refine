@@ -32,6 +32,7 @@ Revolve::Revolve(Initializer *init) :
         _time(10),
         _flags(nullptr),
         _collect_status(Re::Stop),
+        _burning_status(Re::Stop),
         _viewer(nullptr),
         _communicate_finished(true),
         _transmit_finished(true)
@@ -39,7 +40,7 @@ Revolve::Revolve(Initializer *init) :
     connect(&_timer_stop, &QTimer::timeout, this,
             static_cast<bool (Revolve::*)(void)>(&Revolve::stopCollect), Qt::DirectConnection);
     connect(&_collect, &Collect::info, this, &Revolve::collectError, Qt::AutoConnection);
-    connect(&_collect, &Collect::baudRate, this, &Revolve::baudRate);
+    connect(&_collect, &Collect::baudRate, this, &Revolve::recvBaudRate);
     connect(&_transform, &Transform::getTransformedCanMessage,this, &Revolve::getCanMessage);
     connect(&_transform, &Transform::getNewRecvId, this, &Revolve::getNewRecvId);
     _collect.setParams(&_can, &_recv_buf, Collect::FromCan, _msec);

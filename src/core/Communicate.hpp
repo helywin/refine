@@ -5,6 +5,7 @@
 #ifndef REFINE_COMMUNICATE_HPP
 #define REFINE_COMMUNICATE_HPP
 
+#include <QtCore/QDebug>
 #include <QtCore/QThread>
 #include <QtCore/QVector>
 #include "Message.hpp"
@@ -26,11 +27,18 @@ public:
     void setParams(SendBuffer *buffer);
     void burnProgram(QByteArray &&bytes);
     void sendCommand(const QByteArray &bytes);
-    inline void setSendId(const QVector<unsigned int> &ids) { _send_id = ids; }
-    inline void setBurnId(unsigned int id) { _burn_id = id; }
 
-    void begin() {}
-    void stop() {}
+    inline void setSendId(const QVector<unsigned int> &ids)
+    { _send_id = ids; }
+
+    inline void setBurnId(unsigned int id)
+    { _burn_id = id; }
+
+    void begin()
+    {}
+
+    void stop()
+    {}
 
 protected:
     void run() override;

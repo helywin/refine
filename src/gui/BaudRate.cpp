@@ -3,6 +3,7 @@
 //
 
 #include "BaudRate.hpp"
+#include "Style.hpp"
 
 BaudRate::BaudRate(QWidget *parent) :
         QWidget(parent),
@@ -21,13 +22,13 @@ void BaudRate::setup()
     _progress = new FiniteProgress(this);
     _progress->setToolTip(tr("当前波特率"));
     _label = new QLabel(this);
-    _label->setFont(QFont("微软雅黑"));
+    _label->setFont(St::font_title);
     _label->setFixedWidth(70);
     _label->setAlignment(Qt::AlignRight);
     _progress->setMaximum(_maximum_baud_rate);
     _layout->addWidget(_progress, 1);
     _layout->addWidget(_label);
-    setBaudRate(90);
+    setBaudRate(0);
 }
 
 void BaudRate::setBaudRate(double baud_rate)

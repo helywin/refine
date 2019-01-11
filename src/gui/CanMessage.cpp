@@ -65,4 +65,9 @@ void CanMessage::insertMessage(const QString &msg, CanMessage::MessageType type)
     }
 }
 
+bool CanMessage::hasEraseFinishFlag()
+{
+    return toPlainText().right(2) == QString("\n>");
+}
+
 

@@ -3,6 +3,7 @@
 //
 
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QMessageBox>
 #include <QtCore/QDebug>
 #include "CanConfig.hpp"
 #include "CanDefines.hpp"
@@ -85,10 +86,10 @@ void CanConfig::setup()
     _device_index->addItem(tr("2"), 2);
     _device_index->addItem(tr("3"), 3);
     _device_index->setCurrentIndex(0);
-    _device_channel->addItem(tr("1"), 0);
-    _device_channel->addItem(tr("2"), 1);
-    _device_channel->addItem(tr("3"), 2);
-    _device_channel->addItem(tr("4"), 3);
+    _device_channel->addItem(tr("0 (CAN1)"), 0);
+    _device_channel->addItem(tr("1 (CAN2)"), 1);
+    _device_channel->addItem(tr("2"), 2);
+    _device_channel->addItem(tr("3"), 3);
     _device_channel->setCurrentIndex(0);
     _baudrate->addItem(tr("   5 Kbps"), Cd::BR_5Kbps);
     _baudrate->addItem(tr("  10 Kbps"), Cd::BR_10Kbps);
@@ -99,9 +100,9 @@ void CanConfig::setup()
     _baudrate->addItem(tr(" 100 Kbps"), Cd::BR_100Kbps);
     _baudrate->addItem(tr(" 125 Kbps"), Cd::BR_125Kbps);
     _baudrate->addItem(tr(" 200 Kbps"), Cd::BR_200Kbps);
-    _baudrate->addItem(tr(" 250 Kbps"), Cd::BR_250Kbps);
+    _baudrate->addItem(tr(" 250 Kbps (卡车)"), Cd::BR_250Kbps);
     _baudrate->addItem(tr(" 400 Kbps"), Cd::BR_400Kbps);
-    _baudrate->addItem(tr(" 500 Kbps"), Cd::BR_500Kbps);
+    _baudrate->addItem(tr(" 500 Kbps (小车)"), Cd::BR_500Kbps);
     _baudrate->addItem(tr(" 666 Kbps"), Cd::BR_666Kbps);
     _baudrate->addItem(tr(" 800 Kbps"), Cd::BR_800Kbps);
     _baudrate->addItem(tr("1000 Kbps"), Cd::BR_1000Kbps);
@@ -214,12 +215,12 @@ void CanConfig::setup()
     _id_layout->setRowStretch(2, 0);
     _id_layout->setRowStretch(3, 0);
 
-    addSendId(0x611, tr("引导程序"), true);
-    addSendId(0x333, tr("引导程序"), false);
-    addRecvId(0x613, tr("引导程序"), true);
-    addRecvId(0x335, tr("引导程序"), true);
-    addBurnId(0x611, tr("引导程序"), true);
-    addBurnId(0x333, tr("引导程序"), false);
+    addSendId(0x611, tr("小车引导"), true);
+    addSendId(0x333, tr("卡车引导"), false);
+    addRecvId(0x613, tr("小车引导"), true);
+    addRecvId(0x335, tr("卡车引导"), true);
+    addBurnId(0x611, tr("小车引导"), true);
+    addBurnId(0x333, tr("卡车引导"), false);
 
     _connect_can = new QAction(tr("连接CAN(&C)"), this);
     _connect_can->setCheckable(true);
@@ -303,7 +304,7 @@ void CanConfig::setup()
     connect(_device_channel, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, [this](int index) {
                 Q_UNUSED(index);
-                qDebug() << "选择第几路CAN: " << _device_channel->currentData().toUInt();
+//                qDebug() << "选择第几路CAN: " << _device_channel->currentData().toUInt();
                 _revolve->can().configLatest().setDeviceChannel(
                         (unsigned long) _device_channel->currentData().toUInt());
                 _revolve->can().setChanged(true);
@@ -348,9 +349,23 @@ void CanConfig::sendListChanged(int state)
     Q_UNUSED(state);
     QStringList prefixs;
     QVector<unsigned int> ids;
+    int checked_data = 0;
+    int checked_box = 0;
+    Id *p = nullptr;
     for (auto &iter : _send_list_data) {
-        iter.setChecked(iter.widget()->isChecked());
-        if (iter.widget()->isChecked()) {
+        checked_data += iter.isChecked();
+        checked_box += (bool)iter.widget()->checkState();
+        if (iter.isChecked()) {
+            p = &iter;
+        }
+    }
+    if (checked_data == 1 && checked_box == 0 && p) {
+//        QMessageBox::information(this, tr("提示"), tr("至少留下一个发送ID"), tr("确定"));
+        p->widget()->setCheckState(Qt::Checked);
+    }
+    for (auto &iter : _send_list_data) {
+        iter.setChecked(iter.widget()->checkState());
+        if (iter.widget()->checkState()) {
             prefixs.append(QString("%1").arg(iter.data(), 3, 16, QChar('0')));
             ids.append(iter.data());
         }
@@ -364,7 +379,18 @@ void CanConfig::recvListChanged(int state)
     Q_UNUSED(state);
     QMap<unsigned int, bool> ids;
     for (auto &iter : _recv_list_data) {
-        iter.setChecked(iter.widget()->isChecked());
+        if (iter.data() == 0x777
+            && (iter.isChecked() != (bool) iter.widget()->checkState())) {
+            int flag = QMessageBox::warning(this, tr("警告"),
+                                            tr("接收显示0x777的报文会在打开调试报文后"
+                                               "\n由于海量报文直接卡死，确定接收吗？"),
+                                            tr("无所畏惧"), tr("放弃"), QString(), 1);
+            if (flag == 1) {
+//                emitMessage(Re::Debug, "no");
+                iter.widget()->setCheckState(Qt::Unchecked);
+            }
+        }
+        iter.setChecked(iter.widget()->checkState());
         ids[iter.data()] = iter.isChecked();
     }
 //    qDebug() << "CanConfig::recvListChanged: " << ids.keys() << ids.values();

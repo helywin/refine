@@ -82,7 +82,7 @@ private:
     QAction *_menu_view_sketchmsec_50;
     QAction *_menu_view_sketchmsec_100;
     QAction *_menu_view_smooth;
-    QMenu *_menu_init;
+    QMenu *_menu_can;
 //    QAction *_menu_init_canconfig;
 //    QAction *_menu_init_connect;
     QMenu *_menu_control;
@@ -106,7 +106,12 @@ private:
     QAction *_menu_help_feedback;
     QAction *_menu_help_about;
     QAction *_menu_help_aboutqt;
+
     QToolBar *_toolbar_file;
+    QToolBar *_toolbar_view;
+    QToolBar *_toolbar_can;
+    QToolBar *_toolbar_control;
+    QToolBar *_toolbar_tools;
 
     QWidget *_central;
     QHBoxLayout *_layout;
@@ -124,7 +129,13 @@ private:
     CanConfig *_canconfig;
 
     StatusBar *_statusbar;
-    BaudRate *_baud_rate;
+    QPushButton *_btn_baudrate;
+    QMenu *_menu_baudrate;
+    QActionGroup *_menu_baudrate_group;
+    QAction *_menu_baudrate_recv;
+    QAction *_menu_baudrate_send;
+    QAction *_last_baudrate_selection;
+    BaudRate *_baudrate;
 
     Qt::WindowState _win_state;
     bool _presentation;
@@ -235,6 +246,8 @@ private slots:
     void openUpdateUrl();
 
     void openUpdateTool();
+
+    void changeBaudRateDisplay(QAction *action);
 
 signals:
     void message(Re::MessageTypes type, const QString &msg);

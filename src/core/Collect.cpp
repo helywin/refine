@@ -75,6 +75,7 @@ void Collect::run()
             }
         }
     }
+    emit baudRate(0);
 }
 
 void Collect::begin()

@@ -14,6 +14,7 @@
 #ifdef Q_OS_WIN
 
 #include <windows.h>
+#include <Style.hpp>
 
 #endif
 
@@ -104,16 +105,16 @@ void Refine::setup()
     initMenu(_menu_view_sketchmsec, tr("重绘间隔(&R)"), _menu_view);
     _menu_view_sketchmsec_group = new QActionGroup(_menu_view_sketchmsec);
     _menu_view_sketchmsec->setIcon(QIcon(":res/icons/busy.ico"));
-    initMenu(_menu_view_sketchmsec_10, tr("10 ms"), _menu_view_sketchmsec_group,
+    initMenu(_menu_view_sketchmsec_10, tr(" 10 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("10ms刷新间隔"), true, true);
     _menu_view_sketchmsec_10->setData(10);
-    initMenu(_menu_view_sketchmsec_20, tr("20 ms"), _menu_view_sketchmsec_group,
+    initMenu(_menu_view_sketchmsec_20, tr(" 20 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("20ms刷新间隔"), true);
     _menu_view_sketchmsec_20->setData(20);
-    initMenu(_menu_view_sketchmsec_30, tr("30 ms"), _menu_view_sketchmsec_group,
+    initMenu(_menu_view_sketchmsec_30, tr(" 30 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("30ms刷新间隔"), true);
     _menu_view_sketchmsec_30->setData(30);
-    initMenu(_menu_view_sketchmsec_50, tr("50 ms"), _menu_view_sketchmsec_group,
+    initMenu(_menu_view_sketchmsec_50, tr(" 50 ms"), _menu_view_sketchmsec_group,
              _menu_view_sketchmsec, tr("50ms刷新间隔"), true);
     _menu_view_sketchmsec_50->setData(50);
     initMenu(_menu_view_sketchmsec_100, tr("100 ms"),
@@ -124,7 +125,7 @@ void Refine::setup()
     initMenu(_menu_view_smooth, tr("反走样(&A)"), _menu_view,
              tr("开启/关闭反走样"), true, true);
     _menu_view_smooth->setIcon(QIcon(":res/icons/smooth.ico"));
-    initMenu(_menu_init, tr("初始化(&I)"), _menubar);
+    initMenu(_menu_can, tr("CAN(&N)"), _menubar);
 //    initMenu(_menu_init_canconfig, tr("CAN配置(&C)..."), _menu_init,
 //             tr("设置CAN连接配置"));
 //    _menu_init_canconfig->setIcon(QIcon(":res/icons/can.png"));
@@ -134,16 +135,16 @@ void Refine::setup()
     initMenu(_menu_control, tr("控制(&C)"), _menubar);
     initMenu(_menu_control_start, tr("开始(&S)"), _menu_control,
              tr("开始采集曲线"));
-    _menu_control_start->setIcon(QIcon(":res/icons/start.png"));
+    _menu_control_start->setIcon(QIcon(":res/icons/start.ico"));
     initMenu(_menu_control_pause, tr("暂停(&P)"), _menu_control,
              tr("暂停采集曲线(曲线段结束)"));
-    _menu_control_pause->setIcon(QIcon(":res/icons/pause.png"));
+    _menu_control_pause->setIcon(QIcon(":res/icons/pause.ico"));
     initMenu(_menu_control_resume, tr("继续(&R)"), _menu_control,
              tr("继续采集曲线(曲线段开始)"));
-    _menu_control_resume->setIcon(QIcon(":res/icons/resume.png"));
+    _menu_control_resume->setIcon(QIcon(":res/icons/resume.ico"));
     initMenu(_menu_control_finish, tr("结束(&F)"), _menu_control,
              tr("结束采集曲线"));
-    _menu_control_finish->setIcon(QIcon(":res/icons/stop.png"));
+    _menu_control_finish->setIcon(QIcon(":res/icons/stop.ico"));
     initMenu(_menu_tools, tr("工具(&T)"), _menubar);
     initMenu(_menu_tool_editcurve, tr("编辑曲线配置(&E)..."), _menu_tools,
              tr("编辑曲线配置"));
@@ -193,7 +194,7 @@ void Refine::setup()
     _menu_help_aboutqt->setIcon(QIcon(":res/icons/qt.ico"));
 
     _toolbar_file = new QToolBar(tr("文件(&F)"), this);
-    this->addToolBar(_toolbar_file);
+
     _toolbar_file->addAction(_menu_file_open);
     _toolbar_file->addAction(_menu_file_save);
 //    _toolbar_file->addAction(_menu_file_import_config);
@@ -207,7 +208,23 @@ void Refine::setup()
     _toolbar_file->addAction(_menu_file_settings);
     _toolbar_file->addAction(_menu_file_exit);
 
+    _toolbar_view = new QToolBar(_menu_view->title(), this);
+    _toolbar_view->addActions(_menu_view->actions());
+
+    _toolbar_can = new QToolBar(_menu_can->title(), this);
+    _toolbar_control = new QToolBar(_menu_control->title(), this);
+    _toolbar_control->addActions(_menu_control->actions());
+
+    _toolbar_tools = new QToolBar(_menu_tools->title(), this);
+    _toolbar_tools->addActions(_menu_tools->actions());
+
+    this->addToolBar(_toolbar_file);
+    this->addToolBar(_toolbar_view);
+    this->addToolBar(_toolbar_control);
+    this->addToolBar(_toolbar_tools);
+
     _toolbox = new ToolBox(this, &_revolve, this);
+    _toolbox->setFont(St::font_title);
     _toolbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, _toolbox);
 
@@ -222,12 +239,14 @@ void Refine::setup()
 //    _toolbox->raise();
 
     _tribebox = new TribeBox(&_revolve.tribe(), this, this);
+    _tribebox->setFont(St::font_title);
     _tribebox->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _tribebox);
     _revolve.setTribeModel(&_tribebox->tribeModel());
 
     _markbox = new MarkBox(this);
+    _markbox->setFont(St::font_title);
     _markbox->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, _markbox);
 
@@ -252,8 +271,30 @@ void Refine::setup()
     setCurveViewerActions();
 
     _statusbar = new StatusBar(this);
-    _baud_rate = new BaudRate(_statusbar);
-    _statusbar->addPermanentWidget(_baud_rate);
+    _btn_baudrate = new QPushButton(_statusbar);
+    _menu_baudrate = new QMenu(_btn_baudrate);
+    _menu_baudrate_group = new QActionGroup(_menu_baudrate);
+    initMenu(_menu_baudrate_recv, tr("接收"), _menu_baudrate_group, _menu_baudrate,
+             tr("显示接收波特率"), true, true);
+    initMenu(_menu_baudrate_send, tr("发送"), _menu_baudrate_group, _menu_baudrate,
+             tr("显示发送波特率"), true, false);
+    _last_baudrate_selection = _menu_baudrate_recv;
+    _menu_baudrate_group->setExclusive(true);
+    _btn_baudrate->setMenu(_menu_baudrate);
+    _btn_baudrate->setStatusTip(tr("设置显示接收/发送波特率"));
+    _btn_baudrate->setIcon(QIcon(":res/icons/receive.ico"));
+    _btn_baudrate->setFlat(true);
+    auto margins = _btn_baudrate->contentsMargins();
+    _btn_baudrate->setContentsMargins(0, margins.top(), 0, margins.bottom());
+    _btn_baudrate->setStyleSheet("QPushButton::menu-indicator {image: url(:res/icons/popout.ico);"
+                                 "subcontrol-position: right center;"
+                                 "subcontrol-origin: padding;}");
+//    _btn_baudrate->setFixedWidth(80);
+    _btn_baudrate->setFont(St::font_title);
+    _baudrate = new BaudRate(_statusbar);
+    _statusbar->addPermanentWidget(_btn_baudrate);
+    _statusbar->addPermanentWidget(_baudrate);
+//    _statusbar->removeWidget(_recv_baudrate);
     this->setStatusBar(_statusbar);
     _file_picker = new FilePicker(this);
 //    _outputbox->connectToMessager(_file_picker);
@@ -267,7 +308,9 @@ void Refine::setup()
     _manual = new Manual(this);
     _canconfig = new CanConfig(&_revolve, this, this);
     _toolbox->addCommandActions(_canconfig->simpleControlActions());
-    _menu_init->addActions(_canconfig->simpleControlActions());
+    _menu_can->addActions(_canconfig->simpleControlActions());
+    _toolbar_can->addActions(_menu_can->actions());
+    this->insertToolBar(_toolbar_control, _toolbar_can);
 
     _editor = new CurveEditor(&_revolve.curve(), this);
     _revolve.setCurveEditor(_editor);
@@ -354,8 +397,8 @@ void Refine::setup()
             this, &Refine::widgetsVisibilityChanged);
     connect(&_revolve, &Revolve::collectMenuEnable,
             this, &Refine::setCollectMenuEnable);
-    connect(&_revolve, &Revolve::baudRate,
-            _baud_rate, &BaudRate::setBaudRate);
+    connect(&_revolve, &Revolve::recvBaudRate,
+            _baudrate, &BaudRate::setBaudRate);
     connect(_menu_view_presentation, &QAction::triggered,
             this, &Refine::presentation, Qt::DirectConnection);
     connect(_display, &Display::exitPresentation,
@@ -372,6 +415,8 @@ void Refine::setup()
 //            _canconfig, &CanConfig::show);
     connect(_canconfig, &CanConfig::sendIdChanged,
             _toolbox, &ToolBox::setCommandPrefix);
+    connect(_menu_baudrate_group, &QActionGroup::triggered,
+            this, &Refine::changeBaudRateDisplay, Qt::DirectConnection);
 }
 
 void Refine::setLanguage()
@@ -585,6 +630,30 @@ void Refine::openUpdateUrl()
 void Refine::openUpdateTool()
 {
 
+}
+
+void Refine::changeBaudRateDisplay(QAction *action)
+{
+    if (action == _last_baudrate_selection) {
+        return;
+    }
+    if (action == _menu_baudrate_recv) {
+        connect(&_revolve, &Revolve::recvBaudRate,
+                _baudrate, &BaudRate::setBaudRate);
+        disconnect(&_revolve, &Revolve::sendBaudRate,
+                   _baudrate, &BaudRate::setBaudRate);
+        _last_baudrate_selection = _menu_baudrate_recv;
+//        _btn_baudrate->setText(_menu_baudrate_recv->text());
+        _btn_baudrate->setIcon(QIcon(":res/icons/receive.ico"));
+    } else {
+        disconnect(&_revolve, &Revolve::recvBaudRate,
+                   _baudrate, &BaudRate::setBaudRate);
+        connect(&_revolve, &Revolve::sendBaudRate,
+                _baudrate, &BaudRate::setBaudRate);
+        _last_baudrate_selection = _menu_baudrate_send;
+//        _btn_baudrate->setText(_menu_baudrate_send->text());
+        _btn_baudrate->setIcon(QIcon(":res/icons/send.ico"));
+    }
 }
 
 
