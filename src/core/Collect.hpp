@@ -74,7 +74,6 @@ protected:
 
 signals:
     void info(int code);
-
     void baudRate(double baud_rate);
 };
 

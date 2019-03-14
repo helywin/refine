@@ -10,6 +10,7 @@
 
 typedef VCI_CAN_OBJ CanObj;
 typedef VCI_INIT_CONFIG CanCfg;
+#define CAN_OBJ_BITS ((4+4+5+8+3)*8)
 
 namespace Cd {
     //! \brief 波特率

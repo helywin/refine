@@ -54,6 +54,7 @@ protected:
 
 signals:
     void overTime();
+    void baudRate(double baud_rate);
 
 };
 

@@ -38,13 +38,28 @@ void Transmit::run()
 //    emitMessage(Re::Debug, "Transmit::run()");
 //    qDebug() << "Transmit::run()";
 //    int over_time = 0;
+    int frames = 0;
     QTime last = QTime::currentTime();
+    QTime baudrate_last = QTime::currentTime();
     while (_status != Re::Stop) {
         unsigned long time = 0;
-        time = (unsigned long)last.msecsTo(QTime::currentTime());
+        time = (unsigned long) last.msecsTo(QTime::currentTime());
         last = QTime::currentTime();
         if (time > _msec) {
             time = _msec;
+        }
+        int maximum_msec;
+        if (_msec >= 500) {
+            maximum_msec = (int)_msec;
+        } else {
+            maximum_msec = (int)_msec * 4;
+        }
+        int msec = baudrate_last.msecsTo(QTime::currentTime());
+        if (msec > maximum_msec) {
+            double kbps = (CAN_OBJ_BITS * frames) / (double) msec;
+            emit baudRate(kbps);
+            baudrate_last = QTime::currentTime();
+            frames = 0;
         }
         msleep(_msec - time);
         if (_command == Re::CommandStop) {
@@ -64,6 +79,7 @@ void Transmit::run()
             continue;
         }
         int num = qMin(_frame_num, _buffer->size());
+        frames += num;
         for (int i = 0; i < num; ++i) {
             _can->deliver(*_buffer, 1);
         }

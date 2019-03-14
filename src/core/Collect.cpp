@@ -27,7 +27,6 @@ void Collect::setParams(Can *can, RecvBuffer *buffer, Collect::Manner manner,
 }
 
 #define NO_FRAME_TIMES 100  //隔多少次会报接收空白帧
-#define CAN_OBJ_BITS ((4+4+5+8+3)*8)
 
 void Collect::run()
 {

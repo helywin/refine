@@ -41,6 +41,7 @@ Revolve::Revolve(Initializer *init) :
             static_cast<bool (Revolve::*)(void)>(&Revolve::stopCollect), Qt::DirectConnection);
     connect(&_collect, &Collect::info, this, &Revolve::collectError, Qt::AutoConnection);
     connect(&_collect, &Collect::baudRate, this, &Revolve::recvBaudRate);
+    connect(&_transmit, &Transmit::baudRate, this, &Revolve::sendBaudRate);
     connect(&_transform, &Transform::getTransformedCanMessage,this, &Revolve::getCanMessage);
     connect(&_transform, &Transform::getNewRecvId, this, &Revolve::getNewRecvId);
     _collect.setParams(&_can, &_recv_buf, Collect::FromCan, _msec);

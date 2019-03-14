@@ -78,15 +78,15 @@ set(RC ${PROJECT_SOURCE_DIR}/res/main.rc)
 
 set(LIBCAN ${PROJECT_SOURCE_DIR}/lib/ControlCAN.LIB)
 set(LIBPDF ${PROJECT_SOURCE_DIR}/lib/pdflib.lib)
-set(LIBGSL D:/msys32/mingw32/lib/libgsl.a)
-set(LIBOPENGL D:/msys32/mingw32/i686-w64-mingw32/lib/libopengl32.a)
-set(LIBOMP D:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.dll.a)
-set(LIBZIP D:/msys32/mingw32/lib/libzip.dll.a)
-set(LIBZ D:/msys32/mingw32/lib/libz.dll.a)
-set(LIBBZ2 D:/msys32/mingw32/lib/libbz2.dll.a)
-set(LIBFREEGLUT D:/msys32/mingw32/lib/libfreeglut.dll.a)
-set(LIBNETTLE D:/msys32/mingw32/lib/libnettle.dll.a)
-set(LIBGNUTLS D:/msys32/mingw32/lib/libgnutls.dll.a)
+set(LIBGSL F:/msys32/mingw32/lib/libgsl.a)
+set(LIBOPENGL F:/msys32/mingw32/i686-w64-mingw32/lib/libopengl32.a)
+set(LIBOMP F:/msys32/mingw32/lib/gcc/i686-w64-mingw32/7.3.0/libgomp.dll.a)
+set(LIBZIP F:/msys32/mingw32/lib/libzip.dll.a)
+set(LIBZ F:/msys32/mingw32/lib/libz.dll.a)
+set(LIBBZ2 F:/msys32/mingw32/lib/libbz2.dll.a)
+set(LIBFREEGLUT F:/msys32/mingw32/lib/libfreeglut.dll.a)
+set(LIBNETTLE F:/msys32/mingw32/lib/libnettle.dll.a)
+set(LIBGNUTLS F:/msys32/mingw32/lib/libgnutls.dll.a)
 
 add_executable(file test_file.cpp)
 target_link_libraries(file
@@ -135,7 +135,8 @@ add_executable(refine main.cpp ${RC} ${CORE} ${GUI} ${MOD} ${DEL}
         )
 target_link_libraries(refine
         ${LIBCAN}
-        ${LIBOPENGL}
+        opengl32
+#        ${LIBOPENGL}
 #        ${LIBOMP}
 #        ${LIBFREEGLUT}
         Qt5Core
